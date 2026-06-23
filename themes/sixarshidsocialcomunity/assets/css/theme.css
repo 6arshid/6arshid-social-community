@@ -1,0 +1,1641 @@
+﻿/* ═══════════════════════════════════════════════════════════════
+   6Arshid Social Community Theme — main stylesheet
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. CSS Custom Properties ─────────────────────────────────── */
+
+:root {
+	--a6sc-bg:            #ffffff;
+	--a6sc-bg-hover:      #f7f9f9;
+	--a6sc-surface:       #f7f9f9;
+	--a6sc-border:        #eff3f4;
+	--a6sc-border-strong: #cfd9de;
+	--a6sc-text:          #0f1419;
+	--a6sc-text-muted:    #536471;
+	--a6sc-primary:       #1d9bf0;
+	--a6sc-primary-hover: #1a8cd8;
+	--a6sc-primary-10:    rgba(29,155,240,.1);
+	--a6sc-danger:        #f4212e;
+	--a6sc-like:          #f91880;
+	--a6sc-repost:        #00ba7c;
+	--a6sc-font:          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+	--a6sc-sidebar-w:  275px;
+	--a6sc-right-w:    350px;
+	--a6sc-shell-max: 1265px;
+}
+
+[data-a6sc-theme="dark"] {
+	--a6sc-bg:            #000000;
+	--a6sc-bg-hover:      #080808;
+	--a6sc-surface:       #000000;
+	--a6sc-border:        #2f3336;
+	--a6sc-border-strong: #3e4144;
+	--a6sc-text:          #e7e9ea;
+	--a6sc-text-muted:    #71767b;
+}
+
+[data-a6sc-theme="dim"] {
+	--a6sc-bg:            #15202b;
+	--a6sc-bg-hover:      #1e2d3d;
+	--a6sc-surface:       #1e2732;
+	--a6sc-border:        #38444d;
+	--a6sc-border-strong: #4c6074;
+	--a6sc-text:          #f7f9f9;
+	--a6sc-text-muted:    #8b98a5;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-a6sc-theme]) {
+		--a6sc-bg:            #000000;
+		--a6sc-bg-hover:      #080808;
+		--a6sc-surface:       #000000;
+		--a6sc-border:        #2f3336;
+		--a6sc-border-strong: #3e4144;
+		--a6sc-text:          #e7e9ea;
+		--a6sc-text-muted:    #71767b;
+	}
+}
+
+/* ── 2. Reset ─────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+/* overflow-x on html (not body) prevents body from becoming the scroll
+   container, which would break position:fixed on the sidebar. */
+html { scroll-behavior: smooth; overflow-x: hidden; }
+
+body {
+	margin: 0;
+	font-family: var(--a6sc-font);
+	font-size: 15px;
+	line-height: 1.53;
+	background: var(--a6sc-bg);
+	color: var(--a6sc-text);
+}
+
+a            { color: inherit; text-decoration: none; }
+a:hover      { color: var(--a6sc-primary); }
+img, svg     { display: block; max-width: 100%; }
+button       { font-family: inherit; cursor: pointer; border: none; background: none; }
+ul, ol       { list-style: none; margin: 0; padding: 0; }
+
+/* Strip WordPress defaults that break the layout */
+.wp-site-blocks                        { padding: 0 !important; }
+.is-layout-constrained > *             { max-width: none !important; }
+
+
+/* ── 3. 3-Column Layout (CSS Grid) ───────────────────────────── */
+
+/*
+ * Shell is a wp:group.  We force CSS Grid for a deterministic 3-column layout
+ * (left sidebar / center feed / right sidebar) that does not depend on the
+ * block editor's flex/flow layout classes.
+ */
+.socialnetworksix-shell {
+	display: grid !important;
+	grid-template-columns: var(--a6sc-sidebar-w) minmax(0, 1fr) var(--a6sc-right-w) !important;
+	align-items: start !important;
+	max-width: var(--a6sc-shell-max) !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
+	min-height: 100vh;
+	width: 100% !important;
+	padding: 0 !important;
+	gap: 0 !important;
+}
+
+/* ── 4. Left Navigation Sidebar ───────────────────────────────── */
+
+.socialnetworksix-sidebar {
+	position: sticky !important;
+	top: 0;
+	height: 100vh;
+	overflow-y: auto;
+	overflow-x: hidden;
+	scrollbar-width: none;
+	align-self: start;
+
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 0 !important;
+
+	padding: 0 8px 16px;
+	background: var(--a6sc-bg);
+}
+
+.socialnetworksix-sidebar::-webkit-scrollbar { display: none; }
+
+/* Logo area */
+.socialnetworksix-sidebar__logo {
+	padding: 10px 4px 4px;
+}
+
+.socialnetworksix-sidebar__logo .wp-block-site-logo img,
+.socialnetworksix-sidebar__logo img {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	object-fit: contain;
+}
+
+.socialnetworksix-sidebar__logo a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	transition: background .15s;
+}
+
+.socialnetworksix-sidebar__logo a:hover { background: var(--a6sc-primary-10); }
+
+/* Sidebar nav — X.com style */
+.a6sc-sidenav {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	padding: 4px 0;
+	flex: 1;
+}
+
+.a6sc-sidenav__item {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	padding: 12px 16px;
+	border-radius: 9999px;
+	font-size: 20px;
+	font-weight: 400;
+	color: var(--a6sc-text);
+	text-decoration: none;
+	white-space: nowrap;
+	transition: background .15s;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.a6sc-sidenav__item:hover {
+	background: var(--a6sc-bg-hover);
+	color: var(--a6sc-text);
+}
+
+.a6sc-sidenav__item--active {
+	font-weight: 700;
+}
+
+.a6sc-sidenav__icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	line-height: 1;
+}
+
+.a6sc-sidenav__icon svg {
+	width: 26px;
+	height: 26px;
+}
+
+.a6sc-sidenav__label {
+	line-height: 1.3;
+}
+
+/* Unread notification / message count badge */
+.a6sc-nav-badge[hidden] { display: none; }
+.a6sc-nav-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 20px;
+	height: 20px;
+	padding: 0 5px;
+	background: var(--arshid6social-primary, #2563eb);
+	color: #fff;
+	border-radius: 10px;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1;
+	pointer-events: none;
+	box-sizing: border-box;
+}
+
+/* Sidebar: badge appears after the label, pushed to far right */
+.a6sc-sidenav .a6sc-nav-badge { margin-inline-start: auto; }
+
+/* Bottom nav: badge overlaid on top-right corner of the icon */
+.a6sc-bnav .a6sc-nav-badge--icon {
+	position: absolute;
+	top: -5px;
+	right: -6px;
+}
+
+/* Hide sidebar badge in icon-only (narrow) mode — no label to anchor to */
+@media (max-width: 1280px) {
+	.a6sc-sidenav .a6sc-nav-badge { display: none; }
+}
+
+/* Compose / Post button */
+.a6sc-compose-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	margin: 12px 12px 4px;
+	padding: 0 24px;
+	height: 52px;
+	background: var(--a6sc-primary);
+	color: #fff !important;
+	border-radius: 9999px;
+	font-size: 17px;
+	font-weight: 700;
+	transition: background .2s;
+	text-decoration: none !important;
+}
+
+.a6sc-compose-btn:hover { background: var(--a6sc-primary-hover); color: #fff !important; }
+
+/* User menu at bottom of sidebar */
+.socialnetworksix-sidebar__user {
+	margin-top: auto;
+	padding-top: 8px;
+}
+
+.a6sc-user-menu {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 12px;
+	border-radius: 9999px;
+	transition: background .15s;
+	text-decoration: none !important;
+	color: var(--a6sc-text) !important;
+	min-width: 0;
+}
+
+.a6sc-user-menu:hover { background: var(--a6sc-bg-hover); }
+
+.a6sc-user-menu__inner {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex: 1;
+	min-width: 0;
+	text-decoration: none !important;
+	color: inherit !important;
+}
+
+.a6sc-user-menu__avatar,
+.a6sc-user-menu__avatar img {
+	width: 40px !important;
+	height: 40px !important;
+	border-radius: 50% !important;
+	object-fit: cover;
+	flex-shrink: 0;
+}
+
+.a6sc-user-menu__info {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.a6sc-user-menu__name {
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--a6sc-text);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.a6sc-user-menu__handle {
+	font-size: 13px;
+	color: var(--a6sc-text-muted);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.a6sc-user-menu__logout {
+	margin-left: auto;
+	color: var(--a6sc-text-muted);
+	font-size: 18px;
+	padding: 4px 6px;
+	border-radius: 50%;
+	transition: background .15s;
+	flex-shrink: 0;
+}
+
+.a6sc-user-menu__logout:hover { background: var(--a6sc-bg-hover); }
+
+/* Theme toggle button */
+.a6sc-theme-toggle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 38px;
+	height: 38px;
+	border-radius: 50%;
+	border: 1px solid var(--a6sc-border);
+	background: transparent;
+	color: var(--a6sc-text);
+	transition: background .15s;
+	flex-shrink: 0;
+	cursor: pointer;
+}
+
+.a6sc-theme-toggle:hover { background: var(--a6sc-bg-hover); }
+
+/* Show sun in dark, moon in light */
+.a6sc-icon-moon { display: block; }
+.a6sc-icon-sun  { display: none; }
+[data-a6sc-theme="dark"] .a6sc-icon-moon,
+[data-a6sc-theme="dim"]  .a6sc-icon-moon { display: none;  }
+[data-a6sc-theme="dark"] .a6sc-icon-sun,
+[data-a6sc-theme="dim"]  .a6sc-icon-sun  { display: block; }
+
+/* Shell variant: no right sidebar (no-sidebars template) */
+.socialnetworksix-shell--no-right {
+	grid-template-columns: var(--a6sc-sidebar-w) minmax(0, 1fr) !important;
+}
+
+/* ── 5. Center Feed ───────────────────────────────────────────── */
+
+.socialnetworksix-feed {
+	border-left: 1px solid var(--a6sc-border);
+	border-right: 1px solid var(--a6sc-border);
+	min-height: 100vh;
+	min-width: 0;
+	background: var(--a6sc-bg);
+}
+
+/* Feed header — removed, titles no longer shown */
+.a6sc-feed-header { display: none !important; }
+
+/* ── 6. Right Sidebar ─────────────────────────────────────────── */
+
+/*
+ * .socialnetworksix-right is the grid's third column (on the template-part wrapper
+ * via className).  Sticky so it scrolls with the feed but stays in view.
+ */
+.socialnetworksix-right {
+	position: sticky;
+	top: 0;
+	align-self: start;
+	height: 100vh;
+	padding: 12px 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	scrollbar-width: none;
+	background: var(--a6sc-bg);
+}
+
+.socialnetworksix-right::-webkit-scrollbar { display: none; }
+
+/* Keep .socialnetworksix-right-inner as alias so old markup still works */
+.socialnetworksix-right-inner {
+	position: sticky;
+	top: 0;
+	width: var(--a6sc-right-w);
+	height: 100vh;
+	padding: 12px 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	scrollbar-width: none;
+	background: var(--a6sc-bg);
+}
+
+.socialnetworksix-right-inner::-webkit-scrollbar { display: none; }
+
+/* Search */
+.a6sc-search-widget,
+.wp-block-search__inside-wrapper {
+	width: 100%;
+}
+
+.wp-block-search.a6sc-search-widget .wp-block-search__inside-wrapper {
+	border-radius: 9999px !important;
+	background: var(--a6sc-surface) !important;
+	border: 1px solid transparent !important;
+	overflow: hidden;
+}
+
+.wp-block-search.a6sc-search-widget input[type="search"] {
+	background: transparent !important;
+	border: none !important;
+	padding: 10px 16px !important;
+	font-size: 15px !important;
+	color: var(--a6sc-text) !important;
+	font-family: var(--a6sc-font) !important;
+}
+
+.wp-block-search.a6sc-search-widget input[type="search"]::placeholder {
+	color: var(--a6sc-text-muted) !important;
+}
+
+.wp-block-search.a6sc-search-widget input[type="search"]:focus {
+	outline: none !important;
+	box-shadow: none !important;
+}
+
+.wp-block-search.a6sc-search-widget .wp-block-search__inside-wrapper:focus-within {
+	border-color: var(--a6sc-primary) !important;
+	background: var(--a6sc-bg) !important;
+}
+
+/* Default get_search_form() output ([a6sc_search] shortcode, comments, etc.) */
+.a6sc-search-wrap,
+form.a6sc-search-widget {
+	width: 100%;
+	margin-bottom: 16px;
+}
+
+.a6sc-search-wrap .search-form,
+form.a6sc-search-widget {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	gap: 6px;
+	width: 100%;
+	padding: 4px 4px 4px 6px;
+	border-radius: 9999px;
+	background: var(--a6sc-surface);
+	border: 1px solid transparent;
+	transition: border-color .15s ease, background .15s ease;
+	box-sizing: border-box;
+}
+
+/* Hide the accessibility label that ships with the default search form */
+.a6sc-search-wrap .search-form .screen-reader-text,
+form.a6sc-search-widget .screen-reader-text {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+.a6sc-search-wrap .search-form:focus-within,
+form.a6sc-search-widget:focus-within {
+	border-color: var(--a6sc-primary);
+	background: var(--a6sc-bg);
+}
+
+.a6sc-search-wrap .search-form label,
+form.a6sc-search-widget label {
+	display: flex;
+	align-items: center;
+	flex: 1 1 auto;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+}
+
+.a6sc-search-wrap .search-field,
+form.a6sc-search-widget .search-field {
+	width: 100%;
+	min-width: 0;
+	height: auto;
+	line-height: 1.4;
+	background: transparent;
+	border: none;
+	outline: none;
+	box-shadow: none;
+	padding: 8px 14px;
+	margin: 0;
+	font-size: 15px;
+	color: var(--a6sc-text);
+	font-family: var(--a6sc-font);
+	box-sizing: border-box;
+}
+
+.a6sc-search-wrap .search-field::placeholder,
+form.a6sc-search-widget .search-field::placeholder {
+	color: var(--a6sc-text-muted);
+}
+
+.a6sc-search-wrap .search-submit,
+form.a6sc-search-widget .search-submit {
+	flex: 0 0 auto;
+	border: none;
+	cursor: pointer;
+	border-radius: 9999px;
+	padding: 8px 18px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #fff;
+	background: var(--a6sc-primary);
+	font-family: var(--a6sc-font);
+	transition: opacity .15s ease;
+}
+
+.a6sc-search-wrap .search-submit:hover,
+form.a6sc-search-widget .search-submit:hover {
+	opacity: .9;
+}
+
+/* Right panel cards */
+.a6sc-panel {
+	background: var(--a6sc-surface);
+	border-radius: 16px;
+	overflow: hidden;
+	/* Remap plugin vars so social-network.css styles are correct in dark/dim */
+	--arshid6social-text:          var(--a6sc-text);
+	--arshid6social-text-muted:    var(--a6sc-text-muted);
+	--arshid6social-surface:       var(--a6sc-surface);
+	--arshid6social-surface-2:     var(--a6sc-bg-hover);
+	--arshid6social-border:        var(--a6sc-border);
+	--arshid6social-border-strong: var(--a6sc-border-strong);
+	--arshid6social-primary-light: var(--a6sc-primary-10);
+}
+
+.a6sc-panel__title {
+	font-size: 20px !important;
+	font-weight: 800 !important;
+	margin: 0 !important;
+	padding: 12px 16px 4px !important;
+	color: var(--a6sc-text);
+}
+
+/* Who to follow — override plugin member grid to be compact/vertical */
+.a6sc-panel .arshid6social-members-grid,
+.a6sc-panel ul.arshid6social-members-list {
+	display: flex !important;
+	flex-direction: column !important;
+	gap: 0 !important;
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+.a6sc-panel li.arshid6social-member-item,
+.a6sc-panel .arshid6social-member-card {
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: center !important;
+	gap: 10px !important;
+	padding: 10px 16px !important;
+	border-radius: 0 !important;
+	box-shadow: none !important;
+	border: none !important;
+	background: transparent !important;
+	transition: background .15s;
+	list-style: none !important;
+}
+
+.a6sc-panel li.arshid6social-member-item:hover,
+.a6sc-panel .arshid6social-member-card:hover {
+	background: var(--a6sc-bg-hover) !important;
+}
+
+/* ── Who to Follow widget ─────────────────────────────────────────────── */
+
+.arshid6social-who-to-follow {
+	display: flex !important;
+	flex-direction: column !important;
+	padding: 4px 0 !important;
+}
+
+.arshid6social-wtf-row {
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: center !important;
+	flex-wrap: nowrap !important;
+	gap: 12px !important;
+	padding: 8px 16px !important;
+	transition: background 0.15s;
+}
+.arshid6social-wtf-row:hover {
+	background: var(--a6sc-bg-hover) !important;
+}
+
+/* Avatar link + image */
+.arshid6social-wtf-avatar {
+	display: block !important;
+	flex-shrink: 0 !important;
+	width: 44px !important;
+	height: 44px !important;
+	border-radius: 50% !important;
+	overflow: hidden !important;
+	line-height: 0 !important;
+}
+.arshid6social-wtf-avatar img {
+	width: 44px !important;
+	height: 44px !important;
+	max-width: 44px !important;
+	border-radius: 50% !important;
+	object-fit: cover !important;
+	display: block !important;
+}
+
+/* Name */
+.arshid6social-wtf-name {
+	flex: 1 1 0% !important;
+	min-width: 0 !important;
+	font-size: 14px !important;
+	font-weight: 600 !important;
+	line-height: 1.3 !important;
+	color: var(--a6sc-text) !important;
+	text-decoration: none !important;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+	display: block !important;
+}
+.arshid6social-wtf-name:hover {
+	color: var(--a6sc-primary) !important;
+	text-decoration: none !important;
+}
+
+/* Button — filled pill, colour injected via PHP inline style */
+.arshid6social-wtf-btn {
+	display: inline-flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	gap: 6px !important;
+	flex-shrink: 0 !important;
+	border-radius: 9999px !important;
+	font-size: 13px !important;
+	font-weight: 600 !important;
+	font-family: inherit !important;
+	padding: 6px 18px !important;
+	line-height: 1.4 !important;
+	white-space: nowrap !important;
+	cursor: pointer !important;
+	transition: filter 0.15s !important;
+	box-shadow: none !important;
+	outline: none !important;
+	appearance: none !important;
+	-webkit-appearance: none !important;
+	text-decoration: none !important;
+}
+.arshid6social-wtf-btn:hover {
+	filter: brightness(0.88) !important;
+}
+.arshid6social-wtf-btn:disabled {
+	opacity: 0.5 !important;
+	cursor: not-allowed !important;
+}
+.arshid6social-wtf-btn--friends,
+.arshid6social-wtf-btn--pending_sent {
+	opacity: 0.65 !important;
+}
+
+.a6sc-panel__show-more {
+	display: block !important;
+	padding: 14px 16px !important;
+	color: var(--a6sc-primary) !important;
+	font-size: 14px !important;
+	font-weight: 600 !important;
+	transition: background .15s;
+	margin: 0 !important;
+	border-top: 1px solid var(--a6sc-border) !important;
+}
+
+.a6sc-panel__show-more:hover {
+	background: var(--a6sc-bg-hover);
+}
+
+.a6sc-panel__show-more a {
+	color: var(--a6sc-primary) !important;
+	text-decoration: none !important;
+}
+
+/* Footer links */
+.a6sc-footer-links {
+	font-size: 13px !important;
+	color: var(--a6sc-text-muted) !important;
+	margin: 0 !important;
+	line-height: 1.8;
+}
+
+.a6sc-footer-links a {
+	color: var(--a6sc-text-muted) !important;
+	transition: color .15s;
+}
+
+.a6sc-footer-links a:hover {
+	color: var(--a6sc-primary) !important;
+	text-decoration: underline;
+}
+
+/* ── Powered-by footer ──────────────────────────────────────────── */
+
+.a6sc-powered-by {
+	font-size: 12px !important;
+	color: var(--a6sc-text-muted) !important;
+	text-align: center !important;
+	padding: 12px 16px 20px !important;
+	margin: 0 !important;
+}
+
+.a6sc-powered-by a {
+	color: var(--a6sc-text-muted) !important;
+	text-decoration: none;
+	transition: color .15s;
+}
+
+.a6sc-powered-by a:hover {
+	color: var(--a6sc-primary) !important;
+	text-decoration: underline;
+}
+
+/* ── Splash/auth pages: remove the black strip above the splash ──── */
+
+/* A wrapper above the splash left the body background (#000) showing as a thin
+   black bar. Pin the splash to the whole viewport (fixed inset:0) so it always
+   covers from the absolute top — no gap is possible regardless of wrappers. */
+.arshid6social-home-splash-page .wp-site-blocks,
+.arshid6social-home-splash-page .wp-block-post-content,
+.arshid6social-home-splash-page .wp-block-post-content > * {
+	margin-top: 0 !important;
+	padding-top: 0 !important;
+}
+
+.arshid6social-home-splash-page .a6scsplash {
+	position: fixed !important;
+	inset: 0 !important;
+	min-height: 100vh;
+	height: 100vh;
+	overflow-y: auto;
+	z-index: 1;
+}
+
+/* Make the body background match the splash sky so no stray strip can show */
+.arshid6social-home-splash-page {
+	background: #0a1420 !important;
+}
+
+/* ── Footer on splash/auth pages ────────────────────────────────── */
+
+/* The a6scsplash fills 100vh with the video already playing inside it.
+   Pinning the footer to viewport-bottom (position: fixed) makes it
+   float over the a6scsplash video — no video changes needed. */
+.arshid6social-home-splash-page footer.wp-block-template-part {
+	position: fixed !important;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 20;
+	background: transparent !important;
+}
+
+.arshid6social-home-splash-page .a6sc-powered-by {
+	color: rgba(255, 255, 255, 0.55) !important;
+}
+
+.arshid6social-home-splash-page .a6sc-powered-by a {
+	color: rgba(255, 255, 255, 0.55) !important;
+	text-decoration: none;
+}
+
+.arshid6social-home-splash-page .a6sc-powered-by a:hover {
+	color: #fff !important;
+	text-decoration: underline;
+}
+
+/* ── 7. Mobile Bottom Nav ─────────────────────────────────────── */
+
+/* Collapse the WP shortcode block wrapper so it doesn't occupy space */
+.wp-block-shortcode:has(.a6sc-bnav) {
+	display: contents;
+}
+
+.a6sc-bnav {
+	display: none;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 200;
+	background: var(--a6sc-bg);
+	border-top: 1px solid var(--a6sc-border);
+	padding-bottom: env(safe-area-inset-bottom, 0);
+	flex-direction: row;
+	align-items: stretch;
+	justify-content: space-around;
+}
+
+.a6sc-bnav__item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	flex: 1;
+	padding: 8px 4px;
+	gap: 3px;
+	text-decoration: none;
+	color: var(--a6sc-text-muted);
+	font-size: 11px;
+	font-weight: 500;
+	border-radius: 10px;
+	transition: color .15s, background .15s;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.a6sc-bnav__item:hover {
+	color: var(--a6sc-text);
+	background: var(--a6sc-bg-hover);
+}
+
+.a6sc-bnav__item--active {
+	color: var(--a6sc-primary);
+}
+
+.a6sc-bnav__icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	line-height: 1;
+	position: relative;
+}
+
+.a6sc-bnav__icon svg {
+	width: 24px;
+	height: 24px;
+}
+
+.a6sc-bnav__label {
+	line-height: 1;
+}
+
+/* Logo inside mobile side nav (visible only at ≤700px when nav becomes a vertical sidebar) */
+.a6sc-bnav__logo {
+	display: none; /* hidden at default (bottom-bar) mode — shown in the mobile vertical override below */
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	padding: 10px 0 6px;
+	flex-shrink: 0;
+	border-radius: 50%;
+	transition: opacity .15s;
+}
+
+.a6sc-bnav__logo:hover { opacity: .8; }
+
+.a6sc-bnav__logo img {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	object-fit: contain;
+}
+
+/* ── 8. WordPress Block overrides ─────────────────────────────── */
+
+/* Remove default WP padding/margin on body/html */
+body.wp-admin { margin: 0 !important; }
+.is-root-container { padding: 0 !important; }
+.wp-block-post-content > * { max-width: 100% !important; }
+
+/* Fix block separator */
+.wp-block-separator,
+hr {
+	border: none;
+	border-top: 1px solid var(--a6sc-border);
+	margin: 0;
+}
+
+/* Buttons */
+.wp-block-button__link,
+.wp-element-button {
+	background: var(--a6sc-primary) !important;
+	color: #fff !important;
+	border-radius: 9999px !important;
+	font-weight: 700 !important;
+	padding: 8px 20px !important;
+	font-size: 15px !important;
+	transition: background .2s !important;
+	text-decoration: none !important;
+}
+
+.wp-block-button__link:hover,
+.wp-element-button:hover {
+	background: var(--a6sc-primary-hover) !important;
+}
+
+/* Search block */
+.wp-block-search { margin: 0; }
+
+/* ── 9. Plugin component overrides ────────────────────────────── */
+
+/* Activity feed items */
+.arshid6social-activity-item,
+.activity-item {
+	border-bottom: 1px solid var(--a6sc-border) !important;
+	background: var(--a6sc-bg) !important;
+	transition: background .15s;
+}
+
+.arshid6social-activity-item:hover,
+.activity-item:hover {
+	background: var(--a6sc-bg-hover) !important;
+}
+
+/* Notification items */
+.arshid6social-notification-item {
+	border-bottom: 1px solid var(--a6sc-border) !important;
+}
+
+/* Messages */
+.arshid6social-messages-wrap { min-height: 100vh; }
+
+/* Login/Register/Auth forms */
+.arshid6social-login-form-wrap,
+.arshid6social-login-form,
+.arshid6social-register-form,
+.arshid6social-forgot-form-wrap,
+.arshid6social-reset-form-wrap {
+	width: 100%;
+	margin: 32px auto;
+	padding: 32px;
+	border: 1px solid var(--a6sc-border);
+	border-radius: 16px;
+	background: var(--a6sc-bg);
+}
+
+/* Dark mode — transparent card + white text */
+[data-a6sc-theme="dark"] .arshid6social-login-form-wrap,
+[data-a6sc-theme="dark"] .arshid6social-login-form,
+[data-a6sc-theme="dark"] .arshid6social-register-form,
+[data-a6sc-theme="dark"] .arshid6social-forgot-form-wrap,
+[data-a6sc-theme="dark"] .arshid6social-reset-form-wrap,
+[data-a6sc-theme="dim"]  .arshid6social-login-form-wrap,
+[data-a6sc-theme="dim"]  .arshid6social-login-form,
+[data-a6sc-theme="dim"]  .arshid6social-register-form,
+[data-a6sc-theme="dim"]  .arshid6social-forgot-form-wrap,
+[data-a6sc-theme="dim"]  .arshid6social-reset-form-wrap {
+	background: transparent;
+	border-color: rgba(255, 255, 255, 0.12);
+	color: #ffffff;
+}
+
+[data-a6sc-theme="dark"] .arshid6social-forgot-form-wrap input::placeholder,
+[data-a6sc-theme="dark"] .arshid6social-reset-form-wrap input::placeholder,
+[data-a6sc-theme="dark"] .arshid6social-login-form input::placeholder,
+[data-a6sc-theme="dark"] .arshid6social-register-form input::placeholder,
+[data-a6sc-theme="dim"]  .arshid6social-forgot-form-wrap input::placeholder,
+[data-a6sc-theme="dim"]  .arshid6social-reset-form-wrap input::placeholder,
+[data-a6sc-theme="dim"]  .arshid6social-login-form input::placeholder,
+[data-a6sc-theme="dim"]  .arshid6social-register-form input::placeholder {
+	color: rgba(255, 255, 255, 0.7);
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-a6sc-theme]) .arshid6social-login-form-wrap,
+	:root:not([data-a6sc-theme]) .arshid6social-login-form,
+	:root:not([data-a6sc-theme]) .arshid6social-register-form,
+	:root:not([data-a6sc-theme]) .arshid6social-forgot-form-wrap,
+	:root:not([data-a6sc-theme]) .arshid6social-reset-form-wrap {
+		background: transparent;
+		border-color: rgba(255, 255, 255, 0.12);
+		color: #ffffff;
+	}
+
+	:root:not([data-a6sc-theme]) .arshid6social-forgot-form-wrap input::placeholder,
+	:root:not([data-a6sc-theme]) .arshid6social-reset-form-wrap input::placeholder,
+	:root:not([data-a6sc-theme]) .arshid6social-login-form input::placeholder,
+	:root:not([data-a6sc-theme]) .arshid6social-register-form input::placeholder {
+		color: rgba(255, 255, 255, 0.7);
+	}
+}
+
+/* Stories tray — hidden by default; only shown when admin enables the Stories feature.
+ * Let the plugin's stories.css handle all visual styling — we only control visibility. */
+.sn-stories-tray { display: none !important; }
+body.a6sc-stories-on .sn-stories-tray { display: block !important; }
+
+/* Profile page */
+.arshid6social-profile-wrap,
+.arshid6social-member-profile {
+	border-bottom: 1px solid var(--a6sc-border);
+}
+
+/* ── 10. Responsive Breakpoints ───────────────────────────────── */
+
+/* 1280px: collapse sidebar to icon-only (88px) */
+@media (max-width: 1280px) {
+
+	.socialnetworksix-shell {
+		grid-template-columns: 88px minmax(0, 1fr) var(--a6sc-right-w) !important;
+	}
+
+	/* Sidebar: icon-only mode */
+	.socialnetworksix-sidebar {
+		padding: 0 4px 16px;
+		align-items: center;
+	}
+	.socialnetworksix-sidebar__logo { padding: 10px 0 4px; }
+
+	/* Sidebar nav: center icons, hide labels */
+	.a6sc-sidenav { align-items: center; }
+	.a6sc-sidenav__item {
+		padding: 12px;
+		gap: 0;
+		justify-content: center;
+	}
+	.a6sc-sidenav__label { display: none; }
+
+	/* Compose button: icon only, circular */
+	.a6sc-compose-btn .a6sc-compose-btn__label { display: none; }
+	.a6sc-compose-btn {
+		margin: 12px 4px 4px;
+		width: 50px;
+		height: 50px;
+		padding: 0;
+		border-radius: 50%;
+	}
+
+	/* User menu: avatar only */
+	.a6sc-user-menu__info,
+	.a6sc-user-menu__logout { display: none; }
+	.a6sc-user-menu { padding: 10px 4px; justify-content: center; }
+}
+
+/* 1068px: hide right sidebar */
+@media (max-width: 1068px) {
+	.socialnetworksix-shell {
+		grid-template-columns: 88px minmax(0, 1fr) !important;
+	}
+	.socialnetworksix-right,
+	.socialnetworksix-right-inner { display: none !important; }
+}
+
+/* 700px: single column + side nav */
+@media (max-width: 700px) {
+	.socialnetworksix-shell {
+		grid-template-columns: minmax(0, 1fr) !important;
+		padding-left: 68px !important; /* reserve space for the fixed side nav */
+	}
+
+	.socialnetworksix-sidebar {
+		display: none !important;
+	}
+
+	.socialnetworksix-feed {
+		border-left: none !important;
+		border-right: none !important;
+	}
+
+	.socialnetworksix-right,
+	.socialnetworksix-right-inner { display: none !important; }
+
+	/* Side nav — sticks to the left edge (flipped to right in RTL via rtl.css) */
+	.a6sc-bnav {
+		display: flex !important;
+		flex-direction: column !important;
+		align-items: center !important;
+		justify-content: flex-start !important;
+
+		position: fixed !important;
+		top: 0 !important;
+		bottom: 0 !important;
+		left: 0 !important;
+		right: auto !important;
+
+		width: 68px !important;
+		height: 100% !important;
+
+		border-top: none !important;
+		border-right: 1px solid var(--a6sc-border) !important;
+		border-bottom: none !important;
+
+		padding-top: 4px;
+		padding-bottom: env(safe-area-inset-bottom, 0);
+		gap: 4px;
+	}
+
+	/* Show logo at top of vertical side nav */
+	.a6sc-bnav__logo { display: flex !important; }
+
+	.a6sc-bnav__item {
+		flex: none !important;
+		width: 100% !important;
+		padding: 12px 4px !important;
+		border-radius: 0 !important;
+		justify-content: center !important;
+		gap: 0 !important;
+		font-size: 0 !important; /* hide any inline text nodes */
+	}
+
+	.a6sc-bnav__label { display: none !important; }
+
+	.a6sc-bnav__icon svg {
+		width: 26px !important;
+		height: 26px !important;
+	}
+
+	/* Push side nav below WP admin bar when logged in (admin bar is 46px at this viewport) */
+	body.admin-bar .a6sc-bnav {
+		top: 46px !important;
+	}
+
+}
+
+/* ── 11. Dark mode for plugin components ──────────────────────── */
+
+/* Bridge: override ARSHID6SOCIAL plugin CSS vars when theme is dark */
+[data-a6sc-theme="dark"] .arshid6social-wrap,
+[data-a6sc-theme="dark"] .arshid6social-directory-wrap {
+	--arshid6social-surface:       var(--a6sc-bg);
+	--arshid6social-surface-2:     var(--a6sc-bg-hover);
+	--arshid6social-border:        #2f3336;
+	--arshid6social-text:          #e7e9ea;
+	--arshid6social-text-muted:    #71767b;
+	--arshid6social-primary-light: #1a2744;
+	--arshid6social-card-bg:       var(--a6sc-bg);
+}
+
+/* Also apply when system dark mode is active (no explicit data-a6sc-theme set) */
+@media (prefers-color-scheme: dark) {
+	:root:not([data-a6sc-theme]) .arshid6social-wrap,
+	:root:not([data-a6sc-theme]) .arshid6social-directory-wrap {
+		--arshid6social-surface:       var(--a6sc-bg);
+		--arshid6social-surface-2:     var(--a6sc-bg-hover);
+		--arshid6social-border:        #2f3336;
+		--arshid6social-text:          #e7e9ea;
+		--arshid6social-text-muted:    #71767b;
+		--arshid6social-primary-light: #1a2744;
+		--arshid6social-card-bg:       var(--a6sc-bg);
+	}
+}
+
+[data-a6sc-theme="dim"] .arshid6social-wrap,
+[data-a6sc-theme="dim"] .arshid6social-directory-wrap {
+	--arshid6social-surface:       #1e2732;
+	--arshid6social-surface-2:     #253341;
+	--arshid6social-border:        #38444d;
+	--arshid6social-text:          #f7f9f9;
+	--arshid6social-text-muted:    #8b98a5;
+	--arshid6social-primary-light: #1a2744;
+	--arshid6social-card-bg:       #1e2732;
+}
+
+/* Bridge: marketplace uses its own --mkt-* vars */
+[data-a6sc-theme="dark"] .arshid6social-mkt-wrap {
+	--mkt-border: #2f3336;
+	--mkt-text:   #e7e9ea;
+	--mkt-muted:  #71767b;
+	--mkt-bg:     #1d1f23;
+}
+
+[data-a6sc-theme="dim"] .arshid6social-mkt-wrap {
+	--mkt-border: #38444d;
+	--mkt-text:   #f7f9f9;
+	--mkt-muted:  #8b98a5;
+	--mkt-bg:     #253341;
+}
+
+/* Marketplace hardcoded #fff backgrounds */
+[data-a6sc-theme="dark"] .arshid6social-mkt-card,
+[data-a6sc-theme="dark"] .arshid6social-mkt-cat-card,
+[data-a6sc-theme="dark"] .arshid6social-mkt-view-btn,
+[data-a6sc-theme="dark"] .arshid6social-mkt-sort-select,
+[data-a6sc-theme="dark"] .arshid6social-mkt-search-inner {
+	background: #16181c !important;
+	color: #e7e9ea !important;
+}
+
+[data-a6sc-theme="dim"] .arshid6social-mkt-card,
+[data-a6sc-theme="dim"] .arshid6social-mkt-cat-card,
+[data-a6sc-theme="dim"] .arshid6social-mkt-view-btn,
+[data-a6sc-theme="dim"] .arshid6social-mkt-sort-select,
+[data-a6sc-theme="dim"] .arshid6social-mkt-search-inner {
+	background: #1e2732 !important;
+	color: #f7f9f9 !important;
+}
+
+/* Marketplace skeleton shimmer */
+[data-a6sc-theme="dark"] .arshid6social-skeleton-box,
+[data-a6sc-theme="dark"] .arshid6social-skeleton-line {
+	background: linear-gradient(90deg,#2f3336 25%,#3e4144 50%,#2f3336 75%) !important;
+	background-size: 200% 100% !important;
+}
+
+[data-a6sc-theme="dim"] .arshid6social-skeleton-box,
+[data-a6sc-theme="dim"] .arshid6social-skeleton-line {
+	background: linear-gradient(90deg,#38444d 25%,#4c6074 50%,#38444d 75%) !important;
+	background-size: 200% 100% !important;
+}
+
+/* Modal box */
+[data-a6sc-theme="dark"] .arshid6social-modal-box {
+	background: #16181c !important;
+	color: #e7e9ea !important;
+}
+
+[data-a6sc-theme="dim"] .arshid6social-modal-box {
+	background: #1e2732 !important;
+	color: #f7f9f9 !important;
+}
+
+/* Notice error hardcoded colors */
+[data-a6sc-theme="dark"] .arshid6social-notice--error {
+	background: #3b0f0f !important;
+	color:       #fca5a5 !important;
+	border-color: #7f1d1d !important;
+}
+
+[data-a6sc-theme="dim"] .arshid6social-notice--error {
+	background: #451a1a !important;
+	color:       #fca5a5 !important;
+	border-color: #7f1d1d !important;
+}
+
+/* Status badge dark overrides */
+[data-a6sc-theme="dark"] .arshid6social-status-public,
+[data-a6sc-theme="dim"]  .arshid6social-status-public  { background: #14532d; color: #86efac; }
+[data-a6sc-theme="dark"] .arshid6social-status-private,
+[data-a6sc-theme="dim"]  .arshid6social-status-private { background: #451a03; color: #fde68a; }
+[data-a6sc-theme="dark"] .arshid6social-status-hidden,
+[data-a6sc-theme="dim"]  .arshid6social-status-hidden  { background: #1e293b; color: #94a3b8; }
+[data-a6sc-theme="dark"] .arshid6social-status-active,
+[data-a6sc-theme="dim"]  .arshid6social-status-active  { background: #1e3a8a; color: #93c5fd; }
+
+[data-a6sc-theme="dark"] .arshid6social-activity-item,
+[data-a6sc-theme="dark"] .activity-item,
+[data-a6sc-theme="dark"] .arshid6social-notification-item {
+	background: var(--a6sc-bg) !important;
+}
+
+[data-a6sc-theme="dark"] .a6sc-panel,
+[data-a6sc-theme="dark"] .wp-block-group.a6sc-panel {
+	background: transparent !important;
+	background-color: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+}
+[data-a6sc-theme="dark"] .wp-block-search.a6sc-search-widget .wp-block-search__inside-wrapper {
+	background: var(--a6sc-bg) !important;
+	border-color: var(--a6sc-border) !important;
+}
+[data-a6sc-theme="dark"] input,
+[data-a6sc-theme="dark"] textarea,
+[data-a6sc-theme="dark"] select {
+	background: var(--a6sc-bg) !important;
+	color: var(--a6sc-text) !important;
+	border-color: var(--a6sc-border) !important;
+}
+
+/* Stories tray — override plugin's hardcoded dark background */
+[data-a6sc-theme="dark"] .sn-stories-tray,
+[data-a6sc-theme="dark"] .sn-stories-bottom-bar {
+	background: var(--a6sc-bg) !important;
+}
+
+[data-a6sc-theme="dim"] .arshid6social-activity-item,
+[data-a6sc-theme="dim"] .activity-item { background: var(--a6sc-bg) !important; }
+[data-a6sc-theme="dim"] .a6sc-panel { background: var(--a6sc-surface); }
+[data-a6sc-theme="dim"] input,
+[data-a6sc-theme="dim"] textarea,
+[data-a6sc-theme="dim"] select {
+	background: var(--a6sc-surface) !important;
+	color: var(--a6sc-text) !important;
+	border-color: var(--a6sc-border) !important;
+}
+
+/* ── Messages page: hide right sidebar ───────────────────────── */
+body.arshid6social-on-messages .socialnetworksix-right {
+	display: none !important;
+}
+body.arshid6social-on-messages .socialnetworksix-shell {
+	grid-template-columns: var(--a6sc-sidebar-w) 1fr !important;
+}
+@media (max-width: 1280px) {
+	body.arshid6social-on-messages .socialnetworksix-shell {
+		grid-template-columns: 88px 1fr !important;
+	}
+}
+@media (max-width: 700px) {
+	body.arshid6social-on-messages .socialnetworksix-shell {
+		grid-template-columns: 1fr !important;
+	}
+}
+
+/* Messages page: align background & border with theme */
+[data-a6sc-theme="dark"] #arshid6social-messages-page {
+	--arshid6social-surface:   var(--a6sc-bg);
+	--arshid6social-surface-2: var(--a6sc-surface);
+	--arshid6social-border:    var(--a6sc-border);
+}
+[data-a6sc-theme="dim"] #arshid6social-messages-page {
+	--arshid6social-surface:   var(--a6sc-bg);
+	--arshid6social-surface-2: var(--a6sc-surface);
+	--arshid6social-border:    var(--a6sc-border);
+}
+@media (prefers-color-scheme: dark) {
+	:root:not([data-a6sc-theme]) #arshid6social-messages-page {
+		--arshid6social-surface:   var(--a6sc-bg);
+		--arshid6social-surface-2: var(--a6sc-surface);
+		--arshid6social-border:    var(--a6sc-border);
+	}
+	:root:not([data-a6sc-theme]) .a6sc-panel,
+	:root:not([data-a6sc-theme]) .wp-block-group.a6sc-panel {
+		background: transparent !important;
+		background-color: transparent !important;
+		border: none !important;
+		box-shadow: none !important;
+	}
+	:root:not([data-a6sc-theme]) .sn-stories-tray,
+	:root:not([data-a6sc-theme]) .sn-stories-bottom-bar {
+		background: var(--a6sc-bg) !important;
+	}
+	:root:not([data-a6sc-theme]) .wp-block-search.a6sc-search-widget .wp-block-search__inside-wrapper {
+		background: var(--a6sc-bg) !important;
+		border-color: var(--a6sc-border) !important;
+	}
+	:root:not([data-a6sc-theme]) input,
+	:root:not([data-a6sc-theme]) textarea,
+	:root:not([data-a6sc-theme]) select {
+		background: var(--a6sc-bg) !important;
+		border-color: var(--a6sc-border) !important;
+	}
+}
+
+/* ── 12. WP Admin Bar offset ──────────────────────────────────── */
+/*
+ * WP admin bar is position:fixed and overlaps sticky/fixed elements.
+ * Offset every sticky/fixed element by the admin bar height.
+ * Desktop (>782px): 32px  |  Tablet/Mobile (600–782px): 46px
+ */
+
+/* Desktop: sidebar + right sidebar sticky offset for admin bar */
+body.admin-bar .socialnetworksix-sidebar,
+body.admin-bar .socialnetworksix-right-inner {
+	top: 32px;
+	height: calc(100vh - 32px);
+}
+
+/* Tablet/mobile range where admin bar is taller */
+@media screen and (max-width: 782px) {
+	body.admin-bar .socialnetworksix-sidebar,
+	body.admin-bar .socialnetworksix-right-inner {
+		top: 46px;
+		height: calc(100vh - 46px);
+	}
+}
+
+/* Mobile side nav (≤700px breakpoint) already handled in section 10 */
+/* Story viewer/creator offset handled in assets/css/stories.css */
+
+/* ── 13. Top Header Bar ───────────────────────────────────────── */
+
+.a6sc-header {
+	background: var(--a6sc-bg);
+	border-bottom: 1px solid var(--a6sc-border);
+	position: sticky;
+	top: 0;
+	z-index: 90;
+}
+
+body.admin-bar .a6sc-header {
+	top: 32px;
+}
+
+@media screen and (max-width: 782px) {
+	body.admin-bar .a6sc-header {
+		top: 46px;
+	}
+}
+
+.a6sc-header__inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	max-width: 1265px;
+	margin-inline: auto;
+	padding: 12px 16px;
+}
+
+.a6sc-header__brand {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-shrink: 0;
+}
+
+.a6sc-header__brand .wp-block-site-title {
+	margin: 0;
+}
+
+/* Site title inside header */
+.a6sc-header .wp-block-site-title a {
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--a6sc-text) !important;
+	text-decoration: none !important;
+}
+
+/* Navigation inside header */
+.a6sc-header .wp-block-navigation a {
+	color: var(--a6sc-text-muted) !important;
+	text-decoration: none !important;
+	font-size: 14px;
+	padding: 6px 10px;
+	border-radius: 6px;
+	transition: background .15s, color .15s;
+}
+
+.a6sc-header .wp-block-navigation a:hover {
+	color: var(--a6sc-text) !important;
+	background: var(--a6sc-bg-hover);
+}
+
+/* ── 14. Blog Post Cards ──────────────────────────────────────── */
+
+.a6sc-post-card .wp-block-post-title a {
+	color: var(--a6sc-text) !important;
+	text-decoration: none !important;
+}
+
+.a6sc-post-card .wp-block-post-title a:hover {
+	text-decoration: underline !important;
+}
+
+.a6sc-post-card .wp-block-post-featured-image img {
+	border-radius: 12px;
+	width: 100%;
+	height: auto;
+}
+
+.a6sc-post-card .wp-block-post-excerpt p {
+	margin: 0;
+}
+
+.a6sc-post-card .wp-block-post-date a {
+	color: inherit !important;
+	text-decoration: none !important;
+}
+
+/* Pagination */
+.wp-block-query-pagination {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	justify-content: center;
+}
+
+.wp-block-query-pagination-numbers .page-numbers {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 36px;
+	height: 36px;
+	padding: 0 6px;
+	border-radius: 9999px;
+	color: var(--a6sc-text) !important;
+	text-decoration: none !important;
+	font-size: 14px;
+	transition: background .15s;
+}
+
+.wp-block-query-pagination-numbers .page-numbers:hover {
+	background: var(--a6sc-bg-hover);
+}
+
+.wp-block-query-pagination-numbers .page-numbers.current {
+	background: var(--a6sc-primary);
+	color: #fff !important;
+	font-weight: 700;
+}
+
+.wp-block-query-pagination-next,
+.wp-block-query-pagination-previous {
+	display: inline-flex;
+	align-items: center;
+	padding: 6px 14px;
+	border-radius: 9999px;
+	border: 1px solid var(--a6sc-border);
+	color: var(--a6sc-text) !important;
+	text-decoration: none !important;
+	font-size: 14px;
+	transition: background .15s;
+}
+
+.wp-block-query-pagination-next:hover,
+.wp-block-query-pagination-previous:hover {
+	background: var(--a6sc-bg-hover);
+}
+
+/* ── 14b. Blog main content area ─────────────────────────────── */
+
+.a6sc-blog-main {
+	padding: 32px 16px 48px;
+}
+
+/* ── 15. Footer ───────────────────────────────────────────────── */
+
+/* Footer wrapper is now wp:columns — add top border & padding via the page */
+.a6sc-footer__cols.wp-block-columns {
+	border-top: 1px solid var(--a6sc-border);
+	padding: 40px 16px 32px;
+	margin: 0 !important;
+	max-width: none !important;
+	align-items: flex-start;
+}
+
+.a6sc-footer__brand.wp-block-column {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.a6sc-footer__brand .wp-block-site-title {
+	font-size: 16px;
+	font-weight: 700;
+	margin: 0;
+}
+
+.a6sc-footer__brand .wp-block-site-title a {
+	color: var(--a6sc-text) !important;
+	text-decoration: none !important;
+}
+
+.a6sc-footer__brand .wp-block-site-tagline {
+	font-size: 13px;
+	color: var(--a6sc-text-muted);
+	margin: 0;
+}
+
+.a6sc-footer__nav.wp-block-navigation {
+	flex-direction: column !important;
+	align-items: flex-start !important;
+	gap: 8px !important;
+	font-size: 14px;
+}
+
+.a6sc-footer__nav .wp-block-navigation a {
+	color: var(--a6sc-text-muted) !important;
+	text-decoration: none !important;
+	transition: color .15s;
+}
+
+.a6sc-footer__nav .wp-block-navigation a:hover {
+	color: var(--a6sc-text) !important;
+}
+
+.a6sc-footer__credits.wp-block-paragraph {
+	border-top: 1px solid var(--a6sc-border);
+	padding: 16px 16px 0;
+	margin: 0 !important;
+	font-size: 12px;
+	color: var(--a6sc-text-muted);
+}
+
+.a6sc-footer__credits a {
+	color: var(--a6sc-text-muted) !important;
+	text-decoration: none !important;
+}
+
+.a6sc-footer__credits a:hover {
+	text-decoration: underline !important;
+}
+
+.a6sc-footer .wp-block-site-title a {
+	color: var(--a6sc-text) !important;
+	text-decoration: none !important;
+	font-weight: 700;
+}
+
+.a6sc-footer .wp-block-navigation a {
+	color: var(--a6sc-text-muted) !important;
+	text-decoration: none !important;
+	font-size: 14px;
+	transition: color .15s;
+}
+
+.a6sc-footer .wp-block-navigation a:hover {
+	color: var(--a6sc-text) !important;
+}
+
+.a6sc-footer__credits a {
+	color: var(--a6sc-text-muted) !important;
+	text-decoration: none !important;
+}
+
+.a6sc-footer__credits a:hover {
+	text-decoration: underline !important;
+}
+
+/* ── 16. Utilities ────────────────────────────────────────────── */
+
+/* Thin scrollbar for modern browsers */
+* { scrollbar-width: thin; scrollbar-color: var(--a6sc-border-strong) transparent; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--a6sc-border-strong); border-radius: 2px; }
+
+.a6sc-visually-hidden {
+	position: absolute; width: 1px; height: 1px;
+	padding: 0; margin: -1px; overflow: hidden;
+	clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}

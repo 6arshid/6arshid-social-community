@@ -1,0 +1,589 @@
+﻿# Copyright (C) 2026 6arshid
+# This file is distributed under the MIT License.
+msgid ""
+msgstr ""
+"Project-Id-Version: 6Arshid Social Community 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/6arshid/social-network-6/issues\n"
+"POT-Creation-Date: 2026-06-12T00:00:00+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2026-06-12T00:00:00+00:00\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"X-Generator: WP-CLI 2.x\n"
+"X-Domain: sixarshidsocialcomunity\n"
+
+#. Plugin Name of the plugin
+msgid "6Arshid Social Community"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://6arshid.com/apps/wordpress/social-network"
+msgstr ""
+
+#. Description of the plugin
+msgid "A complete, secure, responsive, multilingual social network plugin for WordPress with profiles, activity streams, groups, messaging, notifications, and more."
+msgstr ""
+
+#. Author of the plugin
+msgid "6arshid"
+msgstr ""
+
+#: includes/class-activator.php
+msgid "6Arshid Social Community requires PHP %s or higher."
+msgstr ""
+
+#: includes/class-activator.php
+msgid "6Arshid Social Community requires WordPress %s or higher."
+msgstr ""
+
+#: includes/class-assets.php
+msgid "Loading…"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "No results found."
+msgstr ""
+
+#: includes/class-assets.php
+msgid "Something went wrong. Please try again."
+msgstr ""
+
+#: includes/class-assets.php
+msgid "Are you sure?"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "Like"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "Unlike"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "Add Friend"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "Cancel Request"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "Follow"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "Unfollow"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "Send Message"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "Report"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "Block User"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "Unblock User"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "Delete"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "just now"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "%d minute ago"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "%d minutes ago"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "%d hour ago"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "%d hours ago"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "%d day ago"
+msgstr ""
+
+#: includes/class-assets.php
+msgid "%d days ago"
+msgstr ""
+
+#: includes/admin/class-admin.php
+msgid "Social Network"
+msgstr ""
+
+#: includes/admin/class-admin.php
+msgid "Dashboard"
+msgstr ""
+
+#: includes/admin/class-admin.php
+msgid "Members"
+msgstr ""
+
+#: includes/admin/class-admin.php
+msgid "Moderation"
+msgstr ""
+
+#: includes/admin/class-admin.php
+msgid "Settings"
+msgstr ""
+
+#: includes/admin/class-admin.php
+msgid "Social Network Dashboard"
+msgstr ""
+
+#: includes/admin/class-admin.php
+msgid "Activity Items"
+msgstr ""
+
+#: includes/admin/class-admin.php
+msgid "Groups"
+msgstr ""
+
+#: includes/admin/class-admin.php
+msgid "Pending Reports"
+msgstr ""
+
+#: includes/admin/class-admin.php
+msgid "Welcome to 6Arshid Social Community!"
+msgstr ""
+
+#: includes/admin/class-admin.php
+msgid "Run the setup wizard →"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "General"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Components"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Activity"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Messages"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Notifications"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Security"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Emails"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Appearance"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Social Network Settings"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Save Settings"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Allow Registration"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Allow new users to register on the social network."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Relative (e.g. 5 minutes ago)"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Absolute (e.g. June 12, 2026)"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Jalali / Persian calendar"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Invitation Limit"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Maximum invitations a member can send. 0 = unlimited."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Active Components"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "The Members component is always active."
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Activity Streams"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Friends & Follow"
+msgstr ""
+
+#: includes/admin/class-admin-settings.php
+msgid "Private Messages"
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "%s posted an update"
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "Security check failed."
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "You must be logged in."
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "Your account has been suspended."
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "You are posting too frequently. Please wait."
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "Activity content cannot be empty."
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "Your post contains prohibited content."
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "Your post was identified as spam."
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "Failed to post activity."
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "Activity posted."
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "Activity deleted."
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "Activity not found."
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "Authentication required."
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "Permission denied."
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "You must be logged in to react."
+msgstr ""
+
+#: includes/components/activity/class-activity.php
+msgid "Report submitted. Thank you."
+msgstr ""
+
+#: includes/components/friends/class-friends.php
+msgid "You cannot friend yourself."
+msgstr ""
+
+#: includes/components/friends/class-friends.php
+msgid "Unable to send friend request."
+msgstr ""
+
+#: includes/components/friends/class-friends.php
+msgid "A friend request already exists."
+msgstr ""
+
+#: includes/components/friends/class-friends.php
+msgid "Friend request sent."
+msgstr ""
+
+#: includes/components/friends/class-friends.php
+msgid "Friend request accepted."
+msgstr ""
+
+#: includes/components/friends/class-friends.php
+msgid "Request rejected."
+msgstr ""
+
+#: includes/components/friends/class-friends.php
+msgid "Friend removed."
+msgstr ""
+
+#: includes/components/friends/class-friends.php
+msgid "You are now following this member."
+msgstr ""
+
+#: includes/components/friends/class-friends.php
+msgid "You have unfollowed this member."
+msgstr ""
+
+#: includes/components/friends/class-friends.php
+msgid "User blocked."
+msgstr ""
+
+#: includes/components/friends/class-friends.php
+msgid "User unblocked."
+msgstr ""
+
+#: includes/components/friends/class-friends.php
+msgid "Too many friend requests. Please wait."
+msgstr ""
+
+#: includes/components/groups/class-groups.php
+msgid "Group name is required."
+msgstr ""
+
+#: includes/components/groups/class-groups.php
+msgid "Failed to create group."
+msgstr ""
+
+#: includes/components/groups/class-groups.php
+msgid "Group created!"
+msgstr ""
+
+#: includes/components/groups/class-groups.php
+msgid "Group not found."
+msgstr ""
+
+#: includes/components/groups/class-groups.php
+msgid "This group cannot be joined directly."
+msgstr ""
+
+#: includes/components/groups/class-groups.php
+msgid "You have joined the group."
+msgstr ""
+
+#: includes/components/groups/class-groups.php
+msgid "Membership request sent."
+msgstr ""
+
+#: includes/components/groups/class-groups.php
+msgid "Only group members can invite others."
+msgstr ""
+
+#: includes/components/groups/class-groups.php
+msgid "User not found."
+msgstr ""
+
+#: includes/components/groups/class-groups.php
+msgid "Invitation sent."
+msgstr ""
+
+#: includes/components/groups/class-groups.php
+msgid "You are the only admin. Assign another admin before leaving."
+msgstr ""
+
+#: includes/components/groups/class-groups.php
+msgid "You have left the group."
+msgstr ""
+
+#: includes/components/groups/class-groups.php
+msgid "Group deleted."
+msgstr ""
+
+#: includes/components/messages/class-messages.php
+msgid "You are sending messages too quickly. Please wait."
+msgstr ""
+
+#: includes/components/messages/class-messages.php
+msgid "Message cannot be empty."
+msgstr ""
+
+#: includes/components/messages/class-messages.php
+msgid "Could not send message."
+msgstr ""
+
+#: includes/components/messages/class-messages.php
+msgid "Recipient required."
+msgstr ""
+
+#: includes/components/messages/class-messages.php
+msgid "Conversation deleted."
+msgstr ""
+
+#: includes/components/messages/class-messages.php
+msgid "New Message"
+msgstr ""
+
+#: includes/components/notifications/class-notifications.php
+msgid "%s sent you a friend request."
+msgstr ""
+
+#: includes/components/notifications/class-notifications.php
+msgid "%s accepted your friend request."
+msgstr ""
+
+#: includes/components/notifications/class-notifications.php
+msgid "%s mentioned you in an activity update."
+msgstr ""
+
+#: includes/components/notifications/class-notifications.php
+msgid "%s invited you to join a group."
+msgstr ""
+
+#: includes/components/notifications/class-notifications.php
+msgid "%s sent you a message."
+msgstr ""
+
+#: includes/components/notifications/class-notifications.php
+msgid "%s reacted to your activity."
+msgstr ""
+
+#: includes/components/notifications/class-notifications.php
+msgid "Your %s digest"
+msgstr ""
+
+#: includes/components/notifications/class-notifications.php
+msgid "Hello %s,"
+msgstr ""
+
+#: includes/components/notifications/class-notifications.php
+msgid "Here are your recent notifications:"
+msgstr ""
+
+#: includes/components/notifications/class-notifications.php
+msgid "Manage notification preferences"
+msgstr ""
+
+#: includes/components/moderation/class-moderation.php
+msgid "Your account has been suspended. Please contact an administrator."
+msgstr ""
+
+#: templates/members/profile.php
+msgid "%s cover photo"
+msgstr ""
+
+#: templates/members/profile.php
+msgid "Edit Cover"
+msgstr ""
+
+#: templates/members/profile.php
+msgid "Verified Member"
+msgstr ""
+
+#: templates/members/profile.php
+msgid "Verified"
+msgstr ""
+
+#: templates/members/profile.php
+msgid "Friends"
+msgstr ""
+
+#: templates/members/profile.php
+msgid "Edit Profile"
+msgstr ""
+
+#: templates/members/profile.php
+msgid "Change Photo"
+msgstr ""
+
+#: templates/members/profile.php
+msgid "Add Friend"
+msgstr ""
+
+#: templates/members/profile.php
+msgid "Connect"
+msgstr ""
+
+#: templates/members/profile.php
+msgid "Activity"
+msgstr ""
+
+#: templates/members/profile.php
+msgid "About"
+msgstr ""
+
+#: templates/members/profile.php
+msgid "Profile sections"
+msgstr ""
+
+#: templates/members/profile.php
+msgid "No bio yet."
+msgstr ""
+
+#: templates/members/profile.php
+msgid "Activity feed"
+msgstr ""
+
+#: templates/members/directory.php
+msgid "Search members…"
+msgstr ""
+
+#: templates/members/directory.php
+msgid "Search members"
+msgstr ""
+
+#: templates/members/directory.php
+msgid "Member directory"
+msgstr ""
+
+#: templates/messages/inbox.php
+msgid "Messages"
+msgstr ""
+
+#: templates/messages/inbox.php
+msgid "Conversations"
+msgstr ""
+
+#: templates/messages/inbox.php
+msgid "Message thread"
+msgstr ""
+
+#: templates/messages/inbox.php
+msgid "Select a conversation"
+msgstr ""
+
+#: templates/messages/inbox.php
+msgid "Type a message…"
+msgstr ""
+
+#: templates/messages/inbox.php
+msgid "Message"
+msgstr ""
+
+#: templates/messages/inbox.php
+msgid "Send"
+msgstr ""

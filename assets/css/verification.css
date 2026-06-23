@@ -1,0 +1,252 @@
+/* ============================================================
+   Verification — Badge + Request form
+   ============================================================ */
+
+/* ── Badge ────────────────────────────────────────────────── */
+.sn-verified-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: #2563eb;
+	color: #fff;
+	font-size: 10px;
+	font-weight: 700;
+	vertical-align: middle;
+	margin-left: 4px;
+	flex-shrink: 0;
+	position: relative;
+	line-height: 1;
+	cursor: help;
+}
+
+.sn-verified-badge--staff    { background: #7c3aed; }
+.sn-verified-badge--business { background: #059669; }
+.sn-verified-badge--notable  { background: #d97706; }
+.sn-verified-badge--general  { background: #2563eb; }
+
+.sn-verified-badge::after {
+	content: attr(title);
+	position: absolute;
+	bottom: calc(100% + 6px);
+	left: 50%;
+	transform: translateX(-50%);
+	background: rgba(0, 0, 0, .82);
+	color: #fff;
+	font-size: 11px;
+	font-weight: 400;
+	white-space: nowrap;
+	padding: 3px 8px;
+	border-radius: 4px;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity .15s;
+	z-index: 10;
+}
+.sn-verified-badge:hover::after { opacity: 1; }
+
+/* ── Wrapper — force light surface ───────────────────────── */
+.sn-verification-request {
+	max-width: 560px;
+	color-scheme: light;
+}
+
+/* ── Alert banners ────────────────────────────────────────── */
+.sn-alert {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 14px 18px;
+	border-radius: 10px;
+	margin-bottom: 20px;
+	font-size: 14px;
+	line-height: 1.5;
+}
+.sn-alert--success {
+	background: #ecfdf5;
+	border: 1px solid #6ee7b7;
+	color: #065f46;
+}
+.sn-alert--info {
+	background: #eff6ff;
+	border: 1px solid #93c5fd;
+	color: #1e40af;
+}
+.sn-alert--warning {
+	background: #fffbeb;
+	border: 1px solid #fcd34d;
+	color: #92400e;
+}
+
+/* ── Intro text ───────────────────────────────────────────── */
+.sn-verification-request__intro {
+	color: #6b7280;
+	font-size: 14px;
+	margin-bottom: 24px;
+	line-height: 1.6;
+}
+
+/* ── Form fields ──────────────────────────────────────────── */
+.sn-verification-request__form .sn-form-field {
+	margin-bottom: 18px;
+}
+
+.sn-form-field__label {
+	display: block;
+	font-size: 13px;
+	font-weight: 600;
+	color: #374151;
+	margin-bottom: 6px;
+	letter-spacing: .01em;
+}
+
+.sn-form-field__label > span[aria-hidden] {
+	color: #dc2626;
+	margin-left: 2px;
+}
+
+.sn-form-field__hint {
+	display: block;
+	font-size: 12px;
+	font-weight: 400;
+	color: #6b7280;
+	margin-top: 4px;
+	line-height: 1.4;
+}
+
+.sn-form-field__input,
+.sn-form-field__select,
+.sn-form-field__textarea {
+	display: block;
+	width: 100%;
+	padding: 10px 13px;
+	border: 1.5px solid #d1d5db;
+	border-radius: 8px;
+	font-size: 14px;
+	font-family: inherit;
+	background: #ffffff !important;
+	color: #111827 !important;
+	transition: border-color .18s, box-shadow .18s;
+	box-sizing: border-box;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.sn-form-field__select {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+	background-repeat: no-repeat !important;
+	background-position: right 13px center !important;
+	padding-right: 36px;
+}
+
+.sn-form-field__input::placeholder,
+.sn-form-field__textarea::placeholder {
+	color: #9ca3af;
+}
+
+.sn-form-field__input:focus,
+.sn-form-field__select:focus,
+.sn-form-field__textarea:focus {
+	outline: none;
+	border-color: #2563eb;
+	box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
+}
+
+.sn-form-field__textarea {
+	resize: vertical;
+	min-height: 90px;
+	line-height: 1.5;
+}
+
+/* ── File input ───────────────────────────────────────────── */
+.sn-form-field__file {
+	display: block;
+	font-size: 14px;
+	color: #374151;
+	margin-top: 2px;
+}
+
+/* ── Feedback messages ────────────────────────────────────── */
+.sn-verification-request__feedback {
+	padding: 10px 14px;
+	border-radius: 8px;
+	font-size: 14px;
+	margin-bottom: 14px;
+	line-height: 1.5;
+}
+.sn-verification-request__feedback.is-error {
+	background: #fef2f2;
+	color: #991b1b;
+	border: 1px solid #fca5a5;
+}
+.sn-verification-request__feedback.is-success {
+	background: #ecfdf5;
+	color: #065f46;
+	border: 1px solid #6ee7b7;
+}
+
+/* ── Submit button ────────────────────────────────────────── */
+.sn-verification-request__form .sn-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 10px 22px;
+	border: none;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background .18s, opacity .18s;
+}
+.sn-btn--primary {
+	background: #2563eb;
+	color: #fff !important;
+}
+.sn-btn--primary:hover { background: #1d4ed8; }
+.sn-btn--primary:disabled { opacity: .6; cursor: not-allowed; }
+
+/* ── Pending submitted date ───────────────────────────────── */
+.sn-verification-request__submitted {
+	font-size: 12px;
+	color: #6b7280;
+	margin-top: 6px;
+	margin-bottom: 0;
+}
+
+/* ── More-info warning block ──────────────────────────────── */
+.sn-verification-request__more-info {
+	padding: 14px 18px;
+	border-radius: 10px;
+	margin-bottom: 20px;
+	font-size: 14px;
+	background: #fffbeb;
+	border: 1px solid #fcd34d;
+	color: #92400e;
+}
+.sn-verification-request__more-info p {
+	margin: 6px 0 0;
+	color: #78350f;
+}
+
+/* ── Force light on inputs — override any theme dark vars ─── */
+@media (prefers-color-scheme: dark) {
+	.sn-verification-request .sn-form-field__input,
+	.sn-verification-request .sn-form-field__select,
+	.sn-verification-request .sn-form-field__textarea {
+		background: #ffffff !important;
+		color: #111827 !important;
+		border-color: #d1d5db !important;
+	}
+	.sn-verification-request .sn-form-field__input::placeholder,
+	.sn-verification-request .sn-form-field__textarea::placeholder {
+		color: #9ca3af !important;
+	}
+	.sn-verification-request .sn-form-field__label {
+		color: #374151 !important;
+	}
+	.sn-verification-request .sn-verification-request__intro {
+		color: #6b7280 !important;
+	}
+}

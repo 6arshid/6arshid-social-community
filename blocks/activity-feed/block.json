@@ -1,0 +1,38 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 4,
+	"name": "arshid6social/activity-feed",
+	"version": "1.0.1",
+	"title": "Activity Feed",
+	"category": "widgets",
+	"icon": "list-view",
+	"description": "Display a live activity feed with infinite scroll and reactions.",
+	"keywords": ["activity", "feed", "social", "network", "updates", "timeline"],
+	"textdomain": "sixarshidsocialcomunity",
+	"attributes": {
+		"perPage": {
+			"type": "number",
+			"default": 10
+		},
+		"showComposer": {
+			"type": "boolean",
+			"default": true
+		},
+		"scope": {
+			"type": "string",
+			"default": "site",
+			"enum": ["site", "friends", "self"]
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"],
+		"spacing": {
+			"margin": true,
+			"padding": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"viewScript": "file:../../assets/js/social-network.js",
+	"style": "file:../../assets/css/social-network.css"
+}

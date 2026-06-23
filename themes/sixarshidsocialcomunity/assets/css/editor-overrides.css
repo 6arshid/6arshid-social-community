@@ -1,0 +1,161 @@
+﻿/* ═══════════════════════════════════════════════════════════════
+   Editor-only overrides — loaded only in the block/site editor.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Light mode in editor ───────────────────────────────────────── */
+.editor-styles-wrapper {
+	--a6sc-bg:            #ffffff !important;
+	--a6sc-bg-hover:      #f7f9f9 !important;
+	--a6sc-surface:       #f7f9f9 !important;
+	--a6sc-border:        #eff3f4 !important;
+	--a6sc-border-strong: #cfd9de !important;
+	--a6sc-text:          #0f1419 !important;
+	--a6sc-text-muted:    #536471 !important;
+	background-color: #ffffff !important;
+	color: #0f1419 !important;
+}
+
+/* ─── 3-column shell: deterministic grid in the editor canvas ────── */
+
+/* The shell is a wp:group forced to CSS Grid (matches the frontend). In the
+   editor we reset sticky/height so all three columns are fully visible. */
+.editor-styles-wrapper .socialnetworksix-shell {
+	display: grid !important;
+	grid-template-columns: 275px minmax(0, 1fr) 350px !important;
+	align-items: start !important;
+	gap: 0 !important;
+	padding: 0 !important;
+	min-height: 400px;
+}
+
+.editor-styles-wrapper .socialnetworksix-shell--no-right {
+	grid-template-columns: 275px minmax(0, 1fr) !important;
+}
+
+/* Left sidebar column */
+.editor-styles-wrapper .socialnetworksix-sidebar {
+	position: relative !important;
+	top: auto !important;
+	height: auto !important;
+	min-height: 300px;
+	overflow: visible !important;
+	border-right: 2px dashed #93c5fd !important;
+	padding: 12px !important;
+	background: #fff !important;
+}
+
+/* Center feed column */
+.editor-styles-wrapper .socialnetworksix-feed {
+	min-width: 0 !important;
+	background: #fff !important;
+}
+
+/* Right sidebar column */
+.editor-styles-wrapper .socialnetworksix-right,
+.editor-styles-wrapper .socialnetworksix-right-inner {
+	position: relative !important;
+	top: auto !important;
+	height: auto !important;
+	overflow: visible !important;
+	border-left: 2px dashed #93c5fd !important;
+	padding: 12px !important;
+	background: #fff !important;
+}
+
+/* ─── Shortcode block placeholders ──────────────────────────────── */
+.editor-styles-wrapper .wp-block-shortcode {
+	background: #f0f6ff;
+	border: 1px dashed #93c5fd;
+	border-radius: 6px;
+	padding: 6px 10px;
+	color: #1e40af;
+	font-family: monospace;
+	font-size: 13px;
+}
+
+/* ─── Header ─────────────────────────────────────────────────────── */
+.editor-styles-wrapper .a6sc-header {
+	border-bottom: 1px solid var(--a6sc-border);
+	padding: 0 16px;
+}
+
+.editor-styles-wrapper .a6sc-header__inner {
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: center !important;
+	justify-content: space-between !important;
+	height: 53px;
+}
+
+.editor-styles-wrapper .a6sc-header__brand {
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: center !important;
+	gap: 10px !important;
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────── */
+.editor-styles-wrapper .a6sc-footer__cols {
+	border-top: 1px solid var(--a6sc-border) !important;
+	padding: 24px 16px 16px !important;
+}
+
+.editor-styles-wrapper .a6sc-footer__credits {
+	padding: 0 16px 12px !important;
+	margin: 0 !important;
+}
+
+/* ─── Panels ─────────────────────────────────────────────────────── */
+.editor-styles-wrapper .a6sc-panel {
+	background: #f7f9f9 !important;
+	border-radius: 16px;
+	border: 1px solid #eff3f4 !important;
+}
+
+/* ─── Bottom nav ─────────────────────────────────────────────────── */
+.editor-styles-wrapper .a6sc-bnav {
+	display: flex !important;
+	position: relative !important;
+}
+
+/* The page-nav block wrapper should not add extra spacing in the editor */
+.editor-styles-wrapper .wp-block-sixarshidsocialcomunity-page-nav {
+	margin: 0;
+}
+
+/* ─── Make the "+" block-appender always visible & clickable ─────────
+   The left sidebar, right sidebar and footer are template parts. Give
+   each one breathing room at the bottom and a prominent appender button
+   so you can always add a Gutenberg block there. */
+.editor-styles-wrapper .socialnetworksix-sidebar,
+.editor-styles-wrapper .socialnetworksix-right,
+.editor-styles-wrapper .socialnetworksix-right-inner,
+.editor-styles-wrapper .a6sc-footer,
+.editor-styles-wrapper footer.wp-block-template-part {
+	padding-bottom: 56px !important;
+}
+
+/* The trailing appender row inside those regions */
+.editor-styles-wrapper .socialnetworksix-sidebar .block-list-appender,
+.editor-styles-wrapper .socialnetworksix-right .block-list-appender,
+.editor-styles-wrapper .socialnetworksix-right-inner .block-list-appender,
+.editor-styles-wrapper .a6sc-footer .block-list-appender,
+.editor-styles-wrapper footer.wp-block-template-part .block-list-appender {
+	margin-top: 12px;
+	display: block;
+}
+
+/* Style the inserter "+" so it reads as a clear "Add block" affordance */
+.editor-styles-wrapper .socialnetworksix-sidebar .block-list-appender .block-editor-inserter__toggle,
+.editor-styles-wrapper .socialnetworksix-right .block-list-appender .block-editor-inserter__toggle,
+.editor-styles-wrapper .socialnetworksix-right-inner .block-list-appender .block-editor-inserter__toggle,
+.editor-styles-wrapper .a6sc-footer .block-list-appender .block-editor-inserter__toggle,
+.editor-styles-wrapper footer.wp-block-template-part .block-list-appender .block-editor-inserter__toggle {
+	width: 100%;
+	min-height: 40px;
+	border: 1px dashed #93c5fd !important;
+	border-radius: 8px;
+	background: #f0f6ff !important;
+	color: #1d4ed8 !important;
+	justify-content: center;
+}

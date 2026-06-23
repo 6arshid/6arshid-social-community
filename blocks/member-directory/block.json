@@ -1,0 +1,38 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 4,
+	"name": "arshid6social/member-directory",
+	"version": "1.0.1",
+	"title": "Member Directory",
+	"category": "widgets",
+	"icon": "groups",
+	"description": "Display the 6Arshid Social Community member directory with search and filters.",
+	"keywords": ["members", "directory", "social", "network", "community"],
+	"textdomain": "sixarshidsocialcomunity",
+	"attributes": {
+		"perPage": {
+			"type": "number",
+			"default": 12
+		},
+		"showSearch": {
+			"type": "boolean",
+			"default": true
+		},
+		"defaultType": {
+			"type": "string",
+			"default": "newest",
+			"enum": ["newest", "active", "alphabetical"]
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"],
+		"spacing": {
+			"margin": true,
+			"padding": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"viewScript": "file:../../assets/js/social-network.js",
+	"style": "file:../../assets/css/social-network.css"
+}

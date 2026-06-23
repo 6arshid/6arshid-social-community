@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 4,
+	"name": "arshid6social/group-list",
+	"version": "1.0.1",
+	"title": "Group List",
+	"category": "widgets",
+	"icon": "networking",
+	"description": "Display a grid of social network groups with search and join buttons.",
+	"keywords": ["groups", "community", "social", "network"],
+	"textdomain": "sixarshidsocialcomunity",
+	"attributes": {
+		"perPage": {
+			"type": "number",
+			"default": 9
+		},
+		"showSearch": {
+			"type": "boolean",
+			"default": true
+		},
+		"showCreateButton": {
+			"type": "boolean",
+			"default": true
+		},
+		"status": {
+			"type": "string",
+			"default": "public",
+			"enum": ["public", "all"]
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": ["wide", "full"],
+		"spacing": {
+			"margin": true,
+			"padding": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"viewScript": "file:../../assets/js/social-network.js",
+	"style": "file:../../assets/css/social-network.css"
+}
