@@ -134,21 +134,21 @@ class Polls {
 
 		$poll = $this->get_poll( $poll_id );
 		if ( ! $poll ) {
-			return array( 'success' => false, 'message' => __( 'Poll not found.', '6arshid social community' ) );
+			return array( 'success' => false, 'message' => __( 'Poll not found.', 'social-network-6' ) );
 		}
 
 		if ( 'open' !== $poll->status ) {
-			return array( 'success' => false, 'message' => __( 'This poll is closed.', '6arshid social community' ) );
+			return array( 'success' => false, 'message' => __( 'This poll is closed.', 'social-network-6' ) );
 		}
 
 		if ( $poll->start_date && strtotime( $poll->start_date ) > time() ) {
-			return array( 'success' => false, 'message' => __( 'This poll has not started yet.', '6arshid social community' ) );
+			return array( 'success' => false, 'message' => __( 'This poll has not started yet.', 'social-network-6' ) );
 		}
 
 		$has_voted = $this->user_has_voted( $poll_id, $user_id );
 
 		if ( $has_voted && ! $poll->allow_change_vote ) {
-			return array( 'success' => false, 'message' => __( 'You have already voted.', '6arshid social community' ) );
+			return array( 'success' => false, 'message' => __( 'You have already voted.', 'social-network-6' ) );
 		}
 
 		// Verify options belong to this poll.
@@ -161,7 +161,7 @@ class Polls {
 		$option_ids = array_values( array_intersect( $option_ids, $valid_ids ) );
 
 		if ( empty( $option_ids ) ) {
-			return array( 'success' => false, 'message' => __( 'Invalid option(s).', '6arshid social community' ) );
+			return array( 'success' => false, 'message' => __( 'Invalid option(s).', 'social-network-6' ) );
 		}
 
 		// Enforce single-choice limit.
@@ -192,7 +192,7 @@ class Polls {
 			);
 		}
 
-		return array( 'success' => true, 'message' => __( 'Vote recorded.', '6arshid social community' ), 'results' => $this->get_results( $poll_id, $user_id ) );
+		return array( 'success' => true, 'message' => __( 'Vote recorded.', 'social-network-6' ), 'results' => $this->get_results( $poll_id, $user_id ) );
 	}
 
 	public function get_poll( int $poll_id ): ?object {
@@ -328,7 +328,7 @@ class Polls {
 		// phpcs:enable
 
 		if ( ! $activity_id || ! $question || count( $options ) < 2 ) {
-			wp_send_json_error( array( 'message' => __( 'Question and at least 2 options required.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Question and at least 2 options required.', 'social-network-6' ) ), 400 );
 		}
 
 		// Verify activity ownership.
@@ -409,12 +409,12 @@ class Polls {
 		}
 
 		$vote_btn = ( ! $has_voted && 'open' === $poll->status )
-			? '<button type="button" class="arshid6social-btn arshid6social-btn--primary arshid6social-btn--sm arshid6social-poll-vote-btn" onclick="ARSHID6SOCIALVote(this)">' . esc_html__( 'Vote', '6arshid social community' ) . '</button>'
+			? '<button type="button" class="arshid6social-btn arshid6social-btn--primary arshid6social-btn--sm arshid6social-poll-vote-btn" onclick="ARSHID6SOCIALVote(this)">' . esc_html__( 'Vote', 'social-network-6' ) . '</button>'
 			: '';
 
 		$meta_text = sprintf(
 			/* translators: %d: vote count */
-			esc_html( _n( '%d vote', '%d votes', $total, '6arshid social community' ) ),
+			esc_html( _n( '%d vote', '%d votes', $total, 'social-network-6' ) ),
 			$total
 		);
 
@@ -441,7 +441,7 @@ class Polls {
 		$rl_key = 'arshid6social_rl_vote_' . get_current_user_id();
 		$count  = (int) get_transient( $rl_key );
 		if ( $count >= 60 ) {
-			wp_send_json_error( array( 'message' => __( 'Too many votes. Please slow down.', '6arshid social community' ) ), 429 );
+			wp_send_json_error( array( 'message' => __( 'Too many votes. Please slow down.', 'social-network-6' ) ), 429 );
 		}
 		set_transient( $rl_key, $count + 1, HOUR_IN_SECONDS );
 
@@ -512,7 +512,7 @@ class Polls {
 			$option_text
 		);
 
-		wp_send_json_success( array( 'message' => __( 'Your suggestion has been submitted for review.', '6arshid social community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Your suggestion has been submitted for review.', 'social-network-6' ) ) );
 	}
 
 	// ── REST ──────────────────────────────────────────────────────────────────

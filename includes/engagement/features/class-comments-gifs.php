@@ -174,7 +174,7 @@ class Comments_GIFs {
 		}
 
 		if ( ! $this->is_configured() ) {
-			wp_send_json_error( array( 'message' => __( 'No GIF API key configured. Contact your administrator.', '6arshid social community' ) ), 503 );
+			wp_send_json_error( array( 'message' => __( 'No GIF API key configured. Contact your administrator.', 'social-network-6' ) ), 503 );
 		}
 
 		$gifs = 'tenor' === $this->provider()
@@ -190,7 +190,7 @@ class Comments_GIFs {
 		}
 
 		if ( ! $this->is_configured() ) {
-			wp_send_json_error( array( 'message' => __( 'No GIF API key configured.', '6arshid social community' ) ), 503 );
+			wp_send_json_error( array( 'message' => __( 'No GIF API key configured.', 'social-network-6' ) ), 503 );
 		}
 
 		$q = sanitize_text_field( wp_unslash( $_REQUEST['q'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification

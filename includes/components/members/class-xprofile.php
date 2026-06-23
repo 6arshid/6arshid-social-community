@@ -231,7 +231,7 @@ class XProfile {
 
 			if ( $field['is_required'] && '' === $value ) {
 				/* translators: %s: field name */
-				$errors[ $field_id ] = sprintf( __( '%s is required.', '6arshid social community' ), $field['name'] );
+				$errors[ $field_id ] = sprintf( __( '%s is required.', 'social-network-6' ), $field['name'] );
 				continue;
 			}
 
@@ -305,7 +305,7 @@ class XProfile {
 			'data' => array(
 				array(
 					'group_id'          => 'arshid6social-profile',
-					'group_label'       => __( 'Social Network Profile', '6arshid social community' ),
+					'group_label'       => __( 'Social Network Profile', 'social-network-6' ),
 					'item_id'           => 'arshid6social-profile-' . $user->ID,
 					'data'              => $data,
 				),

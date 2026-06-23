@@ -185,7 +185,7 @@ class Activity {
 				$author  = $formatted['userName'] ?? '';
 				$excerpt = wp_trim_words( wp_strip_all_tags( $formatted['content'] ?? '' ), 10 );
 				$parts['title'] = $author
-					? sprintf( '%s — %s', $author, $excerpt ?: __( 'Activity', '6arshid social community' ) )
+					? sprintf( '%s — %s', $author, $excerpt ?: __( 'Activity', 'social-network-6' ) )
 					: $excerpt;
 				return $parts;
 			}
@@ -258,18 +258,18 @@ class Activity {
 	 */
 	public function ajax_post_activity(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid social community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in.', 'social-network-6' ) ), 401 );
 		}
 
 		$user_id = get_current_user_id();
 
 		// Check suspension.
 		if ( get_user_meta( $user_id, 'arshid6social_suspended', true ) ) {
-			wp_send_json_error( array( 'message' => __( 'Your account has been suspended.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Your account has been suspended.', 'social-network-6' ) ), 403 );
 		}
 
 		$content   = isset( $_POST['content'] ) ? wp_kses_post( wp_unslash( $_POST['content'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
@@ -287,7 +287,7 @@ class Activity {
 		$has_media = get_option( 'arshid6social_activity_allow_media', false ) && ! empty( $_FILES['media_files']['name'] );
 
 		if ( empty( trim( wp_strip_all_tags( $content ) ) ) && ! $has_media ) {
-			wp_send_json_error( array( 'message' => __( 'Activity content cannot be empty.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Activity content cannot be empty.', 'social-network-6' ) ), 400 );
 		}
 
 		$allowed_privacy = array( 'public', 'friends', 'private', 'paid' );
@@ -297,12 +297,12 @@ class Activity {
 
 		// Banned word filter.
 		if ( $this->contains_banned_word( $content ) ) {
-			wp_send_json_error( array( 'message' => __( 'Your post contains prohibited content.', '6arshid social community' ) ), 422 );
+			wp_send_json_error( array( 'message' => __( 'Your post contains prohibited content.', 'social-network-6' ) ), 422 );
 		}
 
 		// Akismet check.
 		if ( get_option( 'arshid6social_enable_akismet' ) && $this->is_spam( $user_id, $content ) ) {
-			wp_send_json_error( array( 'message' => __( 'Your post was identified as spam.', '6arshid social community' ) ), 422 );
+			wp_send_json_error( array( 'message' => __( 'Your post was identified as spam.', 'social-network-6' ) ), 422 );
 		}
 
 		$activity_id = $this->add(
@@ -318,7 +318,7 @@ class Activity {
 		);
 
 		if ( ! $activity_id ) {
-			wp_send_json_error( array( 'message' => __( 'Failed to post activity.', '6arshid social community' ) ), 500 );
+			wp_send_json_error( array( 'message' => __( 'Failed to post activity.', 'social-network-6' ) ), 500 );
 		}
 
 		// Process @mentions.
@@ -335,7 +335,7 @@ class Activity {
 		wp_send_json_success(
 			array(
 				'activity' => $this->format_activity( $this->get_by_id( $activity_id ) ),
-				'message'  => __( 'Activity posted.', '6arshid social community' ),
+				'message'  => __( 'Activity posted.', 'social-network-6' ),
 			)
 		);
 	}
@@ -371,7 +371,7 @@ class Activity {
 			$user            = get_userdata( $args['user_id'] );
 			$args['action']  = sprintf(
 				/* translators: %s: member display name with profile link */
-				__( '%s posted an update', '6arshid social community' ),
+				__( '%s posted an update', 'social-network-6' ),
 				'<a href="' . esc_url( home_url( '/members/' . $user->user_nicename . '/' ) ) . '">' . esc_html( $user->display_name ) . '</a>'
 			);
 		}
@@ -1011,7 +1011,7 @@ class Activity {
 	 */
 	public function ajax_get_activity(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification
@@ -1036,27 +1036,27 @@ class Activity {
 	 */
 	public function ajax_delete_activity(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Authentication required.', '6arshid social community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'Authentication required.', 'social-network-6' ) ), 401 );
 		}
 
 		$activity_id = absint( $_POST['activity_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$activity    = $this->get_by_id( $activity_id );
 
 		if ( ! $activity ) {
-			wp_send_json_error( array( 'message' => __( 'Activity not found.', '6arshid social community' ) ), 404 );
+			wp_send_json_error( array( 'message' => __( 'Activity not found.', 'social-network-6' ) ), 404 );
 		}
 
 		if ( (int) $activity->user_id !== get_current_user_id() && ! current_user_can( 'arshid6social_manage_activity' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'social-network-6' ) ), 403 );
 		}
 
 		$this->delete( $activity_id );
 
-		wp_send_json_success( array( 'message' => __( 'Activity deleted.', '6arshid social community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Activity deleted.', 'social-network-6' ) ) );
 	}
 
 	/**
@@ -1064,22 +1064,22 @@ class Activity {
 	 */
 	public function ajax_edit_activity(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Authentication required.', '6arshid social community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'Authentication required.', 'social-network-6' ) ), 401 );
 		}
 
 		$activity_id = absint( $_POST['activity_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$activity    = $this->get_by_id( $activity_id );
 
 		if ( ! $activity ) {
-			wp_send_json_error( array( 'message' => __( 'Activity not found.', '6arshid social community' ) ), 404 );
+			wp_send_json_error( array( 'message' => __( 'Activity not found.', 'social-network-6' ) ), 404 );
 		}
 
 		if ( (int) $activity->user_id !== get_current_user_id() ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'social-network-6' ) ), 403 );
 		}
 
 		global $wpdb;
@@ -1093,7 +1093,7 @@ class Activity {
 		}
 
 		if ( empty( trim( wp_strip_all_tags( $content ) ) ) ) {
-			wp_send_json_error( array( 'message' => __( 'Activity content cannot be empty.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Activity content cannot be empty.', 'social-network-6' ) ), 400 );
 		}
 
 		// Delete requested media items.
@@ -1128,7 +1128,7 @@ class Activity {
 
 		wp_send_json_success( array(
 			'activity' => $this->format_activity( $this->get_by_id( $activity_id ) ),
-			'message'  => __( 'Activity updated.', '6arshid social community' ),
+			'message'  => __( 'Activity updated.', 'social-network-6' ),
 		) );
 	}
 
@@ -1137,11 +1137,11 @@ class Activity {
 	 */
 	public function ajax_delete_activity_media(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Authentication required.', '6arshid social community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'Authentication required.', 'social-network-6' ) ), 401 );
 		}
 
 		global $wpdb;
@@ -1153,7 +1153,7 @@ class Activity {
 		);
 
 		if ( ! $row || (int) $row->user_id !== get_current_user_id() ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'social-network-6' ) ), 403 );
 		}
 
 		if ( ! empty( $row->file_path ) && file_exists( $row->file_path ) ) {
@@ -1163,7 +1163,7 @@ class Activity {
 		}
 		$wpdb->delete( $wpdb->prefix . 'sn_activity_media', array( 'id' => $media_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
-		wp_send_json_success( array( 'message' => __( 'Media deleted.', '6arshid social community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Media deleted.', 'social-network-6' ) ) );
 	}
 
 	/**
@@ -1235,11 +1235,11 @@ class Activity {
 	 */
 	public function ajax_react_activity(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in to react.', '6arshid social community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in to react.', 'social-network-6' ) ), 401 );
 		}
 
 		global $wpdb;
@@ -1292,7 +1292,7 @@ class Activity {
 	 * Handles reaction attempt by unauthenticated user.
 	 */
 	public function ajax_react_activity_nopriv(): void {
-		wp_send_json_error( array( 'message' => __( 'You must be logged in to react.', '6arshid social community' ) ), 401 );
+		wp_send_json_error( array( 'message' => __( 'You must be logged in to react.', 'social-network-6' ) ), 401 );
 	}
 
 	/**
@@ -1300,7 +1300,7 @@ class Activity {
 	 */
 	public function ajax_report_activity(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		$activity_id = absint( $_POST['activity_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -1313,7 +1313,7 @@ class Activity {
 			$reason
 		);
 
-		wp_send_json_success( array( 'message' => __( 'Report submitted. Thank you.', '6arshid social community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Report submitted. Thank you.', 'social-network-6' ) ) );
 	}
 
 	/**
@@ -1321,21 +1321,21 @@ class Activity {
 	 */
 	public function ajax_post_comment(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid social community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in.', 'social-network-6' ) ), 401 );
 		}
 
 		if ( ! get_option( 'arshid6social_activity_allow_comments', true ) ) {
-			wp_send_json_error( array( 'message' => __( 'Comments are disabled.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Comments are disabled.', 'social-network-6' ) ), 403 );
 		}
 
 		$user_id = get_current_user_id();
 
 		if ( get_user_meta( $user_id, 'arshid6social_suspended', true ) ) {
-			wp_send_json_error( array( 'message' => __( 'Your account has been suspended.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Your account has been suspended.', 'social-network-6' ) ), 403 );
 		}
 
 		$parent_id         = absint( $_POST['activity_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -1349,12 +1349,12 @@ class Activity {
 		}
 
 		if ( ! $parent_id || empty( trim( wp_strip_all_tags( $content ) ) ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid comment data.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid comment data.', 'social-network-6' ) ), 400 );
 		}
 
 		$parent = $this->get_by_id( $parent_id );
 		if ( ! $parent || 'activity_comment' === $parent->type ) {
-			wp_send_json_error( array( 'message' => __( 'Activity not found.', '6arshid social community' ) ), 404 );
+			wp_send_json_error( array( 'message' => __( 'Activity not found.', 'social-network-6' ) ), 404 );
 		}
 
 		// Validate parent comment belongs to same activity.
@@ -1366,7 +1366,7 @@ class Activity {
 		}
 
 		if ( $this->contains_banned_word( $content ) ) {
-			wp_send_json_error( array( 'message' => __( 'Your comment contains prohibited content.', '6arshid social community' ) ), 422 );
+			wp_send_json_error( array( 'message' => __( 'Your comment contains prohibited content.', 'social-network-6' ) ), 422 );
 		}
 
 		$user       = get_userdata( $user_id );
@@ -1381,14 +1381,14 @@ class Activity {
 				'secondary_item_id' => $parent_comment_id,
 				'action'            => sprintf(
 					/* translators: %s: member display name with profile link */
-					__( '%s replied to a post', '6arshid social community' ),
+					__( '%s replied to a post', 'social-network-6' ),
 					'<a href="' . esc_url( home_url( '/members/' . $user->user_nicename . '/' ) ) . '">' . esc_html( $user->display_name ) . '</a>'
 				),
 			)
 		);
 
 		if ( ! $comment_id ) {
-			wp_send_json_error( array( 'message' => __( 'Failed to post comment.', '6arshid social community' ) ), 500 );
+			wp_send_json_error( array( 'message' => __( 'Failed to post comment.', 'social-network-6' ) ), 500 );
 		}
 
 		$this->process_mentions( $comment_id, $content, $user_id );
@@ -1397,7 +1397,7 @@ class Activity {
 
 		wp_send_json_success( array(
 			'comment' => $this->format_activity( $this->get_by_id( $comment_id ) ),
-			'message' => __( 'Comment posted.', '6arshid social community' ),
+			'message' => __( 'Comment posted.', 'social-network-6' ),
 		) );
 	}
 
@@ -1406,7 +1406,7 @@ class Activity {
 	 */
 	public function ajax_get_comments(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		global $wpdb;
@@ -1417,7 +1417,7 @@ class Activity {
 		// phpcs:enable
 
 		if ( ! $activity_id ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid activity ID.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid activity ID.', 'social-network-6' ) ), 400 );
 		}
 
 		$per_page = 10;

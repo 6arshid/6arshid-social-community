@@ -411,7 +411,7 @@ class Stories {
 		// Prepend a story reference to the message.
 		$thread_id = $messages_comp->start_thread(
 			array( $owner_id ),
-			__( 'Story Reply', '6arshid social community' ),
+			__( 'Story Reply', 'social-network-6' ),
 			'[story:' . $story_item_id . '] ' . $message,
 			$sender_id
 		);
@@ -675,7 +675,7 @@ class Stories {
 
 	private function nonce_check(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 	}
 
@@ -684,7 +684,7 @@ class Stories {
 		$user_id = get_current_user_id();
 
 		if ( ! arshid6social_check_rate_limit( 'arshid6social_rl_stories', $user_id, (int) get_option( 'arshid6social_stories_rate_limit', 20 ) ) ) {
-			wp_send_json_error( array( 'message' => __( 'Too many stories. Please wait.', '6arshid social community' ) ), 429 );
+			wp_send_json_error( array( 'message' => __( 'Too many stories. Please wait.', 'social-network-6' ) ), 429 );
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification
@@ -710,7 +710,7 @@ class Stories {
 
 			// Check video enabled.
 			if ( 'story_video' === $context && ! get_option( 'arshid6social_stories_allow_video', true ) ) {
-				wp_send_json_error( array( 'message' => __( 'Video stories are disabled.', '6arshid social community' ) ) );
+				wp_send_json_error( array( 'message' => __( 'Video stories are disabled.', 'social-network-6' ) ) );
 			}
 
 			$upload = \Arshid6Social\Media_Handler::handle( $_FILES['media'], $context, $user_id );
@@ -734,12 +734,12 @@ class Stories {
 
 		$story_id = $this->create( $user_id, $privacy, array( $item ) );
 		if ( ! $story_id ) {
-			wp_send_json_error( array( 'message' => __( 'Could not create story.', '6arshid social community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Could not create story.', 'social-network-6' ) ) );
 		}
 
 		wp_send_json_success( array(
 			'story_id' => $story_id,
-			'message'  => __( 'Story created.', '6arshid social community' ),
+			'message'  => __( 'Story created.', 'social-network-6' ),
 		) );
 	}
 
@@ -785,7 +785,7 @@ class Stories {
 		$this->nonce_check();
 
 		if ( ! get_option( 'arshid6social_messages_story_enabled', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Story replies are disabled.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Story replies are disabled.', 'social-network-6' ) ), 403 );
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification
@@ -793,7 +793,7 @@ class Stories {
 		$message = sanitize_textarea_field( wp_unslash( $_POST['message'] ?? '' ) );
 		// phpcs:enable
 		if ( ! $message ) {
-			wp_send_json_error( array( 'message' => __( 'Message cannot be empty.', '6arshid social community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Message cannot be empty.', 'social-network-6' ) ) );
 		}
 		$thread_id = $this->reply( $item_id, get_current_user_id(), $message );
 		$thread_id ? wp_send_json_success( array( 'thread_id' => $thread_id ) ) : wp_send_json_error();

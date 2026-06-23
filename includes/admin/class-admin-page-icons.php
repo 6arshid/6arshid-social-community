@@ -62,7 +62,7 @@ final class Admin_Page_Icons {
 	public function add_meta_box(): void {
 		add_meta_box(
 			'arshid6social-page-icon',
-			__( 'Page Icon', '6arshid social community' ),
+			__( 'Page Icon', 'social-network-6' ),
 			array( $this, 'render_meta_box' ),
 			'page',
 			'side',
@@ -92,23 +92,23 @@ final class Admin_Page_Icons {
 					?>
 				</span>
 				<span id="arshid6social-icp-preview-name">
-					<?php echo $current ? esc_html( $current ) : esc_html__( '— none —', '6arshid social community' ); ?>
+					<?php echo $current ? esc_html( $current ) : esc_html__( '— none —', 'social-network-6' ); ?>
 				</span>
 			</div>
 
 			<?php if ( $available ) : ?>
 			<div class="arshid6social-icp-actions">
 				<button type="button" id="arshid6social-icp-open" class="button button-primary">
-					<?php esc_html_e( 'Choose Icon', '6arshid social community' ); ?>
+					<?php esc_html_e( 'Choose Icon', 'social-network-6' ); ?>
 				</button>
 				<button type="button" id="arshid6social-icp-clear" class="button"
 					<?php echo $current ? '' : 'style="display:none"'; ?>>
-					<?php esc_html_e( 'Clear', '6arshid social community' ); ?>
+					<?php esc_html_e( 'Clear', 'social-network-6' ); ?>
 				</button>
 			</div>
 			<?php else : ?>
 			<p style="color:#b91c1c;font-size:12px;margin:6px 0 0;">
-				<?php esc_html_e( 'Icon data file not found. Please re-install the plugin.', '6arshid social community' ); ?>
+				<?php esc_html_e( 'Icon data file not found. Please re-install the plugin.', 'social-network-6' ); ?>
 			</p>
 			<?php endif; ?>
 		</div>
@@ -117,18 +117,18 @@ final class Admin_Page_Icons {
 		<div id="arshid6social-icp-modal" hidden>
 			<div id="arshid6social-icp-backdrop"></div>
 			<div id="arshid6social-icp-dialog" role="dialog" aria-modal="true"
-				aria-label="<?php esc_attr_e( 'Select an icon', '6arshid social community' ); ?>">
+				aria-label="<?php esc_attr_e( 'Select an icon', 'social-network-6' ); ?>">
 
 				<div id="arshid6social-icp-dialog-head">
-					<strong><?php esc_html_e( 'Select an Icon', '6arshid social community' ); ?></strong>
+					<strong><?php esc_html_e( 'Select an Icon', 'social-network-6' ); ?></strong>
 					<span id="arshid6social-icp-icon-count"></span>
 					<button type="button" id="arshid6social-icp-close"
-						aria-label="<?php esc_attr_e( 'Close', '6arshid social community' ); ?>">&#10005;</button>
+						aria-label="<?php esc_attr_e( 'Close', 'social-network-6' ); ?>">&#10005;</button>
 				</div>
 
 				<div id="arshid6social-icp-search-row">
 					<input type="search" id="arshid6social-icp-search"
-						placeholder="<?php esc_attr_e( 'Search icons…', '6arshid social community' ); ?>"
+						placeholder="<?php esc_attr_e( 'Search icons…', 'social-network-6' ); ?>"
 						autocomplete="off" spellcheck="false">
 				</div>
 
@@ -136,7 +136,7 @@ final class Admin_Page_Icons {
 					<div id="arshid6social-icp-grid"></div>
 					<div id="arshid6social-icp-load-more-wrap">
 						<button type="button" id="arshid6social-icp-load-more" class="button" hidden>
-							<?php esc_html_e( 'Load more', '6arshid social community' ); ?>
+							<?php esc_html_e( 'Load more', 'social-network-6' ); ?>
 						</button>
 					</div>
 				</div>
@@ -179,7 +179,7 @@ final class Admin_Page_Icons {
 		foreach ( $columns as $k => $v ) {
 			$out[ $k ] = $v;
 			if ( 'title' === $k ) {
-				$out['arshid6social_icon'] = __( 'Icon', '6arshid social community' );
+				$out['arshid6social_icon'] = __( 'Icon', 'social-network-6' );
 			}
 		}
 		return $out;

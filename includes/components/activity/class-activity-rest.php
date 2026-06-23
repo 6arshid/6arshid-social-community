@@ -96,7 +96,7 @@ class Activity_REST extends \WP_REST_Controller {
 	public function get_items( $request ): \WP_REST_Response|\WP_Error {
 		$component = ARSHID6SOCIAL()->component( 'activity' );
 		if ( ! $component ) {
-			return new \WP_Error( 'arshid6social_disabled', __( 'Activity component not active.', '6arshid social community' ), array( 'status' => 503 ) );
+			return new \WP_Error( 'arshid6social_disabled', __( 'Activity component not active.', 'social-network-6' ), array( 'status' => 503 ) );
 		}
 
 		$query_args = array(
@@ -132,7 +132,7 @@ class Activity_REST extends \WP_REST_Controller {
 		) );
 
 		if ( ! $activity_id ) {
-			return new \WP_Error( 'arshid6social_create_failed', __( 'Failed to create activity.', '6arshid social community' ), array( 'status' => 500 ) );
+			return new \WP_Error( 'arshid6social_create_failed', __( 'Failed to create activity.', 'social-network-6' ), array( 'status' => 500 ) );
 		}
 
 		return rest_ensure_response( $component->format_activity( $component->get_by_id( $activity_id ) ) );
@@ -144,12 +144,12 @@ class Activity_REST extends \WP_REST_Controller {
 		$activity    = $component->get_by_id( $activity_id );
 
 		if ( ! $activity ) {
-			return new \WP_Error( 'arshid6social_not_found', __( 'Activity not found.', '6arshid social community' ), array( 'status' => 404 ) );
+			return new \WP_Error( 'arshid6social_not_found', __( 'Activity not found.', 'social-network-6' ), array( 'status' => 404 ) );
 		}
 
 		// Enforce activity privacy.
 		if ( ! arshid6social_current_user_can_view_activity( $activity_id ) ) {
-			return new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', '6arshid social community' ), array( 'status' => 403 ) );
+			return new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', 'social-network-6' ), array( 'status' => 403 ) );
 		}
 
 		return rest_ensure_response( $component->format_activity( $activity ) );
@@ -161,11 +161,11 @@ class Activity_REST extends \WP_REST_Controller {
 		$activity    = $component->get_by_id( $activity_id );
 
 		if ( ! $activity ) {
-			return new \WP_Error( 'arshid6social_not_found', __( 'Activity not found.', '6arshid social community' ), array( 'status' => 404 ) );
+			return new \WP_Error( 'arshid6social_not_found', __( 'Activity not found.', 'social-network-6' ), array( 'status' => 404 ) );
 		}
 
 		if ( (int) $activity->user_id !== get_current_user_id() && ! current_user_can( 'arshid6social_manage_activity' ) ) {
-			return new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', '6arshid social community' ), array( 'status' => 403 ) );
+			return new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', 'social-network-6' ), array( 'status' => 403 ) );
 		}
 
 		$component->delete( $activity_id );
@@ -181,7 +181,7 @@ class Activity_REST extends \WP_REST_Controller {
 
 		// Verify the current user can view this activity before allowing a reaction.
 		if ( ! arshid6social_current_user_can_view_activity( $activity_id ) ) {
-			return new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', '6arshid social community' ), array( 'status' => 403 ) );
+			return new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', 'social-network-6' ), array( 'status' => 403 ) );
 		}
 
 		$existing = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery

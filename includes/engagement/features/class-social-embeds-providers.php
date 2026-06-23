@@ -269,7 +269,7 @@ class Social_Embeds_Providers {
 		// Generic OG fallback — matches any URL; must stay last.
 		$p['og_generic'] = array(
 			'id'      => 'og_generic',
-			'name'    => __( 'Generic Link Preview (Open Graph)', '6arshid social community' ),
+			'name'    => __( 'Generic Link Preview (Open Graph)', 'social-network-6' ),
 			'patterns' => array(
 				'#https?://[^\s<>"\']+#u',
 			),

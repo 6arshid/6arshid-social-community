@@ -249,71 +249,71 @@ class Activator {
 	public static function create_pages(): void {
 		$pages = array(
 			'members'  => array(
-				'title'     => __( 'Members', '6arshid social community' ),
+				'title'     => __( 'Members', 'social-network-6' ),
 				'slug'      => 'members',
 				'shortcode' => '[arshid6social_members]',
 				'option'    => 'arshid6social_page_members',
 			),
 			'activity' => array(
-				'title'     => __( 'Activity', '6arshid social community' ),
+				'title'     => __( 'Activity', 'social-network-6' ),
 				'slug'      => 'activity',
 				'shortcode' => '[arshid6social_activity]',
 				'option'    => 'arshid6social_page_activity',
 			),
 			'groups'   => array(
-				'title'     => __( 'Groups', '6arshid social community' ),
+				'title'     => __( 'Groups', 'social-network-6' ),
 				'slug'      => 'groups',
 				'shortcode' => '[arshid6social_groups]',
 				'option'    => 'arshid6social_page_groups',
 			),
 			'messages' => array(
-				'title'     => __( 'Messages', '6arshid social community' ),
+				'title'     => __( 'Messages', 'social-network-6' ),
 				'slug'      => 'messages',
 				'shortcode' => '[arshid6social_messages]',
 				'option'    => 'arshid6social_page_messages',
 			),
 			'notifications' => array(
-				'title'     => __( 'Notifications', '6arshid social community' ),
+				'title'     => __( 'Notifications', 'social-network-6' ),
 				'slug'      => 'notifications',
 				'shortcode' => '[arshid6social_notifications]',
 				'option'    => 'arshid6social_page_notifications',
 			),
 			'register' => array(
-				'title'     => __( 'Register', '6arshid social community' ),
+				'title'     => __( 'Register', 'social-network-6' ),
 				'slug'      => 'register',
 				'shortcode' => '[arshid6social_register_form]',
 				'option'    => 'arshid6social_page_register',
 				'template'  => 'no-sidebars',
 			),
 			'login' => array(
-				'title'     => __( 'Login', '6arshid social community' ),
+				'title'     => __( 'Login', 'social-network-6' ),
 				'slug'      => 'login',
 				'shortcode' => '[arshid6social_login_form]',
 				'option'    => 'arshid6social_page_login',
 				'template'  => 'no-sidebars',
 			),
 			'forgot-password' => array(
-				'title'     => __( 'Forgot Password', '6arshid social community' ),
+				'title'     => __( 'Forgot Password', 'social-network-6' ),
 				'slug'      => 'forgot-password',
 				'shortcode' => '[arshid6social_forgot_password]',
 				'option'    => 'arshid6social_page_forgot_password',
 				'template'  => 'no-sidebars',
 			),
 			'reset-password' => array(
-				'title'     => __( 'Reset Password', '6arshid social community' ),
+				'title'     => __( 'Reset Password', 'social-network-6' ),
 				'slug'      => 'reset-password',
 				'shortcode' => '[arshid6social_reset_password]',
 				'option'    => 'arshid6social_page_reset_password',
 				'template'  => 'no-sidebars',
 			),
 			'dashboard' => array(
-				'title'     => __( 'Dashboard', '6arshid social community' ),
+				'title'     => __( 'Dashboard', 'social-network-6' ),
 				'slug'      => 'dashboard',
 				'shortcode' => '[arshid6social_dashboard]',
 				'option'    => 'arshid6social_page_dashboard',
 			),
 			'home' => array(
-				'title'     => __( 'Home', '6arshid social community' ),
+				'title'     => __( 'Home', 'social-network-6' ),
 				'slug'      => 'home',
 				'shortcode' => '[arshid6social_home]',
 				'option'    => 'arshid6social_page_home',
@@ -399,7 +399,7 @@ class Activator {
 			wp_die(
 				sprintf(
 					/* translators: %s: required PHP version */
-					esc_html__( '6Arshid Social Community requires PHP %s or higher.', '6arshid social community' ),
+					esc_html__( '6Arshid Social Community requires PHP %s or higher.', 'social-network-6' ),
 					esc_html( ARSHID6SOCIAL_MIN_PHP )
 				)
 			);
@@ -409,7 +409,7 @@ class Activator {
 			wp_die(
 				sprintf(
 					/* translators: %s: required WordPress version */
-					esc_html__( '6Arshid Social Community requires WordPress %s or higher.', '6arshid social community' ),
+					esc_html__( '6Arshid Social Community requires WordPress %s or higher.', 'social-network-6' ),
 					esc_html( ARSHID6SOCIAL_MIN_WP )
 				)
 			);
@@ -1322,6 +1322,6 @@ class Activator {
 			'</IfModule>',
 		);
 
-		insert_with_markers( $htaccess, '6Arshid Social Community', $rules );
+		insert_with_markers( $htaccess, 'social-network-6', $rules );
 	}
 }

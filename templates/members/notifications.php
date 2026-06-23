@@ -22,20 +22,20 @@ $notif_types = \Arshid6Social\Components\Notifications\Notifications::TYPES;
 	<!-- Header bar -->
 	<div class="arshid6social-notif-page-header">
 		<h2 class="arshid6social-notif-page-title">
-			<?php esc_html_e( 'Notifications', '6arshid social community' ); ?>
+			<?php esc_html_e( 'Notifications', 'social-network-6' ); ?>
 			<span id="arshid6social-notif-page-unread-badge" class="arshid6social-badge arshid6social-badge--primary" hidden></span>
 		</h2>
 		<div class="arshid6social-notif-page-actions">
 			<label class="arshid6social-notif-filter-label">
 				<input type="checkbox" id="arshid6social-notif-unread-only" />
-				<?php esc_html_e( 'Unread only', '6arshid social community' ); ?>
+				<?php esc_html_e( 'Unread only', 'social-network-6' ); ?>
 			</label>
 			<button id="arshid6social-notif-mark-all" class="arshid6social-btn arshid6social-btn--ghost arshid6social-btn--sm">
-				<?php esc_html_e( 'Mark all read', '6arshid social community' ); ?>
+				<?php esc_html_e( 'Mark all read', 'social-network-6' ); ?>
 			</button>
 			<button id="arshid6social-notif-settings-toggle" class="arshid6social-btn arshid6social-btn--ghost arshid6social-btn--sm arshid6social-notif-settings-toggle"
 				aria-expanded="false" aria-controls="arshid6social-notif-settings-panel">
-				⚙ <?php esc_html_e( 'Customize', '6arshid social community' ); ?>
+				⚙ <?php esc_html_e( 'Customize', 'social-network-6' ); ?>
 			</button>
 		</div>
 	</div>
@@ -44,14 +44,14 @@ $notif_types = \Arshid6Social\Components\Notifications\Notifications::TYPES;
 	<div id="arshid6social-notif-settings-panel" class="arshid6social-notif-settings-panel" hidden>
 		<div class="arshid6social-card" style="margin-block-end:1.5rem;">
 			<div class="arshid6social-card__header" style="display:flex;align-items:center;justify-content:space-between;">
-				<span>⚙ <?php esc_html_e( 'Notification Preferences', '6arshid social community' ); ?></span>
-				<button type="button" class="arshid6social-notif-settings-toggle arshid6social-link-btn" style="font-size:1.2rem;" aria-label="<?php esc_attr_e( 'Close', '6arshid social community' ); ?>">✕</button>
+				<span>⚙ <?php esc_html_e( 'Notification Preferences', 'social-network-6' ); ?></span>
+				<button type="button" class="arshid6social-notif-settings-toggle arshid6social-link-btn" style="font-size:1.2rem;" aria-label="<?php esc_attr_e( 'Close', 'social-network-6' ); ?>">✕</button>
 			</div>
 			<div class="arshid6social-card__body">
 				<form id="arshid6social-notif-prefs-form">
 
 					<p class="arshid6social-settings-desc" style="margin-block-end:1rem;">
-						<?php esc_html_e( 'Choose which events send you a notification.', '6arshid social community' ); ?>
+						<?php esc_html_e( 'Choose which events send you a notification.', 'social-network-6' ); ?>
 					</p>
 
 					<div class="arshid6social-notif-prefs-grid">
@@ -76,27 +76,27 @@ $notif_types = \Arshid6Social\Components\Notifications\Notifications::TYPES;
 						<label class="arshid6social-notif-pref-row" style="flex:none;">
 							<input type="checkbox" name="arshid6social_email_notifications" value="1"
 								<?php checked( ! empty( $notif_prefs['email_notifications'] ) ); ?> />
-							<span>✉ <?php esc_html_e( 'Email notifications', '6arshid social community' ); ?></span>
+							<span>✉ <?php esc_html_e( 'Email notifications', 'social-network-6' ); ?></span>
 						</label>
 
 						<div>
 							<label style="font-size:.8rem;font-weight:600;display:block;margin-block-end:.25rem;">
-								<?php esc_html_e( 'Email frequency', '6arshid social community' ); ?>
+								<?php esc_html_e( 'Email frequency', 'social-network-6' ); ?>
 							</label>
 							<select name="arshid6social_email_digest" class="arshid6social-select" style="max-width:200px;">
-								<option value="none"   <?php selected( $notif_prefs['email_digest'], 'none' ); ?>><?php esc_html_e( 'Never', '6arshid social community' ); ?></option>
-								<option value="daily"  <?php selected( $notif_prefs['email_digest'], 'daily' ); ?>><?php esc_html_e( 'Daily digest', '6arshid social community' ); ?></option>
-								<option value="weekly" <?php selected( $notif_prefs['email_digest'], 'weekly' ); ?>><?php esc_html_e( 'Weekly digest', '6arshid social community' ); ?></option>
+								<option value="none"   <?php selected( $notif_prefs['email_digest'], 'none' ); ?>><?php esc_html_e( 'Never', 'social-network-6' ); ?></option>
+								<option value="daily"  <?php selected( $notif_prefs['email_digest'], 'daily' ); ?>><?php esc_html_e( 'Daily digest', 'social-network-6' ); ?></option>
+								<option value="weekly" <?php selected( $notif_prefs['email_digest'], 'weekly' ); ?>><?php esc_html_e( 'Weekly digest', 'social-network-6' ); ?></option>
 							</select>
 						</div>
 					</div>
 
 					<div class="arshid6social-settings-actions" style="margin-block-start:1.25rem;">
 						<button type="submit" class="arshid6social-btn arshid6social-btn--primary" id="arshid6social-notif-prefs-save-btn">
-							<?php esc_html_e( 'Save Preferences', '6arshid social community' ); ?>
+							<?php esc_html_e( 'Save Preferences', 'social-network-6' ); ?>
 						</button>
 						<span class="arshid6social-notif-prefs-saved-msg" hidden aria-live="polite">
-							&#10003; <?php esc_html_e( 'Saved!', '6arshid social community' ); ?>
+							&#10003; <?php esc_html_e( 'Saved!', 'social-network-6' ); ?>
 						</span>
 					</div>
 

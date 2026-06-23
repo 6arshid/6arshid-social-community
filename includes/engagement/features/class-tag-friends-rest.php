@@ -71,7 +71,7 @@ class Tag_Friends_REST {
 		$y              = (float) ( $req->get_param( 'y' ) ?? 0 );
 
 		if ( ! $tagged_user_id ) {
-			return new \WP_REST_Response( array( 'message' => __( 'User ID required.', '6arshid social community' ) ), 400 );
+			return new \WP_REST_Response( array( 'message' => __( 'User ID required.', 'social-network-6' ) ), 400 );
 		}
 
 		global $wpdb;
@@ -81,7 +81,7 @@ class Tag_Friends_REST {
 		) );
 
 		if ( ! $activity || (int) $activity->user_id !== get_current_user_id() ) {
-			return new \WP_REST_Response( array( 'message' => __( 'Permission denied.', '6arshid social community' ) ), 403 );
+			return new \WP_REST_Response( array( 'message' => __( 'Permission denied.', 'social-network-6' ) ), 403 );
 		}
 
 		$feature = arshid6social_eng()->feature( 'tag_friends' );

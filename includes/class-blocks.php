@@ -113,17 +113,17 @@ class Blocks {
 			<form class="arshid6social-activity-form arshid6social-card" data-nonce="<?php echo esc_attr( $nonce ); ?>">
 				<?php wp_nonce_field( 'arshid6social_activity', 'arshid6social_nonce' ); ?>
 				<textarea name="content" class="arshid6social-activity-composer"
-					placeholder="<?php esc_attr_e( "What's on your mind?", '6arshid social community' ); ?>"
+					placeholder="<?php esc_attr_e( "What's on your mind?", 'social-network-6' ); ?>"
 					rows="3" maxlength="5000" required></textarea>
 				<div class="arshid6social-activity-form-footer">
 					<button type="submit" class="arshid6social-btn arshid6social-btn-primary">
-						<?php esc_html_e( 'Post', '6arshid social community' ); ?>
+						<?php esc_html_e( 'Post', 'social-network-6' ); ?>
 					</button>
 				</div>
 			</form>
 			<?php endif; ?>
 
-			<div class="arshid6social-activity-feed" aria-label="<?php esc_attr_e( 'Activity feed', '6arshid social community' ); ?>">
+			<div class="arshid6social-activity-feed" aria-label="<?php esc_attr_e( 'Activity feed', 'social-network-6' ); ?>">
 				<?php
 				// Render skeletons; JS replaces them on load.
 				for ( $i = 0; $i < 3; $i++ ) :

@@ -10,7 +10,7 @@
  * Author URI:        https://6arshid.com/
  * License:           MIT
  * License URI:       https://opensource.org/licenses/MIT
- * Text Domain:       sixarshidsocialcomunity
+ * Text Domain:       social-network-6
  * Domain Path:       /languages
  *
  * @package Arshid6Social
@@ -32,7 +32,7 @@ define( 'ARSHID6SOCIAL_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 define( 'ARSHID6SOCIAL_INCLUDES_DIR', ARSHID6SOCIAL_PLUGIN_DIR . 'includes/' );
 define( 'ARSHID6SOCIAL_TEMPLATES_DIR', ARSHID6SOCIAL_PLUGIN_DIR . 'templates/' );
 define( 'ARSHID6SOCIAL_ASSETS_URL', ARSHID6SOCIAL_PLUGIN_URL . 'assets/' );
-define( 'ARSHID6SOCIAL_TEXT_DOMAIN', '6arshid social community' );
+define( 'ARSHID6SOCIAL_TEXT_DOMAIN', 'social-network-6' );
 define( 'ARSHID6SOCIAL_MIN_PHP', '8.1' );
 define( 'ARSHID6SOCIAL_MIN_WP', '6.5' );
 
@@ -45,7 +45,7 @@ if ( version_compare( PHP_VERSION, ARSHID6SOCIAL_MIN_PHP, '<' ) ) {
 				'<div class="notice notice-error"><p>%s</p></div>',
 				sprintf(
 					/* translators: 1: required PHP version, 2: current PHP version */
-					esc_html__( '6Arshid Social Community requires PHP %1$s or higher. You are running PHP %2$s. Please upgrade.', '6arshid social community' ),
+					esc_html__( '6Arshid Social Community requires PHP %1$s or higher. You are running PHP %2$s. Please upgrade.', 'social-network-6' ),
 					esc_html( ARSHID6SOCIAL_MIN_PHP ),
 					esc_html( PHP_VERSION )
 				)

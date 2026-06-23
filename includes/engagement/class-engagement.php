@@ -227,19 +227,19 @@ class Engagement {
 				'maxVisible' => (int) get_option( 'arshid6social_eng_social_share_max_visible', 8 ),
 				'useNative'  => (bool) get_option( 'arshid6social_eng_social_share_native', true ),
 				'i18n'       => array(
-					'share'          => __( 'Share', '6arshid social community' ),
-					'shareTitle'     => __( 'Share this post', '6arshid social community' ),
-					'shareTo'        => __( 'Share to', '6arshid social community' ),
-					'search'         => __( 'Search networks…', '6arshid social community' ),
-					'close'          => __( 'Close', '6arshid social community' ),
-					'copied'         => __( 'Link copied!', '6arshid social community' ),
-					'more'           => __( 'Show more networks', '6arshid social community' ),
-					'sendAsMessage'  => __( 'Send as Message', '6arshid social community' ),
-					'dmSearchPlaceholder' => __( 'Search users…', '6arshid social community' ),
-					'dmSent'         => __( 'Message sent!', '6arshid social community' ),
-					'dmError'        => __( 'Could not send message.', '6arshid social community' ),
-					'dmLoginRequired' => __( 'You must be logged in to send messages.', '6arshid social community' ),
-					'back'           => __( 'Back', '6arshid social community' ),
+					'share'          => __( 'Share', 'social-network-6' ),
+					'shareTitle'     => __( 'Share this post', 'social-network-6' ),
+					'shareTo'        => __( 'Share to', 'social-network-6' ),
+					'search'         => __( 'Search networks…', 'social-network-6' ),
+					'close'          => __( 'Close', 'social-network-6' ),
+					'copied'         => __( 'Link copied!', 'social-network-6' ),
+					'more'           => __( 'Show more networks', 'social-network-6' ),
+					'sendAsMessage'  => __( 'Send as Message', 'social-network-6' ),
+					'dmSearchPlaceholder' => __( 'Search users…', 'social-network-6' ),
+					'dmSent'         => __( 'Message sent!', 'social-network-6' ),
+					'dmError'        => __( 'Could not send message.', 'social-network-6' ),
+					'dmLoginRequired' => __( 'You must be logged in to send messages.', 'social-network-6' ),
+					'back'           => __( 'Back', 'social-network-6' ),
 				),
 			);
 		}
@@ -249,8 +249,8 @@ class Engagement {
 			$localize_data['socialEmbeds'] = array(
 				'lazyLoad'   => (bool) get_option( 'arshid6social_eng_embed_lazy_load', '1' ),
 				'i18n'       => array(
-					'dismissEmbed' => __( 'Remove embed preview', '6arshid social community' ),
-					'loadEmbed'    => __( 'Click to load', '6arshid social community' ),
+					'dismissEmbed' => __( 'Remove embed preview', 'social-network-6' ),
+					'loadEmbed'    => __( 'Click to load', 'social-network-6' ),
 				),
 			);
 		}

@@ -296,14 +296,14 @@ class Notifications {
 		$formatted  = $this->format_notification( $notif );
 		$site_name  = esc_html( get_bloginfo( 'name' ) );
 		$notif_url  = esc_url( home_url( '/notifications/' ) );
-		$type_info  = self::TYPES[ $args['component_action'] ?? '' ] ?? array( 'label' => __( 'Notification', '6arshid social community' ) );
+		$type_info  = self::TYPES[ $args['component_action'] ?? '' ] ?? array( 'label' => __( 'Notification', 'social-network-6' ) );
 		$subject    = sprintf( '[%s] %s', $site_name, $type_info['label'] );
 		$plain_desc = wp_strip_all_tags( $formatted['description'] ?? '' );
 
 		$body = "<!DOCTYPE html><html><body style='font-family:sans-serif;color:#111;max-width:600px;margin:auto;padding:24px;'>
 			<p style='font-size:1rem;'>{$plain_desc}</p>
 			<p><a href='{$notif_url}' style='color:#2563eb;'>"
-			. esc_html__( 'View all notifications', '6arshid social community' )
+			. esc_html__( 'View all notifications', 'social-network-6' )
 			. "</a></p>
 		</body></html>";
 
@@ -342,7 +342,7 @@ class Notifications {
 		$notification->component_action = $action;
 
 		$sender       = get_userdata( (int) $notification->item_id );
-		$sender_name  = $sender ? esc_html( $sender->display_name ) : __( 'Someone', '6arshid social community' );
+		$sender_name  = $sender ? esc_html( $sender->display_name ) : __( 'Someone', 'social-network-6' );
 		$sender_url   = $sender ? esc_url( home_url( '/members/' . $sender->user_nicename . '/' ) ) : '#';
 		$sender_avatar = $sender
 			? esc_url( get_avatar_url( $sender->ID, array( 'size' => 48, 'default' => 'mp' ) ) )
@@ -472,35 +472,35 @@ class Notifications {
 	 */
 	private function get_description( object $notification ): string {
 		$user     = get_userdata( (int) $notification->item_id );
-		$username = $user ? esc_html( $user->display_name ) : __( 'Someone', '6arshid social community' );
+		$username = $user ? esc_html( $user->display_name ) : __( 'Someone', 'social-network-6' );
 		$url      = $user ? esc_url( home_url( '/members/' . $user->user_nicename . '/' ) ) : '#';
 		$link     = "<a href=\"$url\"><strong>$username</strong></a>";
 
 		return match ( $notification->component_action ) {
 			/* translators: %s: linked username */
-			'friend_request'        => sprintf( __( '%s sent you a friend request.', '6arshid social community' ), $link ),
+			'friend_request'        => sprintf( __( '%s sent you a friend request.', 'social-network-6' ), $link ),
 			/* translators: %s: linked username */
-			'friendship_accepted'   => sprintf( __( '%s accepted your friend request.', '6arshid social community' ), $link ),
+			'friendship_accepted'   => sprintf( __( '%s accepted your friend request.', 'social-network-6' ), $link ),
 			/* translators: %s: linked username */
-			'activity_mention'      => sprintf( __( '%s mentioned you in a post.', '6arshid social community' ), $link ),
+			'activity_mention'      => sprintf( __( '%s mentioned you in a post.', 'social-network-6' ), $link ),
 			/* translators: %s: linked username */
-			'group_invitation'      => sprintf( __( '%s invited you to join a group.', '6arshid social community' ), $link ),
+			'group_invitation'      => sprintf( __( '%s invited you to join a group.', 'social-network-6' ), $link ),
 			/* translators: %s: linked username */
-			'new_message'           => sprintf( __( '%s sent you a message.', '6arshid social community' ), $link ),
+			'new_message'           => sprintf( __( '%s sent you a message.', 'social-network-6' ), $link ),
 			/* translators: %s: linked username */
-			'activity_reaction'     => sprintf( __( '%s reacted to your post.', '6arshid social community' ), $link ),
+			'activity_reaction'     => sprintf( __( '%s reacted to your post.', 'social-network-6' ), $link ),
 			/* translators: %s: linked username */
-			'activity_comment'      => sprintf( __( '%s commented on your post.', '6arshid social community' ), $link ),
+			'activity_comment'      => sprintf( __( '%s commented on your post.', 'social-network-6' ), $link ),
 			/* translators: %s: linked username */
-			'comment_reply'         => sprintf( __( '%s replied to your comment.', '6arshid social community' ), $link ),
+			'comment_reply'         => sprintf( __( '%s replied to your comment.', 'social-network-6' ), $link ),
 			/* translators: %s: linked username */
-			'new_follower'          => sprintf( __( '%s started following you.', '6arshid social community' ), $link ),
+			'new_follower'          => sprintf( __( '%s started following you.', 'social-network-6' ), $link ),
 			/* translators: %s: linked username */
-			'story_reaction'        => sprintf( __( '%s reacted to your story.', '6arshid social community' ), $link ),
+			'story_reaction'        => sprintf( __( '%s reacted to your story.', 'social-network-6' ), $link ),
 			/* translators: %s: linked username */
-			'story_reply'           => sprintf( __( '%s replied to your story.', '6arshid social community' ), $link ),
-			'verification_approved' => __( 'Your verification request has been approved.', '6arshid social community' ),
-			'verification_rejected' => __( 'Your verification request has been rejected.', '6arshid social community' ),
+			'story_reply'           => sprintf( __( '%s replied to your story.', 'social-network-6' ), $link ),
+			'verification_approved' => __( 'Your verification request has been approved.', 'social-network-6' ),
+			'verification_rejected' => __( 'Your verification request has been rejected.', 'social-network-6' ),
 			default                 => apply_filters( 'arshid6social_notification_description', '', $notification ),
 		};
 	}
@@ -649,7 +649,7 @@ class Notifications {
 
 	public function ajax_get_notifications(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		$page        = max( 1, absint( $_POST['page'] ?? 1 ) ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -671,7 +671,7 @@ class Notifications {
 
 	public function ajax_mark_read(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		$user_id = get_current_user_id();
@@ -694,12 +694,12 @@ class Notifications {
 
 	public function ajax_delete_notification(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		$id = absint( $_POST['id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		if ( ! $id ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid notification.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid notification.', 'social-network-6' ) ), 400 );
 		}
 
 		$user_id = get_current_user_id();
@@ -708,13 +708,13 @@ class Notifications {
 			$this->invalidate_unread_cache( $user_id );
 			wp_send_json_success( array( 'unreadCount' => $this->get_unread_count( $user_id ) ) );
 		} else {
-			wp_send_json_error( array( 'message' => __( 'Could not delete notification.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Could not delete notification.', 'social-network-6' ) ), 403 );
 		}
 	}
 
 	public function ajax_save_prefs(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		$user_id = get_current_user_id();
@@ -738,7 +738,7 @@ class Notifications {
 			update_user_meta( $user_id, 'arshid6social_email_digest', $digest );
 		}
 
-		wp_send_json_success( array( 'message' => __( 'Preferences saved.', '6arshid social community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Preferences saved.', 'social-network-6' ) ) );
 	}
 
 	// ── Digest emails ─────────────────────────────────────────────────────────
@@ -773,7 +773,7 @@ class Notifications {
 
 		$site_digest = get_option( 'arshid6social_email_digest', 'daily' );
 		/* translators: %s: site name */
-		$subject_tpl = sprintf( __( 'Your %s notifications digest', '6arshid social community' ), get_bloginfo( 'name' ) );
+		$subject_tpl = sprintf( __( 'Your %s notifications digest', 'social-network-6' ), get_bloginfo( 'name' ) );
 
 		foreach ( $user_ids as $user_id ) {
 			$user = get_userdata( $user_id ); // hits WP internal cache, no extra query
@@ -823,12 +823,12 @@ class Notifications {
 			<div style='padding:24px;background:#fff;border:1px solid #e5e7eb;border-top:none;'>
 				<p>" .
 				/* translators: %s: user display name */
-				sprintf( esc_html__( 'Hello %s,', '6arshid social community' ), esc_html( $user->display_name ) ) . "</p>
-				<p>" . esc_html__( 'Here are your recent notifications:', '6arshid social community' ) . "</p>
+				sprintf( esc_html__( 'Hello %s,', 'social-network-6' ), esc_html( $user->display_name ) ) . "</p>
+				<p>" . esc_html__( 'Here are your recent notifications:', 'social-network-6' ) . "</p>
 				<table width='100%' cellpadding='0' cellspacing='0'>{$items}</table>
 				<p style='margin-top:24px;'>
 					<a href='{$notif_url}' style='background:#2563eb;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;display:inline-block;'>
-					" . esc_html__( 'View All Notifications', '6arshid social community' ) . "
+					" . esc_html__( 'View All Notifications', 'social-network-6' ) . "
 					</a>
 				</p>
 			</div>

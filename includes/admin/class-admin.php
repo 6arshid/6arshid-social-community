@@ -60,8 +60,8 @@ final class Admin {
 	 */
 	public function register_menus(): void {
 		add_menu_page(
-			__( '6Arshid Social Community', '6arshid social community' ),
-			__( '6Arshid Social Community', '6arshid social community' ),
+			__( 'social-network-6', 'social-network-6' ),
+			__( 'social-network-6', 'social-network-6' ),
 			'arshid6social_manage_settings',
 			'arshid6social-dashboard',
 			array( $this, 'render_dashboard' ),
@@ -71,8 +71,8 @@ final class Admin {
 
 		add_submenu_page(
 			'arshid6social-dashboard',
-			__( 'Dashboard', '6arshid social community' ),
-			__( 'Dashboard', '6arshid social community' ),
+			__( 'Dashboard', 'social-network-6' ),
+			__( 'Dashboard', 'social-network-6' ),
 			'arshid6social_manage_settings',
 			'arshid6social-dashboard',
 			array( $this, 'render_dashboard' )
@@ -80,8 +80,8 @@ final class Admin {
 
 		$activity_hook = add_submenu_page(
 			'arshid6social-dashboard',
-			__( 'Activity Items', '6arshid social community' ),
-			__( 'Activity Items', '6arshid social community' ),
+			__( 'Activity Items', 'social-network-6' ),
+			__( 'Activity Items', 'social-network-6' ),
 			'arshid6social_manage_settings',
 			'arshid6social-activity',
 			array( Admin_Activity::instance(), 'render' )
@@ -92,8 +92,8 @@ final class Admin {
 
 		$members_hook = add_submenu_page(
 			'arshid6social-dashboard',
-			__( 'Members', '6arshid social community' ),
-			__( 'Members', '6arshid social community' ),
+			__( 'Members', 'social-network-6' ),
+			__( 'Members', 'social-network-6' ),
 			'arshid6social_manage_members',
 			'arshid6social-members',
 			array( Admin_Members::instance(), 'render' )
@@ -104,8 +104,8 @@ final class Admin {
 
 		$moderation_hook = add_submenu_page(
 			'arshid6social-dashboard',
-			__( 'Reports & Moderation', '6arshid social community' ),
-			__( 'Moderation', '6arshid social community' ),
+			__( 'Reports & Moderation', 'social-network-6' ),
+			__( 'Moderation', 'social-network-6' ),
 			'arshid6social_manage_reports',
 			'arshid6social-moderation',
 			array( Admin_Moderation::instance(), 'render' )
@@ -117,8 +117,8 @@ final class Admin {
 		if ( get_option( 'arshid6social_verification_enabled', false ) ) {
 			$verification_hook = add_submenu_page(
 				'arshid6social-dashboard',
-				__( 'Verification Queue', '6arshid social community' ),
-				__( 'Verification', '6arshid social community' ),
+				__( 'Verification Queue', 'social-network-6' ),
+				__( 'Verification', 'social-network-6' ),
 				'arshid6social_manage_members',
 				'arshid6social-verification',
 				array( Admin_Verification::instance(), 'render' )
@@ -130,8 +130,8 @@ final class Admin {
 
 		add_submenu_page(
 			'arshid6social-dashboard',
-			__( 'Pages & Shortcodes', '6arshid social community' ),
-			__( 'Pages & Shortcodes', '6arshid social community' ),
+			__( 'Pages & Shortcodes', 'social-network-6' ),
+			__( 'Pages & Shortcodes', 'social-network-6' ),
 			'arshid6social_manage_settings',
 			'arshid6social-pages',
 			array( $this->admin_pages, 'render' )
@@ -139,8 +139,8 @@ final class Admin {
 
 		add_submenu_page(
 			'arshid6social-dashboard',
-			__( 'Notifications', '6arshid social community' ),
-			__( 'Notifications', '6arshid social community' ),
+			__( 'Notifications', 'social-network-6' ),
+			__( 'Notifications', 'social-network-6' ),
 			'arshid6social_manage_settings',
 			'arshid6social-notifications',
 			array( Admin_Notifications::instance(), 'render' )
@@ -148,8 +148,8 @@ final class Admin {
 
 		$mkt_hook = add_submenu_page(
 			'arshid6social-dashboard',
-			__( 'Products Archive', '6arshid social community' ),
-			__( 'Products Archive', '6arshid social community' ),
+			__( 'Products Archive', 'social-network-6' ),
+			__( 'Products Archive', 'social-network-6' ),
 			'arshid6social_manage_settings',
 			'arshid6social-marketplace',
 			array( Admin_Marketplace::instance(), 'render' )
@@ -160,8 +160,8 @@ final class Admin {
 
 		add_submenu_page(
 			'arshid6social-dashboard',
-			__( 'Ads Manager', '6arshid social community' ),
-			__( 'Ads Manager', '6arshid social community' ),
+			__( 'Ads Manager', 'social-network-6' ),
+			__( 'Ads Manager', 'social-network-6' ),
 			'arshid6social_manage_settings',
 			'arshid6social-ads',
 			array( Admin_Ads::instance(), 'render' )
@@ -169,8 +169,8 @@ final class Admin {
 
 		$monetization_hook = add_submenu_page(
 			'arshid6social-dashboard',
-			__( 'Monetization', '6arshid social community' ),
-			__( 'Monetization', '6arshid social community' ),
+			__( 'Monetization', 'social-network-6' ),
+			__( 'Monetization', 'social-network-6' ),
 			'arshid6social_manage_settings',
 			'arshid6social-monetization',
 			array( $this, 'render_monetization' )
@@ -181,8 +181,8 @@ final class Admin {
 
 		add_submenu_page(
 			'arshid6social-dashboard',
-			__( 'Settings', '6arshid social community' ),
-			__( 'Settings', '6arshid social community' ),
+			__( 'Settings', 'social-network-6' ),
+			__( 'Settings', 'social-network-6' ),
 			'arshid6social_manage_settings',
 			'arshid6social-settings',
 			array( Admin_Settings::instance(), 'render' )
@@ -202,41 +202,41 @@ final class Admin {
 	 */
 	public function render_dashboard(): void {
 		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_die( esc_html__( 'You do not have permission to access this page.', '6arshid social community' ) );
+			wp_die( esc_html__( 'You do not have permission to access this page.', 'social-network-6' ) );
 		}
 
 		$stats = $this->get_dashboard_stats();
 
 		echo '<div class="wrap arshid6social-admin-dashboard">';
-		echo '<h1>' . esc_html__( '6Arshid Social Community Dashboard', '6arshid social community' ) . '</h1>';
+		echo '<h1>' . esc_html__( '6Arshid Social Community Dashboard', 'social-network-6' ) . '</h1>';
 
 		$card_defs = array(
 			array(
-				'label'  => __( 'Activity Items', '6arshid social community' ),
+				'label'  => __( 'Activity Items', 'social-network-6' ),
 				'count'  => $stats['activity'],
 				'icon'   => 'dashicons-format-status',
 				'url'    => admin_url( 'admin.php?page=arshid6social-activity' ),
 			),
 			array(
-				'label'  => __( 'Groups', '6arshid social community' ),
+				'label'  => __( 'Groups', 'social-network-6' ),
 				'count'  => $stats['groups'],
 				'icon'   => 'dashicons-groups',
 				'url'    => admin_url( 'admin.php?page=arshid6social-moderation' ),
 			),
 			array(
-				'label'  => __( 'Members', '6arshid social community' ),
+				'label'  => __( 'Members', 'social-network-6' ),
 				'count'  => $stats['members'],
 				'icon'   => 'dashicons-admin-users',
 				'url'    => admin_url( 'admin.php?page=arshid6social-members' ),
 			),
 			array(
-				'label'  => __( 'Pending Reports', '6arshid social community' ),
+				'label'  => __( 'Pending Reports', 'social-network-6' ),
 				'count'  => $stats['reports'],
 				'icon'   => 'dashicons-flag',
 				'url'    => admin_url( 'admin.php?page=arshid6social-moderation' ),
 			),
 			array(
-				'label'  => __( 'Products Archive', '6arshid social community' ),
+				'label'  => __( 'Products Archive', 'social-network-6' ),
 				'count'  => $stats['products'],
 				'icon'   => 'dashicons-store',
 				'url'    => admin_url( 'admin.php?page=arshid6social-marketplace' ),
@@ -245,7 +245,7 @@ final class Admin {
 
 		if ( get_option( 'arshid6social_verification_enabled', false ) ) {
 			$card_defs[] = array(
-				'label'  => __( 'Pending Verifications', '6arshid social community' ),
+				'label'  => __( 'Pending Verifications', 'social-network-6' ),
 				'count'  => $stats['verifications'],
 				'icon'   => 'dashicons-yes-alt',
 				'url'    => admin_url( 'admin.php?page=arshid6social-verification' ),
@@ -312,9 +312,9 @@ final class Admin {
 			delete_transient( 'arshid6social_setup_redirect' );
 			printf(
 				'<div class="notice notice-info is-dismissible"><p>%s <a href="%s">%s</a></p></div>',
-				esc_html__( 'Welcome to 6Arshid Social Community!', '6arshid social community' ),
+				esc_html__( 'Welcome to 6Arshid Social Community!', 'social-network-6' ),
 				esc_url( admin_url( 'index.php?page=arshid6social-setup' ) ),
-				esc_html__( 'Run the setup wizard →', '6arshid social community' )
+				esc_html__( 'Run the setup wizard →', 'social-network-6' )
 			);
 		}
 
@@ -331,9 +331,9 @@ final class Admin {
 		if ( $missing ) {
 			printf(
 				'<div class="notice notice-warning is-dismissible"><p>%s <a href="%s"><strong>%s</strong></a></p></div>',
-				esc_html__( '6Arshid Social Community: Some required pages are missing.', '6arshid social community' ),
+				esc_html__( '6Arshid Social Community: Some required pages are missing.', 'social-network-6' ),
 				esc_url( admin_url( 'admin.php?page=arshid6social-pages&arshid6social_create_pages=1&_wpnonce=' . wp_create_nonce( 'arshid6social_create_pages' ) ) ),
-				esc_html__( 'Click here to create them automatically →', '6arshid social community' )
+				esc_html__( 'Click here to create them automatically →', 'social-network-6' )
 			);
 		}
 	}
@@ -348,12 +348,12 @@ final class Admin {
 		$links['settings'] = sprintf(
 			'<a href="%s">%s</a>',
 			esc_url( admin_url( 'admin.php?page=arshid6social-settings' ) ),
-			esc_html__( 'Settings', '6arshid social community' )
+			esc_html__( 'Settings', 'social-network-6' )
 		);
 		$links['pages'] = sprintf(
 			'<a href="%s">%s</a>',
 			esc_url( admin_url( 'admin.php?page=arshid6social-pages' ) ),
-			esc_html__( 'Pages', '6arshid social community' )
+			esc_html__( 'Pages', 'social-network-6' )
 		);
 		return $links;
 	}
@@ -388,13 +388,13 @@ final class Admin {
 
 		if ( 'payouts' === $tab ) {
 			add_screen_option( 'per_page', array(
-				'label'   => __( 'IBANs per page', '6arshid social community' ),
+				'label'   => __( 'IBANs per page', 'social-network-6' ),
 				'default' => 20,
 				'option'  => 'arshid6social_payouts_per_page',
 			) );
 		} elseif ( 'transactions' === $tab ) {
 			add_screen_option( 'per_page', array(
-				'label'   => __( 'Transactions per page', '6arshid social community' ),
+				'label'   => __( 'Transactions per page', 'social-network-6' ),
 				'default' => 25,
 				'option'  => 'arshid6social_tx_per_page',
 			) );
@@ -419,7 +419,7 @@ final class Admin {
 	 */
 	public function render_monetization(): void {
 		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_die( esc_html__( 'You do not have permission to access this page.', '6arshid social community' ) );
+			wp_die( esc_html__( 'You do not have permission to access this page.', 'social-network-6' ) );
 		}
 
 		wp_enqueue_media();
@@ -428,13 +428,13 @@ final class Admin {
 		$current_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'settings';
 
 		$tabs = array(
-			'settings'     => __( 'Settings', '6arshid social community' ),
-			'payouts'      => __( 'Creator Payouts — IBAN List', '6arshid social community' ),
-			'transactions' => __( 'Financial Transactions', '6arshid social community' ),
+			'settings'     => __( 'Settings', 'social-network-6' ),
+			'payouts'      => __( 'Creator Payouts — IBAN List', 'social-network-6' ),
+			'transactions' => __( 'Financial Transactions', 'social-network-6' ),
 		);
 
 		echo '<div class="wrap arshid6social-admin-settings">';
-		echo '<h1>' . esc_html__( 'Monetization', '6arshid social community' ) . '</h1>';
+		echo '<h1>' . esc_html__( 'Monetization', 'social-network-6' ) . '</h1>';
 
 		echo '<nav class="nav-tab-wrapper" style="margin-bottom:0;">';
 		foreach ( $tabs as $key => $label ) {
@@ -454,7 +454,7 @@ final class Admin {
 			echo '<form method="post" action="options.php">';
 			settings_fields( 'arshid6social_monetization' );
 			do_action( 'arshid6social_settings_tab_monetization' );
-			submit_button( __( 'Save Settings', '6arshid social community' ) );
+			submit_button( __( 'Save Settings', 'social-network-6' ) );
 			echo '</form>';
 		}
 
@@ -469,7 +469,7 @@ final class Admin {
 		$table = $wpdb->prefix . 'sixarshidsc_transactions';
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		if ( $wpdb->get_var( "SHOW TABLES LIKE '{$table}'" ) !== $table ) {
-			echo '<p class="description">' . esc_html__( 'Transactions table does not exist yet. Enable Monetization and save settings first.', '6arshid social community' ) . '</p>';
+			echo '<p class="description">' . esc_html__( 'Transactions table does not exist yet. Enable Monetization and save settings first.', 'social-network-6' ) . '</p>';
 			return;
 		}
 
@@ -547,60 +547,60 @@ final class Admin {
 			'refunded'  => '#6b7280',
 		);
 		?>
-		<h2 style="margin-top:0;"><?php esc_html_e( 'Financial Transactions', '6arshid social community' ); ?></h2>
+		<h2 style="margin-top:0;"><?php esc_html_e( 'Financial Transactions', 'social-network-6' ); ?></h2>
 
 		<form method="get" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;align-items:center;">
 			<input type="hidden" name="page" value="arshid6social-monetization" />
 			<input type="hidden" name="tab"  value="transactions" />
 
 			<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>"
-				placeholder="<?php esc_attr_e( 'Name, email, gateway ref…', '6arshid social community' ); ?>"
+				placeholder="<?php esc_attr_e( 'Name, email, gateway ref…', 'social-network-6' ); ?>"
 				style="padding:5px 9px;border:1px solid #8c8f94;border-radius:4px;min-width:240px;" />
 
 			<select name="txtype" style="padding:5px;border:1px solid #8c8f94;border-radius:4px;">
-				<option value=""><?php esc_html_e( 'All types', '6arshid social community' ); ?></option>
+				<option value=""><?php esc_html_e( 'All types', 'social-network-6' ); ?></option>
 				<?php foreach ( array( 'subscription', 'ppv', 'payout', 'refund' ) as $t ) : ?>
 					<option value="<?php echo esc_attr( $t ); ?>" <?php selected( $filter_type, $t ); ?>><?php echo esc_html( ucfirst( $t ) ); ?></option>
 				<?php endforeach; ?>
 			</select>
 
 			<select name="txstatus" style="padding:5px;border:1px solid #8c8f94;border-radius:4px;">
-				<option value=""><?php esc_html_e( 'All statuses', '6arshid social community' ); ?></option>
+				<option value=""><?php esc_html_e( 'All statuses', 'social-network-6' ); ?></option>
 				<?php foreach ( array( 'completed', 'pending', 'failed', 'refunded' ) as $st ) : ?>
 					<option value="<?php echo esc_attr( $st ); ?>" <?php selected( $filter_status, $st ); ?>><?php echo esc_html( ucfirst( $st ) ); ?></option>
 				<?php endforeach; ?>
 			</select>
 
-			<?php submit_button( __( 'Filter', '6arshid social community' ), 'secondary', '', false, array( 'style' => 'padding:4px 12px;' ) ); ?>
+			<?php submit_button( __( 'Filter', 'social-network-6' ), 'secondary', '', false, array( 'style' => 'padding:4px 12px;' ) ); ?>
 			<?php if ( $search || $filter_type || $filter_status ) : ?>
-				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'arshid6social-monetization', 'tab' => 'transactions' ), admin_url( 'admin.php' ) ) ); ?>" class="button"><?php esc_html_e( 'Clear', '6arshid social community' ); ?></a>
+				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'arshid6social-monetization', 'tab' => 'transactions' ), admin_url( 'admin.php' ) ) ); ?>" class="button"><?php esc_html_e( 'Clear', 'social-network-6' ); ?></a>
 			<?php endif; ?>
 		</form>
 
 		<p class="description" style="margin-bottom:8px;">
 			<?php
 			/* translators: %d: total number of transactions */
-			printf( esc_html__( '%d transaction(s) found.', '6arshid social community' ), (int) $total );
+			printf( esc_html__( '%d transaction(s) found.', 'social-network-6' ), (int) $total );
 			?>
 		</p>
 
 		<?php if ( empty( $rows ) ) : ?>
 			<p class="description" style="padding:1rem;background:#f6f7f7;border-radius:4px;">
-				<?php esc_html_e( 'No transactions match the current filter.', '6arshid social community' ); ?>
+				<?php esc_html_e( 'No transactions match the current filter.', 'social-network-6' ); ?>
 			</p>
 		<?php else : ?>
 			<table class="widefat striped" style="margin-top:0;">
 				<thead>
 					<tr>
 						<th>#</th>
-						<th><?php esc_html_e( 'Type', '6arshid social community' ); ?></th>
-						<th><?php esc_html_e( 'Payer', '6arshid social community' ); ?></th>
-						<th><?php esc_html_e( 'Creator', '6arshid social community' ); ?></th>
-						<th><?php esc_html_e( 'Amount', '6arshid social community' ); ?></th>
-						<th><?php esc_html_e( 'Fee', '6arshid social community' ); ?></th>
-						<th><?php esc_html_e( 'Status', '6arshid social community' ); ?></th>
-						<th><?php esc_html_e( 'Gateway Ref', '6arshid social community' ); ?></th>
-						<th><?php esc_html_e( 'Date', '6arshid social community' ); ?></th>
+						<th><?php esc_html_e( 'Type', 'social-network-6' ); ?></th>
+						<th><?php esc_html_e( 'Payer', 'social-network-6' ); ?></th>
+						<th><?php esc_html_e( 'Creator', 'social-network-6' ); ?></th>
+						<th><?php esc_html_e( 'Amount', 'social-network-6' ); ?></th>
+						<th><?php esc_html_e( 'Fee', 'social-network-6' ); ?></th>
+						<th><?php esc_html_e( 'Status', 'social-network-6' ); ?></th>
+						<th><?php esc_html_e( 'Gateway Ref', 'social-network-6' ); ?></th>
+						<th><?php esc_html_e( 'Date', 'social-network-6' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>

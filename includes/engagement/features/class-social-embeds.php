@@ -192,7 +192,7 @@ class Social_Embeds {
 		if ( $this->is_banned( $url ) ) {
 			return new \WP_Error(
 				'arshid6social_embed_banned',
-				__( 'This domain is not allowed.', '6arshid social community' ),
+				__( 'This domain is not allowed.', 'social-network-6' ),
 				array( 'status' => 403 )
 			);
 		}
@@ -200,7 +200,7 @@ class Social_Embeds {
 		if ( ! Social_Embeds_Fetcher::validate_url( $url ) ) {
 			return new \WP_Error(
 				'arshid6social_embed_invalid',
-				__( 'Invalid or unsafe URL.', '6arshid social community' ),
+				__( 'Invalid or unsafe URL.', 'social-network-6' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -212,7 +212,7 @@ class Social_Embeds {
 			if ( ! get_option( 'arshid6social_eng_embed_og_generic', '1' ) ) {
 				return new \WP_Error(
 					'arshid6social_embed_no_provider',
-					__( 'No embed provider matched this URL.', '6arshid social community' ),
+					__( 'No embed provider matched this URL.', 'social-network-6' ),
 					array( 'status' => 404 )
 				);
 			}
@@ -223,7 +223,7 @@ class Social_Embeds {
 		if ( ! $provider ) {
 			return new \WP_Error(
 				'arshid6social_embed_no_provider',
-				__( 'No embed provider matched this URL.', '6arshid social community' ),
+				__( 'No embed provider matched this URL.', 'social-network-6' ),
 				array( 'status' => 404 )
 			);
 		}
@@ -232,7 +232,7 @@ class Social_Embeds {
 		if ( ! $result ) {
 			return new \WP_Error(
 				'arshid6social_embed_fetch_failed',
-				__( 'Could not retrieve embed data for this URL.', '6arshid social community' ),
+				__( 'Could not retrieve embed data for this URL.', 'social-network-6' ),
 				array( 'status' => 502 )
 			);
 		}

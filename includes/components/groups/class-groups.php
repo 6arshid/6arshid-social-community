@@ -476,11 +476,11 @@ class Groups {
 	 */
 	public function ajax_create_group(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		if ( get_user_meta( get_current_user_id(), 'arshid6social_suspended', true ) ) {
-			wp_send_json_error( array( 'message' => __( 'Your account has been suspended.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Your account has been suspended.', 'social-network-6' ) ), 403 );
 		}
 
 		$name        = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -488,19 +488,19 @@ class Groups {
 		$status      = sanitize_key( $_POST['status'] ?? 'public' ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		if ( empty( $name ) ) {
-			wp_send_json_error( array( 'message' => __( 'Group name is required.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Group name is required.', 'social-network-6' ) ), 400 );
 		}
 
 		$group_id = $this->create( array( 'name' => $name, 'description' => $description, 'status' => $status ) );
 
 		if ( ! $group_id ) {
-			wp_send_json_error( array( 'message' => __( 'Failed to create group.', '6arshid social community' ) ), 500 );
+			wp_send_json_error( array( 'message' => __( 'Failed to create group.', 'social-network-6' ) ), 500 );
 		}
 
 		wp_send_json_success(
 			array(
 				'group'   => $this->format_group( $this->get_by_id( $group_id ) ),
-				'message' => __( 'Group created!', '6arshid social community' ),
+				'message' => __( 'Group created!', 'social-network-6' ),
 			)
 		);
 	}
@@ -510,7 +510,7 @@ class Groups {
 	 */
 	public function ajax_get_groups(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification
@@ -529,7 +529,7 @@ class Groups {
 	 */
 	public function ajax_join_group(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		$group_id = absint( $_POST['group_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -537,11 +537,11 @@ class Groups {
 		$group    = $this->get_by_id( $group_id );
 
 		if ( ! $group ) {
-			wp_send_json_error( array( 'message' => __( 'Group not found.', '6arshid social community' ) ), 404 );
+			wp_send_json_error( array( 'message' => __( 'Group not found.', 'social-network-6' ) ), 404 );
 		}
 
 		if ( 'hidden' === $group->status ) {
-			wp_send_json_error( array( 'message' => __( 'This group cannot be joined directly.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'This group cannot be joined directly.', 'social-network-6' ) ), 403 );
 		}
 
 		$is_confirmed = ( 'public' === $group->status ) ? 1 : 0;
@@ -552,8 +552,8 @@ class Groups {
 				'joined'  => $is_confirmed,
 				'pending' => ! $is_confirmed,
 				'message' => $is_confirmed
-					? __( 'You have joined the group.', '6arshid social community' )
-					: __( 'Membership request sent.', '6arshid social community' ),
+					? __( 'You have joined the group.', 'social-network-6' )
+					: __( 'Membership request sent.', 'social-network-6' ),
 			)
 		);
 	}
@@ -563,7 +563,7 @@ class Groups {
 	 */
 	public function ajax_leave_group(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		$group_id = absint( $_POST['group_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -574,12 +574,12 @@ class Groups {
 			global $wpdb;
 			$admin_count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}sn_groups_members WHERE group_id = %d AND is_admin = 1", $group_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			if ( $admin_count <= 1 ) {
-				wp_send_json_error( array( 'message' => __( 'You are the only admin. Assign another admin before leaving.', '6arshid social community' ) ), 422 );
+				wp_send_json_error( array( 'message' => __( 'You are the only admin. Assign another admin before leaving.', 'social-network-6' ) ), 422 );
 			}
 		}
 
 		$this->remove_member( $group_id, $user_id );
-		wp_send_json_success( array( 'message' => __( 'You have left the group.', '6arshid social community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'You have left the group.', 'social-network-6' ) ) );
 	}
 
 	/**
@@ -587,7 +587,7 @@ class Groups {
 	 */
 	public function ajax_invite_to_group(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		$group_id  = absint( $_POST['group_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -595,18 +595,18 @@ class Groups {
 		$current    = get_current_user_id();
 
 		if ( ! $this->is_member( $current, $group_id ) && ! current_user_can( 'arshid6social_manage_groups' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Only group members can invite others.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Only group members can invite others.', 'social-network-6' ) ), 403 );
 		}
 
 		if ( ! get_userdata( $invitee_id ) ) {
-			wp_send_json_error( array( 'message' => __( 'User not found.', '6arshid social community' ) ), 404 );
+			wp_send_json_error( array( 'message' => __( 'User not found.', 'social-network-6' ) ), 404 );
 		}
 
 		$this->add_member( $group_id, $invitee_id, array( 'inviter_id' => $current, 'is_confirmed' => 0, 'invite_sent' => 1 ) );
 
 		do_action( 'arshid6social_group_invitation_sent', $group_id, $invitee_id, $current );
 
-		wp_send_json_success( array( 'message' => __( 'Invitation sent.', '6arshid social community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Invitation sent.', 'social-network-6' ) ) );
 	}
 
 	/**
@@ -614,18 +614,18 @@ class Groups {
 	 */
 	public function ajax_delete_group(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		$group_id = absint( $_POST['group_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$user_id  = get_current_user_id();
 
 		if ( ! $this->is_admin( $user_id, $group_id ) && ! current_user_can( 'arshid6social_manage_groups' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'social-network-6' ) ), 403 );
 		}
 
 		$this->delete( $group_id );
-		wp_send_json_success( array( 'message' => __( 'Group deleted.', '6arshid social community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Group deleted.', 'social-network-6' ) ) );
 	}
 
 	/**
@@ -633,19 +633,19 @@ class Groups {
 	 */
 	public function ajax_update_group(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		$group_id = absint( $_POST['group_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$user_id  = get_current_user_id();
 
 		if ( ! $this->is_admin( $user_id, $group_id ) && ! current_user_can( 'arshid6social_manage_groups' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'social-network-6' ) ), 403 );
 		}
 
 		$group = $this->get_by_id( $group_id );
 		if ( ! $group ) {
-			wp_send_json_error( array( 'message' => __( 'Group not found.', '6arshid social community' ) ), 404 );
+			wp_send_json_error( array( 'message' => __( 'Group not found.', 'social-network-6' ) ), 404 );
 		}
 
 		$name        = sanitize_text_field( wp_unslash( $_POST['name'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -653,7 +653,7 @@ class Groups {
 		$status      = sanitize_key( $_POST['status'] ?? 'public' ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		if ( empty( $name ) ) {
-			wp_send_json_error( array( 'message' => __( 'Group name is required.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Group name is required.', 'social-network-6' ) ), 400 );
 		}
 
 		global $wpdb;
@@ -674,7 +674,7 @@ class Groups {
 		wp_send_json_success(
 			array(
 				'group'   => $this->format_group( $this->get_by_id( $group_id ) ),
-				'message' => __( 'Group updated.', '6arshid social community' ),
+				'message' => __( 'Group updated.', 'social-network-6' ),
 			)
 		);
 	}
@@ -699,16 +699,16 @@ class Groups {
 	 */
 	public function ajax_upload_group_avatar(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		$group_id = absint( $_POST['group_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		if ( ! $group_id || ! $this->is_admin( get_current_user_id(), $group_id ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'social-network-6' ) ), 403 );
 		}
 
 		if ( empty( $_FILES['file'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'No file uploaded.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'No file uploaded.', 'social-network-6' ) ), 400 );
 		}
 
 		$result = $this->save_group_image( $_FILES['file'], $group_id, 'avatar' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
@@ -733,16 +733,16 @@ class Groups {
 	 */
 	public function ajax_upload_group_cover(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
 		}
 
 		$group_id = absint( $_POST['group_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		if ( ! $group_id || ! $this->is_admin( get_current_user_id(), $group_id ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'social-network-6' ) ), 403 );
 		}
 
 		if ( empty( $_FILES['file'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'No file uploaded.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'No file uploaded.', 'social-network-6' ) ), 400 );
 		}
 
 		$result = $this->save_group_image( $_FILES['file'], $group_id, 'cover' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
@@ -777,19 +777,19 @@ class Groups {
 		$real_mime    = $finfo->file( $file['tmp_name'] );
 
 		if ( ! in_array( $real_mime, $allowed_mime, true ) ) {
-			return new \WP_Error( 'invalid_mime', __( 'Only image files are allowed.', '6arshid social community' ) );
+			return new \WP_Error( 'invalid_mime', __( 'Only image files are allowed.', 'social-network-6' ) );
 		}
 
 		$max_bytes = (int) get_option( 'arshid6social_max_upload_size_mb', 5 ) * MB_IN_BYTES;
 		if ( $file['size'] > $max_bytes ) {
-			return new \WP_Error( 'file_too_large', __( 'File is too large.', '6arshid social community' ) );
+			return new \WP_Error( 'file_too_large', __( 'File is too large.', 'social-network-6' ) );
 		}
 
 		$upload_dir = wp_upload_dir();
 		$dest_dir   = trailingslashit( $upload_dir['basedir'] ) . "social-network/groups/{$group_id}/{$slot}";
 
 		if ( ! wp_mkdir_p( $dest_dir ) ) {
-			return new \WP_Error( 'mkdir_failed', __( 'Could not create upload directory.', '6arshid social community' ) );
+			return new \WP_Error( 'mkdir_failed', __( 'Could not create upload directory.', 'social-network-6' ) );
 		}
 
 		$ext      = array( 'image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif', 'image/webp' => 'webp' )[ $real_mime ] ?? 'jpg';
@@ -797,7 +797,7 @@ class Groups {
 		$dest     = $dest_dir . '/' . $filename;
 
 		if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
-			return new \WP_Error( 'move_failed', __( 'Failed to save file.', '6arshid social community' ) );
+			return new \WP_Error( 'move_failed', __( 'Failed to save file.', 'social-network-6' ) );
 		}
 		global $wp_filesystem;
 		if ( ! $wp_filesystem ) {
@@ -805,7 +805,7 @@ class Groups {
 			WP_Filesystem();
 		}
 		if ( ! $wp_filesystem || ! $wp_filesystem->move( $file['tmp_name'], $dest, true ) ) {
-			return new \WP_Error( 'move_failed', __( 'Failed to save file.', '6arshid social community' ) );
+			return new \WP_Error( 'move_failed', __( 'Failed to save file.', 'social-network-6' ) );
 		}
 
 		$url = trailingslashit( $upload_dir['baseurl'] ) . "social-network/groups/{$group_id}/{$slot}/{$filename}";

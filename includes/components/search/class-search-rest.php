@@ -225,7 +225,7 @@ class Search_REST {
 			$items[] = array(
 				'id'              => (int) $row->id,
 				'title'           => $row->title,
-				'price_formatted' => $row->is_free ? __( 'Free', '6arshid social community' ) : number_format( (float) $row->price, 2 ),
+				'price_formatted' => $row->is_free ? __( 'Free', 'social-network-6' ) : number_format( (float) $row->price, 2 ),
 				'is_free'         => (bool) $row->is_free,
 				'location_city'   => $row->location_city ?? '',
 				'url'             => add_query_arg( array( 'action' => 'view', 'id' => ( $row->uid ?: $row->id ) ), $base ),

@@ -178,13 +178,13 @@ class Marketplace_Listings {
 	 */
 	private static function time_ago( string $datetime ): string {
 		$diff = time() - strtotime( $datetime );
-		if ( $diff < 60 )       return __( 'just now', '6arshid social community' );
+		if ( $diff < 60 )       return __( 'just now', 'social-network-6' );
 		/* translators: %d: number of minutes */
-		if ( $diff < 3600 )     return sprintf( _n( '%d minute ago', '%d minutes ago', (int) ( $diff / 60 ),   '6arshid social community' ), (int) ( $diff / 60 ) );
+		if ( $diff < 3600 )     return sprintf( _n( '%d minute ago', '%d minutes ago', (int) ( $diff / 60 ),   'social-network-6' ), (int) ( $diff / 60 ) );
 		/* translators: %d: number of hours */
-		if ( $diff < 86400 )    return sprintf( _n( '%d hour ago',   '%d hours ago',   (int) ( $diff / 3600 ), '6arshid social community' ), (int) ( $diff / 3600 ) );
+		if ( $diff < 86400 )    return sprintf( _n( '%d hour ago',   '%d hours ago',   (int) ( $diff / 3600 ), 'social-network-6' ), (int) ( $diff / 3600 ) );
 		/* translators: %d: number of days */
-		if ( $diff < 604800 )   return sprintf( _n( '%d day ago',    '%d days ago',    (int) ( $diff / 86400 ),'6arshid social community' ), (int) ( $diff / 86400 ) );
+		if ( $diff < 604800 )   return sprintf( _n( '%d day ago',    '%d days ago',    (int) ( $diff / 86400 ),'social-network-6' ), (int) ( $diff / 86400 ) );
 		return date_i18n( get_option( 'date_format' ), strtotime( $datetime ) );
 	}
 
@@ -197,7 +197,7 @@ class Marketplace_Listings {
 		check_ajax_referer( 'arshid6social_marketplace', 'nonce' );
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Not logged in.', '6arshid social community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'Not logged in.', 'social-network-6' ) ), 401 );
 		}
 
 		$user_id = get_current_user_id();
@@ -206,18 +206,18 @@ class Marketplace_Listings {
 		$token   = sanitize_key( wp_unslash( $_POST['token'] ?? '' ) );
 
 		if ( ! $token ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid form session.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid form session.', 'social-network-6' ) ), 400 );
 		}
 
 		$draft = get_transient( "arshid6social_mkt_draft_{$token}" ) ?: array();
 
 		if ( count( $draft ) >= $max ) {
 			/* translators: %d: maximum number of photos */
-			wp_send_json_error( array( 'message' => sprintf( __( 'Maximum %d photos allowed.', '6arshid social community' ), $max ) ), 400 );
+			wp_send_json_error( array( 'message' => sprintf( __( 'Maximum %d photos allowed.', 'social-network-6' ), $max ) ), 400 );
 		}
 
 		if ( empty( $_FILES['photo'] ) || UPLOAD_ERR_OK !== $_FILES['photo']['error'] ) {
-			wp_send_json_error( array( 'message' => __( 'No valid file received.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'No valid file received.', 'social-network-6' ) ), 400 );
 		}
 
 		$file = $_FILES['photo']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
@@ -225,7 +225,7 @@ class Marketplace_Listings {
 		// Size
 		if ( $file['size'] > $max_mb * MB_IN_BYTES ) {
 			/* translators: %d: maximum file size in MB */
-			wp_send_json_error( array( 'message' => sprintf( __( 'File exceeds the %d MB limit.', '6arshid social community' ), $max_mb ) ), 400 );
+			wp_send_json_error( array( 'message' => sprintf( __( 'File exceeds the %d MB limit.', 'social-network-6' ), $max_mb ) ), 400 );
 		}
 
 		// MIME type (server-side, not just extension)
@@ -234,7 +234,7 @@ class Marketplace_Listings {
 		finfo_close( $finfo );
 		$allowed = array( 'image/jpeg', 'image/png', 'image/webp', 'image/gif' );
 		if ( ! in_array( $mime, $allowed, true ) ) {
-			wp_send_json_error( array( 'message' => __( 'Only JPEG, PNG, WebP, and GIF images are accepted.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Only JPEG, PNG, WebP, and GIF images are accepted.', 'social-network-6' ) ), 400 );
 		}
 
 		// Upload to WP media library
@@ -284,13 +284,13 @@ class Marketplace_Listings {
 		$token         = sanitize_key( wp_unslash( $_POST['token'] ?? '' ) );
 
 		if ( ! $attachment_id || ! $token ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid request.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid request.', 'social-network-6' ) ), 400 );
 		}
 
 		// Ownership check
 		$uploader = (int) get_post_meta( $attachment_id, '_arshid6social_mkt_uploader', true );
 		if ( $uploader !== $user_id && ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'social-network-6' ) ), 403 );
 		}
 
 		// Remove from transient
@@ -314,7 +314,7 @@ class Marketplace_Listings {
 		check_ajax_referer( 'arshid6social_marketplace', 'nonce' );
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in to post a listing.', '6arshid social community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in to post a listing.', 'social-network-6' ) ), 401 );
 		}
 
 		$user_id = get_current_user_id();
@@ -325,7 +325,7 @@ class Marketplace_Listings {
 		if ( get_option( 'arshid6social_marketplace_require_verified', false ) ) {
 			$verification = ARSHID6SOCIAL()->component( 'verification' );
 			if ( $verification && ! $verification->is_verified( $user_id ) ) {
-				wp_send_json_error( array( 'message' => __( 'Only verified users can post listings.', '6arshid social community' ) ), 403 );
+				wp_send_json_error( array( 'message' => __( 'Only verified users can post listings.', 'social-network-6' ) ), 403 );
 			}
 		}
 
@@ -336,7 +336,7 @@ class Marketplace_Listings {
 		if ( $is_publish ) {
 			$daily_max = (int) get_option( 'arshid6social_marketplace_daily_new_listings', 10 );
 			if ( $daily_max > 0 && ! arshid6social_check_rate_limit( 'arshid6social_mkt_new', $user_id, $daily_max ) ) {
-				wp_send_json_error( array( 'message' => __( 'You have reached your daily listing limit. Try again tomorrow.', '6arshid social community' ) ), 429 );
+				wp_send_json_error( array( 'message' => __( 'You have reached your daily listing limit. Try again tomorrow.', 'social-network-6' ) ), 429 );
 			}
 
 			// Max active listings cap
@@ -350,7 +350,7 @@ class Marketplace_Listings {
 				if ( $active_count >= $max_active ) {
 					wp_send_json_error( array(
 						/* translators: %d: maximum active listings */
-						'message' => sprintf( __( 'You can have a maximum of %d active listings at once.', '6arshid social community' ), $max_active ),
+						'message' => sprintf( __( 'You can have a maximum of %d active listings at once.', 'social-network-6' ), $max_active ),
 					), 400 );
 				}
 			}
@@ -374,10 +374,10 @@ class Marketplace_Listings {
 
 		// ── Validate ─────────────────────────────────────────────────────────
 		if ( '' === $title ) {
-			wp_send_json_error( array( 'message' => __( 'Title is required.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Title is required.', 'social-network-6' ) ), 400 );
 		}
 		if ( mb_strlen( $title ) > 200 ) {
-			wp_send_json_error( array( 'message' => __( 'Title must be 200 characters or less.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Title must be 200 characters or less.', 'social-network-6' ) ), 400 );
 		}
 
 		$allowed_conditions = array( 'new', 'like_new', 'good', 'fair', 'poor', 'used' );
@@ -392,7 +392,7 @@ class Marketplace_Listings {
 			$check_text   = mb_strtolower( $title . ' ' . wp_strip_all_tags( $description ) );
 			foreach ( $banned_words as $word ) {
 				if ( $word && str_contains( $check_text, $word ) ) {
-					wp_send_json_error( array( 'message' => __( 'Your listing contains prohibited content and cannot be posted.', '6arshid social community' ) ), 400 );
+					wp_send_json_error( array( 'message' => __( 'Your listing contains prohibited content and cannot be posted.', 'social-network-6' ) ), 400 );
 				}
 			}
 		}
@@ -440,7 +440,7 @@ class Marketplace_Listings {
 
 		$ok = $wpdb->query( $insert_sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
 		if ( ! $ok ) {
-			wp_send_json_error( array( 'message' => __( 'Failed to save your listing. Please try again.', '6arshid social community' ) ), 500 );
+			wp_send_json_error( array( 'message' => __( 'Failed to save your listing. Please try again.', 'social-network-6' ) ), 500 );
 		}
 
 		$listing_id = (int) $wpdb->insert_id;
@@ -480,7 +480,7 @@ class Marketplace_Listings {
 			wp_send_json_success( array(
 				'url'     => $base_url,
 				'uid'     => $uid,
-				'message' => __( 'Your listing is under review and will be published shortly.', '6arshid social community' ),
+				'message' => __( 'Your listing is under review and will be published shortly.', 'social-network-6' ),
 			) );
 		}
 
@@ -492,8 +492,8 @@ class Marketplace_Listings {
 			'url'     => $redirect_url,
 			'uid'     => $uid,
 			'message' => 'draft' === $status
-				? __( 'Draft saved.', '6arshid social community' )
-				: __( 'Your listing is now live!', '6arshid social community' ),
+				? __( 'Draft saved.', 'social-network-6' )
+				: __( 'Your listing is now live!', 'social-network-6' ),
 		) );
 	}
 
@@ -511,7 +511,7 @@ class Marketplace_Listings {
 		$listing_id = absint( $_POST['listing_id'] ?? 0 );
 
 		if ( ! $listing_id ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid listing.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid listing.', 'social-network-6' ) ), 400 );
 		}
 
 		global $wpdb;
@@ -521,10 +521,10 @@ class Marketplace_Listings {
 		) );
 
 		if ( ! $listing ) {
-			wp_send_json_error( array( 'message' => __( 'Listing not found.', '6arshid social community' ) ), 404 );
+			wp_send_json_error( array( 'message' => __( 'Listing not found.', 'social-network-6' ) ), 404 );
 		}
 		if ( (int) $listing->seller_id !== $user_id && ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'social-network-6' ) ), 403 );
 		}
 
 		// Delete media rows + attachments
@@ -540,7 +540,7 @@ class Marketplace_Listings {
 		// Delete the listing row
 		$wpdb->delete( "{$wpdb->prefix}arshid6social_listings", array( 'id' => $listing_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
-		wp_send_json_success( array( 'message' => __( 'Listing deleted.', '6arshid social community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Listing deleted.', 'social-network-6' ) ) );
 	}
 
 	/**
@@ -559,7 +559,7 @@ class Marketplace_Listings {
 
 		$allowed_statuses = array( 'active', 'sold', 'archived', 'draft' );
 		if ( ! $listing_id || ! in_array( $new_status, $allowed_statuses, true ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid request.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid request.', 'social-network-6' ) ), 400 );
 		}
 
 		global $wpdb;
@@ -569,10 +569,10 @@ class Marketplace_Listings {
 		) );
 
 		if ( ! $listing ) {
-			wp_send_json_error( array( 'message' => __( 'Listing not found.', '6arshid social community' ) ), 404 );
+			wp_send_json_error( array( 'message' => __( 'Listing not found.', 'social-network-6' ) ), 404 );
 		}
 		if ( (int) $listing->seller_id !== $user_id && ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'social-network-6' ) ), 403 );
 		}
 
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -595,14 +595,14 @@ class Marketplace_Listings {
 		check_ajax_referer( 'arshid6social_marketplace', 'nonce' );
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid social community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in.', 'social-network-6' ) ), 401 );
 		}
 
 		$user_id    = get_current_user_id();
 		$listing_id = absint( $_POST['listing_id'] ?? 0 );
 
 		if ( ! $listing_id ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid listing.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid listing.', 'social-network-6' ) ), 400 );
 		}
 
 		$saved = get_user_meta( $user_id, 'arshid6social_mkt_saved_listings', true );
@@ -630,7 +630,7 @@ class Marketplace_Listings {
 		check_ajax_referer( 'arshid6social_marketplace', 'nonce' );
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid social community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in.', 'social-network-6' ) ), 401 );
 		}
 
 		$user_id    = get_current_user_id();
@@ -638,13 +638,13 @@ class Marketplace_Listings {
 		$reason     = sanitize_text_field( wp_unslash( $_POST['reason'] ?? '' ) );
 
 		if ( ! $listing_id ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid listing.', '6arshid social community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid listing.', 'social-network-6' ) ), 400 );
 		}
 
 		// Prevent duplicate reports from the same user.
 		$reported = (array) get_user_meta( $user_id, 'arshid6social_mkt_reported_listings', true );
 		if ( in_array( $listing_id, array_map( 'intval', $reported ), true ) ) {
-			wp_send_json_error( array( 'message' => __( 'You have already reported this listing.', '6arshid social community' ) ), 409 );
+			wp_send_json_error( array( 'message' => __( 'You have already reported this listing.', 'social-network-6' ) ), 409 );
 		}
 
 		// Store report as post meta on the listing for admin review.
@@ -673,7 +673,7 @@ class Marketplace_Listings {
 		$reported[] = $listing_id;
 		update_user_meta( $user_id, 'arshid6social_mkt_reported_listings', $reported );
 
-		wp_send_json_success( array( 'message' => __( 'Thank you. Your report has been submitted.', '6arshid social community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Thank you. Your report has been submitted.', 'social-network-6' ) ) );
 	}
 
 	// ── Cron ─────────────────────────────────────────────────────────────────
