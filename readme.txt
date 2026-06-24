@@ -155,6 +155,50 @@ A complete, secure, responsive, multilingual social network plugin for WordPress
 * GIF insertion into comments
 * GIF usage analytics
 
+= Social Embeds =
+
+* Auto-embed links pasted into posts, comments, and private messages
+* 19 supported platforms: YouTube, Vimeo, X / Twitter, Instagram, Facebook, TikTok, Spotify, SoundCloud, Pinterest, Reddit, Twitch, Dailymotion, Apple Music / Podcasts, LinkedIn, Telegram, Threads, Bluesky, Aparat, and a generic Open Graph link preview fallback
+* Methods: oEmbed (rich player), iframe (sandbox), and Open Graph preview card
+* Lazy load / click-to-play mode — no third-party request until the user clicks (privacy-first)
+* Tracking parameter stripping from URLs before embedding (`utm_*`, `fbclid`, etc.)
+* Configurable cache duration with daily prune cron job
+* Per-platform enable/disable toggles and banned-domain list
+* REST endpoint `/wp-json/arshid6social/v1/embeds/preview` for live previews in the composer
+
+= Unified Search =
+
+* Full-text search across activity posts, members, groups, and marketplace listings from a single search page
+* Tabbed results by section — All, Activity, Members, Groups, Marketplace
+* Respects content privacy (guests see only public activity)
+* REST endpoint at `/wp-json/arshid6social/v1/search`
+
+= Ads =
+
+* Admin-managed native ad campaigns — no external ad network required
+* Ad types: image, video, HTML / JavaScript
+* Placement options: sidebar, in-feed (auto-injected every N posts), or both
+* Date-based scheduling — optional start and end dates per campaign
+* Click tracking with per-campaign click counter
+
+= Monetization (Paid Content & Creator Subscriptions) =
+
+* Let creators monetize content with X-style monthly subscriptions and pay-per-view posts
+* Stripe Connect — creators link their own Stripe account; no raw bank details stored on the server
+* Platform application fee: configurable percentage + optional flat amount per transaction
+* Minimum subscription price floor set by the site admin
+* Stripe secret keys and webhook signing secrets stored encrypted in the database
+* Supports live and test mode with separate key pairs
+* Webhook handler for Stripe events (`customer.subscription.*`, `invoice.*`, `payment_intent.*`, `account.updated`)
+* 13 supported currencies: USD, EUR, GBP, CAD, AUD, JPY, CHF, SEK, NOK, DKK, TRY, AED, SAR
+* Extensible gateway layer — additional gateways can be registered via the `sixarshidsc_payment_gateways` filter
+
+= XML Sitemaps =
+
+* Automatic XML sitemap entries for public activity posts, member profiles, groups, and marketplace listings
+* Integrates with the WordPress core sitemap API — no additional plugin required
+* Sitemap index entries: `arshid6social_activity`, `arshid6social_members`, `arshid6social_groups`, `arshid6social_marketplace`
+
 = Developer & REST API =
 
 * Full REST API at `/wp-json/arshid6social/v1/`
@@ -275,8 +319,8 @@ When GIF comments are enabled, this plugin queries the GIPHY API to display tren
 * Terms of Service: https://support.giphy.com/hc/en-us/articles/360020027752
 
 
-= Social Embeds (Facebook, Instagram, Vimeo, Telegram, Aparat) =
-When the social embeds feature is enabled and a user pastes a URL from a supported platform in a post, this plugin fetches oEmbed data from the respective platform's API to generate a preview. The URL being embedded is sent to the platform's servers. This happens only when a post containing a supported URL is created or displayed.
+= Social Embeds (YouTube, Vimeo, X / Twitter, Instagram, Facebook, TikTok, Spotify, SoundCloud, Pinterest, Reddit, Twitch, Dailymotion, Apple Music / Podcasts, LinkedIn, Telegram, Threads, Bluesky, Aparat) =
+When Social Embeds are enabled and a user pastes a supported URL into a post, comment, or message, this plugin fetches oEmbed data or Open Graph metadata from the respective platform. The URL is sent to the platform's servers only when an embed is requested. Each provider can be individually enabled or disabled in Settings → Engagement.
 * Facebook oEmbed: https://developers.facebook.com/docs/plugins/oembed
   * Privacy Policy: https://www.facebook.com/privacy/policy/
   * Terms of Service: https://www.facebook.com/terms.php
@@ -292,12 +336,31 @@ When the social embeds feature is enabled and a user pastes a URL from a support
 * Aparat oEmbed: https://www.aparat.com
   * Privacy Policy: https://www.aparat.com/
   * Terms of Service: https://www.aparat.com/
+* YouTube: https://www.youtube.com — Privacy Policy: https://policies.google.com/privacy
+* X / Twitter: https://publish.twitter.com/oembed — Privacy Policy: https://twitter.com/en/privacy
+* TikTok: https://www.tiktok.com/oembed — Privacy Policy: https://www.tiktok.com/legal/privacy-policy
+* Spotify: https://open.spotify.com/oembed — Privacy Policy: https://www.spotify.com/legal/privacy-policy/
+* SoundCloud: https://soundcloud.com/oembed — Privacy Policy: https://soundcloud.com/pages/privacy
+* Pinterest: https://www.pinterest.com/oembed.json — Privacy Policy: https://policy.pinterest.com/en/privacy-policy
+* Reddit: https://www.reddit.com/oembed — Privacy Policy: https://www.reddit.com/policies/privacy-policy
+* Twitch: https://www.twitch.tv — Privacy Policy: https://www.twitch.tv/p/legal/privacy-notice/
+* Dailymotion: https://www.dailymotion.com/services/oembed — Privacy Policy: https://www.dailymotion.com/legal/privacy
+* Apple Music / Podcasts: https://music.apple.com — Privacy Policy: https://www.apple.com/legal/privacy/
+* LinkedIn: https://www.linkedin.com — Privacy Policy: https://www.linkedin.com/legal/privacy-policy
+* Threads: https://www.threads.net/oembed/ — Privacy Policy: https://privacycenter.instagram.com/policy/
+* Bluesky: https://bsky.app — Privacy Policy: https://bsky.social/about/support/privacy-policy
 
 = WhatsApp, Social Sharing =
 The social sharing feature generates links that open WhatsApp and other social networks in a new tab/window. No data is sent automatically — these are user-initiated sharing actions.
 * WhatsApp: https://www.whatsapp.com
   * Privacy Policy: https://www.whatsapp.com/legal/privacy-policy
   * Terms of Service: https://www.whatsapp.com/legal/terms-of-service
+
+= Stripe (Monetization) =
+When the Monetization module is enabled, creator onboarding and payment processing are handled by Stripe Connect. The plugin communicates with the Stripe API to create and manage Stripe Connect accounts, subscriptions, and payment intents. The plugin does NOT store raw bank details — Stripe handles creator identity verification (KYC) and bank payouts directly.
+* Service: https://stripe.com
+* Privacy Policy: https://stripe.com/privacy
+* Terms of Service: https://stripe.com/legal
 
 == Changelog ==
 

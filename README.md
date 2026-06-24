@@ -158,6 +158,50 @@ A complete, secure, responsive, multilingual social network plugin for WordPress
 - GIF insertion into comments
 - GIF usage analytics
 
+### Social Embeds
+
+- Auto-embed links pasted into posts, comments, and private messages
+- 19 supported platforms: YouTube, Vimeo, X / Twitter, Instagram, Facebook, TikTok, Spotify, SoundCloud, Pinterest, Reddit, Twitch, Dailymotion, Apple Music / Podcasts, LinkedIn, Telegram, Threads, Bluesky, Aparat, and a generic Open Graph link preview fallback
+- Methods: oEmbed (rich player), iframe (sandbox), and Open Graph preview card
+- Lazy load / click-to-play mode — no third-party request until the user clicks (privacy-first)
+- Tracking parameter stripping from URLs before embedding (`utm_*`, `fbclid`, etc.)
+- Configurable cache duration with daily prune cron job
+- Per-platform enable/disable toggles and banned-domain list
+- REST endpoint `/wp-json/arshid6social/v1/embeds/preview` for live previews in the composer
+
+### Unified Search
+
+- Full-text search across activity posts, members, groups, and marketplace listings from a single search page
+- Tabbed results by section — switch between All, Activity, Members, Groups, Marketplace
+- Respects content privacy (guests see only public activity)
+- REST endpoint at `/wp-json/arshid6social/v1/search`
+
+### Ads
+
+- Admin-managed native ad campaigns — no external ad network required
+- Ad types: image, video, HTML / JavaScript
+- Placement options: sidebar, in-feed (auto-injected every N posts), or both
+- Date-based scheduling — set optional start and end dates per campaign
+- Click tracking with per-campaign click counter
+
+### Monetization (Paid Content & Creator Subscriptions)
+
+- Let creators monetize content with X-style monthly subscriptions and pay-per-view posts
+- Stripe Connect — creators link their own Stripe account; no raw bank details stored on the server
+- Platform application fee: configurable percentage + optional flat amount per transaction
+- Minimum subscription price floor set by the site admin
+- Stripe secret keys and webhook signing secrets stored **encrypted** in the database
+- Supports live and test mode with separate key pairs
+- Webhook handler for Stripe events (`customer.subscription.*`, `invoice.*`, `payment_intent.*`, `account.updated`)
+- 13 supported currencies: USD, EUR, GBP, CAD, AUD, JPY, CHF, SEK, NOK, DKK, TRY, AED, SAR
+- Extensible gateway layer — additional gateways can be registered via the `sixarshidsc_payment_gateways` filter
+
+### XML Sitemaps
+
+- Automatic XML sitemap entries for public activity posts, member profiles, groups, and marketplace listings
+- Integrates with the WordPress core sitemap API — no additional plugin required
+- Sitemap index entries: `arshid6social_activity`, `arshid6social_members`, `arshid6social_groups`, `arshid6social_marketplace`
+
 ### Developer & REST API
 
 - Full REST API at `/wp-json/arshid6social/v1/`
@@ -416,6 +460,23 @@ After saving, rewrite rules are flushed automatically. No need to visit Settings
 
 Accessible at **Settings → Engagement**. Each feature can be toggled independently. Disabled features unload all their hooks, REST routes, and assets.
 
+#### Social Embeds
+
+| Option | Key | Type | Default | Description |
+|---|---|---|---|---|
+| Enable Social Embeds | `arshid6social_eng_social_embeds` | checkbox | `false` | Auto-embed URLs from supported platforms in posts, comments, and messages. |
+| Embed In | `arshid6social_eng_embed_locations` | checkboxes | `[activity, comments, messages]` | Where embeds are rendered: `activity` (posts), `comments`, `messages`. |
+| Max Embeds Per Item | `arshid6social_eng_embed_max_per_post` | number | `3` | Maximum number of embeds per post / comment / message (1–10). |
+| Cache Duration | `arshid6social_eng_embed_cache_hours` | number (hours) | `24` | How long oEmbed responses are cached before re-fetching (1–720 h). |
+| Lazy Load | `arshid6social_eng_embed_lazy_load` | checkbox | `true` | Delay third-party requests until the user clicks the embed placeholder (privacy-first). |
+| Strip Tracking Params | `arshid6social_eng_embed_strip_tracking` | checkbox | `true` | Remove `utm_*`, `fbclid`, and similar tracking parameters from URLs before embedding. |
+| OG Fallback | `arshid6social_eng_embed_og_fallback` | checkbox | `true` | Show an Open Graph preview card when a provider's oEmbed fetch fails. |
+| Generic OG Preview | `arshid6social_eng_embed_og_generic` | checkbox | `true` | Show an Open Graph preview for any URL that doesn't match a specific provider. |
+| Facebook App Token | `arshid6social_eng_embed_fb_token` | password | — | Facebook Graph API app access token for official Facebook oEmbed. Falls back to OG preview if empty. |
+| Instagram Access Token | `arshid6social_eng_embed_ig_token` | password | — | Instagram Graph API token for official Instagram oEmbed. Falls back to OG preview if empty. |
+| Blocked Domains | `arshid6social_eng_embed_banned_domains` | textarea | — | One domain per line. URLs from these domains will never be embedded. |
+| Per-Provider Toggles | `arshid6social_eng_embed_{provider_id}` | checkbox | `true` | Individual on/off switch for each of the 19 supported providers (e.g. `arshid6social_eng_embed_youtube`). Supported IDs: `youtube`, `vimeo`, `twitter`, `instagram`, `facebook`, `tiktok`, `spotify`, `soundcloud`, `pinterest`, `reddit`, `twitch`, `dailymotion`, `apple_music`, `linkedin`, `telegram`, `threads`, `bluesky`, `aparat`, `og_generic`. |
+
 #### Hashtags
 
 | Option | Key | Type | Default | Description |
@@ -573,6 +634,30 @@ Hierarchical listing categories managed through an inline AJAX UI (add, edit, de
 
 ---
 
+### Tab: Monetization
+
+Accessible at **Settings → Monetization**. Requires HTTPS to accept live payments.
+
+| Option | Key | Type | Default | Description |
+|---|---|---|---|---|
+| Enable Monetization | `sixarshidsc_enabled` | checkbox | `false` | Activate Paid Content & Creator Subscriptions. |
+| Active Gateway | `sixarshidsc_active_gateway` | radio | `stripe_connect` | Payment gateway to use. Additional gateways can be registered via the `sixarshidsc_payment_gateways` filter. |
+| Test Mode | `sixarshidsc_stripe_test_mode` | checkbox | `true` | Use Stripe test keys — no real money is charged. Uncheck only when ready to go live. |
+| Publishable Key (Live) | `sixarshidsc_stripe_pub_key_live` | text | — | Stripe live publishable key (`pk_live_…`). Client-visible by design. |
+| Secret Key (Live) | `sixarshidsc_stripe_secret_live` | password | — | Stripe live secret key (`sk_live_…`). Stored encrypted. |
+| Webhook Secret (Live) | `sixarshidsc_stripe_webhook_secret_live` | password | — | Stripe live webhook signing secret (`whsec_…`). Stored encrypted. |
+| Publishable Key (Test) | `sixarshidsc_stripe_pub_key_test` | text | — | Stripe test publishable key (`pk_test_…`). |
+| Secret Key (Test) | `sixarshidsc_stripe_secret_test` | password | — | Stripe test secret key. Stored encrypted. |
+| Webhook Secret (Test) | `sixarshidsc_stripe_webhook_secret_test` | password | — | Stripe test webhook signing secret. Stored encrypted. |
+| Platform Fee % | `sixarshidsc_platform_fee_pct` | number | `0` | Percentage of each transaction retained by the platform (0–100). Applied as a Stripe Connect application fee. |
+| Platform Flat Fee | `sixarshidsc_platform_fee_flat` | number | `0` | Optional fixed amount per transaction in addition to the percentage fee. |
+| Currency | `sixarshidsc_currency` | select | `USD` | Settlement currency. Supported: USD, EUR, GBP, CAD, AUD, JPY, CHF, SEK, NOK, DKK, TRY, AED, SAR. Must match the Stripe account's settlement currency. |
+| Minimum Subscription Price | `sixarshidsc_min_sub_price` | number | `1.00` | Lowest monthly price a creator can set for their subscription tier. |
+
+**Stripe webhook endpoint:** Register `{site-url}/wp-json/sixarshidsc/v1/webhook` in the Stripe Dashboard. Listen for: `customer.subscription.*`, `invoice.*`, `payment_intent.*`, `account.updated`.
+
+---
+
 ## Frequently Asked Questions
 
 **Can I disable specific features?**
@@ -630,6 +715,49 @@ Yes. The REST API at `/wp-json/arshid6social/v1/` covers activity, members, frie
 ### 1.0.0
 
 Initial release. No upgrade path required.
+
+---
+
+## External Services
+
+This plugin connects to several third-party services to deliver certain features (GIF search, profile avatars, social embeds, and sharing). Each service is optional and can be disabled via the Components settings.
+
+### Gravatar
+
+Member profile photos fall back to Gravatar (gravatar.com) when no custom avatar has been uploaded. The user's email hash is sent to Gravatar's servers when viewing a member profile.
+- Service: https://gravatar.com
+- Privacy Policy: https://automattic.com/privacy/
+- Terms of Service: https://gravatar.com/site/terms-of-service
+
+### GIPHY
+
+When GIF comments are enabled, this plugin queries the GIPHY API to display trending and searchable GIFs. The user's search query is sent to GIPHY's servers when a user opens the GIF picker.
+- Service: https://giphy.com
+- Privacy Policy: https://support.giphy.com/hc/en-us/articles/360032872931
+- Terms of Service: https://support.giphy.com/hc/en-us/articles/360020027752
+
+### Social Embeds (YouTube, Vimeo, X / Twitter, Instagram, Facebook, TikTok, Spotify, SoundCloud, Pinterest, Reddit, Twitch, Dailymotion, Apple Music / Podcasts, LinkedIn, Telegram, Threads, Bluesky, Aparat)
+
+When Social Embeds are enabled and a user pastes a supported URL into a post, comment, or message, this plugin fetches oEmbed data or the page's Open Graph metadata from the respective platform. The URL is sent to the platform's servers only when an embed is requested.
+
+- Facebook oEmbed: https://developers.facebook.com/docs/plugins/oembed — Privacy Policy: https://www.facebook.com/privacy/policy/
+- Instagram oEmbed: https://developers.facebook.com/docs/instagram/oembed — Privacy Policy: https://privacycenter.instagram.com/policy/
+- Vimeo oEmbed: https://developer.vimeo.com/api/oembed/videos — Privacy Policy: https://vimeo.com/privacy
+- Telegram Embeds: https://core.telegram.org/widgets/post — Privacy Policy: https://telegram.org/privacy
+- Aparat oEmbed: https://www.aparat.com — Privacy Policy: https://www.aparat.com/
+
+### WhatsApp & External Social Sharing
+
+The social sharing feature generates links that open WhatsApp, X, Facebook, Telegram, and other networks in a new tab. No data is sent automatically — these are user-initiated sharing actions.
+- WhatsApp Privacy Policy: https://www.whatsapp.com/legal/privacy-policy
+- WhatsApp Terms of Service: https://www.whatsapp.com/legal/terms-of-service
+
+### Stripe (Monetization)
+
+When the Monetization module is enabled, creator onboarding and payment processing are handled by Stripe. The plugin communicates with the Stripe API to create and manage Stripe Connect accounts, subscriptions, and payment intents.
+- Service: https://stripe.com
+- Privacy Policy: https://stripe.com/privacy
+- Terms of Service: https://stripe.com/legal
 
 ---
 
