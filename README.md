@@ -88,7 +88,7 @@ A complete, secure, responsive, multilingual social network plugin for WordPress
 
 ## Installation
 
-1. Upload `social-network-6` to `/wp-content/plugins/`
+1. Upload `6arshid-social-community` to `/wp-content/plugins/`
 2. Activate via **Plugins** in WordPress admin
 3. Follow the setup wizard
 4. Configure at **Social Network → Settings**
