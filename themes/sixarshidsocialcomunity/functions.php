@@ -19,40 +19,45 @@ defined( 'ABSPATH' ) || exit;
  * the wp_theme taxonomy term, plus any file-based auto-draft copies.
  */
 function a6sc_flush_templates() {
-	$ver = 'v3.0.2';
+	$ver = 'v3.0.3';
 	if ( get_option( 'socialnetworksix_tpl_ver' ) === $ver ) {
 		return;
 	}
 
 	global $wpdb;
-	$theme = 'social-network-6';
+	$theme = 'sixarshidsocialcomunity';
 
-	// 1) Delete every template/part linked to this theme via the wp_theme taxonomy.
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-	$wpdb->query(
-		$wpdb->prepare(
-			"DELETE p FROM {$wpdb->posts} p
-			 INNER JOIN {$wpdb->term_relationships} tr ON tr.object_id = p.ID
-			 INNER JOIN {$wpdb->term_taxonomy} tt        ON tt.term_taxonomy_id = tr.term_taxonomy_id
-			 INNER JOIN {$wpdb->terms} t                 ON t.term_id = tt.term_id
-			 WHERE p.post_type IN ('wp_template','wp_template_part')
-			   AND tt.taxonomy = 'wp_theme'
-			   AND t.slug = %s",
-			$theme
-		)
-	);
+	// 1) Delete every template/part linked to this theme (or the old slug) via the wp_theme taxonomy.
+	foreach ( array( $theme, 'social-network-6' ) as $slug ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE p FROM {$wpdb->posts} p
+				 INNER JOIN {$wpdb->term_relationships} tr ON tr.object_id = p.ID
+				 INNER JOIN {$wpdb->term_taxonomy} tt        ON tt.term_taxonomy_id = tr.term_taxonomy_id
+				 INNER JOIN {$wpdb->terms} t                 ON t.term_id = tt.term_id
+				 WHERE p.post_type IN ('wp_template','wp_template_part')
+				   AND tt.taxonomy = 'wp_theme'
+				   AND t.slug = %s",
+				$slug
+			)
+		);
+	}
 
-	// 2) Delete any file-based auto-draft copies (post_name = 'sixarshidsocialcomunity//slug').
-	$like = $wpdb->esc_like( $theme . '//' ) . '%';
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-	$wpdb->query(
-		$wpdb->prepare(
-			"DELETE FROM {$wpdb->posts}
-			 WHERE post_type IN ('wp_template','wp_template_part')
-			   AND post_name LIKE %s",
-			$like
-		)
-	);
+	// 2) Delete any file-based auto-draft copies (post_name = 'slug//template').
+	// Also purge stale entries that were stored under the old 'social-network-6' slug.
+	foreach ( array( $theme, 'social-network-6' ) as $slug ) {
+		$like = $wpdb->esc_like( $slug . '//' ) . '%';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->posts}
+				 WHERE post_type IN ('wp_template','wp_template_part')
+				   AND post_name LIKE %s",
+				$like
+			)
+		);
+	}
 
 	// 3) Clean up orphaned postmeta + term relationships.
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -1001,7 +1006,9 @@ add_shortcode( 'a6sc_search', function () {
 	} else {
 		$form = str_replace( 'role="search"', 'role="search" class="a6sc-search-widget"', $form );
 	}
-	return wp_kses_post( $form );
+	// Return as-is — get_search_form() is a trusted WP core function.
+	// wp_kses_post() would strip <form>, <input>, <button>, <label> elements.
+	return $form;
 } );
 
 // ─── 15. Full sidebar shortcodes (no wp:group → no block-validation errors) ──
@@ -1057,13 +1064,15 @@ add_shortcode( 'a6sc_right_sidebar', function () {
 		. ' &middot; <a href="' . esc_url( home_url( '/terms/' ) ) . '">Terms</a>'
 		. '</p>';
 
-	return wp_kses_post( '<aside class="socialnetworksix-right">'
+	// Not using wp_kses_post here — $search contains trusted WP core form HTML
+	// that kses would strip (<form>, <input>, <button>, <label>).
+	return '<aside class="socialnetworksix-right">'
 		. '<div class="socialnetworksix-right-inner">'
 		. $search
 		. $panel
 		. $ads
 		. $footer_links
 		. '</div>'
-		. '</aside>' );
+		. '</aside>';
 } );
 
