@@ -1,4 +1,4 @@
-﻿# 6Arshid Social Community
+# 6Arshid Social Community
 
 **Contributors:** 6arshid, hassantafreshi, aminkhadivar
 **Requires at least:** WordPress 6.5 · PHP 8.1
