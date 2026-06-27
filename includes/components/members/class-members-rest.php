@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Members;
 
 /**
@@ -76,7 +76,7 @@ class Members_REST extends \WP_REST_Controller {
 	public function get_items( $request ): \WP_REST_Response|\WP_Error {
 		$component = ARSHID6SOCIAL()->component( 'members' );
 		if ( ! $component ) {
-			return new \WP_Error( 'arshid6social_component_disabled', __( 'Members component is not active.', '6arshid social community' ), array( 'status' => 503 ) );
+			return new \WP_Error( 'arshid6social_component_disabled', __( 'Members component is not active.', '6arshid-social-community' ), array( 'status' => 503 ) );
 		}
 
 		$data = $component->get_members(
@@ -104,7 +104,7 @@ class Members_REST extends \WP_REST_Controller {
 	public function get_item( $request ): \WP_REST_Response|\WP_Error {
 		$user = get_userdata( $request->get_param( 'id' ) );
 		if ( ! $user ) {
-			return new \WP_Error( 'arshid6social_member_not_found', __( 'Member not found.', '6arshid social community' ), array( 'status' => 404 ) );
+			return new \WP_Error( 'arshid6social_member_not_found', __( 'Member not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
 		}
 
 		$component = ARSHID6SOCIAL()->component( 'members' );
@@ -134,14 +134,14 @@ class Members_REST extends \WP_REST_Controller {
 		$fields  = $request->get_param( 'fields' );
 
 		if ( ! is_array( $fields ) ) {
-			return new \WP_Error( 'arshid6social_invalid_data', __( 'Fields must be an object.', '6arshid social community' ), array( 'status' => 400 ) );
+			return new \WP_Error( 'arshid6social_invalid_data', __( 'Fields must be an object.', '6arshid-social-community' ), array( 'status' => 400 ) );
 		}
 
 		$component = ARSHID6SOCIAL()->component( 'members' );
 		$errors    = $component->xprofile->save_profile_data( $user_id, $fields );
 
 		if ( ! empty( $errors ) ) {
-			return new \WP_Error( 'arshid6social_validation_error', __( 'Validation failed.', '6arshid social community' ), array( 'status' => 422, 'errors' => $errors ) );
+			return new \WP_Error( 'arshid6social_validation_error', __( 'Validation failed.', '6arshid-social-community' ), array( 'status' => 422, 'errors' => $errors ) );
 		}
 
 		return rest_ensure_response( $component->format_member( get_userdata( $user_id ) ) );
@@ -155,14 +155,14 @@ class Members_REST extends \WP_REST_Controller {
 	 */
 	public function update_item_permissions_check( $request ): bool|\WP_Error {
 		if ( ! is_user_logged_in() ) {
-			return new \WP_Error( 'arshid6social_unauthenticated', __( 'Authentication required.', '6arshid social community' ), array( 'status' => 401 ) );
+			return new \WP_Error( 'arshid6social_unauthenticated', __( 'Authentication required.', '6arshid-social-community' ), array( 'status' => 401 ) );
 		}
 
 		$target_user_id = (int) $request->get_param( 'id' );
 		$current_user   = get_current_user_id();
 
 		if ( $current_user !== $target_user_id && ! current_user_can( 'arshid6social_manage_members' ) ) {
-			return new \WP_Error( 'arshid6social_forbidden', __( 'You can only edit your own profile.', '6arshid social community' ), array( 'status' => 403 ) );
+			return new \WP_Error( 'arshid6social_forbidden', __( 'You can only edit your own profile.', '6arshid-social-community' ), array( 'status' => 403 ) );
 		}
 
 		return true;

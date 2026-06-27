@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Messages;
 
 /**
@@ -76,7 +76,7 @@ class Messages_REST extends \WP_REST_Controller {
 		);
 
 		if ( ! $thread_id ) {
-			return new \WP_Error( 'arshid6social_message_error', __( 'Could not create thread.', '6arshid social community' ), array( 'status' => 500 ) );
+			return new \WP_Error( 'arshid6social_message_error', __( 'Could not create thread.', '6arshid-social-community' ), array( 'status' => 500 ) );
 		}
 
 		return rest_ensure_response( array( 'thread_id' => $thread_id ) );
@@ -96,7 +96,7 @@ class Messages_REST extends \WP_REST_Controller {
 		);
 
 		if ( ! $message_id ) {
-			return new \WP_Error( 'arshid6social_message_error', __( 'Could not send message.', '6arshid social community' ), array( 'status' => 500 ) );
+			return new \WP_Error( 'arshid6social_message_error', __( 'Could not send message.', '6arshid-social-community' ), array( 'status' => 500 ) );
 		}
 
 		return rest_ensure_response( array( 'message_id' => $message_id ) );

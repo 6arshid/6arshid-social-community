@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Engagement;
 
 /**
@@ -35,7 +35,7 @@ class Engagement_DB {
 		}
 
 		$new_id = wp_insert_post( array(
-			'post_title'     => __( 'Saved Posts', '6arshid social community' ),
+			'post_title'     => __( 'Saved Posts', '6arshid-social-community' ),
 			'post_name'      => 'saved-posts',
 			'post_content'   => '[arshid6social_bookmarks]',
 			'post_status'    => 'publish',

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Members;
 
 /**
@@ -231,7 +231,7 @@ class XProfile {
 
 			if ( $field['is_required'] && '' === $value ) {
 				/* translators: %s: field name */
-				$errors[ $field_id ] = sprintf( __( '%s is required.', '6arshid social community' ), $field['name'] );
+				$errors[ $field_id ] = sprintf( __( '%s is required.', '6arshid-social-community' ), $field['name'] );
 				continue;
 			}
 
@@ -305,7 +305,7 @@ class XProfile {
 			'data' => array(
 				array(
 					'group_id'          => 'arshid6social-profile',
-					'group_label'       => __( 'Social Network Profile', '6arshid social community' ),
+					'group_label'       => __( 'Social Network Profile', '6arshid-social-community' ),
 					'item_id'           => 'arshid6social-profile-' . $user->ID,
 					'data'              => $data,
 				),

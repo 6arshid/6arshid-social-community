@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Verification;
 
 /**
@@ -363,7 +363,7 @@ class Verification {
 		if ( $user ) {
 			wp_mail(
 				$user->user_email,
-				__( 'More information needed for your verification request', '6arshid social community' ),
+				__( 'More information needed for your verification request', '6arshid-social-community' ),
 				sanitize_textarea_field( $message )
 			);
 		}
@@ -402,7 +402,7 @@ class Verification {
 
 	public function shortcode_request_form( array $atts ): string {
 		if ( ! is_user_logged_in() ) {
-			return '<p>' . esc_html__( 'You must be logged in to request verification.', '6arshid social community' ) . '</p>';
+			return '<p>' . esc_html__( 'You must be logged in to request verification.', '6arshid-social-community' ) . '</p>';
 		}
 		$loader = \Arshid6Social\Template_Loader::instance();
 		return $loader->get_template(
@@ -426,7 +426,7 @@ class Verification {
 			$ok = $ok && current_user_can( 'arshid6social_manage_members' );
 		}
 		if ( ! $ok ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid social community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
 		}
 	}
 
@@ -436,7 +436,7 @@ class Verification {
 		$user_id = get_current_user_id();
 
 		if ( ! arshid6social_check_rate_limit( 'arshid6social_rl_verify', $user_id, (int) get_option( 'arshid6social_verification_rate_limit', 3 ) ) ) {
-			wp_send_json_error( array( 'message' => __( 'Too many verification requests. Please try later.', '6arshid social community' ) ), 429 );
+			wp_send_json_error( array( 'message' => __( 'Too many verification requests. Please try later.', '6arshid-social-community' ) ), 429 );
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification
@@ -470,17 +470,17 @@ class Verification {
 				$user_id
 			);
 		} elseif ( $require ) {
-			wp_send_json_error( array( 'message' => __( 'A document upload is required for verification.', '6arshid social community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'A document upload is required for verification.', '6arshid-social-community' ) ) );
 		}
 
 		$id = $this->submit_request( $user_id, $type, $fields, $doc_paths );
 		if ( ! $id ) {
-			wp_send_json_error( array( 'message' => __( 'You already have a pending verification request.', '6arshid social community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'You already have a pending verification request.', '6arshid-social-community' ) ) );
 		}
 
 		$this->notify_admin_new_request( $user_id );
 
-		wp_send_json_success( array( 'message' => __( 'Your verification request has been submitted. We will review it shortly.', '6arshid social community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Your verification request has been submitted. We will review it shortly.', '6arshid-social-community' ) ) );
 	}
 
 	public function ajax_get_status(): void {
@@ -544,7 +544,7 @@ class Verification {
 		$pending = $this->get_pending_request( $user_id );
 
 		if ( ! $pending || 'more_info' !== $pending->status ) {
-			wp_send_json_error( array( 'message' => __( 'No request awaiting additional information.', '6arshid social community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No request awaiting additional information.', '6arshid-social-community' ) ) );
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification
@@ -586,7 +586,7 @@ class Verification {
 
 		$this->notify_admin_new_request( $user_id );
 
-		wp_send_json_success( array( 'message' => __( 'Your additional information has been submitted. We will review it shortly.', '6arshid social community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Your additional information has been submitted. We will review it shortly.', '6arshid-social-community' ) ) );
 	}
 
 	public function serve_doc(): void {
@@ -645,13 +645,13 @@ class Verification {
 		$email   = $user ? $user->user_email : '';
 		$subject = sprintf(
 			/* translators: 1: site name, 2: user display name */
-			__( '[%1$s] New verification request from %2$s', '6arshid social community' ),
+			__( '[%1$s] New verification request from %2$s', '6arshid-social-community' ),
 			get_bloginfo( 'name' ),
 			$name
 		);
 		$body = sprintf(
 			/* translators: 1: name, 2: email, 3: admin URL */
-			__( "User %1\$s (%2\$s) has submitted a verification request.\n\nReview it in the admin panel:\n%3\$s", '6arshid social community' ),
+			__( "User %1\$s (%2\$s) has submitted a verification request.\n\nReview it in the admin panel:\n%3\$s", '6arshid-social-community' ),
 			$name,
 			$email,
 			admin_url( 'admin.php?page=arshid6social-verification' )

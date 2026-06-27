@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Hashtag archive template — rendered at /hashtags/{slug}/.
  *
@@ -35,7 +35,7 @@ $post_count  = (int) $hashtag->post_count;
 					<?php
 					printf(
 						/* translators: %d: number of posts */
-						esc_html( _n( '%d post', '%d posts', $post_count, '6arshid social community' ) ),
+						esc_html( _n( '%d post', '%d posts', $post_count, '6arshid-social-community' ) ),
 						absint( $post_count )
 					);
 					?>
@@ -50,8 +50,8 @@ $post_count  = (int) $hashtag->post_count;
 					aria-pressed="<?php echo $is_followed ? 'true' : 'false'; ?>"
 				>
 					<?php echo $is_followed
-						? esc_html__( 'Following', '6arshid social community' )
-						: esc_html__( 'Follow', '6arshid social community' );
+						? esc_html__( 'Following', '6arshid-social-community' )
+						: esc_html__( 'Follow', '6arshid-social-community' );
 					?>
 				</button>
 			<?php endif; ?>
@@ -64,7 +64,7 @@ $post_count  = (int) $hashtag->post_count;
 		<div class="arshid6social-activity-feed" role="main"
 			aria-label="<?php
 			/* translators: %s: hashtag */
-			echo esc_attr( sprintf( __( 'Posts tagged %s', '6arshid social community' ), '#' . $slug ) ); ?>">
+			echo esc_attr( sprintf( __( 'Posts tagged %s', '6arshid-social-community' ), '#' . $slug ) ); ?>">
 		</div>
 		<div class="arshid6social-load-more-sentinel" style="height:1px;"></div>
 	</div>
@@ -101,8 +101,8 @@ document.addEventListener( 'DOMContentLoaded', function () {
 				btn.dataset.followed = nowFollowing ? '1' : '0';
 				btn.setAttribute( 'aria-pressed', nowFollowing ? 'true' : 'false' );
 				btn.textContent = nowFollowing
-					? <?php echo wp_json_encode( __( 'Following', '6arshid social community' ) ); ?>
-					: <?php echo wp_json_encode( __( 'Follow', '6arshid social community' ) ); ?>;
+					? <?php echo wp_json_encode( __( 'Following', '6arshid-social-community' ) ); ?>
+					: <?php echo wp_json_encode( __( 'Follow', '6arshid-social-community' ) ); ?>;
 				btn.classList.toggle( 'arshid6social-btn-primary',   ! nowFollowing );
 				btn.classList.toggle( 'arshid6social-btn-secondary', nowFollowing );
 				btn.classList.toggle( 'arshid6social-hashtag-following', nowFollowing );

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Global helper functions for 6Arshid Social Community.
  *
@@ -207,26 +207,26 @@ function arshid6social_report_modal(): void {
 	?>
 	<div id="arshid6social-report-modal" class="arshid6social-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="arshid6social-rm-title" hidden>
 		<div class="arshid6social-modal-box">
-			<button class="arshid6social-modal-close" id="arshid6social-rm-close" aria-label="<?php esc_attr_e( 'Close', '6arshid social community' ); ?>">&times;</button>
-			<h2 class="arshid6social-modal-title" id="arshid6social-rm-title"><?php esc_html_e( 'Report', '6arshid social community' ); ?></h2>
-			<p class="arshid6social-modal-desc"><?php esc_html_e( 'Why are you reporting this?', '6arshid social community' ); ?></p>
+			<button class="arshid6social-modal-close" id="arshid6social-rm-close" aria-label="<?php esc_attr_e( 'Close', '6arshid-social-community' ); ?>">&times;</button>
+			<h2 class="arshid6social-modal-title" id="arshid6social-rm-title"><?php esc_html_e( 'Report', '6arshid-social-community' ); ?></h2>
+			<p class="arshid6social-modal-desc"><?php esc_html_e( 'Why are you reporting this?', '6arshid-social-community' ); ?></p>
 
 			<div id="arshid6social-rm-reasons" class="arshid6social-report-reasons"></div>
 
-			<label class="arshid6social-report-label" for="arshid6social-rm-notes"><?php esc_html_e( 'Additional details (optional)', '6arshid social community' ); ?></label>
+			<label class="arshid6social-report-label" for="arshid6social-rm-notes"><?php esc_html_e( 'Additional details (optional)', '6arshid-social-community' ); ?></label>
 			<textarea id="arshid6social-rm-notes" class="arshid6social-report-notes" rows="3"
-				placeholder="<?php esc_attr_e( 'Tell us more about this report…', '6arshid social community' ); ?>"></textarea>
+				placeholder="<?php esc_attr_e( 'Tell us more about this report…', '6arshid-social-community' ); ?>"></textarea>
 
 			<div id="arshid6social-rm-attachment-wrap" hidden>
-				<label class="arshid6social-report-label" for="arshid6social-rm-file"><?php esc_html_e( 'Attach a screenshot (optional)', '6arshid social community' ); ?></label>
+				<label class="arshid6social-report-label" for="arshid6social-rm-file"><?php esc_html_e( 'Attach a screenshot (optional)', '6arshid-social-community' ); ?></label>
 				<input type="file" id="arshid6social-rm-file" accept="image/*" class="arshid6social-report-file" />
 			</div>
 
 			<div id="arshid6social-rm-feedback" class="arshid6social-report-feedback" hidden></div>
 
 			<div class="arshid6social-modal-actions">
-				<button class="arshid6social-btn arshid6social-btn--secondary" id="arshid6social-rm-cancel"><?php esc_html_e( 'Cancel', '6arshid social community' ); ?></button>
-				<button class="arshid6social-btn arshid6social-btn--danger" id="arshid6social-rm-submit" disabled><?php esc_html_e( 'Submit Report', '6arshid social community' ); ?></button>
+				<button class="arshid6social-btn arshid6social-btn--secondary" id="arshid6social-rm-cancel"><?php esc_html_e( 'Cancel', '6arshid-social-community' ); ?></button>
+				<button class="arshid6social-btn arshid6social-btn--danger" id="arshid6social-rm-submit" disabled><?php esc_html_e( 'Submit Report', '6arshid-social-community' ); ?></button>
 			</div>
 
 			<input type="hidden" id="arshid6social-rm-item-id" value="" />

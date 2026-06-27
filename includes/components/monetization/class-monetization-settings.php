@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Monetization;
 
 /**
@@ -44,7 +44,7 @@ class Monetization_Settings {
 
 	/** Appends the Monetization tab to the settings nav. */
 	public function add_tab( array $tabs ): array {
-		$tabs['monetization'] = __( 'Monetization', '6arshid social community' );
+		$tabs['monetization'] = __( 'Monetization', '6arshid-social-community' );
 		return $tabs;
 	}
 
@@ -197,29 +197,29 @@ class Monetization_Settings {
 		<?php if ( ! is_ssl() && ! ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ) : ?>
 		<div class="notice notice-error inline" style="margin:16px 0 0">
 			<p>
-				<strong><?php esc_html_e( 'HTTPS required.', '6arshid social community' ); ?></strong>
-				<?php esc_html_e( 'Paid Content & Creator Subscriptions requires an SSL certificate. Please enable HTTPS on your site before accepting payments.', '6arshid social community' ); ?>
+				<strong><?php esc_html_e( 'HTTPS required.', '6arshid-social-community' ); ?></strong>
+				<?php esc_html_e( 'Paid Content & Creator Subscriptions requires an SSL certificate. Please enable HTTPS on your site before accepting payments.', '6arshid-social-community' ); ?>
 			</p>
 		</div>
 		<?php endif; ?>
 
-		<h2><?php esc_html_e( 'Paid Content & Creator Subscriptions', '6arshid social community' ); ?></h2>
+		<h2><?php esc_html_e( 'Paid Content & Creator Subscriptions', '6arshid-social-community' ); ?></h2>
 		<p class="description">
-			<?php esc_html_e( 'Let creators monetize content with X-style monthly subscriptions and pay-per-view posts. Stripe Connect handles creator identity verification and bank payouts — raw bank details are never stored here.', '6arshid social community' ); ?>
+			<?php esc_html_e( 'Let creators monetize content with X-style monthly subscriptions and pay-per-view posts. Stripe Connect handles creator identity verification and bank payouts — raw bank details are never stored here.', '6arshid-social-community' ); ?>
 		</p>
 
 		<!-- Enable toggle -->
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Enable Monetization', '6arshid social community' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Enable Monetization', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="sixarshidsc_enabled" value="1"
 							<?php checked( get_option( 'sixarshidsc_enabled' ) ); ?> />
-						<?php esc_html_e( 'Activate Paid Content & Creator Subscriptions', '6arshid social community' ); ?>
+						<?php esc_html_e( 'Activate Paid Content & Creator Subscriptions', '6arshid-social-community' ); ?>
 					</label>
 					<p class="description">
-						<?php esc_html_e( 'A page reload is required after first enabling this feature.', '6arshid social community' ); ?>
+						<?php esc_html_e( 'A page reload is required after first enabling this feature.', '6arshid-social-community' ); ?>
 					</p>
 				</td>
 			</tr>
@@ -227,14 +227,14 @@ class Monetization_Settings {
 
 		<!-- Gateway selection -->
 		<div class="sixarshidsc-section">
-			<h3><?php esc_html_e( 'Payment Gateway', '6arshid social community' ); ?></h3>
+			<h3><?php esc_html_e( 'Payment Gateway', '6arshid-social-community' ); ?></h3>
 		</div>
 		<p class="description" style="margin-top:8px">
-			<?php esc_html_e( 'Additional gateways can be registered via the sixarshidsc_payment_gateways filter for regions where Stripe is unavailable.', '6arshid social community' ); ?>
+			<?php esc_html_e( 'Additional gateways can be registered via the sixarshidsc_payment_gateways filter for regions where Stripe is unavailable.', '6arshid-social-community' ); ?>
 		</p>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Active Gateway', '6arshid social community' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Active Gateway', '6arshid-social-community' ); ?></th>
 				<td>
 					<?php
 					/**
@@ -246,7 +246,7 @@ class Monetization_Settings {
 					 * @param array<string,string> $gateways key => display label.
 					 */
 					$gateways = (array) apply_filters( 'sixarshidsc_payment_gateways', array(
-						'stripe_connect' => __( 'Stripe Connect (recommended)', '6arshid social community' ),
+						'stripe_connect' => __( 'Stripe Connect (recommended)', '6arshid-social-community' ),
 					) );
 					$active = (string) get_option( 'sixarshidsc_active_gateway', 'stripe_connect' );
 					foreach ( $gateways as $key => $label ) :
@@ -264,14 +264,14 @@ class Monetization_Settings {
 
 		<!-- Stripe Connect credentials -->
 		<div class="sixarshidsc-section">
-			<h3><?php esc_html_e( 'Stripe Connect Credentials', '6arshid social community' ); ?></h3>
+			<h3><?php esc_html_e( 'Stripe Connect Credentials', '6arshid-social-community' ); ?></h3>
 		</div>
 		<p class="description" style="margin-top:8px">
 			<?php
 			printf(
 				wp_kses(
 					/* translators: %s: Stripe dashboard URL */
-					__( 'Find your API keys in the <a href="%s" target="_blank" rel="noopener noreferrer">Stripe Dashboard → Developers → API keys</a>. The secret key and webhook signing secret are stored <strong>encrypted</strong> and are never exposed to the browser or REST API.', '6arshid social community' ),
+					__( 'Find your API keys in the <a href="%s" target="_blank" rel="noopener noreferrer">Stripe Dashboard → Developers → API keys</a>. The secret key and webhook signing secret are stored <strong>encrypted</strong> and are never exposed to the browser or REST API.', '6arshid-social-community' ),
 					array(
 						'a'      => array( 'href' => array(), 'target' => array(), 'rel' => array() ),
 						'strong' => array(),
@@ -284,49 +284,49 @@ class Monetization_Settings {
 
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Mode', '6arshid social community' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Mode', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="sixarshidsc_stripe_test_mode" value="1"
 							<?php checked( get_option( 'sixarshidsc_stripe_test_mode', true ) ); ?> />
-						<?php esc_html_e( 'Test mode — use test keys and no real money is charged', '6arshid social community' ); ?>
+						<?php esc_html_e( 'Test mode — use test keys and no real money is charged', '6arshid-social-community' ); ?>
 					</label>
 					<p class="description">
-						<?php esc_html_e( 'Uncheck only when you are ready to go live.', '6arshid social community' ); ?>
+						<?php esc_html_e( 'Uncheck only when you are ready to go live.', '6arshid-social-community' ); ?>
 					</p>
 				</td>
 			</tr>
 		</table>
 
 		<h4 style="margin:20px 0 0 10px;font-size:13px;color:#3c434a;">
-			<?php esc_html_e( 'Live Keys', '6arshid social community' ); ?>
+			<?php esc_html_e( 'Live Keys', '6arshid-social-community' ); ?>
 		</h4>
 		<table class="form-table" role="presentation">
-			<?php $this->render_key_row( 'sixarshidsc_stripe_pub_key_live',          __( 'Publishable Key (Live)', '6arshid social community' ),  'pk_live_…', false ); ?>
-			<?php $this->render_key_row( 'sixarshidsc_stripe_secret_live',           __( 'Secret Key (Live)', '6arshid social community' ),       'sk_live_…', true ); ?>
-			<?php $this->render_key_row( 'sixarshidsc_stripe_webhook_secret_live',   __( 'Webhook Secret (Live)', '6arshid social community' ),   'whsec_…',   true ); ?>
+			<?php $this->render_key_row( 'sixarshidsc_stripe_pub_key_live',          __( 'Publishable Key (Live)', '6arshid-social-community' ),  'pk_live_…', false ); ?>
+			<?php $this->render_key_row( 'sixarshidsc_stripe_secret_live',           __( 'Secret Key (Live)', '6arshid-social-community' ),       'sk_live_…', true ); ?>
+			<?php $this->render_key_row( 'sixarshidsc_stripe_webhook_secret_live',   __( 'Webhook Secret (Live)', '6arshid-social-community' ),   'whsec_…',   true ); ?>
 		</table>
 
 		<h4 style="margin:20px 0 0 10px;font-size:13px;color:#3c434a;">
-			<?php esc_html_e( 'Test Keys', '6arshid social community' ); ?>
+			<?php esc_html_e( 'Test Keys', '6arshid-social-community' ); ?>
 		</h4>
 		<table class="form-table" role="presentation">
-			<?php $this->render_key_row( 'sixarshidsc_stripe_pub_key_test',          __( 'Publishable Key (Test)', '6arshid social community' ),  'pk_test_…', false ); ?>
-			<?php $this->render_key_row( 'sixarshidsc_stripe_secret_test',           __( 'Secret Key (Test)', '6arshid social community' ),       'sk_test_…', true ); ?>
-			<?php $this->render_key_row( 'sixarshidsc_stripe_webhook_secret_test',   __( 'Webhook Secret (Test)', '6arshid social community' ),   'whsec_…',   true ); ?>
+			<?php $this->render_key_row( 'sixarshidsc_stripe_pub_key_test',          __( 'Publishable Key (Test)', '6arshid-social-community' ),  'pk_test_…', false ); ?>
+			<?php $this->render_key_row( 'sixarshidsc_stripe_secret_test',           __( 'Secret Key (Test)', '6arshid-social-community' ),       'sk_test_…', true ); ?>
+			<?php $this->render_key_row( 'sixarshidsc_stripe_webhook_secret_test',   __( 'Webhook Secret (Test)', '6arshid-social-community' ),   'whsec_…',   true ); ?>
 		</table>
 
 		<!-- Webhook URL notice -->
 		<div class="notice notice-info inline" style="margin:16px 0 0">
 			<p>
-				<strong><?php esc_html_e( 'Stripe webhook endpoint:', '6arshid social community' ); ?></strong><br />
+				<strong><?php esc_html_e( 'Stripe webhook endpoint:', '6arshid-social-community' ); ?></strong><br />
 				<span class="sixarshidsc-code"><?php echo esc_url( $webhook_url ); ?></span><br />
 				<span class="description">
 					<?php
 					printf(
 						wp_kses(
 							// translators: %s is the URL to the Stripe Dashboard webhooks settings page.
-							__( 'Register this URL in <a href="%s" target="_blank" rel="noopener noreferrer">Stripe Dashboard → Webhooks</a>. Listen for: <code>customer.subscription.*</code>, <code>invoice.*</code>, <code>payment_intent.*</code>, <code>account.updated</code>.', '6arshid social community' ),
+							__( 'Register this URL in <a href="%s" target="_blank" rel="noopener noreferrer">Stripe Dashboard → Webhooks</a>. Listen for: <code>customer.subscription.*</code>, <code>invoice.*</code>, <code>payment_intent.*</code>, <code>account.updated</code>.', '6arshid-social-community' ),
 							array(
 								'a'    => array( 'href' => array(), 'target' => array(), 'rel' => array() ),
 								'code' => array(),
@@ -341,16 +341,16 @@ class Monetization_Settings {
 
 		<!-- Platform revenue -->
 		<div class="sixarshidsc-section">
-			<h3><?php esc_html_e( 'Platform Revenue', '6arshid social community' ); ?></h3>
+			<h3><?php esc_html_e( 'Platform Revenue', '6arshid-social-community' ); ?></h3>
 		</div>
 		<p class="description" style="margin-top:8px">
-			<?php esc_html_e( 'These fees are applied as a Stripe Connect application fee and deducted before the creator receives their payout. The site owner is responsible for applicable local tax obligations.', '6arshid social community' ); ?>
+			<?php esc_html_e( 'These fees are applied as a Stripe Connect application fee and deducted before the creator receives their payout. The site owner is responsible for applicable local tax obligations.', '6arshid-social-community' ); ?>
 		</p>
 		<table class="form-table" role="presentation">
 			<tr>
 				<th scope="row">
 					<label for="sixarshidsc_platform_fee_pct">
-						<?php esc_html_e( 'Platform Fee %', '6arshid social community' ); ?>
+						<?php esc_html_e( 'Platform Fee %', '6arshid-social-community' ); ?>
 					</label>
 				</th>
 				<td>
@@ -360,14 +360,14 @@ class Monetization_Settings {
 						min="0" max="100" step="0.01" />
 					<span class="description">%</span>
 					<p class="description">
-						<?php esc_html_e( '0 – 100. For example, 10 means the platform retains 10 % of every transaction.', '6arshid social community' ); ?>
+						<?php esc_html_e( '0 – 100. For example, 10 means the platform retains 10 % of every transaction.', '6arshid-social-community' ); ?>
 					</p>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row">
 					<label for="sixarshidsc_platform_fee_flat">
-						<?php esc_html_e( 'Platform Flat Fee', '6arshid social community' ); ?>
+						<?php esc_html_e( 'Platform Flat Fee', '6arshid-social-community' ); ?>
 					</label>
 				</th>
 				<td>
@@ -377,14 +377,14 @@ class Monetization_Settings {
 						min="0" step="0.01" />
 					<span class="description"><?php echo esc_html( $currency ); ?></span>
 					<p class="description">
-						<?php esc_html_e( 'Optional fixed amount per transaction, in addition to the percentage fee.', '6arshid social community' ); ?>
+						<?php esc_html_e( 'Optional fixed amount per transaction, in addition to the percentage fee.', '6arshid-social-community' ); ?>
 					</p>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row">
 					<label for="sixarshidsc_currency">
-						<?php esc_html_e( 'Currency', '6arshid social community' ); ?>
+						<?php esc_html_e( 'Currency', '6arshid-social-community' ); ?>
 					</label>
 				</th>
 				<td>
@@ -415,7 +415,7 @@ class Monetization_Settings {
 						<?php endforeach; ?>
 					</select>
 					<p class="description">
-						<?php esc_html_e( 'Must match your Stripe account\'s settlement currency.', '6arshid social community' ); ?>
+						<?php esc_html_e( 'Must match your Stripe account\'s settlement currency.', '6arshid-social-community' ); ?>
 					</p>
 				</td>
 			</tr>
@@ -423,13 +423,13 @@ class Monetization_Settings {
 
 		<!-- Subscription pricing -->
 		<div class="sixarshidsc-section">
-			<h3><?php esc_html_e( 'Subscription Pricing', '6arshid social community' ); ?></h3>
+			<h3><?php esc_html_e( 'Subscription Pricing', '6arshid-social-community' ); ?></h3>
 		</div>
 		<table class="form-table" role="presentation" style="margin-top:0">
 			<tr>
 				<th scope="row">
 					<label for="sixarshidsc_min_sub_price">
-						<?php esc_html_e( 'Minimum Subscription Price', '6arshid social community' ); ?>
+						<?php esc_html_e( 'Minimum Subscription Price', '6arshid-social-community' ); ?>
 					</label>
 				</th>
 				<td>
@@ -439,7 +439,7 @@ class Monetization_Settings {
 						min="0.01" step="0.01" />
 					<span class="description"><?php echo esc_html( $currency ); ?></span>
 					<p class="description">
-						<?php esc_html_e( 'The lowest monthly price a creator can set for their subscription tier.', '6arshid social community' ); ?>
+						<?php esc_html_e( 'The lowest monthly price a creator can set for their subscription tier.', '6arshid-social-community' ); ?>
 					</p>
 				</td>
 			</tr>
@@ -447,11 +447,11 @@ class Monetization_Settings {
 
 		<!-- Compliance notice -->
 		<div class="sixarshidsc-section">
-			<h3><?php esc_html_e( 'Compliance', '6arshid social community' ); ?></h3>
+			<h3><?php esc_html_e( 'Compliance', '6arshid-social-community' ); ?></h3>
 		</div>
 		<div class="notice notice-warning inline" style="margin:8px 0 0">
 			<p>
-				<?php esc_html_e( 'This platform facilitates payments via Stripe Connect and is not itself a bank or payment processor. Stripe handles creator identity verification (KYC) and bank payouts. Refunds and chargebacks are processed per Stripe\'s policies. The site owner is solely responsible for applicable taxes and VAT in their jurisdiction.', '6arshid social community' ); ?>
+				<?php esc_html_e( 'This platform facilitates payments via Stripe Connect and is not itself a bank or payment processor. Stripe handles creator identity verification (KYC) and bank payouts. Refunds and chargebacks are processed per Stripe\'s policies. The site owner is solely responsible for applicable taxes and VAT in their jurisdiction.', '6arshid-social-community' ); ?>
 			</p>
 		</div>
 		<?php
@@ -485,7 +485,7 @@ class Monetization_Settings {
 			// Never output the decrypted value into the browser.
 			$input_value  = '';
 			$input_placeholder = $is_set
-				? __( '— key saved; enter a new value to replace —', '6arshid social community' )
+				? __( '— key saved; enter a new value to replace —', '6arshid-social-community' )
 				: $placeholder;
 		} else {
 			// Publishable keys are client-visible by design — show the saved value.
@@ -511,7 +511,7 @@ class Monetization_Settings {
 					placeholder="<?php echo esc_attr( $input_placeholder ); ?>"
 				/>
 				<?php if ( $is_set ) : ?>
-					<span class="sixarshidsc-key-set">&#10003; <?php esc_html_e( 'Saved', '6arshid social community' ); ?></span>
+					<span class="sixarshidsc-key-set">&#10003; <?php esc_html_e( 'Saved', '6arshid-social-community' ); ?></span>
 				<?php endif; ?>
 			</td>
 		</tr>

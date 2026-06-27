@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Verification;
 
 /**
@@ -139,7 +139,7 @@ class Verification_REST extends \WP_REST_Controller {
 		$user_id = get_current_user_id();
 
 		if ( ! arshid6social_check_rate_limit( 'arshid6social_rl_verify', $user_id, (int) get_option( 'arshid6social_verification_rate_limit', 3 ) ) ) {
-			return new \WP_Error( 'rate_limited', __( 'Too many requests.', '6arshid social community' ), array( 'status' => 429 ) );
+			return new \WP_Error( 'rate_limited', __( 'Too many requests.', '6arshid-social-community' ), array( 'status' => 429 ) );
 		}
 
 		$id = $this->verification->submit_request(
@@ -153,7 +153,7 @@ class Verification_REST extends \WP_REST_Controller {
 		);
 
 		if ( ! $id ) {
-			return new \WP_Error( 'already_pending', __( 'A pending request already exists.', '6arshid social community' ), array( 'status' => 400 ) );
+			return new \WP_Error( 'already_pending', __( 'A pending request already exists.', '6arshid-social-community' ), array( 'status' => 400 ) );
 		}
 
 		return rest_ensure_response( array( 'id' => $id ) );
@@ -189,7 +189,7 @@ class Verification_REST extends \WP_REST_Controller {
 		);
 		return $ok
 			? rest_ensure_response( array( 'approved' => true ) )
-			: new \WP_Error( 'not_found', __( 'Request not found.', '6arshid social community' ), array( 'status' => 404 ) );
+			: new \WP_Error( 'not_found', __( 'Request not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
 	}
 
 	public function reject_request( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
@@ -199,7 +199,7 @@ class Verification_REST extends \WP_REST_Controller {
 		);
 		return $ok
 			? rest_ensure_response( array( 'rejected' => true ) )
-			: new \WP_Error( 'not_found', __( 'Request not found.', '6arshid social community' ), array( 'status' => 404 ) );
+			: new \WP_Error( 'not_found', __( 'Request not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
 	}
 
 	public function grant( \WP_REST_Request $request ): \WP_REST_Response {

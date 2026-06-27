@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Admin;
 
 /**
@@ -49,7 +49,7 @@ class Admin_Verification {
 		add_screen_option(
 			'per_page',
 			array(
-				'label'   => __( 'Requests per page', '6arshid social community' ),
+				'label'   => __( 'Requests per page', '6arshid-social-community' ),
 				'default' => 20,
 				'option'  => 'arshid6social_verification_per_page',
 			)
@@ -59,14 +59,14 @@ class Admin_Verification {
 	/** @return array<string,string> */
 	public function get_columns(): array {
 		return array(
-			'user'      => __( 'User', '6arshid social community' ),
-			'type'      => __( 'Type', '6arshid social community' ),
-			'full_name' => __( 'Full Name', '6arshid social community' ),
-			'category'  => __( 'Category', '6arshid social community' ),
-			'links'     => __( 'Links', '6arshid social community' ),
-			'doc'       => __( 'Doc', '6arshid social community' ),
-			'submitted' => __( 'Submitted', '6arshid social community' ),
-			'actions'   => __( 'Actions', '6arshid social community' ),
+			'user'      => __( 'User', '6arshid-social-community' ),
+			'type'      => __( 'Type', '6arshid-social-community' ),
+			'full_name' => __( 'Full Name', '6arshid-social-community' ),
+			'category'  => __( 'Category', '6arshid-social-community' ),
+			'links'     => __( 'Links', '6arshid-social-community' ),
+			'doc'       => __( 'Doc', '6arshid-social-community' ),
+			'submitted' => __( 'Submitted', '6arshid-social-community' ),
+			'actions'   => __( 'Actions', '6arshid-social-community' ),
 		);
 	}
 
@@ -200,10 +200,10 @@ class Admin_Verification {
 		// ── Flash messages ────────────────────────────────────────────────────
 		if ( isset( $_GET['arshid6social_msg'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			$messages = array(
-				'approved'  => __( 'Request approved and badge granted.', '6arshid social community' ),
-				'rejected'  => __( 'Request rejected.', '6arshid social community' ),
-				'more_info' => __( 'More info requested from user.', '6arshid social community' ),
-				'revoked'   => __( 'Verification badge revoked.', '6arshid social community' ),
+				'approved'  => __( 'Request approved and badge granted.', '6arshid-social-community' ),
+				'rejected'  => __( 'Request rejected.', '6arshid-social-community' ),
+				'more_info' => __( 'More info requested from user.', '6arshid-social-community' ),
+				'revoked'   => __( 'Verification badge revoked.', '6arshid-social-community' ),
 			);
 			$msg_key = sanitize_key( $_GET['arshid6social_msg'] ); // phpcs:ignore WordPress.Security.NonceVerification
 			if ( isset( $messages[ $msg_key ] ) ) {
@@ -212,17 +212,17 @@ class Admin_Verification {
 		}
 		?>
 		<div class="wrap">
-			<h1 class="wp-heading-inline"><?php esc_html_e( 'Verification Queue', '6arshid social community' ); ?></h1>
+			<h1 class="wp-heading-inline"><?php esc_html_e( 'Verification Queue', '6arshid-social-community' ); ?></h1>
 			<hr class="wp-header-end">
 
 			<?php // ── Status tabs ──────────────────────────────────────────── ?>
 			<ul class="subsubsub">
 				<?php
 				$tab_labels = array(
-					'pending'  => __( 'Pending', '6arshid social community' ),
-					'approved' => __( 'Approved', '6arshid social community' ),
-					'rejected' => __( 'Rejected', '6arshid social community' ),
-					'revoked'  => __( 'Revoked', '6arshid social community' ),
+					'pending'  => __( 'Pending', '6arshid-social-community' ),
+					'approved' => __( 'Approved', '6arshid-social-community' ),
+					'rejected' => __( 'Rejected', '6arshid-social-community' ),
+					'revoked'  => __( 'Revoked', '6arshid-social-community' ),
 				);
 				$tab_list = array();
 				foreach ( $tab_labels as $key => $label ) {
@@ -249,7 +249,7 @@ class Admin_Verification {
 						echo esc_html(
 							sprintf(
 								/* translators: %s: number of items */
-								_n( '%s item', '%s items', $total, '6arshid social community' ),
+								_n( '%s item', '%s items', $total, '6arshid-social-community' ),
 								number_format_i18n( $total )
 							)
 						);
@@ -276,19 +276,19 @@ class Admin_Verification {
 			<table class="wp-list-table widefat fixed striped">
 				<thead>
 					<tr>
-						<th class="manage-column column-user column-primary"><?php esc_html_e( 'User', '6arshid social community' ); ?></th>
-						<th class="manage-column column-type<?php echo esc_attr( $col_class( 'type' ) ); ?>"><?php esc_html_e( 'Type', '6arshid social community' ); ?></th>
-						<th class="manage-column column-full_name<?php echo esc_attr( $col_class( 'full_name' ) ); ?>"><?php esc_html_e( 'Full Name', '6arshid social community' ); ?></th>
-						<th class="manage-column column-category<?php echo esc_attr( $col_class( 'category' ) ); ?>"><?php esc_html_e( 'Category', '6arshid social community' ); ?></th>
-						<th class="manage-column column-links<?php echo esc_attr( $col_class( 'links' ) ); ?>"><?php esc_html_e( 'Links', '6arshid social community' ); ?></th>
-						<th class="manage-column column-doc<?php echo esc_attr( $col_class( 'doc' ) ); ?>"><?php esc_html_e( 'Doc', '6arshid social community' ); ?></th>
-						<th class="manage-column column-submitted<?php echo esc_attr( $col_class( 'submitted' ) ); ?>"><?php esc_html_e( 'Submitted', '6arshid social community' ); ?></th>
-						<th class="manage-column column-actions<?php echo esc_attr( $col_class( 'actions' ) ); ?>"><?php esc_html_e( 'Actions', '6arshid social community' ); ?></th>
+						<th class="manage-column column-user column-primary"><?php esc_html_e( 'User', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-type<?php echo esc_attr( $col_class( 'type' ) ); ?>"><?php esc_html_e( 'Type', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-full_name<?php echo esc_attr( $col_class( 'full_name' ) ); ?>"><?php esc_html_e( 'Full Name', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-category<?php echo esc_attr( $col_class( 'category' ) ); ?>"><?php esc_html_e( 'Category', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-links<?php echo esc_attr( $col_class( 'links' ) ); ?>"><?php esc_html_e( 'Links', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-doc<?php echo esc_attr( $col_class( 'doc' ) ); ?>"><?php esc_html_e( 'Doc', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-submitted<?php echo esc_attr( $col_class( 'submitted' ) ); ?>"><?php esc_html_e( 'Submitted', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-actions<?php echo esc_attr( $col_class( 'actions' ) ); ?>"><?php esc_html_e( 'Actions', '6arshid-social-community' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
 					<?php if ( empty( $rows ) ) : ?>
-						<tr><td colspan="8"><?php esc_html_e( 'No requests found.', '6arshid social community' ); ?></td></tr>
+						<tr><td colspan="8"><?php esc_html_e( 'No requests found.', '6arshid-social-community' ); ?></td></tr>
 					<?php else : ?>
 						<?php foreach ( $rows as $row ) : ?>
 							<?php
@@ -325,7 +325,7 @@ class Admin_Verification {
 											<a href="<?php echo esc_url( admin_url( 'admin-ajax.php?action=arshid6social_serve_verification_doc&request_id=' . $row->id . '&idx=' . $idx . '&nonce=' . wp_create_nonce( 'arshid6social_ajax_nonce' ) ) ); ?>" target="_blank">
 												<?php
 												/* translators: %d: document number */
-												echo esc_html( sprintf( __( 'Doc %d', '6arshid social community' ), $idx + 1 ) ); ?>
+												echo esc_html( sprintf( __( 'Doc %d', '6arshid-social-community' ), $idx + 1 ) ); ?>
 											</a><br>
 										<?php endforeach; ?>
 									<?php else : ?>
@@ -341,14 +341,14 @@ class Admin_Verification {
 											admin_url( 'admin.php?page=arshid6social-verification&arshid6social_verify_action=approve&request_id=' . $row->id . '&type=' . esc_attr( $row->type ) ),
 											'arshid6social_verify_action_' . $row->id
 										) ); ?>" class="button button-primary button-small">
-											<?php esc_html_e( 'Approve', '6arshid social community' ); ?>
+											<?php esc_html_e( 'Approve', '6arshid-social-community' ); ?>
 										</a>
 										<a href="<?php echo esc_url( wp_nonce_url(
 											admin_url( 'admin.php?page=arshid6social-verification&arshid6social_verify_action=reject&request_id=' . $row->id ),
 											'arshid6social_verify_action_' . $row->id
 										) ); ?>" class="button button-small"
-											onclick="return confirm('<?php esc_attr_e( 'Reject this request?', '6arshid social community' ); ?>')">
-											<?php esc_html_e( 'Reject', '6arshid social community' ); ?>
+											onclick="return confirm('<?php esc_attr_e( 'Reject this request?', '6arshid-social-community' ); ?>')">
+											<?php esc_html_e( 'Reject', '6arshid-social-community' ); ?>
 										</a>
 									<?php elseif ( 'approved' === $row->status ) : ?>
 										<span class="dashicons dashicons-yes-alt" style="color:#16a34a;vertical-align:middle;"></span>
@@ -356,8 +356,8 @@ class Admin_Verification {
 											admin_url( 'admin.php?page=arshid6social-verification&arshid6social_verify_action=revoke&request_id=' . $row->id ),
 											'arshid6social_verify_action_' . $row->id
 										) ); ?>" class="button button-small" style="color:#b91c1c;border-color:#fca5a5;"
-											onclick="return confirm('<?php esc_attr_e( 'Revoke this verification badge?', '6arshid social community' ); ?>')">
-											<?php esc_html_e( 'Revoke Badge', '6arshid social community' ); ?>
+											onclick="return confirm('<?php esc_attr_e( 'Revoke this verification badge?', '6arshid-social-community' ); ?>')">
+											<?php esc_html_e( 'Revoke Badge', '6arshid-social-community' ); ?>
 										</a>
 									<?php elseif ( 'rejected' === $row->status ) : ?>
 										<span class="dashicons dashicons-dismiss" style="color:#dc2626"></span>
@@ -372,14 +372,14 @@ class Admin_Verification {
 
 				<tfoot>
 					<tr>
-						<th class="manage-column column-user column-primary"><?php esc_html_e( 'User', '6arshid social community' ); ?></th>
-						<th class="manage-column column-type<?php echo esc_attr( $col_class( 'type' ) ); ?>"><?php esc_html_e( 'Type', '6arshid social community' ); ?></th>
-						<th class="manage-column column-full_name<?php echo esc_attr( $col_class( 'full_name' ) ); ?>"><?php esc_html_e( 'Full Name', '6arshid social community' ); ?></th>
-						<th class="manage-column column-category<?php echo esc_attr( $col_class( 'category' ) ); ?>"><?php esc_html_e( 'Category', '6arshid social community' ); ?></th>
-						<th class="manage-column column-links<?php echo esc_attr( $col_class( 'links' ) ); ?>"><?php esc_html_e( 'Links', '6arshid social community' ); ?></th>
-						<th class="manage-column column-doc<?php echo esc_attr( $col_class( 'doc' ) ); ?>"><?php esc_html_e( 'Doc', '6arshid social community' ); ?></th>
-						<th class="manage-column column-submitted<?php echo esc_attr( $col_class( 'submitted' ) ); ?>"><?php esc_html_e( 'Submitted', '6arshid social community' ); ?></th>
-						<th class="manage-column column-actions<?php echo esc_attr( $col_class( 'actions' ) ); ?>"><?php esc_html_e( 'Actions', '6arshid social community' ); ?></th>
+						<th class="manage-column column-user column-primary"><?php esc_html_e( 'User', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-type<?php echo esc_attr( $col_class( 'type' ) ); ?>"><?php esc_html_e( 'Type', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-full_name<?php echo esc_attr( $col_class( 'full_name' ) ); ?>"><?php esc_html_e( 'Full Name', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-category<?php echo esc_attr( $col_class( 'category' ) ); ?>"><?php esc_html_e( 'Category', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-links<?php echo esc_attr( $col_class( 'links' ) ); ?>"><?php esc_html_e( 'Links', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-doc<?php echo esc_attr( $col_class( 'doc' ) ); ?>"><?php esc_html_e( 'Doc', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-submitted<?php echo esc_attr( $col_class( 'submitted' ) ); ?>"><?php esc_html_e( 'Submitted', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-actions<?php echo esc_attr( $col_class( 'actions' ) ); ?>"><?php esc_html_e( 'Actions', '6arshid-social-community' ); ?></th>
 					</tr>
 				</tfoot>
 			</table>

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Stories;
 
 /**
@@ -230,7 +230,7 @@ class Stories_REST extends \WP_REST_Controller {
 		$user_id = get_current_user_id();
 
 		if ( ! arshid6social_check_rate_limit( 'arshid6social_rl_stories', $user_id, (int) get_option( 'arshid6social_stories_rate_limit', 20 ) ) ) {
-			return new \WP_Error( 'rate_limited', __( 'Too many stories.', '6arshid social community' ), array( 'status' => 429 ) );
+			return new \WP_Error( 'rate_limited', __( 'Too many stories.', '6arshid-social-community' ), array( 'status' => 429 ) );
 		}
 
 		$item = array(
@@ -242,7 +242,7 @@ class Stories_REST extends \WP_REST_Controller {
 
 		$story_id = $this->stories->create( $user_id, $request->get_param( 'privacy' ), array( $item ) );
 		if ( ! $story_id ) {
-			return new \WP_Error( 'create_failed', __( 'Could not create story.', '6arshid social community' ), array( 'status' => 500 ) );
+			return new \WP_Error( 'create_failed', __( 'Could not create story.', '6arshid-social-community' ), array( 'status' => 500 ) );
 		}
 
 		return rest_ensure_response( array( 'story_id' => $story_id ) );
@@ -252,7 +252,7 @@ class Stories_REST extends \WP_REST_Controller {
 		$ok = $this->stories->delete( $request->get_param( 'id' ), get_current_user_id() );
 		return $ok
 			? rest_ensure_response( array( 'deleted' => true ) )
-			: new \WP_Error( 'not_found', __( 'Story not found or permission denied.', '6arshid social community' ), array( 'status' => 404 ) );
+			: new \WP_Error( 'not_found', __( 'Story not found or permission denied.', '6arshid-social-community' ), array( 'status' => 404 ) );
 	}
 
 	public function get_items( $request ): \WP_REST_Response {
@@ -283,7 +283,7 @@ class Stories_REST extends \WP_REST_Controller {
 		);
 		return $thread_id
 			? rest_ensure_response( array( 'thread_id' => $thread_id ) )
-			: new \WP_Error( 'reply_failed', __( 'Could not send reply.', '6arshid social community' ), array( 'status' => 400 ) );
+			: new \WP_Error( 'reply_failed', __( 'Could not send reply.', '6arshid-social-community' ), array( 'status' => 400 ) );
 	}
 
 	public function report( \WP_REST_Request $request ): \WP_REST_Response {
@@ -346,14 +346,14 @@ class Stories_REST extends \WP_REST_Controller {
 		);
 		return $id
 			? rest_ensure_response( array( 'highlight_id' => $id ) )
-			: new \WP_Error( 'create_failed', __( 'Could not create highlight.', '6arshid social community' ), array( 'status' => 500 ) );
+			: new \WP_Error( 'create_failed', __( 'Could not create highlight.', '6arshid-social-community' ), array( 'status' => 500 ) );
 	}
 
 	public function delete_highlight( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
 		$ok = $this->stories->delete_highlight( $request->get_param( 'id' ), get_current_user_id() );
 		return $ok
 			? rest_ensure_response( array( 'deleted' => true ) )
-			: new \WP_Error( 'not_found', __( 'Highlight not found.', '6arshid social community' ), array( 'status' => 404 ) );
+			: new \WP_Error( 'not_found', __( 'Highlight not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
 	}
 
 	public function add_to_highlight( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
@@ -364,7 +364,7 @@ class Stories_REST extends \WP_REST_Controller {
 		);
 		return $ok
 			? rest_ensure_response( array( 'added' => true ) )
-			: new \WP_Error( 'failed', __( 'Could not add to highlight.', '6arshid social community' ), array( 'status' => 400 ) );
+			: new \WP_Error( 'failed', __( 'Could not add to highlight.', '6arshid-social-community' ), array( 'status' => 400 ) );
 	}
 
 	// ── Permission callbacks ──────────────────────────────────────────────────
