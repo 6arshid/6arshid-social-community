@@ -143,8 +143,10 @@ add_action( 'admin_init', static function () {
 	update_option( 'arshid6social_tpl_flush', $ver );
 }, 1 );
 
-// Boot the plugin after all plugins are loaded so hooks from other plugins are available.
-add_action( 'plugins_loaded', 'arshid6social' );
+// Boot on init so translated strings are not evaluated before WordPress loads
+// textdomains in WP 6.7+, while still registering routes, shortcodes, and assets
+// before their later lifecycle hooks run.
+add_action( 'init', 'arshid6social', 0 );
 
 // Boot the Engagement Pack after the main plugin is ready.
 add_action( 'arshid6social_loaded', 'arshid6social_eng' );

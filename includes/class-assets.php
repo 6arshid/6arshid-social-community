@@ -487,15 +487,40 @@ final class Assets {
 
 			// Primary: match auto-created page IDs.
 			if ( $post ) {
-				$page_options = array( 'arshid6social_page_members', 'arshid6social_page_activity', 'arshid6social_page_groups', 'arshid6social_page_messages', 'arshid6social_page_register', 'arshid6social_page_login', 'arshid6social_page_dashboard', 'arshid6social_page_notifications' );
+				$page_options = array(
+					'arshid6social_page_home',
+					'arshid6social_page_members',
+					'arshid6social_page_activity',
+					'arshid6social_page_groups',
+					'arshid6social_page_messages',
+					'arshid6social_page_notifications',
+					'arshid6social_page_register',
+					'arshid6social_page_login',
+					'arshid6social_page_forgot_password',
+					'arshid6social_page_reset_password',
+					'arshid6social_page_dashboard',
+					'arshid6social_page_marketplace',
+					'arshid6social_page_saved',
+				);
 				foreach ( $page_options as $opt ) {
 					if ( (int) get_option( $opt, 0 ) === $post->ID ) {
 						return true;
 					}
 				}
 
-				// Fallback: any page/post whose content contains a WPSN shortcode.
-				if ( $post->post_content && str_contains( $post->post_content, '[ARSHID6SOCIAL_' ) ) {
+				// Fallback: any page/post whose content contains a plugin shortcode or block.
+				if ( $post->post_content && str_contains( $post->post_content, '[arshid6social_' ) ) {
+					return true;
+				}
+
+				if (
+					function_exists( 'has_block' )
+					&& (
+						has_block( 'arshid6social/activity-feed', $post )
+						|| has_block( 'arshid6social/member-directory', $post )
+						|| has_block( 'arshid6social/group-list', $post )
+					)
+				) {
 					return true;
 				}
 			}

@@ -52,6 +52,7 @@ final class Plugin {
 	 */
 	private function init(): void {
 		require_once ARSHID6SOCIAL_INCLUDES_DIR . 'functions.php';
+		$this->load_i18n();
 		add_action( 'init', array( $this, 'load_i18n' ), 1 );
 		$this->load_services();
 		$this->load_components();
