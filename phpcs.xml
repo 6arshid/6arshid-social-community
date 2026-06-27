@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<ruleset name="6Arshid Social Community">
+    <description>PHPCS rules for 6Arshid Social Community plugin.</description>
+
+    <rule ref="WordPress">
+        <properties>
+            <property name="text_domain" type="array" value="6arshid-social-community"/>
+        </properties>
+    </rule>
+</ruleset>
