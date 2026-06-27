@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Engagement\Features;
 
 /**
@@ -51,7 +51,7 @@ class Messages_Attachments {
 
 		$message_id = absint( $_POST['message_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		if ( ! $message_id ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid message ID.', '6arshid-social-community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid message ID.', '6arshid-social-community-main' ) ), 400 );
 		}
 
 		// Verify caller is a participant in the message's thread.
@@ -68,14 +68,14 @@ class Messages_Attachments {
 		}
 
 		if ( empty( $_FILES['attachment']['tmp_name'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'No file uploaded.', '6arshid-social-community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'No file uploaded.', '6arshid-social-community-main' ) ), 400 );
 		}
 
 		$file      = $_FILES['attachment']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$max_bytes = (int) get_option( 'arshid6social_eng_msg_att_max_mb', 10 ) * MB_IN_BYTES;
 
 		if ( (int) $file['size'] > $max_bytes ) {
-			wp_send_json_error( array( 'message' => __( 'File too large.', '6arshid-social-community' ) ), 413 );
+			wp_send_json_error( array( 'message' => __( 'File too large.', '6arshid-social-community-main' ) ), 413 );
 		}
 
 		$allowed_types = (array) get_option( 'arshid6social_eng_msg_att_types', array( 'image', 'audio' ) );
@@ -88,7 +88,7 @@ class Messages_Attachments {
 		$real_mime = $finfo->file( $file['tmp_name'] );
 
 		if ( ! in_array( $real_mime, $allowed_mimes, true ) ) {
-			wp_send_json_error( array( 'message' => __( 'File type not allowed.', '6arshid-social-community' ) ), 415 );
+			wp_send_json_error( array( 'message' => __( 'File type not allowed.', '6arshid-social-community-main' ) ), 415 );
 		}
 
 		$media_type = 'document';
@@ -138,7 +138,7 @@ class Messages_Attachments {
 		remove_filter( 'upload_dir', $subdir_filter );
 
 		if ( ! isset( $moved['file'] ) || isset( $moved['error'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'Upload failed.', '6arshid-social-community' ) ), 500 );
+			wp_send_json_error( array( 'message' => __( 'Upload failed.', '6arshid-social-community-main' ) ), 500 );
 		}
 
 		// Store with a signed serve URL (not the real path) for IDOR protection.

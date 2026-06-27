@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Ads;
 
 /**
@@ -43,11 +43,11 @@ class Ads {
 	public function ajax_upload_media(): void {
 		check_ajax_referer( 'arshid6social_admin_ads_nonce', 'nonce' );
 		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_send_json_error( __( 'Forbidden', '6arshid-social-community' ) );
+			wp_send_json_error( __( 'Forbidden', '6arshid-social-community-main' ) );
 		}
 
 		if ( empty( $_FILES['file'] ) ) {
-			wp_send_json_error( __( 'No file received.', '6arshid-social-community' ) );
+			wp_send_json_error( __( 'No file received.', '6arshid-social-community-main' ) );
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -165,7 +165,7 @@ class Ads {
 				break;
 		}
 
-		$label = esc_html__( 'Sponsored', '6arshid-social-community' );
+		$label = esc_html__( 'Sponsored', '6arshid-social-community-main' );
 
 		return '<div class="arshid6social-ad-card" data-ad-id="' . $ad_id . '">'
 			. '<div class="arshid6social-ad-card__label">' . $label . '</div>'

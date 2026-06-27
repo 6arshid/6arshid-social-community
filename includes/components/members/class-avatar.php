@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Members;
 
 /**
@@ -62,11 +62,11 @@ class Avatar {
 	 */
 	public function ajax_upload_avatar(): void {
 		if ( ! check_ajax_referer( 'arshid6social_upload_avatar', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community-main' ) ), 401 );
 		}
 
 		$user_id = get_current_user_id();
@@ -103,11 +103,11 @@ class Avatar {
 	 */
 	public function ajax_upload_cover(): void {
 		if ( ! check_ajax_referer( 'arshid6social_upload_cover', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community-main' ) ), 401 );
 		}
 
 		$user_id = get_current_user_id();
@@ -143,7 +143,7 @@ class Avatar {
 	 */
 	public function ajax_delete_avatar(): void {
 		if ( ! check_ajax_referer( 'arshid6social_delete_avatar', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
 		}
 
 		$user_id = get_current_user_id();
@@ -164,7 +164,7 @@ class Avatar {
 	 */
 	public function ajax_delete_cover(): void {
 		if ( ! check_ajax_referer( 'arshid6social_delete_cover', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
 		}
 
 		$user_id = get_current_user_id();
@@ -191,7 +191,7 @@ class Avatar {
 	 */
 	private function process_upload( ?array $file, string $image_type, int $user_id ): array|\WP_Error {
 		if ( ! $file || isset( $file['error'] ) && UPLOAD_ERR_OK !== $file['error'] ) {
-			return new \WP_Error( 'upload_error', __( 'Upload failed. Please try again.', '6arshid-social-community' ) );
+			return new \WP_Error( 'upload_error', __( 'Upload failed. Please try again.', '6arshid-social-community-main' ) );
 		}
 
 		// ── Size check ──────────────────────────────────────────────────────────
@@ -201,7 +201,7 @@ class Avatar {
 				'file_too_large',
 				sprintf(
 					/* translators: %s: max file size in MB */
-					__( 'File exceeds the maximum allowed size of %s MB.', '6arshid-social-community' ),
+					__( 'File exceeds the maximum allowed size of %s MB.', '6arshid-social-community-main' ),
 					get_option( 'arshid6social_max_upload_size_mb', 5 )
 				)
 			);
@@ -214,7 +214,7 @@ class Avatar {
 		finfo_close( $finfo );
 
 		if ( ! in_array( $mime, $allowed, true ) ) {
-			return new \WP_Error( 'invalid_mime', __( 'Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.', '6arshid-social-community' ) );
+			return new \WP_Error( 'invalid_mime', __( 'Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.', '6arshid-social-community-main' ) );
 		}
 
 		// ── Re-encode via WP image editor (strips EXIF, embedded payloads) ──────

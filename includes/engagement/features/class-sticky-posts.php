@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Engagement\Features;
 
 /**
@@ -173,7 +173,7 @@ class Sticky_Posts {
 		};
 
 		if ( ! $allowed ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community-main' ) ), 403 );
 		}
 
 		$id = $this->pin( $activity_id, $scope, $scope_id, get_current_user_id(), $expires_at );

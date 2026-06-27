@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Groups;
 
 /**
@@ -88,7 +88,7 @@ class Groups_REST extends \WP_REST_Controller {
 	public function get_items( $request ): \WP_REST_Response|\WP_Error {
 		$component = ARSHID6SOCIAL()->component( 'groups' );
 		if ( ! $component ) {
-			return new \WP_Error( 'arshid6social_disabled', __( 'Groups component not active.', '6arshid-social-community' ), array( 'status' => 503 ) );
+			return new \WP_Error( 'arshid6social_disabled', __( 'Groups component not active.', '6arshid-social-community-main' ), array( 'status' => 503 ) );
 		}
 
 		$data = $component->get_groups( array(
@@ -107,7 +107,7 @@ class Groups_REST extends \WP_REST_Controller {
 		$component = ARSHID6SOCIAL()->component( 'groups' );
 		$group     = $component->get_by_id( (int) $request['id'] );
 		if ( ! $group ) {
-			return new \WP_Error( 'arshid6social_not_found', __( 'Group not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
+			return new \WP_Error( 'arshid6social_not_found', __( 'Group not found.', '6arshid-social-community-main' ), array( 'status' => 404 ) );
 		}
 		return rest_ensure_response( $component->format_group( $group ) );
 	}
@@ -121,7 +121,7 @@ class Groups_REST extends \WP_REST_Controller {
 		) );
 
 		if ( ! $group_id ) {
-			return new \WP_Error( 'arshid6social_create_failed', __( 'Failed to create group.', '6arshid-social-community' ), array( 'status' => 500 ) );
+			return new \WP_Error( 'arshid6social_create_failed', __( 'Failed to create group.', '6arshid-social-community-main' ), array( 'status' => 500 ) );
 		}
 
 		return rest_ensure_response( $component->format_group( $component->get_by_id( $group_id ) ) );
@@ -133,7 +133,7 @@ class Groups_REST extends \WP_REST_Controller {
 		$group     = $component->get_by_id( $group_id );
 
 		if ( ! $group ) {
-			return new \WP_Error( 'arshid6social_not_found', __( 'Group not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
+			return new \WP_Error( 'arshid6social_not_found', __( 'Group not found.', '6arshid-social-community-main' ), array( 'status' => 404 ) );
 		}
 
 		$component->delete( $group_id );
@@ -146,7 +146,7 @@ class Groups_REST extends \WP_REST_Controller {
 		$group     = $component->get_by_id( $group_id );
 
 		if ( ! $group ) {
-			return new \WP_Error( 'arshid6social_not_found', __( 'Group not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
+			return new \WP_Error( 'arshid6social_not_found', __( 'Group not found.', '6arshid-social-community-main' ), array( 'status' => 404 ) );
 		}
 
 		$user_id      = get_current_user_id();

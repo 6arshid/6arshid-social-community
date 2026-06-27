@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Engagement\Features;
 
 /**
@@ -157,7 +157,7 @@ class Tag_Friends {
 		}
 
 		if ( ! get_option( 'arshid6social_eng_tag_photo_tags', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Photo tagging is disabled.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Photo tagging is disabled.', '6arshid-social-community-main' ) ), 403 );
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification

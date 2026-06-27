@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Marketplace homepage template.
  *
@@ -40,12 +40,12 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 					id="arshid6social-mkt-search"
 					class="arshid6social-mkt-search-input"
 					value="<?php echo esc_attr( $search_q ); ?>"
-					placeholder="<?php esc_attr_e( 'Search listings…', '6arshid-social-community' ); ?>"
+					placeholder="<?php esc_attr_e( 'Search listings…', '6arshid-social-community-main' ); ?>"
 					autocomplete="off"
-					aria-label="<?php esc_attr_e( 'Search marketplace listings', '6arshid-social-community' ); ?>"
+					aria-label="<?php esc_attr_e( 'Search marketplace listings', '6arshid-social-community-main' ); ?>"
 				/>
 				<button type="submit" class="arshid6social-mkt-search-btn">
-					<?php esc_html_e( 'Search', '6arshid-social-community' ); ?>
+					<?php esc_html_e( 'Search', '6arshid-social-community-main' ); ?>
 				</button>
 			</div>
 		</form>
@@ -53,11 +53,11 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 		<?php if ( $is_logged_in ) : ?>
 			<a href="<?php echo esc_url( $post_url ); ?>" class="arshid6social-mkt-post-btn">
 				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-				<?php esc_html_e( 'Post a Listing', '6arshid-social-community' ); ?>
+				<?php esc_html_e( 'Post a Listing', '6arshid-social-community-main' ); ?>
 			</a>
 		<?php else : ?>
 			<a href="<?php echo esc_url( wp_login_url( $post_url ) ); ?>" class="arshid6social-mkt-post-btn arshid6social-mkt-post-btn--guest">
-				<?php esc_html_e( 'Sign in to Sell', '6arshid-social-community' ); ?>
+				<?php esc_html_e( 'Sign in to Sell', '6arshid-social-community-main' ); ?>
 			</a>
 		<?php endif; ?>
 	</div>
@@ -66,7 +66,7 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 	<?php if ( ! empty( $categories ) ) : ?>
 	<section class="arshid6social-mkt-section" aria-labelledby="arshid6social-mkt-cats-heading">
 		<h2 class="arshid6social-mkt-section-title" id="arshid6social-mkt-cats-heading">
-			<?php esc_html_e( 'Browse by Category', '6arshid-social-community' ); ?>
+			<?php esc_html_e( 'Browse by Category', '6arshid-social-community-main' ); ?>
 		</h2>
 		<div class="arshid6social-mkt-cat-grid" role="list">
 			<?php foreach ( $categories as $cat ) :
@@ -88,11 +88,11 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 	<?php /* ── Active filters bar ─────────────────────────────────────────── */ ?>
 	<?php if ( $search_q || $active_cat ) : ?>
 	<div class="arshid6social-mkt-filters-bar">
-		<span><?php esc_html_e( 'Filters:', '6arshid-social-community' ); ?></span>
+		<span><?php esc_html_e( 'Filters:', '6arshid-social-community-main' ); ?></span>
 		<?php if ( $search_q ) : ?>
 			<span class="arshid6social-mkt-filter-chip">
 				<?php echo esc_html( '"' . $search_q . '"' ); ?>
-				<a href="<?php echo esc_url( remove_query_arg( 'q', $marketplace_url ) ); ?>" class="arshid6social-mkt-filter-remove" aria-label="<?php esc_attr_e( 'Remove search filter', '6arshid-social-community' ); ?>">×</a>
+				<a href="<?php echo esc_url( remove_query_arg( 'q', $marketplace_url ) ); ?>" class="arshid6social-mkt-filter-remove" aria-label="<?php esc_attr_e( 'Remove search filter', '6arshid-social-community-main' ); ?>">×</a>
 			</span>
 		<?php endif; ?>
 		<?php if ( $active_cat ) :
@@ -100,12 +100,12 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 			$cat_name = $wpdb->get_var( $wpdb->prepare( "SELECT name FROM {$wpdb->prefix}arshid6social_categories WHERE id = %d", $active_cat ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		?>
 			<span class="arshid6social-mkt-filter-chip">
-				<?php echo esc_html( $cat_name ?: __( 'Category', '6arshid-social-community' ) ); ?>
-				<a href="<?php echo esc_url( remove_query_arg( 'cat', $marketplace_url ) ); ?>" class="arshid6social-mkt-filter-remove" aria-label="<?php esc_attr_e( 'Remove category filter', '6arshid-social-community' ); ?>">×</a>
+				<?php echo esc_html( $cat_name ?: __( 'Category', '6arshid-social-community-main' ) ); ?>
+				<a href="<?php echo esc_url( remove_query_arg( 'cat', $marketplace_url ) ); ?>" class="arshid6social-mkt-filter-remove" aria-label="<?php esc_attr_e( 'Remove category filter', '6arshid-social-community-main' ); ?>">×</a>
 			</span>
 		<?php endif; ?>
 		<a href="<?php echo esc_url( $marketplace_url ); ?>" class="arshid6social-mkt-clear-all">
-			<?php esc_html_e( 'Clear all', '6arshid-social-community' ); ?>
+			<?php esc_html_e( 'Clear all', '6arshid-social-community-main' ); ?>
 		</a>
 	</div>
 	<?php endif; ?>
@@ -115,21 +115,21 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 		<div class="arshid6social-mkt-listings-header">
 			<h2 class="arshid6social-mkt-section-title" id="arshid6social-mkt-listings-heading">
 				<?php echo $search_q || $active_cat
-					? esc_html__( 'Results', '6arshid-social-community' )
-					: esc_html__( 'Recently Listed', '6arshid-social-community' ); ?>
+					? esc_html__( 'Results', '6arshid-social-community-main' )
+					: esc_html__( 'Recently Listed', '6arshid-social-community-main' ); ?>
 			</h2>
 			<div class="arshid6social-mkt-view-sort">
-				<button class="arshid6social-mkt-view-btn arshid6social-mkt-view-btn--active" data-view="grid" aria-label="<?php esc_attr_e( 'Grid view', '6arshid-social-community' ); ?>" title="<?php esc_attr_e( 'Grid view', '6arshid-social-community' ); ?>">
+				<button class="arshid6social-mkt-view-btn arshid6social-mkt-view-btn--active" data-view="grid" aria-label="<?php esc_attr_e( 'Grid view', '6arshid-social-community-main' ); ?>" title="<?php esc_attr_e( 'Grid view', '6arshid-social-community-main' ); ?>">
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
 				</button>
-				<button class="arshid6social-mkt-view-btn" data-view="list" aria-label="<?php esc_attr_e( 'List view', '6arshid-social-community' ); ?>" title="<?php esc_attr_e( 'List view', '6arshid-social-community' ); ?>">
+				<button class="arshid6social-mkt-view-btn" data-view="list" aria-label="<?php esc_attr_e( 'List view', '6arshid-social-community-main' ); ?>" title="<?php esc_attr_e( 'List view', '6arshid-social-community-main' ); ?>">
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="4" width="18" height="2" rx="1"/><rect x="3" y="11" width="18" height="2" rx="1"/><rect x="3" y="18" width="18" height="2" rx="1"/></svg>
 				</button>
-				<select class="arshid6social-mkt-sort-select" aria-label="<?php esc_attr_e( 'Sort listings', '6arshid-social-community' ); ?>">
-					<option value="newest"><?php esc_html_e( 'Newest', '6arshid-social-community' ); ?></option>
-					<option value="price_asc"><?php esc_html_e( 'Price: Low to High', '6arshid-social-community' ); ?></option>
-					<option value="price_desc"><?php esc_html_e( 'Price: High to Low', '6arshid-social-community' ); ?></option>
-					<option value="most_viewed"><?php esc_html_e( 'Most Viewed', '6arshid-social-community' ); ?></option>
+				<select class="arshid6social-mkt-sort-select" aria-label="<?php esc_attr_e( 'Sort listings', '6arshid-social-community-main' ); ?>">
+					<option value="newest"><?php esc_html_e( 'Newest', '6arshid-social-community-main' ); ?></option>
+					<option value="price_asc"><?php esc_html_e( 'Price: Low to High', '6arshid-social-community-main' ); ?></option>
+					<option value="price_desc"><?php esc_html_e( 'Price: High to Low', '6arshid-social-community-main' ); ?></option>
+					<option value="most_viewed"><?php esc_html_e( 'Most Viewed', '6arshid-social-community-main' ); ?></option>
 				</select>
 			</div>
 		</div>
@@ -156,17 +156,17 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 
 		<div id="arshid6social-mkt-listings-empty" class="arshid6social-mkt-empty" hidden>
 			<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-			<p><?php esc_html_e( 'No listings found.', '6arshid-social-community' ); ?></p>
+			<p><?php esc_html_e( 'No listings found.', '6arshid-social-community-main' ); ?></p>
 			<?php if ( $is_logged_in ) : ?>
 				<a href="<?php echo esc_url( $post_url ); ?>" class="arshid6social-mkt-post-btn" style="margin-top:12px">
-					<?php esc_html_e( 'Be the first to post!', '6arshid-social-community' ); ?>
+					<?php esc_html_e( 'Be the first to post!', '6arshid-social-community-main' ); ?>
 				</a>
 			<?php endif; ?>
 		</div>
 
 		<div id="arshid6social-mkt-listings-more" class="arshid6social-mkt-load-more" hidden>
 			<button type="button" id="arshid6social-mkt-load-more-btn" class="arshid6social-btn arshid6social-btn--outline">
-				<?php esc_html_e( 'Load More', '6arshid-social-community' ); ?>
+				<?php esc_html_e( 'Load More', '6arshid-social-community-main' ); ?>
 			</button>
 		</div>
 	</section>
@@ -329,7 +329,7 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 			empty.hidden    = true;
 			moreWrap.hidden = true;
 		} else {
-			moreBtn.textContent = '<?php echo esc_js( __( 'Loading…', '6arshid-social-community' ) ); ?>';
+			moreBtn.textContent = '<?php echo esc_js( __( 'Loading…', '6arshid-social-community-main' ) ); ?>';
 			moreBtn.disabled    = true;
 		}
 
@@ -359,7 +359,7 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 			empty.hidden = false;
 		} finally {
 			isLoading           = false;
-			moreBtn.textContent = '<?php echo esc_js( __( 'Load More', '6arshid-social-community' ) ); ?>';
+			moreBtn.textContent = '<?php echo esc_js( __( 'Load More', '6arshid-social-community-main' ) ); ?>';
 			moreBtn.disabled    = false;
 		}
 	}
@@ -390,9 +390,9 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 		a.className = 'arshid6social-mkt-card';
 
 		let badge = '';
-		if ( listing.is_free )       badge = '<span class="arshid6social-mkt-card-badge arshid6social-mkt-card-badge--free"><?php echo esc_js( __( 'Free', '6arshid-social-community' ) ); ?></span>';
-		else if ( listing.status === 'sold' ) badge = '<span class="arshid6social-mkt-card-badge arshid6social-mkt-card-badge--sold"><?php echo esc_js( __( 'Sold', '6arshid-social-community' ) ); ?></span>';
-		else if ( listing.is_negotiable ) badge = '<span class="arshid6social-mkt-card-badge arshid6social-mkt-card-badge--negot"><?php echo esc_js( __( 'Negotiable', '6arshid-social-community' ) ); ?></span>';
+		if ( listing.is_free )       badge = '<span class="arshid6social-mkt-card-badge arshid6social-mkt-card-badge--free"><?php echo esc_js( __( 'Free', '6arshid-social-community-main' ) ); ?></span>';
+		else if ( listing.status === 'sold' ) badge = '<span class="arshid6social-mkt-card-badge arshid6social-mkt-card-badge--sold"><?php echo esc_js( __( 'Sold', '6arshid-social-community-main' ) ); ?></span>';
+		else if ( listing.is_negotiable ) badge = '<span class="arshid6social-mkt-card-badge arshid6social-mkt-card-badge--negot"><?php echo esc_js( __( 'Negotiable', '6arshid-social-community-main' ) ); ?></span>';
 
 		const imgHtml = listing.thumb
 			? '<img src="' + escAttr( listing.thumb ) + '" alt="' + escAttr( listing.title ) + '" loading="lazy">'

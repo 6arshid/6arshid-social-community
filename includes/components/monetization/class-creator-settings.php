@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Monetization;
 
 /**
@@ -74,7 +74,7 @@ class Creator_Settings {
 		$address_nonce = wp_create_nonce( 'sixarshidsc_save_address_' . $user->ID );
 		?>
 		<div class="arshid6social-card arshid6social-user-settings-card" id="sixarshidsc-payout-account-card">
-			<div class="arshid6social-card__header"><?php esc_html_e( 'Payout Account', '6arshid-social-community' ); ?></div>
+			<div class="arshid6social-card__header"><?php esc_html_e( 'Payout Account', '6arshid-social-community-main' ); ?></div>
 			<div class="arshid6social-card__body">
 
 				<!-- IBAN form -->
@@ -83,17 +83,17 @@ class Creator_Settings {
 
 					<div class="arshid6social-settings-field">
 						<label class="arshid6social-settings-label" for="sixarshidsc-iban-input">
-							<?php esc_html_e( 'Bank Account (IBAN)', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Bank Account (IBAN)', '6arshid-social-community-main' ); ?>
 						</label>
 						<p class="arshid6social-settings-desc" style="margin-block-end:.75rem;">
-							<?php esc_html_e( 'Your IBAN is stored securely and is only visible to site administrators for processing payouts.', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Your IBAN is stored securely and is only visible to site administrators for processing payouts.', '6arshid-social-community-main' ); ?>
 						</p>
 						<input
 							type="text"
 							id="sixarshidsc-iban-input"
 							name="iban"
 							class="arshid6social-input"
-							placeholder="<?php echo $has_iban ? esc_attr__( '— IBAN saved; enter a new value to replace —', '6arshid-social-community' ) : 'IR000000000000000000000000'; ?>"
+							placeholder="<?php echo $has_iban ? esc_attr__( '— IBAN saved; enter a new value to replace —', '6arshid-social-community-main' ) : 'IR000000000000000000000000'; ?>"
 							value=""
 							maxlength="34"
 							autocomplete="off"
@@ -102,17 +102,17 @@ class Creator_Settings {
 						/>
 						<?php if ( $has_iban ) : ?>
 							<p class="arshid6social-settings-desc" style="color:var(--sn-color-success,#16a34a);margin-block-start:.4rem;">
-								&#10003; <?php esc_html_e( 'IBAN saved. Leave blank to keep the existing one.', '6arshid-social-community' ); ?>
+								&#10003; <?php esc_html_e( 'IBAN saved. Leave blank to keep the existing one.', '6arshid-social-community-main' ); ?>
 							</p>
 						<?php endif; ?>
 					</div>
 
 					<div class="arshid6social-settings-actions" style="margin-block-start:.75rem;">
 						<button type="submit" class="arshid6social-btn arshid6social-btn--primary" id="sixarshidsc-iban-save-btn">
-							<?php esc_html_e( 'Save IBAN', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Save IBAN', '6arshid-social-community-main' ); ?>
 						</button>
 						<span class="sixarshidsc-iban-saved-msg" hidden aria-live="polite">
-							&#10003; <?php esc_html_e( 'Saved!', '6arshid-social-community' ); ?>
+							&#10003; <?php esc_html_e( 'Saved!', '6arshid-social-community-main' ); ?>
 						</span>
 						<span class="sixarshidsc-iban-error-msg" hidden aria-live="polite" style="color:var(--sn-color-danger,#dc2626);"></span>
 					</div>
@@ -125,49 +125,49 @@ class Creator_Settings {
 					<input type="hidden" name="nonce" value="<?php echo esc_attr( $address_nonce ); ?>" />
 
 					<p class="arshid6social-settings-label" style="margin-block-end:.75rem;font-weight:600;">
-						<?php esc_html_e( 'Billing / Contact Address', '6arshid-social-community' ); ?>
+						<?php esc_html_e( 'Billing / Contact Address', '6arshid-social-community-main' ); ?>
 					</p>
 					<p class="arshid6social-settings-desc" style="margin-block-end:1rem;">
-						<?php esc_html_e( 'Used for invoicing and tax records. Not shared publicly.', '6arshid-social-community' ); ?>
+						<?php esc_html_e( 'Used for invoicing and tax records. Not shared publicly.', '6arshid-social-community-main' ); ?>
 					</p>
 
 					<div class="arshid6social-settings-field">
 						<label class="arshid6social-settings-label" for="sixarshidsc-address-line1">
-							<?php esc_html_e( 'Address Line', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Address Line', '6arshid-social-community-main' ); ?>
 						</label>
 						<input type="text" id="sixarshidsc-address-line1" name="line1"
 							class="arshid6social-input"
 							value="<?php echo esc_attr( $address['line1'] ); ?>"
-							placeholder="<?php esc_attr_e( 'Street address, apartment, etc.', '6arshid-social-community' ); ?>"
+							placeholder="<?php esc_attr_e( 'Street address, apartment, etc.', '6arshid-social-community-main' ); ?>"
 							style="width:100%;box-sizing:border-box;" />
 					</div>
 
 					<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-block-start:.75rem;">
 						<div class="arshid6social-settings-field">
 							<label class="arshid6social-settings-label" for="sixarshidsc-address-city">
-								<?php esc_html_e( 'City', '6arshid-social-community' ); ?>
+								<?php esc_html_e( 'City', '6arshid-social-community-main' ); ?>
 							</label>
 							<input type="text" id="sixarshidsc-address-city" name="city"
 								class="arshid6social-input"
 								value="<?php echo esc_attr( $address['city'] ); ?>"
-								placeholder="<?php esc_attr_e( 'City', '6arshid-social-community' ); ?>"
+								placeholder="<?php esc_attr_e( 'City', '6arshid-social-community-main' ); ?>"
 								style="width:100%;box-sizing:border-box;" />
 						</div>
 						<div class="arshid6social-settings-field">
 							<label class="arshid6social-settings-label" for="sixarshidsc-address-postal">
-								<?php esc_html_e( 'Postal Code', '6arshid-social-community' ); ?>
+								<?php esc_html_e( 'Postal Code', '6arshid-social-community-main' ); ?>
 							</label>
 							<input type="text" id="sixarshidsc-address-postal" name="postal"
 								class="arshid6social-input"
 								value="<?php echo esc_attr( $address['postal'] ); ?>"
-								placeholder="<?php esc_attr_e( 'Postal / ZIP code', '6arshid-social-community' ); ?>"
+								placeholder="<?php esc_attr_e( 'Postal / ZIP code', '6arshid-social-community-main' ); ?>"
 								style="width:100%;box-sizing:border-box;" />
 						</div>
 					</div>
 
 					<div class="arshid6social-settings-field" style="margin-block-start:.75rem;">
 						<label class="arshid6social-settings-label" for="sixarshidsc-address-country">
-							<?php esc_html_e( 'Country', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Country', '6arshid-social-community-main' ); ?>
 						</label>
 						<select id="sixarshidsc-address-country" name="country"
 							class="arshid6social-input"
@@ -175,7 +175,7 @@ class Creator_Settings {
 							<?php
 							// Sanctioned / OFAC-restricted countries are excluded: IR (Iran), CU (Cuba), KP (North Korea), SY (Syria), RU (Russia), BY (Belarus), VE (Venezuela), MM (Myanmar), SD (Sudan), SS (South Sudan), ZW (Zimbabwe), LY (Libya), SO (Somalia), YE (Yemen), ER (Eritrea).
 							$countries = array(
-								''   => __( '— Select country —', '6arshid-social-community' ),
+								''   => __( '— Select country —', '6arshid-social-community-main' ),
 								'AF' => 'Afghanistan',
 								'AL' => 'Albania',
 								'DZ' => 'Algeria',
@@ -369,13 +369,13 @@ class Creator_Settings {
 
 					<div class="arshid6social-settings-actions" style="margin-block-start:1rem;">
 						<button type="submit" class="arshid6social-btn arshid6social-btn--primary" id="sixarshidsc-address-save-btn">
-							<?php esc_html_e( 'Save Address', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Save Address', '6arshid-social-community-main' ); ?>
 						</button>
 						<span class="sixarshidsc-address-saved-msg" hidden aria-live="polite">
-							&#10003; <?php esc_html_e( 'Saved!', '6arshid-social-community' ); ?>
+							&#10003; <?php esc_html_e( 'Saved!', '6arshid-social-community-main' ); ?>
 						</span>
 						<span class="sixarshidsc-address-error-msg" hidden aria-live="polite" style="color:var(--sn-color-danger,#dc2626);">
-							<?php esc_html_e( 'Error saving. Please try again.', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Error saving. Please try again.', '6arshid-social-community-main' ); ?>
 						</span>
 					</div>
 				</form>
@@ -386,9 +386,9 @@ class Creator_Settings {
 		<?php
 		$js_payout  = '(function(){';
 		$js_payout .= 'var ajaxUrl=(window.ARSHID6SOCIALConfig&&window.ARSHID6SOCIALConfig.ajaxUrl)||' . wp_json_encode( admin_url( 'admin-ajax.php' ) ) . ';';
-		$js_payout .= 'var txtIbanSaved=' . wp_json_encode( __( '— IBAN saved; enter a new value to replace —', '6arshid-social-community' ) ) . ';';
-		$js_payout .= 'var txtIbanError=' . wp_json_encode( __( 'Error saving IBAN.', '6arshid-social-community' ) ) . ';';
-		$js_payout .= 'var txtNetError=' . wp_json_encode( __( 'Network error. Please try again.', '6arshid-social-community' ) ) . ';';
+		$js_payout .= 'var txtIbanSaved=' . wp_json_encode( __( '— IBAN saved; enter a new value to replace —', '6arshid-social-community-main' ) ) . ';';
+		$js_payout .= 'var txtIbanError=' . wp_json_encode( __( 'Error saving IBAN.', '6arshid-social-community-main' ) ) . ';';
+		$js_payout .= 'var txtNetError=' . wp_json_encode( __( 'Network error. Please try again.', '6arshid-social-community-main' ) ) . ';';
 		$js_payout .= <<<'ENDJS'
 (function(){
 	var form=document.getElementById('sixarshidsc-iban-form');if(!form)return;
@@ -491,14 +491,14 @@ ENDJS;
 		) );
 		?>
 		<div class="arshid6social-card arshid6social-user-settings-card" id="sixarshidsc-earnings-card">
-			<div class="arshid6social-card__header"><?php esc_html_e( 'Earnings & Transactions', '6arshid-social-community' ); ?></div>
+			<div class="arshid6social-card__header"><?php esc_html_e( 'Earnings & Transactions', '6arshid-social-community-main' ); ?></div>
 			<div class="arshid6social-card__body">
 
 				<!-- Balance summary -->
 				<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-block-end:1.25rem;">
 					<div style="padding:1rem;background:var(--sn-surface-alt,#f3f4f6);border-radius:8px;text-align:center;">
 						<div style="font-size:.8rem;color:var(--sn-text-muted,#6b7280);text-transform:uppercase;letter-spacing:.05em;">
-							<?php esc_html_e( 'Available Balance', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Available Balance', '6arshid-social-community-main' ); ?>
 						</div>
 						<div style="font-size:1.5rem;font-weight:700;margin-block-start:.25rem;color:var(--sn-color-success,#16a34a);">
 							<?php echo esc_html( number_format( $available, 2 ) . ' ' . $currency ); ?>
@@ -506,7 +506,7 @@ ENDJS;
 					</div>
 					<div style="padding:1rem;background:var(--sn-surface-alt,#f3f4f6);border-radius:8px;text-align:center;">
 						<div style="font-size:.8rem;color:var(--sn-text-muted,#6b7280);text-transform:uppercase;letter-spacing:.05em;">
-							<?php esc_html_e( 'Pending Cashout', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Pending Cashout', '6arshid-social-community-main' ); ?>
 						</div>
 						<div style="font-size:1.5rem;font-weight:700;margin-block-start:.25rem;color:var(--sn-color-warning,#d97706);">
 							<?php echo esc_html( number_format( $pending_cashout, 2 ) . ' ' . $currency ); ?>
@@ -518,15 +518,15 @@ ENDJS;
 				<div id="sixarshidsc-cashout-wrap" style="margin-block-end:1.5rem;">
 					<?php if ( $available > 0 && ! $has_iban ) : ?>
 						<p class="arshid6social-settings-desc" style="color:var(--sn-color-warning,#d97706);">
-							<?php esc_html_e( 'Please save your IBAN above before requesting a cashout.', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Please save your IBAN above before requesting a cashout.', '6arshid-social-community-main' ); ?>
 						</p>
 					<?php elseif ( $pending_cashout > 0 ) : ?>
 						<p class="arshid6social-settings-desc" style="color:var(--sn-color-warning,#d97706);">
-							<?php esc_html_e( 'You have a pending cashout request. The administrator will process it shortly.', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'You have a pending cashout request. The administrator will process it shortly.', '6arshid-social-community-main' ); ?>
 						</p>
 					<?php elseif ( $available <= 0 ) : ?>
 						<p class="arshid6social-settings-desc">
-							<?php esc_html_e( 'Payouts are processed manually by the site administrator to the IBAN you provided above.', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Payouts are processed manually by the site administrator to the IBAN you provided above.', '6arshid-social-community-main' ); ?>
 						</p>
 					<?php else : ?>
 						<button
@@ -540,7 +540,7 @@ ENDJS;
 							<?php
 							echo esc_html( sprintf(
 								/* translators: %1$s = formatted amount, %2$s = currency */
-								__( 'Request Cashout — %1$s %2$s', '6arshid-social-community' ),
+								__( 'Request Cashout — %1$s %2$s', '6arshid-social-community-main' ),
 								number_format( $available, 2 ),
 								$currency
 							) );
@@ -554,18 +554,18 @@ ENDJS;
 				<div style="overflow-x:auto;">
 					<?php if ( empty( $rows ) ) : ?>
 						<p class="arshid6social-settings-desc" style="text-align:center;padding:1.5rem 0;">
-							<?php esc_html_e( 'No transactions yet.', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'No transactions yet.', '6arshid-social-community-main' ); ?>
 						</p>
 					<?php else : ?>
 						<table style="width:100%;border-collapse:collapse;font-size:.875rem;">
 							<thead>
 								<tr style="border-block-end:2px solid var(--sn-border,#e5e7eb);">
-									<th style="padding:.5rem .75rem;text-align:start;color:var(--sn-text-muted,#6b7280);font-weight:600;"><?php esc_html_e( 'Date', '6arshid-social-community' ); ?></th>
-									<th style="padding:.5rem .75rem;text-align:start;color:var(--sn-text-muted,#6b7280);font-weight:600;"><?php esc_html_e( 'Type', '6arshid-social-community' ); ?></th>
-									<th style="padding:.5rem .75rem;text-align:end;color:var(--sn-text-muted,#6b7280);font-weight:600;"><?php esc_html_e( 'Amount', '6arshid-social-community' ); ?></th>
-									<th style="padding:.5rem .75rem;text-align:end;color:var(--sn-text-muted,#6b7280);font-weight:600;"><?php esc_html_e( 'Fee', '6arshid-social-community' ); ?></th>
-									<th style="padding:.5rem .75rem;text-align:end;color:var(--sn-text-muted,#6b7280);font-weight:600;"><?php esc_html_e( 'Net', '6arshid-social-community' ); ?></th>
-									<th style="padding:.5rem .75rem;text-align:start;color:var(--sn-text-muted,#6b7280);font-weight:600;"><?php esc_html_e( 'Status', '6arshid-social-community' ); ?></th>
+									<th style="padding:.5rem .75rem;text-align:start;color:var(--sn-text-muted,#6b7280);font-weight:600;"><?php esc_html_e( 'Date', '6arshid-social-community-main' ); ?></th>
+									<th style="padding:.5rem .75rem;text-align:start;color:var(--sn-text-muted,#6b7280);font-weight:600;"><?php esc_html_e( 'Type', '6arshid-social-community-main' ); ?></th>
+									<th style="padding:.5rem .75rem;text-align:end;color:var(--sn-text-muted,#6b7280);font-weight:600;"><?php esc_html_e( 'Amount', '6arshid-social-community-main' ); ?></th>
+									<th style="padding:.5rem .75rem;text-align:end;color:var(--sn-text-muted,#6b7280);font-weight:600;"><?php esc_html_e( 'Fee', '6arshid-social-community-main' ); ?></th>
+									<th style="padding:.5rem .75rem;text-align:end;color:var(--sn-text-muted,#6b7280);font-weight:600;"><?php esc_html_e( 'Net', '6arshid-social-community-main' ); ?></th>
+									<th style="padding:.5rem .75rem;text-align:start;color:var(--sn-text-muted,#6b7280);font-weight:600;"><?php esc_html_e( 'Status', '6arshid-social-community-main' ); ?></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -607,14 +607,14 @@ ENDJS;
 
 		<?php
 		// translators: %1$s is the cashout amount formatted as a number, %2$s is the currency code.
-		$cashout_confirm_txt = sprintf( __( 'Request cashout of %1$s %2$s? The admin will transfer it to your IBAN.', '6arshid-social-community' ), number_format( $available, 2 ), $currency );
+		$cashout_confirm_txt = sprintf( __( 'Request cashout of %1$s %2$s? The admin will transfer it to your IBAN.', '6arshid-social-community-main' ), number_format( $available, 2 ), $currency );
 		$js_cashout  = '(function(){';
 		$js_cashout .= 'var ajaxUrl=(window.ARSHID6SOCIALConfig&&window.ARSHID6SOCIALConfig.ajaxUrl)||' . wp_json_encode( admin_url( 'admin-ajax.php' ) ) . ';';
 		$js_cashout .= 'var txtConfirm=' . wp_json_encode( $cashout_confirm_txt ) . ';';
-		$js_cashout .= 'var txtSubmitting=' . wp_json_encode( __( 'Submitting…', '6arshid-social-community' ) ) . ';';
-		$js_cashout .= 'var txtSuccess=' . wp_json_encode( __( 'Cashout requested! The admin will process it shortly.', '6arshid-social-community' ) ) . ';';
-		$js_cashout .= 'var txtError=' . wp_json_encode( __( 'Error. Please try again.', '6arshid-social-community' ) ) . ';';
-		$js_cashout .= 'var txtNetError=' . wp_json_encode( __( 'Network error. Please try again.', '6arshid-social-community' ) ) . ';';
+		$js_cashout .= 'var txtSubmitting=' . wp_json_encode( __( 'Submitting…', '6arshid-social-community-main' ) ) . ';';
+		$js_cashout .= 'var txtSuccess=' . wp_json_encode( __( 'Cashout requested! The admin will process it shortly.', '6arshid-social-community-main' ) ) . ';';
+		$js_cashout .= 'var txtError=' . wp_json_encode( __( 'Error. Please try again.', '6arshid-social-community-main' ) ) . ';';
+		$js_cashout .= 'var txtNetError=' . wp_json_encode( __( 'Network error. Please try again.', '6arshid-social-community-main' ) ) . ';';
 		$js_cashout .= <<<'ENDJS'
 var btn=document.getElementById('sixarshidsc-cashout-btn');if(!btn)return;
 var msgEl=document.getElementById('sixarshidsc-cashout-msg');
@@ -702,47 +702,47 @@ ENDJS;
 			admin_url( 'admin.php' )
 		);
 		?>
-		<h2 style="margin-top:0;"><?php esc_html_e( 'Creator Payouts — IBAN List', '6arshid-social-community' ); ?></h2>
+		<h2 style="margin-top:0;"><?php esc_html_e( 'Creator Payouts — IBAN List', '6arshid-social-community-main' ); ?></h2>
 		<p class="description">
-			<?php esc_html_e( 'Creators who have saved their bank IBAN. Use this list to process manual bank transfers. IBANs are stored encrypted and only visible to administrators.', '6arshid-social-community' ); ?>
+			<?php esc_html_e( 'Creators who have saved their bank IBAN. Use this list to process manual bank transfers. IBANs are stored encrypted and only visible to administrators.', '6arshid-social-community-main' ); ?>
 		</p>
 
 		<form method="get" style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
 			<input type="hidden" name="page" value="arshid6social-monetization" />
 			<input type="hidden" name="tab"  value="payouts" />
 			<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>"
-				placeholder="<?php esc_attr_e( 'Search by name or email…', '6arshid-social-community' ); ?>"
+				placeholder="<?php esc_attr_e( 'Search by name or email…', '6arshid-social-community-main' ); ?>"
 				style="padding:5px 9px;border:1px solid #8c8f94;border-radius:4px;min-width:260px;" />
-			<?php submit_button( __( 'Search', '6arshid-social-community' ), 'secondary', '', false, array( 'style' => 'padding:4px 12px;' ) ); ?>
+			<?php submit_button( __( 'Search', '6arshid-social-community-main' ), 'secondary', '', false, array( 'style' => 'padding:4px 12px;' ) ); ?>
 			<?php if ( $search ) : ?>
-				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'arshid6social-monetization', 'tab' => 'payouts' ), admin_url( 'admin.php' ) ) ); ?>" class="button"><?php esc_html_e( 'Clear', '6arshid-social-community' ); ?></a>
+				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'arshid6social-monetization', 'tab' => 'payouts' ), admin_url( 'admin.php' ) ) ); ?>" class="button"><?php esc_html_e( 'Clear', '6arshid-social-community-main' ); ?></a>
 			<?php endif; ?>
 		</form>
 
 		<p class="description" style="margin-bottom:8px;">
 			<?php
 			/* translators: %d: total number of creators */
-			printf( esc_html__( '%d creator(s) with saved IBAN.', '6arshid-social-community' ), (int) $total );
+			printf( esc_html__( '%d creator(s) with saved IBAN.', '6arshid-social-community-main' ), (int) $total );
 			?>
 		</p>
 
 		<?php if ( empty( $iban_users ) ) : ?>
 			<p class="description" style="padding:1rem;background:#f6f7f7;border-radius:4px;">
-				<?php esc_html_e( 'No creators match the current search.', '6arshid-social-community' ); ?>
+				<?php esc_html_e( 'No creators match the current search.', '6arshid-social-community-main' ); ?>
 			</p>
 		<?php else : ?>
 			<table class="widefat striped" id="sixarshidsc-payout-table">
 				<thead>
 					<tr>
-						<th><?php esc_html_e( 'User', '6arshid-social-community' ); ?></th>
-						<th><?php esc_html_e( 'IBAN', '6arshid-social-community' ); ?></th>
+						<th><?php esc_html_e( 'User', '6arshid-social-community-main' ); ?></th>
+						<th><?php esc_html_e( 'IBAN', '6arshid-social-community-main' ); ?></th>
 						<?php if ( $table_exists ) : ?>
-						<th><?php esc_html_e( 'Available Balance', '6arshid-social-community' ); ?></th>
-						<th><?php esc_html_e( 'Pending Cashout', '6arshid-social-community' ); ?></th>
+						<th><?php esc_html_e( 'Available Balance', '6arshid-social-community-main' ); ?></th>
+						<th><?php esc_html_e( 'Pending Cashout', '6arshid-social-community-main' ); ?></th>
 						<?php endif; ?>
-						<th><?php esc_html_e( 'Address', '6arshid-social-community' ); ?></th>
+						<th><?php esc_html_e( 'Address', '6arshid-social-community-main' ); ?></th>
 						<?php if ( $table_exists ) : ?>
-						<th><?php esc_html_e( 'Action', '6arshid-social-community' ); ?></th>
+						<th><?php esc_html_e( 'Action', '6arshid-social-community-main' ); ?></th>
 						<?php endif; ?>
 					</tr>
 				</thead>
@@ -790,7 +790,7 @@ ENDJS;
 					<td>
 						<strong><?php echo esc_html( $user->display_name ); ?></strong><br />
 						<span style="color:#666;font-size:.85em;"><?php echo esc_html( $user->user_email ); ?></span><br />
-						<a href="<?php echo esc_url( get_edit_user_link( $uid ) ); ?>" style="font-size:.85em;"><?php esc_html_e( 'Edit user', '6arshid-social-community' ); ?></a>
+						<a href="<?php echo esc_url( get_edit_user_link( $uid ) ); ?>" style="font-size:.85em;"><?php esc_html_e( 'Edit user', '6arshid-social-community-main' ); ?></a>
 					</td>
 					<td>
 						<?php if ( '' !== $iban_plain ) : ?>
@@ -798,7 +798,7 @@ ENDJS;
 								<?php echo esc_html( $iban_plain ); ?>
 							</code>
 						<?php else : ?>
-							<em style="color:#999;"><?php esc_html_e( '(encrypted — cannot decrypt)', '6arshid-social-community' ); ?></em>
+							<em style="color:#999;"><?php esc_html_e( '(encrypted — cannot decrypt)', '6arshid-social-community-main' ); ?></em>
 						<?php endif; ?>
 					</td>
 					<?php if ( $table_exists ) : ?>
@@ -823,10 +823,10 @@ ENDJS;
 								data-nonce="<?php echo esc_attr( $admin_nonce ); ?>"
 								data-amount="<?php echo esc_attr( number_format( $pending_cashout, 2 ) . ' ' . $currency ); ?>"
 							>
-								<?php esc_html_e( 'Mark as Paid', '6arshid-social-community' ); ?>
+								<?php esc_html_e( 'Mark as Paid', '6arshid-social-community-main' ); ?>
 							</button>
 						<?php else : ?>
-							<span style="color:#999;font-size:.85em;"><?php esc_html_e( 'No request', '6arshid-social-community' ); ?></span>
+							<span style="color:#999;font-size:.85em;"><?php esc_html_e( 'No request', '6arshid-social-community-main' ); ?></span>
 						<?php endif; ?>
 					</td>
 					<?php endif; ?>
@@ -882,44 +882,44 @@ ENDJS;
 	public function ajax_save_iban(): void {
 		$user_id = get_current_user_id();
 		if ( ! $user_id ) {
-			wp_send_json_error( array( 'message' => __( 'Not logged in.', '6arshid-social-community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'Not logged in.', '6arshid-social-community-main' ) ), 401 );
 		}
 
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, 'sixarshidsc_save_iban_' . $user_id ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
 		}
 
 		$raw_iban = isset( $_POST['iban'] ) ? strtoupper( preg_replace( '/\s+/', '', sanitize_text_field( wp_unslash( $_POST['iban'] ) ) ) ) : '';
 
 		if ( '' === $raw_iban ) {
-			wp_send_json_error( array( 'message' => __( 'IBAN cannot be empty.', '6arshid-social-community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'IBAN cannot be empty.', '6arshid-social-community-main' ) ) );
 		}
 
 		// Basic IBAN format check: 2 letters + 2 digits + up to 30 alphanumeric chars.
 		if ( ! preg_match( '/^[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}$/', $raw_iban ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid IBAN format. Please check and try again.', '6arshid-social-community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid IBAN format. Please check and try again.', '6arshid-social-community-main' ) ) );
 		}
 
 		$encrypted = Monetization_Crypto::encrypt( $raw_iban );
 		if ( '' === $encrypted ) {
-			wp_send_json_error( array( 'message' => __( 'Could not save IBAN securely. Please contact support.', '6arshid-social-community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Could not save IBAN securely. Please contact support.', '6arshid-social-community-main' ) ) );
 		}
 
 		update_user_meta( $user_id, self::IBAN_META, $encrypted );
 
-		wp_send_json_success( array( 'message' => __( 'IBAN saved.', '6arshid-social-community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'IBAN saved.', '6arshid-social-community-main' ) ) );
 	}
 
 	public function ajax_save_address(): void {
 		$user_id = get_current_user_id();
 		if ( ! $user_id ) {
-			wp_send_json_error( array( 'message' => __( 'Not logged in.', '6arshid-social-community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'Not logged in.', '6arshid-social-community-main' ) ), 401 );
 		}
 
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, 'sixarshidsc_save_address_' . $user_id ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
 		}
 
 		$fields = array(
@@ -934,24 +934,24 @@ ENDJS;
 			update_user_meta( $user_id, $meta_key, $value );
 		}
 
-		wp_send_json_success( array( 'message' => __( 'Address saved.', '6arshid-social-community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Address saved.', '6arshid-social-community-main' ) ) );
 	}
 
 	/** Creator requests a cashout of their available balance. */
 	public function ajax_request_cashout(): void {
 		$user_id = get_current_user_id();
 		if ( ! $user_id ) {
-			wp_send_json_error( array( 'message' => __( 'Not logged in.', '6arshid-social-community' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'Not logged in.', '6arshid-social-community-main' ) ), 401 );
 		}
 
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, 'sixarshidsc_request_cashout_' . $user_id ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
 		}
 
 		$has_iban = '' !== (string) get_user_meta( $user_id, self::IBAN_META, true );
 		if ( ! $has_iban ) {
-			wp_send_json_error( array( 'message' => __( 'Please save your IBAN before requesting a cashout.', '6arshid-social-community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Please save your IBAN before requesting a cashout.', '6arshid-social-community-main' ) ) );
 		}
 
 		global $wpdb;
@@ -963,7 +963,7 @@ ENDJS;
 			$user_id
 		) );
 		if ( $pending > 0 ) {
-			wp_send_json_error( array( 'message' => __( 'You already have a pending cashout request.', '6arshid-social-community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'You already have a pending cashout request.', '6arshid-social-community-main' ) ) );
 		}
 
 		// Recalculate available balance server-side.
@@ -980,7 +980,7 @@ ENDJS;
 		$available = $total_income - $paid_out;
 
 		if ( $available <= 0 ) {
-			wp_send_json_error( array( 'message' => __( 'No balance available for cashout.', '6arshid-social-community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No balance available for cashout.', '6arshid-social-community-main' ) ) );
 		}
 
 		$currency = strtoupper( (string) get_option( 'sixarshidsc_currency', 'USD' ) );
@@ -1005,7 +1005,7 @@ ENDJS;
 		wp_send_json_success( array(
 			'message' => sprintf(
 				/* translators: %1$s = amount, %2$s = currency */
-				__( 'Cashout of %1$s %2$s requested! The admin will transfer it to your IBAN.', '6arshid-social-community' ),
+				__( 'Cashout of %1$s %2$s requested! The admin will transfer it to your IBAN.', '6arshid-social-community-main' ),
 				number_format( $available, 2 ),
 				$currency
 			),
@@ -1072,10 +1072,10 @@ ENDJS;
 
 	private function type_label( string $type ): string {
 		$map = array(
-			'subscription' => __( 'Subscription', '6arshid-social-community' ),
-			'ppv'          => __( 'Pay-per-view', '6arshid-social-community' ),
-			'refund'       => __( 'Refund', '6arshid-social-community' ),
-			'payout'       => __( 'Payout', '6arshid-social-community' ),
+			'subscription' => __( 'Subscription', '6arshid-social-community-main' ),
+			'ppv'          => __( 'Pay-per-view', '6arshid-social-community-main' ),
+			'refund'       => __( 'Refund', '6arshid-social-community-main' ),
+			'payout'       => __( 'Payout', '6arshid-social-community-main' ),
 		);
 		return $map[ $type ] ?? ucfirst( $type );
 	}

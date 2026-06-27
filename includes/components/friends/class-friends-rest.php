@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Friends;
 
 /**
@@ -85,7 +85,7 @@ class Friends_REST extends \WP_REST_Controller {
 		}
 		$target = absint( $request['id'] );
 		if ( $target === get_current_user_id() ) {
-			return new \WP_Error( 'arshid6social_self_follow', __( 'You cannot follow yourself.', '6arshid-social-community' ), array( 'status' => 400 ) );
+			return new \WP_Error( 'arshid6social_self_follow', __( 'You cannot follow yourself.', '6arshid-social-community-main' ), array( 'status' => 400 ) );
 		}
 		if ( ! get_userdata( $target ) ) {
 			return true; // Target user not found; let the callback return a 404.

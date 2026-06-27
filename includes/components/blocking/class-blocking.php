@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Blocking;
 
 /**
@@ -66,7 +66,7 @@ class Blocking {
 
 	public function shortcode_block_list( array $atts ): string {
 		if ( ! is_user_logged_in() ) {
-			return '<p>' . esc_html__( 'You must be logged in to view your block list.', '6arshid-social-community' ) . '</p>';
+			return '<p>' . esc_html__( 'You must be logged in to view your block list.', '6arshid-social-community-main' ) . '</p>';
 		}
 
 		$user_id  = get_current_user_id();
@@ -189,7 +189,7 @@ class Blocking {
 
 	private function nonce_check(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
 		}
 	}
 
@@ -205,11 +205,11 @@ class Blocking {
 		$friends  = ARSHID6SOCIAL()->component( 'friends' );
 
 		if ( ! $friends || ! $target || $target === $current ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid request.', '6arshid-social-community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid request.', '6arshid-social-community-main' ) ) );
 		}
 
 		if ( ! arshid6social_check_rate_limit( 'arshid6social_rl_block', $current, 20 ) ) {
-			wp_send_json_error( array( 'message' => __( 'Too many block actions. Please wait.', '6arshid-social-community' ) ), 429 );
+			wp_send_json_error( array( 'message' => __( 'Too many block actions. Please wait.', '6arshid-social-community-main' ) ), 429 );
 		}
 
 		global $wpdb;
@@ -219,7 +219,7 @@ class Blocking {
 
 		if ( ! $blocked && ! $friends->is_blocked( $current, $target ) ) {
 			wp_send_json_error( array(
-				'message' => __( 'Could not block user.', '6arshid-social-community' ),
+				'message' => __( 'Could not block user.', '6arshid-social-community-main' ),
 				'db_error' => $wpdb->last_error,
 				'target'   => $target,
 				'current'  => $current,
@@ -229,7 +229,7 @@ class Blocking {
 
 		wp_send_json_success( array(
 			'blocked' => true,
-			'message' => __( 'User blocked.', '6arshid-social-community' ),
+			'message' => __( 'User blocked.', '6arshid-social-community-main' ),
 		) );
 	}
 
@@ -245,7 +245,7 @@ class Blocking {
 
 		wp_send_json_success( array(
 			'blocked' => false,
-			'message' => __( 'User unblocked.', '6arshid-social-community' ),
+			'message' => __( 'User unblocked.', '6arshid-social-community-main' ),
 		) );
 	}
 
@@ -349,13 +349,13 @@ class Blocking {
 				admin_url( 'admin.php?action=arshid6social_site_unblock&user=' . $user->ID ),
 				'arshid6social_site_unblock_' . $user->ID
 			);
-			$actions['arshid6social_site_unblock'] = '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Site-Unblock', '6arshid-social-community' ) . '</a>';
+			$actions['arshid6social_site_unblock'] = '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Site-Unblock', '6arshid-social-community-main' ) . '</a>';
 		} else {
 			$url = wp_nonce_url(
 				admin_url( 'admin.php?action=arshid6social_site_block&user=' . $user->ID ),
 				'arshid6social_site_block_' . $user->ID
 			);
-			$actions['arshid6social_site_block'] = '<a href="' . esc_url( $url ) . '" style="color:#dc2626">' . esc_html__( 'Site-Block', '6arshid-social-community' ) . '</a>';
+			$actions['arshid6social_site_block'] = '<a href="' . esc_url( $url ) . '" style="color:#dc2626">' . esc_html__( 'Site-Block', '6arshid-social-community-main' ) . '</a>';
 		}
 
 		return $actions;

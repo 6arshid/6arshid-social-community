@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Admin;
 
 /**
@@ -45,11 +45,11 @@ final class Sample_Data {
 
 	public function ajax_import(): void {
 		if ( ! check_ajax_referer( 'arshid6social_sample_data', 'nonce', false ) || ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
 		}
 
 		if ( get_option( 'arshid6social_sample_data_imported' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Sample data already exists. Delete it first.', '6arshid-social-community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Sample data already exists. Delete it first.', '6arshid-social-community-main' ) ) );
 		}
 
 		$ids = $this->import();
@@ -60,7 +60,7 @@ final class Sample_Data {
 		wp_send_json_success( array(
 			'message' => sprintf(
 				/* translators: counts */
-				__( 'Imported: %1$d users, %2$d activities, %3$d notifications, %4$d listings, %5$d groups, %6$d bookmarks, %7$d messages, %8$d stories, %9$d ad.', '6arshid-social-community' ),
+				__( 'Imported: %1$d users, %2$d activities, %3$d notifications, %4$d listings, %5$d groups, %6$d bookmarks, %7$d messages, %8$d stories, %9$d ad.', '6arshid-social-community-main' ),
 				count( $ids['users'] ),
 				count( $ids['activities'] ),
 				count( $ids['notifications'] ),
@@ -76,11 +76,11 @@ final class Sample_Data {
 
 	public function ajax_delete(): void {
 		if ( ! check_ajax_referer( 'arshid6social_sample_data', 'nonce', false ) || ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
 		}
 
 		if ( ! get_option( 'arshid6social_sample_data_imported' ) ) {
-			wp_send_json_error( array( 'message' => __( 'No sample data found to delete.', '6arshid-social-community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No sample data found to delete.', '6arshid-social-community-main' ) ) );
 		}
 
 		$this->delete();
@@ -88,7 +88,7 @@ final class Sample_Data {
 		delete_option( 'arshid6social_sample_data_imported' );
 		delete_option( 'arshid6social_sample_data_ids' );
 
-		wp_send_json_success( array( 'message' => __( 'Sample data deleted successfully.', '6arshid-social-community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Sample data deleted successfully.', '6arshid-social-community-main' ) ) );
 	}
 
 	// ── Data arrays ───────────────────────────────────────────────────────────

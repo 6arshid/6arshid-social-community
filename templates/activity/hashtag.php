@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Hashtag archive page.
  *
@@ -24,7 +24,7 @@ $display_tag = '#' . $hashtag;
 			echo esc_html(
 				sprintf(
 					/* translators: %s: hashtag with # symbol */
-					__( 'All activity tagged with %s', '6arshid-social-community' ),
+					__( 'All activity tagged with %s', '6arshid-social-community-main' ),
 					$display_tag
 				)
 			);
@@ -37,7 +37,7 @@ $display_tag = '#' . $hashtag;
 		data-per-page="10">
 		<div class="arshid6social-activity-feed" aria-label="<?php
 		/* translators: %s: hashtag */
-		echo esc_attr( sprintf( __( 'Activity tagged %s', '6arshid-social-community' ), $display_tag ) ); ?>"></div>
+		echo esc_attr( sprintf( __( 'Activity tagged %s', '6arshid-social-community-main' ), $display_tag ) ); ?>"></div>
 		<div class="arshid6social-load-more-sentinel" style="height:1px;"></div>
 	</div>
 

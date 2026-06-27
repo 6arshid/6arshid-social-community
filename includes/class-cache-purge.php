@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social;
 
 /**
@@ -29,14 +29,14 @@ class Cache_Purge {
 				admin_url( 'admin-post.php?action=arshid6social_purge_cache' ),
 				'arshid6social_purge_cache'
 			),
-			'meta'  => array( 'title' => __( 'Purge all 6Arshid Social Community caches', '6arshid-social-community' ) ),
+			'meta'  => array( 'title' => __( 'Purge all 6Arshid Social Community caches', '6arshid-social-community-main' ) ),
 		) );
 	}
 
 	/** Handle the purge request. */
 	public static function handle(): void {
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Not allowed.', '6arshid-social-community' ), 403 );
+			wp_die( esc_html__( 'Not allowed.', '6arshid-social-community-main' ), 403 );
 		}
 		check_admin_referer( 'arshid6social_purge_cache' );
 
@@ -52,7 +52,7 @@ class Cache_Purge {
 			return;
 		}
 		echo '<div class="notice notice-success is-dismissible"><p>'
-			. esc_html__( '6Arshid Social Community: all caches purged successfully.', '6arshid-social-community' )
+			. esc_html__( '6Arshid Social Community: all caches purged successfully.', '6arshid-social-community-main' )
 			. '</p></div>';
 	}
 
