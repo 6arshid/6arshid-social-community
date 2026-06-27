@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Marketplace homepage template.
  *

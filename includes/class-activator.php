@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 namespace Arshid6Social;
 
 /**
@@ -424,6 +424,8 @@ class Activator {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		$charset_collate = $wpdb->get_charset_collate();
+
+		$tables = array();
 
 		// ── xProfile field groups ───────────────────────────────────────────────
 		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_xprofile_groups (

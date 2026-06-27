@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Story viewer overlay — full-screen lightbox rendered once per page.
  * JavaScript (stories.js) populates and controls it.

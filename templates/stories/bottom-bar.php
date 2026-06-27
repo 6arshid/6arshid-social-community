@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Stories bottom bar — fixed horizontal strip at the bottom of every plugin page.
  *

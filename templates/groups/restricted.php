@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Shown when a non-member tries to access a private/hidden group.
  *

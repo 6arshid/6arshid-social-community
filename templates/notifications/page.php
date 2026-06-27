@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Standalone notifications page — rendered by [arshid6social_notifications] shortcode.
  *

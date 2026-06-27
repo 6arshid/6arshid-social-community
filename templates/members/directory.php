@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Member directory template.
  * Rendered both from shortcode (inside WP page) and from rewrite-rule handler.

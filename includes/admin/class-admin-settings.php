@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 namespace Arshid6Social\Admin;
 
 /**
@@ -352,7 +352,7 @@ ENDJS;
 			$current_tab = 'general';
 		}
 
-		$option_group = 'ARSHID6SOCIAL_' . $current_tab;
+		$option_group = 'arshid6social_' . $current_tab;
 		?>
 		<div class="wrap arshid6social-admin-settings">
 			<h1><?php esc_html_e( 'Social Network Settings', '6arshid-social-community-main' ); ?></h1>
@@ -1083,7 +1083,7 @@ ENDJS;
 		// Reuse the already-booted Stories instance to avoid duplicate hooks.
 		$tray        = array();
 		$stories_obj = \Arshid6Social\Plugin::instance()->component( 'stories' );
-		if ( $stories_obj && method_exists( $stories_obj, 'get_tray' ) ) {
+		if ( $stories_obj instanceof \Arshid6Social\Components\Stories\Stories ) {
 			$tray = $stories_obj->get_tray( $viewer_id );
 		}
 		?>

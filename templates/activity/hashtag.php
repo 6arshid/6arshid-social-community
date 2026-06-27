@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Hashtag archive page.
  *
