@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * 6Arshid Social Community theme — functions.php
  *

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Plugin Name:       6Arshid Social Community
  * Plugin URI:        https://6arshid.com/apps/wordpress/6arshid-social-community

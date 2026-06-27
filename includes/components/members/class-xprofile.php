@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 namespace Arshid6Social\Components\Members;
 
 /**
@@ -150,6 +150,11 @@ class XProfile {
 	 */
 	public function save_field_value( int $user_id, int $field_id, string $value ): void {
 		global $wpdb;
+
+		$table = $wpdb->prefix . 'sn_xprofile_fields';
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '$table'" ) !== $table ) { // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
+			return;
+		}
 
 		$field = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}sn_xprofile_fields WHERE id = %d", $field_id ),

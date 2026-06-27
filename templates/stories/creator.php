@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Story creator modal — shown when user clicks "Add Story".
  *

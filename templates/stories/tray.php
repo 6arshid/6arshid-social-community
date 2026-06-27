@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Stories tray — horizontal scrollable row displayed above the activity feed.
  *
