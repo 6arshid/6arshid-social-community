@@ -821,7 +821,6 @@ input.addEventListener('input',function(){
 })();
 ENDJS;
 		wp_add_inline_script( 'arshid6social-main', $js_reg );
-		<?php
 		$this->splash_wrap_end();
 		return ob_get_clean();
 	}
