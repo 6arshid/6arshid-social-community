@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Global helper functions for 6Arshid Social Community.
  *

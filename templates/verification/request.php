@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Verification request form — shortcode [sn_verification_request].
  *

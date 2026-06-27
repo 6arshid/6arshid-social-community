@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Create group form template.
  *

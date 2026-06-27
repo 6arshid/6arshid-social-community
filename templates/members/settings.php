@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Member settings template — personal preferences.
  *

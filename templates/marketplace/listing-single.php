@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Single listing detail page template.
  *

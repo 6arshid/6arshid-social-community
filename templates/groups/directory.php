@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Groups directory template.
  * Never calls get_header/get_footer — rendered inside a WP page via shortcode.

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Single activity post — injected via the_content filter.
  *

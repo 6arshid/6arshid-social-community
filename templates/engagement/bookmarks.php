@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Saved Posts page template — rendered by [arshid6social_bookmarks] shortcode.
  *

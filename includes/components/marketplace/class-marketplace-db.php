@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 namespace Arshid6Social\Components\Marketplace;
 
 /**
