@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Messages inbox template.
  * Rendered inside a WP page via [arshid6social_messages] shortcode — no get_header/get_footer.
