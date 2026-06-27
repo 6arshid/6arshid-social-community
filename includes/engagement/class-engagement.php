@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Engagement;
 
 /**
@@ -227,19 +227,19 @@ class Engagement {
 				'maxVisible' => (int) get_option( 'arshid6social_eng_social_share_max_visible', 8 ),
 				'useNative'  => (bool) get_option( 'arshid6social_eng_social_share_native', true ),
 				'i18n'       => array(
-					'share'          => __( 'Share', '6arshid-social-community' ),
-					'shareTitle'     => __( 'Share this post', '6arshid-social-community' ),
-					'shareTo'        => __( 'Share to', '6arshid-social-community' ),
-					'search'         => __( 'Search networks…', '6arshid-social-community' ),
-					'close'          => __( 'Close', '6arshid-social-community' ),
-					'copied'         => __( 'Link copied!', '6arshid-social-community' ),
-					'more'           => __( 'Show more networks', '6arshid-social-community' ),
-					'sendAsMessage'  => __( 'Send as Message', '6arshid-social-community' ),
-					'dmSearchPlaceholder' => __( 'Search users…', '6arshid-social-community' ),
-					'dmSent'         => __( 'Message sent!', '6arshid-social-community' ),
-					'dmError'        => __( 'Could not send message.', '6arshid-social-community' ),
-					'dmLoginRequired' => __( 'You must be logged in to send messages.', '6arshid-social-community' ),
-					'back'           => __( 'Back', '6arshid-social-community' ),
+					'share'          => __( 'Share', '6arshid social community' ),
+					'shareTitle'     => __( 'Share this post', '6arshid social community' ),
+					'shareTo'        => __( 'Share to', '6arshid social community' ),
+					'search'         => __( 'Search networks…', '6arshid social community' ),
+					'close'          => __( 'Close', '6arshid social community' ),
+					'copied'         => __( 'Link copied!', '6arshid social community' ),
+					'more'           => __( 'Show more networks', '6arshid social community' ),
+					'sendAsMessage'  => __( 'Send as Message', '6arshid social community' ),
+					'dmSearchPlaceholder' => __( 'Search users…', '6arshid social community' ),
+					'dmSent'         => __( 'Message sent!', '6arshid social community' ),
+					'dmError'        => __( 'Could not send message.', '6arshid social community' ),
+					'dmLoginRequired' => __( 'You must be logged in to send messages.', '6arshid social community' ),
+					'back'           => __( 'Back', '6arshid social community' ),
 				),
 			);
 		}
@@ -249,8 +249,8 @@ class Engagement {
 			$localize_data['socialEmbeds'] = array(
 				'lazyLoad'   => (bool) get_option( 'arshid6social_eng_embed_lazy_load', '1' ),
 				'i18n'       => array(
-					'dismissEmbed' => __( 'Remove embed preview', '6arshid-social-community' ),
-					'loadEmbed'    => __( 'Click to load', '6arshid-social-community' ),
+					'dismissEmbed' => __( 'Remove embed preview', '6arshid social community' ),
+					'loadEmbed'    => __( 'Click to load', '6arshid social community' ),
 				),
 			);
 		}

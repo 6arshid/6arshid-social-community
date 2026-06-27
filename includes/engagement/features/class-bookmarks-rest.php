@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Engagement\Features;
 
 /**
@@ -116,7 +116,7 @@ class Bookmarks_REST {
 		$coll_id     = absint( $req->get_param( 'collection_id' ) ) ?: null;
 
 		if ( ! $object_id ) {
-			return new \WP_REST_Response( array( 'message' => __( 'object_id required.', '6arshid-social-community' ) ), 400 );
+			return new \WP_REST_Response( array( 'message' => __( 'object_id required.', '6arshid social community' ) ), 400 );
 		}
 
 		$ok = $f->add( get_current_user_id(), $object_id, $object_type, $coll_id );

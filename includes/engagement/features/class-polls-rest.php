@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Engagement\Features;
 
 /**
@@ -106,7 +106,7 @@ class Polls_REST {
 
 		return $poll_id
 			? new \WP_REST_Response( array( 'poll_id' => $poll_id, 'results' => $f->get_results( $poll_id, get_current_user_id() ) ), 201 )
-			: new \WP_REST_Response( array( 'message' => __( 'Failed to create poll.', '6arshid-social-community' ) ), 400 );
+			: new \WP_REST_Response( array( 'message' => __( 'Failed to create poll.', '6arshid social community' ) ), 400 );
 	}
 
 	public function get( \WP_REST_Request $req ): \WP_REST_Response {
@@ -166,7 +166,7 @@ class Polls_REST {
 		header( 'Pragma: no-cache' );
 
 		$out = fopen( 'php://output', 'w' );
-		fputcsv( $out, array( __( 'Option', '6arshid-social-community' ), __( 'Votes', '6arshid-social-community' ), __( 'Percentage', '6arshid-social-community' ) ) );
+		fputcsv( $out, array( __( 'Option', '6arshid social community' ), __( 'Votes', '6arshid social community' ), __( 'Percentage', '6arshid social community' ) ) );
 
 		foreach ( $results['options'] as $opt ) {
 			fputcsv( $out, array( $opt['text'], $opt['voteCount'] ?? 0, ( $opt['percentage'] ?? 0 ) . '%' ) );
@@ -175,7 +175,7 @@ class Polls_REST {
 		// If public voting, append voter list.
 		if ( ! $results['anonymous'] ) {
 			fputcsv( $out, array() );
-			fputcsv( $out, array( __( 'Voter', '6arshid-social-community' ), __( 'Option', '6arshid-social-community' ), __( 'Voted At', '6arshid-social-community' ) ) );
+			fputcsv( $out, array( __( 'Voter', '6arshid social community' ), __( 'Option', '6arshid social community' ), __( 'Voted At', '6arshid social community' ) ) );
 
 			$votes = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT v.user_id, v.voted_at, o.option_text

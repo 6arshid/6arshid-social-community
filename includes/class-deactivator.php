@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social;
 
 /**
@@ -33,7 +33,7 @@ class Deactivator {
 	 * default WordPress theme so the site doesn't break when the plugin is off.
 	 */
 	private static function maybe_revert_bundled_theme(): void {
-		if ( get_stylesheet() !== '6arshid-social-community' ) {
+		if ( get_stylesheet() !== '6arshid social community' ) {
 			return;
 		}
 

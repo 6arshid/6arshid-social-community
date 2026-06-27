@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Stories bottom bar — fixed horizontal strip at the bottom of every plugin page.
  *
@@ -15,13 +15,13 @@ if ( empty( $stories ) && ! is_user_logged_in() ) {
 	return;
 }
 ?>
-<div class="sn-stories-bottom-bar" id="sn-stories-bottom-bar" aria-label="<?php esc_attr_e( 'Stories', '6arshid-social-community' ); ?>">
+<div class="sn-stories-bottom-bar" id="sn-stories-bottom-bar" aria-label="<?php esc_attr_e( 'Stories', '6arshid social community' ); ?>">
 	<div class="sn-stories-bottom-bar__inner" role="list">
 
 		<?php if ( is_user_logged_in() ) : ?>
 		<div class="sn-story-bubble sn-story-bubble--own" role="listitem">
 			<button class="sn-story-bubble__avatar-btn" id="sn-add-story-btn-bar"
-			        aria-label="<?php esc_attr_e( 'Add Story', '6arshid-social-community' ); ?>">
+			        aria-label="<?php esc_attr_e( 'Add Story', '6arshid social community' ); ?>">
 				<span class="sn-story-bubble__ring sn-story-bubble__ring--add"></span>
 				<img class="sn-story-bubble__avatar"
 				     src="<?php echo esc_url( get_avatar_url( $viewer_id, array( 'size' => 48 ) ) ); ?>"
@@ -29,7 +29,7 @@ if ( empty( $stories ) && ! is_user_logged_in() ) {
 				     width="48" height="48">
 				<span class="sn-story-bubble__add-icon" aria-hidden="true">+</span>
 			</button>
-			<span class="sn-story-bubble__name"><?php esc_html_e( 'Your Story', '6arshid-social-community' ); ?></span>
+			<span class="sn-story-bubble__name"><?php esc_html_e( 'Your Story', '6arshid social community' ); ?></span>
 		</div>
 		<?php endif; ?>
 
@@ -45,7 +45,7 @@ if ( empty( $stories ) && ! is_user_logged_in() ) {
 		     data-user-id="<?php echo esc_attr( $story_user_id ); ?>">
 			<button class="sn-story-bubble__avatar-btn sn-open-story"
 			        data-story-id="<?php echo esc_attr( $story->id ); ?>"
-			        aria-label="<?php echo esc_attr( sprintf( /* translators: %s: user display name */ __( '%s\'s story', '6arshid-social-community' ), $story->display_name ) ); ?>">
+			        aria-label="<?php echo esc_attr( sprintf( /* translators: %s: user display name */ __( '%s\'s story', '6arshid social community' ), $story->display_name ) ); ?>">
 				<span class="sn-story-bubble__ring <?php echo esc_attr( $ring_class ); ?>"></span>
 				<img class="sn-story-bubble__avatar"
 				     src="<?php echo esc_url( get_avatar_url( $story_user_id, array( 'size' => 48 ) ) ); ?>"

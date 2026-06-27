@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Member profile template.
  *
@@ -29,7 +29,7 @@ if ( ! $is_self && is_user_logged_in() ) {
 	$_friends_comp = ARSHID6SOCIAL()->component( 'friends' );
 	if ( $_friends_comp && $_friends_comp->is_blocked( get_current_user_id(), $profile_user->ID ) ) {
 		echo '<div class="arshid6social-wrap"><div class="arshid6social-container" style="padding-block:4rem;text-align:center;">';
-		echo '<p>' . esc_html__( 'This profile is not available.', '6arshid-social-community' ) . '</p>';
+		echo '<p>' . esc_html__( 'This profile is not available.', '6arshid social community' ) . '</p>';
 		echo '</div></div>';
 		return;
 	}
@@ -42,17 +42,17 @@ if ( $_profile_suspended ) {
 	echo '<div class="arshid6social-suspended-notice">';
 	echo '<div class="arshid6social-suspended-notice__icon">&#128683;</div>';
 	if ( $is_self ) {
-		echo '<h2 class="arshid6social-suspended-notice__title">' . esc_html__( 'Your Account is Suspended', '6arshid-social-community' ) . '</h2>';
-		echo '<p class="arshid6social-suspended-notice__msg">' . esc_html__( 'Your account has been suspended. Please contact an administrator for more information.', '6arshid-social-community' ) . '</p>';
+		echo '<h2 class="arshid6social-suspended-notice__title">' . esc_html__( 'Your Account is Suspended', '6arshid social community' ) . '</h2>';
+		echo '<p class="arshid6social-suspended-notice__msg">' . esc_html__( 'Your account has been suspended. Please contact an administrator for more information.', '6arshid social community' ) . '</p>';
 		if ( $_suspend_reason && 'auto_threshold' !== $_suspend_reason ) {
 			echo '<p class="arshid6social-suspended-notice__msg" style="font-weight:600;">' . esc_html( $_suspend_reason ) . '</p>';
 		}
 	} else {
-		echo '<h2 class="arshid6social-suspended-notice__title">' . esc_html__( 'Account Suspended', '6arshid-social-community' ) . '</h2>';
-		echo '<p class="arshid6social-suspended-notice__msg">' . esc_html__( 'This account has been suspended and its content is not available.', '6arshid-social-community' ) . '</p>';
+		echo '<h2 class="arshid6social-suspended-notice__title">' . esc_html__( 'Account Suspended', '6arshid social community' ) . '</h2>';
+		echo '<p class="arshid6social-suspended-notice__msg">' . esc_html__( 'This account has been suspended and its content is not available.', '6arshid social community' ) . '</p>';
 	}
 	echo '<div class="arshid6social-suspended-notice__actions">';
-	echo '<a href="' . esc_url( home_url( '/' ) ) . '" class="arshid6social-btn arshid6social-btn-primary">' . esc_html__( 'Back to Home', '6arshid-social-community' ) . '</a>';
+	echo '<a href="' . esc_url( home_url( '/' ) ) . '" class="arshid6social-btn arshid6social-btn-primary">' . esc_html__( 'Back to Home', '6arshid social community' ) . '</a>';
 	if ( $_viewer_is_admin ) {
 		$_unsuspend_url = add_query_arg(
 			array(
@@ -63,7 +63,7 @@ if ( $_profile_suspended ) {
 			),
 			admin_url( 'admin.php' )
 		);
-		echo '<a href="' . esc_url( admin_url( 'admin.php?page=arshid6social-members' ) ) . '" class="arshid6social-btn arshid6social-btn-secondary">' . esc_html__( 'Manage in Admin', '6arshid-social-community' ) . '</a>';
+		echo '<a href="' . esc_url( admin_url( 'admin.php?page=arshid6social-members' ) ) . '" class="arshid6social-btn arshid6social-btn-secondary">' . esc_html__( 'Manage in Admin', '6arshid social community' ) . '</a>';
 	}
 	echo '</div>';
 	echo '</div>';
@@ -74,10 +74,10 @@ if ( $_profile_suspended ) {
 $tabs = apply_filters(
 	'arshid6social_profile_tabs',
 	array(
-		'activity'    => __( 'Activity', '6arshid-social-community' ),
-		'friends'     => __( 'Friends', '6arshid-social-community' ),
-		'groups'      => __( 'Groups', '6arshid-social-community' ),
-		'about'       => __( 'About', '6arshid-social-community' ),
+		'activity'    => __( 'Activity', '6arshid social community' ),
+		'friends'     => __( 'Friends', '6arshid social community' ),
+		'groups'      => __( 'Groups', '6arshid social community' ),
+		'about'       => __( 'About', '6arshid social community' ),
 	),
 	$profile_user
 );
@@ -85,12 +85,12 @@ $tabs = apply_filters(
 if ( $is_self ) {
 	$_notif_comp  = ARSHID6SOCIAL()->component( 'notifications' );
 	$unread_count = $_notif_comp ? $_notif_comp->get_unread_count( get_current_user_id() ) : 0;
-	$notif_label  = __( 'Notifications', '6arshid-social-community' );
+	$notif_label  = __( 'Notifications', '6arshid social community' );
 	if ( $unread_count ) {
 		$notif_label .= ' <span class="arshid6social-badge arshid6social-badge--primary arshid6social-badge--sm">' . esc_html( $unread_count ) . '</span>';
 	}
 	$tabs['notifications'] = $notif_label;
-	$tabs['settings']      = __( 'Settings', '6arshid-social-community' );
+	$tabs['settings']      = __( 'Settings', '6arshid social community' );
 }
 
 $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
@@ -110,7 +110,7 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 				aria-label="<?php
 					printf(
 						/* translators: %s: member name */
-						esc_attr__( '%s cover photo', '6arshid-social-community' ),
+						esc_attr__( '%s cover photo', '6arshid social community' ),
 						esc_attr( $profile_user->display_name )
 					);
 				?>"
@@ -118,8 +118,8 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 				<?php if ( $is_self ) : ?>
 					<button class="arshid6social-cover-edit-btn"
 						onclick="document.getElementById('arshid6social-cover-input').click()"
-						title="<?php esc_attr_e( 'Edit Cover', '6arshid-social-community' ); ?>"
-						aria-label="<?php esc_attr_e( 'Edit Cover', '6arshid-social-community' ); ?>">
+						title="<?php esc_attr_e( 'Edit Cover', '6arshid social community' ); ?>"
+						aria-label="<?php esc_attr_e( 'Edit Cover', '6arshid social community' ); ?>">
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
 					</button>
 					<form id="arshid6social-cover-form" hidden
@@ -141,7 +141,7 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 						width="120" height="120"
 					/>
 					<?php if ( $component->is_user_online( $profile_user->ID ) ) : ?>
-						<span class="arshid6social-online-badge" aria-label="<?php esc_attr_e( 'Online', '6arshid-social-community' ); ?>"></span>
+						<span class="arshid6social-online-badge" aria-label="<?php esc_attr_e( 'Online', '6arshid social community' ); ?>"></span>
 					<?php endif; ?>
 				</div>
 
@@ -150,7 +150,7 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 						<?php echo esc_html( $profile_user->display_name ); ?>
 						<?php if ( $_profile_suspended ) : ?>
 							<span class="arshid6social-badge arshid6social-badge--suspended arshid6social-badge--sm" style="vertical-align:middle;font-size:.65rem;">
-								<?php esc_html_e( 'Suspended', '6arshid-social-community' ); ?>
+								<?php esc_html_e( 'Suspended', '6arshid social community' ); ?>
 							</span>
 						<?php endif; ?>
 						<?php
@@ -159,13 +159,13 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 							echo wp_kses_post( $_verif->get_badge_html( $profile_user->ID ) );
 						elseif ( ! $_verif && get_user_meta( $profile_user->ID, 'arshid6social_verified', true ) ) :
 					?>
-							<span class="arshid6social-verified-badge" title="<?php esc_attr_e( 'Verified Member', '6arshid-social-community' ); ?>" aria-label="<?php esc_attr_e( 'Verified', '6arshid-social-community' ); ?>">&#10003;</span>
+							<span class="arshid6social-verified-badge" title="<?php esc_attr_e( 'Verified Member', '6arshid social community' ); ?>" aria-label="<?php esc_attr_e( 'Verified', '6arshid social community' ); ?>">&#10003;</span>
 						<?php endif; ?>
 					</h1>
 					<div class="arshid6social-profile-stats">
 						<div>
 							<strong><?php echo esc_html( number_format_i18n( $component->get_friend_count( $profile_user->ID ) ) ); ?></strong>
-							<?php esc_html_e( 'Friends', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Friends', '6arshid social community' ); ?>
 						</div>
 					</div>
 				</div>
@@ -175,7 +175,7 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 					<?php if ( $is_self ) : ?>
 						<a href="<?php echo esc_url( $profile_url . 'settings/' ); ?>" class="arshid6social-btn arshid6social-btn--secondary">
 							<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-							<?php esc_html_e( 'Edit Profile', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Edit Profile', '6arshid social community' ); ?>
 						</a>
 						<form id="arshid6social-avatar-form" hidden enctype="multipart/form-data"
 							action="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" method="post">
@@ -185,7 +185,7 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 						</form>
 						<button class="arshid6social-btn arshid6social-btn--secondary" onclick="document.getElementById('arshid6social-avatar-input').click()">
 							<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-							<?php esc_html_e( 'Change Photo', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Change Photo', '6arshid social community' ); ?>
 						</button>
 					<?php elseif ( is_user_logged_in() ) :
 						$friends_comp   = ARSHID6SOCIAL()->component( 'friends' );
@@ -193,22 +193,22 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 							? $friends_comp->get_friendship_status( get_current_user_id(), $profile_user->ID )
 							: 'not_friends';
 						$friend_labels  = array(
-							'not_friends'      => __( 'Add Friend', '6arshid-social-community' ),
-							'pending_sent'     => __( 'Cancel Request', '6arshid-social-community' ),
-							'pending_received' => __( 'Accept Request', '6arshid-social-community' ),
-							'friends'          => __( 'Friends ✓', '6arshid-social-community' ),
+							'not_friends'      => __( 'Add Friend', '6arshid social community' ),
+							'pending_sent'     => __( 'Cancel Request', '6arshid social community' ),
+							'pending_received' => __( 'Accept Request', '6arshid social community' ),
+							'friends'          => __( 'Friends ✓', '6arshid social community' ),
 						);
 					?>
 						<button class="arshid6social-btn arshid6social-btn--primary arshid6social-friend-btn"
 							data-user-id="<?php echo esc_attr( $profile_user->ID ); ?>"
 							data-status="<?php echo esc_attr( $friend_status ); ?>">
 							<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-							<?php echo esc_html( $friend_labels[ $friend_status ] ?? __( 'Add Friend', '6arshid-social-community' ) ); ?>
+							<?php echo esc_html( $friend_labels[ $friend_status ] ?? __( 'Add Friend', '6arshid social community' ) ); ?>
 						</button>
 						<a href="<?php echo esc_url( home_url( '/messages/compose/?to=' . \Arshid6Social\Components\Messages\Messages::get_user_uid( $profile_user->ID ) ) ); ?>"
 							class="arshid6social-btn arshid6social-btn--secondary">
 							<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-							<?php esc_html_e( 'Send Message', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Send Message', '6arshid social community' ); ?>
 						</a>
 						<?php if ( arshid6social_blocking() ) :
 							global $wpdb;
@@ -220,12 +220,12 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 						<?php if ( $current_blocked ) : ?>
 							<button class="arshid6social-btn arshid6social-btn--danger sn--blocked"
 								data-unblock-user-id="<?php echo esc_attr( $profile_user->ID ); ?>">
-								<?php esc_html_e( 'Blocked', '6arshid-social-community' ); ?>
+								<?php esc_html_e( 'Blocked', '6arshid social community' ); ?>
 							</button>
 						<?php else : ?>
 							<button class="arshid6social-btn arshid6social-btn--secondary"
 								data-block-user-id="<?php echo esc_attr( $profile_user->ID ); ?>">
-								<?php esc_html_e( 'Block', '6arshid-social-community' ); ?>
+								<?php esc_html_e( 'Block', '6arshid social community' ); ?>
 							</button>
 						<?php endif; ?>
 						<?php endif; ?>
@@ -233,20 +233,20 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 						<button class="arshid6social-btn arshid6social-btn--ghost arshid6social-btn--sm arshid6social-report-btn arshid6social-profile-report-btn"
 							data-item-id="<?php echo esc_attr( $profile_user->ID ); ?>"
 							data-item-type="profile"
-							title="<?php esc_attr_e( 'Report this profile', '6arshid-social-community' ); ?>">
+							title="<?php esc_attr_e( 'Report this profile', '6arshid social community' ); ?>">
 							<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-							<?php esc_html_e( 'Report', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Report', '6arshid social community' ); ?>
 						</button>
 					<?php else : ?>
 						<a href="<?php echo esc_url( wp_login_url( get_permalink() ) ); ?>" class="arshid6social-btn arshid6social-btn--primary">
-							<?php esc_html_e( 'Connect', '6arshid-social-community' ); ?>
+							<?php esc_html_e( 'Connect', '6arshid social community' ); ?>
 						</a>
 					<?php endif; ?>
 				</div>
 			</div>
 
 			<!-- Tabs -->
-			<nav class="arshid6social-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Profile sections', '6arshid-social-community' ); ?>">
+			<nav class="arshid6social-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Profile sections', '6arshid social community' ); ?>">
 				<?php foreach ( $tabs as $tab_key => $tab_label ) : ?>
 					<a class="arshid6social-tab-link <?php echo ( $active_tab === $tab_key ) ? 'is-active' : ''; ?>"
 						href="<?php echo esc_url( $profile_url . $tab_key . '/' ); ?>"
@@ -280,16 +280,16 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 			<?php $about_bio = $xprofile->get_field_value( $profile_user->ID, 'bio' ); ?>
 			<div class="arshid6social-card arshid6social-card--about" id="arshid6social-about-card">
 				<div class="arshid6social-about-row">
-					<span class="arshid6social-about-label"><?php esc_html_e( 'About', '6arshid-social-community' ); ?></span>
+					<span class="arshid6social-about-label"><?php esc_html_e( 'About', '6arshid social community' ); ?></span>
 					<span class="arshid6social-about-bio" id="arshid6social-bio-display">
 						<?php if ( $about_bio ) : ?>
 							<?php echo wp_kses_post( $about_bio ); ?>
 						<?php else : ?>
-							<span class="arshid6social-text-muted"><?php esc_html_e( 'No bio yet.', '6arshid-social-community' ); ?></span>
+							<span class="arshid6social-text-muted"><?php esc_html_e( 'No bio yet.', '6arshid social community' ); ?></span>
 						<?php endif; ?>
 					</span>
 					<?php if ( $is_self ) : ?>
-						<button type="button" class="arshid6social-btn arshid6social-btn--ghost arshid6social-btn--sm arshid6social-about-edit-btn" id="arshid6social-bio-edit-btn" aria-label="<?php esc_attr_e( 'Edit bio', '6arshid-social-community' ); ?>">
+						<button type="button" class="arshid6social-btn arshid6social-btn--ghost arshid6social-btn--sm arshid6social-about-edit-btn" id="arshid6social-bio-edit-btn" aria-label="<?php esc_attr_e( 'Edit bio', '6arshid social community' ); ?>">
 							<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
 						</button>
 					<?php endif; ?>
@@ -298,8 +298,8 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 				<div id="arshid6social-bio-edit-form" hidden style="padding:.65rem 1rem; border-top:1px solid var(--arshid6social-border);">
 					<textarea id="arshid6social-bio-textarea" class="arshid6social-textarea" rows="3" style="width:100%;box-sizing:border-box;resize:vertical;"><?php echo esc_textarea( $about_bio ); ?></textarea>
 					<div style="display:flex;gap:.5rem;margin-block-start:.5rem;">
-						<button type="button" class="arshid6social-btn arshid6social-btn--primary arshid6social-btn--sm" id="arshid6social-bio-save-btn"><?php esc_html_e( 'Save', '6arshid-social-community' ); ?></button>
-						<button type="button" class="arshid6social-btn arshid6social-btn--ghost arshid6social-btn--sm" id="arshid6social-bio-cancel-btn"><?php esc_html_e( 'Cancel', '6arshid-social-community' ); ?></button>
+						<button type="button" class="arshid6social-btn arshid6social-btn--primary arshid6social-btn--sm" id="arshid6social-bio-save-btn"><?php esc_html_e( 'Save', '6arshid social community' ); ?></button>
+						<button type="button" class="arshid6social-btn arshid6social-btn--ghost arshid6social-btn--sm" id="arshid6social-bio-cancel-btn"><?php esc_html_e( 'Cancel', '6arshid social community' ); ?></button>
 					</div>
 				</div>
 				<?php endif; ?>
@@ -318,7 +318,7 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 			?>
 			<div class="arshid6social-card arshid6social-sidebar-stories">
 				<div class="arshid6social-sidebar-stories__header">
-					<span><?php esc_html_e( 'Stories', '6arshid-social-community' ); ?></span>
+					<span><?php esc_html_e( 'Stories', '6arshid social community' ); ?></span>
 				</div>
 				<div class="arshid6social-sidebar-stories__body">
 					<?php
@@ -349,7 +349,7 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 						data-user-id="<?php echo esc_attr( $profile_user->ID ); ?>"
 						data-scope="personal"
 						role="feed"
-						aria-label="<?php esc_attr_e( 'Activity feed', '6arshid-social-community' ); ?>">
+						aria-label="<?php esc_attr_e( 'Activity feed', '6arshid social community' ); ?>">
 						<div class="arshid6social-skeleton" style="height:80px;margin-bottom:12px;"></div>
 						<div class="arshid6social-skeleton" style="height:80px;margin-bottom:12px;"></div>
 					</div>
@@ -369,7 +369,7 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 						</div>
 						<div id="arshid6social-friends-load-more-wrap" hidden style="text-align:center;margin-top:1rem;">
 							<button id="arshid6social-friends-load-more" class="arshid6social-btn arshid6social-btn--secondary">
-								<?php esc_html_e( 'Load more', '6arshid-social-community' ); ?>
+								<?php esc_html_e( 'Load more', '6arshid social community' ); ?>
 							</button>
 						</div>
 					</div>

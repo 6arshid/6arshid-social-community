@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Listing creation wizard template.
  *
@@ -19,19 +19,19 @@ $base_url    = get_permalink( (int) get_option( 'arshid6social_page_marketplace'
 	?: home_url( '/' . get_option( 'arshid6social_marketplace_slug', 'marketplace' ) . '/' );
 
 $step_labels = array(
-	1 => __( 'Category', '6arshid-social-community' ),
-	2 => __( 'Photos', '6arshid-social-community' ),
-	3 => __( 'Details', '6arshid-social-community' ),
-	4 => __( 'Location', '6arshid-social-community' ),
-	5 => __( 'Review', '6arshid-social-community' ),
+	1 => __( 'Category', '6arshid social community' ),
+	2 => __( 'Photos', '6arshid social community' ),
+	3 => __( 'Details', '6arshid social community' ),
+	4 => __( 'Location', '6arshid social community' ),
+	5 => __( 'Review', '6arshid social community' ),
 );
 
 $conditions = array(
-	'new'      => __( 'New', '6arshid-social-community' ),
-	'like_new' => __( 'Like New', '6arshid-social-community' ),
-	'good'     => __( 'Good', '6arshid-social-community' ),
-	'fair'     => __( 'Fair', '6arshid-social-community' ),
-	'poor'     => __( 'Poor', '6arshid-social-community' ),
+	'new'      => __( 'New', '6arshid social community' ),
+	'like_new' => __( 'Like New', '6arshid social community' ),
+	'good'     => __( 'Good', '6arshid social community' ),
+	'fair'     => __( 'Fair', '6arshid social community' ),
+	'poor'     => __( 'Poor', '6arshid social community' ),
 );
 ?>
 
@@ -46,13 +46,13 @@ $conditions = array(
 	<?php /* ── Back link ─────────────────────────────────────────────────── */ ?>
 	<a href="<?php echo esc_url( $base_url ); ?>" class="arshid6social-mkt-back-link">
 		<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-		<?php esc_html_e( 'Back to Marketplace', '6arshid-social-community' ); ?>
+		<?php esc_html_e( 'Back to Marketplace', '6arshid social community' ); ?>
 	</a>
 
-	<h1 class="arshid6social-mkt-page-title"><?php esc_html_e( 'Post a Listing', '6arshid-social-community' ); ?></h1>
+	<h1 class="arshid6social-mkt-page-title"><?php esc_html_e( 'Post a Listing', '6arshid social community' ); ?></h1>
 
 	<?php /* ── Step progress ───────────────────────────────────────────────── */ ?>
-	<div class="arshid6social-mkt-steps" role="tablist" aria-label="<?php esc_attr_e( 'Listing wizard steps', '6arshid-social-community' ); ?>">
+	<div class="arshid6social-mkt-steps" role="tablist" aria-label="<?php esc_attr_e( 'Listing wizard steps', '6arshid social community' ); ?>">
 		<?php foreach ( $step_labels as $num => $label ) : ?>
 		<div class="arshid6social-mkt-step-indicator<?php echo 1 === $num ? ' is-active' : ''; ?>"
 			data-step="<?php echo esc_attr( $num ); ?>"
@@ -75,16 +75,16 @@ $conditions = array(
 
 		<?php /* ══ STEP 1: Category & Title ══════════════════════════════════ */ ?>
 		<div class="arshid6social-mkt-panel is-active" data-panel="1">
-			<h2 class="arshid6social-mkt-panel-title"><?php esc_html_e( 'What are you selling?', '6arshid-social-community' ); ?></h2>
+			<h2 class="arshid6social-mkt-panel-title"><?php esc_html_e( 'What are you selling?', '6arshid social community' ); ?></h2>
 
 			<div class="arshid6social-mkt-field">
 				<label class="arshid6social-mkt-label" for="mkt-title">
-					<?php esc_html_e( 'Title', '6arshid-social-community' ); ?>
+					<?php esc_html_e( 'Title', '6arshid social community' ); ?>
 					<span class="arshid6social-mkt-required" aria-hidden="true">*</span>
 				</label>
 				<input type="text" id="mkt-title" name="title" class="arshid6social-mkt-input"
 					maxlength="200"
-					placeholder="<?php esc_attr_e( 'e.g. iPhone 15 Pro 256 GB, Black', '6arshid-social-community' ); ?>"
+					placeholder="<?php esc_attr_e( 'e.g. iPhone 15 Pro 256 GB, Black', '6arshid social community' ); ?>"
 					required
 					aria-describedby="mkt-title-hint">
 				<span id="mkt-title-hint" class="arshid6social-mkt-hint">
@@ -94,11 +94,11 @@ $conditions = array(
 
 			<div class="arshid6social-mkt-field">
 				<label class="arshid6social-mkt-label" for="mkt-category">
-					<?php esc_html_e( 'Category', '6arshid-social-community' ); ?>
+					<?php esc_html_e( 'Category', '6arshid social community' ); ?>
 					<span class="arshid6social-mkt-required" aria-hidden="true">*</span>
 				</label>
 				<select id="mkt-category" name="category_id" class="arshid6social-mkt-select" required>
-					<option value=""><?php esc_html_e( '— Select a category —', '6arshid-social-community' ); ?></option>
+					<option value=""><?php esc_html_e( '— Select a category —', '6arshid social community' ); ?></option>
 					<?php foreach ( $categories as $cat ) :
 						$indent = str_repeat( '　', $cat['depth'] );
 					?>
@@ -112,7 +112,7 @@ $conditions = array(
 			<div class="arshid6social-mkt-panel-nav">
 				<span></span>
 				<button type="button" class="arshid6social-mkt-btn arshid6social-mkt-btn--primary arshid6social-mkt-next" data-next="2">
-					<?php esc_html_e( 'Next: Photos', '6arshid-social-community' ); ?>
+					<?php esc_html_e( 'Next: Photos', '6arshid social community' ); ?>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
 				</button>
 			</div>
@@ -120,24 +120,24 @@ $conditions = array(
 
 		<?php /* ══ STEP 2: Photos ════════════════════════════════════════════ */ ?>
 		<div class="arshid6social-mkt-panel" data-panel="2">
-			<h2 class="arshid6social-mkt-panel-title"><?php esc_html_e( 'Add Photos', '6arshid-social-community' ); ?></h2>
+			<h2 class="arshid6social-mkt-panel-title"><?php esc_html_e( 'Add Photos', '6arshid social community' ); ?></h2>
 			<p class="arshid6social-mkt-panel-desc">
 				<?php printf(
 					/* translators: 1: max photos, 2: max MB */
-					esc_html__( 'Upload up to %1$d photos (max %2$d MB each). The first photo will be the cover.', '6arshid-social-community' ),
+					esc_html__( 'Upload up to %1$d photos (max %2$d MB each). The first photo will be the cover.', '6arshid social community' ),
 					absint( $max_photos ),
 					absint( $max_mb )
 				); ?>
 			</p>
 
 			<div id="arshid6social-mkt-photo-drop" class="arshid6social-mkt-photo-drop" tabindex="0" role="button"
-				aria-label="<?php esc_attr_e( 'Upload photos — click or drag and drop', '6arshid-social-community' ); ?>">
+				aria-label="<?php esc_attr_e( 'Upload photos — click or drag and drop', '6arshid social community' ); ?>">
 				<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-				<p><?php esc_html_e( 'Click to add photos or drag &amp; drop here', '6arshid-social-community' ); ?></p>
+				<p><?php esc_html_e( 'Click to add photos or drag &amp; drop here', '6arshid social community' ); ?></p>
 				<span class="arshid6social-mkt-photo-count-label" id="arshid6social-mkt-photo-count-label">
 					<?php printf(
 						/* translators: 1: current count, 2: max count */
-						esc_html__( '%1$d / %2$d photos', '6arshid-social-community' ),
+						esc_html__( '%1$d / %2$d photos', '6arshid social community' ),
 						0,
 						absint( $max_photos )
 					); ?>
@@ -145,17 +145,17 @@ $conditions = array(
 				<input type="file" id="arshid6social-mkt-photo-input" accept="image/jpeg,image/png,image/webp,image/gif" multiple aria-hidden="true">
 			</div>
 
-			<div id="arshid6social-mkt-photo-grid" class="arshid6social-mkt-photo-grid" aria-label="<?php esc_attr_e( 'Uploaded photos', '6arshid-social-community' ); ?>"></div>
+			<div id="arshid6social-mkt-photo-grid" class="arshid6social-mkt-photo-grid" aria-label="<?php esc_attr_e( 'Uploaded photos', '6arshid social community' ); ?>"></div>
 
 			<div id="arshid6social-mkt-photo-error" class="arshid6social-mkt-form-error" hidden role="alert"></div>
 
 			<div class="arshid6social-mkt-panel-nav">
 				<button type="button" class="arshid6social-mkt-btn arshid6social-mkt-btn--outline arshid6social-mkt-prev" data-prev="1">
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-					<?php esc_html_e( 'Back', '6arshid-social-community' ); ?>
+					<?php esc_html_e( 'Back', '6arshid social community' ); ?>
 				</button>
 				<button type="button" class="arshid6social-mkt-btn arshid6social-mkt-btn--primary arshid6social-mkt-next" data-next="3">
-					<?php esc_html_e( 'Next: Details', '6arshid-social-community' ); ?>
+					<?php esc_html_e( 'Next: Details', '6arshid social community' ); ?>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
 				</button>
 			</div>
@@ -163,11 +163,11 @@ $conditions = array(
 
 		<?php /* ══ STEP 3: Details ══════════════════════════════════════════ */ ?>
 		<div class="arshid6social-mkt-panel" data-panel="3">
-			<h2 class="arshid6social-mkt-panel-title"><?php esc_html_e( 'Listing Details', '6arshid-social-community' ); ?></h2>
+			<h2 class="arshid6social-mkt-panel-title"><?php esc_html_e( 'Listing Details', '6arshid social community' ); ?></h2>
 
 			<?php /* Price row */ ?>
 			<div class="arshid6social-mkt-field">
-				<label class="arshid6social-mkt-label"><?php esc_html_e( 'Price', '6arshid-social-community' ); ?></label>
+				<label class="arshid6social-mkt-label"><?php esc_html_e( 'Price', '6arshid social community' ); ?></label>
 
 				<div class="arshid6social-mkt-price-row">
 					<div class="arshid6social-mkt-price-input-wrap" id="arshid6social-mkt-price-wrap">
@@ -178,19 +178,19 @@ $conditions = array(
 					</div>
 					<label class="arshid6social-mkt-toggle-label" for="mkt-is-free">
 						<input type="checkbox" id="mkt-is-free" name="is_free" class="arshid6social-mkt-toggle-cb" value="1">
-						<span class="arshid6social-mkt-toggle-text"><?php esc_html_e( 'Free', '6arshid-social-community' ); ?></span>
+						<span class="arshid6social-mkt-toggle-text"><?php esc_html_e( 'Free', '6arshid social community' ); ?></span>
 					</label>
 					<label class="arshid6social-mkt-toggle-label" id="arshid6social-mkt-neg-label" for="mkt-is-negotiable">
 						<input type="checkbox" id="mkt-is-negotiable" name="is_negotiable" class="arshid6social-mkt-toggle-cb" value="1">
-						<span class="arshid6social-mkt-toggle-text"><?php esc_html_e( 'Negotiable', '6arshid-social-community' ); ?></span>
+						<span class="arshid6social-mkt-toggle-text"><?php esc_html_e( 'Negotiable', '6arshid social community' ); ?></span>
 					</label>
 				</div>
 			</div>
 
 			<?php /* Condition */ ?>
 			<div class="arshid6social-mkt-field">
-				<label class="arshid6social-mkt-label"><?php esc_html_e( 'Condition', '6arshid-social-community' ); ?></label>
-				<div class="arshid6social-mkt-condition-grid" role="group" aria-label="<?php esc_attr_e( 'Item condition', '6arshid-social-community' ); ?>">
+				<label class="arshid6social-mkt-label"><?php esc_html_e( 'Condition', '6arshid social community' ); ?></label>
+				<div class="arshid6social-mkt-condition-grid" role="group" aria-label="<?php esc_attr_e( 'Item condition', '6arshid social community' ); ?>">
 					<?php foreach ( $conditions as $val => $label ) : ?>
 					<label class="arshid6social-mkt-condition-opt">
 						<input type="radio" name="item_condition" value="<?php echo esc_attr( $val ); ?>"
@@ -204,10 +204,10 @@ $conditions = array(
 			<?php /* Description */ ?>
 			<div class="arshid6social-mkt-field">
 				<label class="arshid6social-mkt-label" for="mkt-description">
-					<?php esc_html_e( 'Description', '6arshid-social-community' ); ?>
+					<?php esc_html_e( 'Description', '6arshid social community' ); ?>
 				</label>
 				<textarea id="mkt-description" name="description" class="arshid6social-mkt-textarea" rows="6"
-					placeholder="<?php esc_attr_e( 'Describe your item — condition, dimensions, reason for selling, included accessories…', '6arshid-social-community' ); ?>"
+					placeholder="<?php esc_attr_e( 'Describe your item — condition, dimensions, reason for selling, included accessories…', '6arshid social community' ); ?>"
 					maxlength="5000"
 					aria-describedby="mkt-desc-count"></textarea>
 				<span id="mkt-desc-count" class="arshid6social-mkt-hint"><span id="mkt-desc-num">0</span>/5000</span>
@@ -216,10 +216,10 @@ $conditions = array(
 			<div class="arshid6social-mkt-panel-nav">
 				<button type="button" class="arshid6social-mkt-btn arshid6social-mkt-btn--outline arshid6social-mkt-prev" data-prev="2">
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-					<?php esc_html_e( 'Back', '6arshid-social-community' ); ?>
+					<?php esc_html_e( 'Back', '6arshid social community' ); ?>
 				</button>
 				<button type="button" class="arshid6social-mkt-btn arshid6social-mkt-btn--primary arshid6social-mkt-next" data-next="4">
-					<?php esc_html_e( 'Next: Location', '6arshid-social-community' ); ?>
+					<?php esc_html_e( 'Next: Location', '6arshid social community' ); ?>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
 				</button>
 			</div>
@@ -227,19 +227,19 @@ $conditions = array(
 
 		<?php /* ══ STEP 4: Location ══════════════════════════════════════════ */ ?>
 		<div class="arshid6social-mkt-panel" data-panel="4">
-			<h2 class="arshid6social-mkt-panel-title"><?php esc_html_e( 'Location', '6arshid-social-community' ); ?></h2>
-			<p class="arshid6social-mkt-panel-desc"><?php esc_html_e( 'Your exact address is never shown. Only city/region is displayed to buyers.', '6arshid-social-community' ); ?></p>
+			<h2 class="arshid6social-mkt-panel-title"><?php esc_html_e( 'Location', '6arshid social community' ); ?></h2>
+			<p class="arshid6social-mkt-panel-desc"><?php esc_html_e( 'Your exact address is never shown. Only city/region is displayed to buyers.', '6arshid social community' ); ?></p>
 
 			<div class="arshid6social-mkt-field">
-				<label class="arshid6social-mkt-label" for="mkt-city"><?php esc_html_e( 'City / Region', '6arshid-social-community' ); ?></label>
+				<label class="arshid6social-mkt-label" for="mkt-city"><?php esc_html_e( 'City / Region', '6arshid social community' ); ?></label>
 				<input type="text" id="mkt-city" name="location_city" class="arshid6social-mkt-input"
-					placeholder="<?php esc_attr_e( 'e.g. Tehran, New York…', '6arshid-social-community' ); ?>">
+					placeholder="<?php esc_attr_e( 'e.g. Tehran, New York…', '6arshid social community' ); ?>">
 			</div>
 
 			<div class="arshid6social-mkt-field">
-				<label class="arshid6social-mkt-label" for="mkt-country"><?php esc_html_e( 'Country', '6arshid-social-community' ); ?></label>
+				<label class="arshid6social-mkt-label" for="mkt-country"><?php esc_html_e( 'Country', '6arshid social community' ); ?></label>
 				<select id="mkt-country" name="location_country" class="arshid6social-mkt-select">
-					<option value=""><?php esc_html_e( '— Select country —', '6arshid-social-community' ); ?></option>
+					<option value=""><?php esc_html_e( '— Select country —', '6arshid social community' ); ?></option>
 					<?php
 					$countries = array(
 						'IR' => 'Iran', 'US' => 'United States', 'GB' => 'United Kingdom',
@@ -257,7 +257,7 @@ $conditions = array(
 			<div class="arshid6social-mkt-field">
 				<button type="button" id="arshid6social-mkt-geolocate" class="arshid6social-mkt-btn arshid6social-mkt-btn--outline arshid6social-mkt-btn--sm">
 					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-					<?php esc_html_e( 'Use my current location', '6arshid-social-community' ); ?>
+					<?php esc_html_e( 'Use my current location', '6arshid social community' ); ?>
 				</button>
 				<span id="arshid6social-mkt-geo-status" class="arshid6social-mkt-hint" aria-live="polite"></span>
 				<input type="hidden" name="lat" id="mkt-lat" value="">
@@ -267,10 +267,10 @@ $conditions = array(
 			<div class="arshid6social-mkt-panel-nav">
 				<button type="button" class="arshid6social-mkt-btn arshid6social-mkt-btn--outline arshid6social-mkt-prev" data-prev="3">
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-					<?php esc_html_e( 'Back', '6arshid-social-community' ); ?>
+					<?php esc_html_e( 'Back', '6arshid social community' ); ?>
 				</button>
 				<button type="button" class="arshid6social-mkt-btn arshid6social-mkt-btn--primary arshid6social-mkt-next" data-next="5">
-					<?php esc_html_e( 'Review Listing', '6arshid-social-community' ); ?>
+					<?php esc_html_e( 'Review Listing', '6arshid social community' ); ?>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
 				</button>
 			</div>
@@ -278,7 +278,7 @@ $conditions = array(
 
 		<?php /* ══ STEP 5: Review & Publish ════════════════════════════════ */ ?>
 		<div class="arshid6social-mkt-panel" data-panel="5">
-			<h2 class="arshid6social-mkt-panel-title"><?php esc_html_e( 'Review Your Listing', '6arshid-social-community' ); ?></h2>
+			<h2 class="arshid6social-mkt-panel-title"><?php esc_html_e( 'Review Your Listing', '6arshid social community' ); ?></h2>
 
 			<div id="arshid6social-mkt-preview-card" class="arshid6social-mkt-preview-card">
 				<div class="arshid6social-mkt-preview-img" id="arshid6social-mkt-preview-img">
@@ -286,7 +286,7 @@ $conditions = array(
 				</div>
 				<div class="arshid6social-mkt-preview-body">
 					<p class="arshid6social-mkt-preview-price" id="arshid6social-mkt-preview-price">—</p>
-					<p class="arshid6social-mkt-preview-title" id="arshid6social-mkt-preview-title"><?php esc_html_e( '(no title)', '6arshid-social-community' ); ?></p>
+					<p class="arshid6social-mkt-preview-title" id="arshid6social-mkt-preview-title"><?php esc_html_e( '(no title)', '6arshid social community' ); ?></p>
 					<p class="arshid6social-mkt-preview-meta" id="arshid6social-mkt-preview-meta"></p>
 					<p class="arshid6social-mkt-preview-desc" id="arshid6social-mkt-preview-desc"></p>
 				</div>
@@ -297,27 +297,27 @@ $conditions = array(
 			if ( 'manual' === $moderation ) : ?>
 			<div class="arshid6social-mkt-moderation-notice">
 				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-				<?php esc_html_e( 'Your listing will be reviewed before it appears publicly.', '6arshid-social-community' ); ?>
+				<?php esc_html_e( 'Your listing will be reviewed before it appears publicly.', '6arshid social community' ); ?>
 			</div>
 			<?php endif; ?>
 
 			<div class="arshid6social-mkt-panel-nav arshid6social-mkt-panel-nav--publish">
 				<button type="button" class="arshid6social-mkt-btn arshid6social-mkt-btn--outline arshid6social-mkt-prev" data-prev="4">
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-					<?php esc_html_e( 'Back', '6arshid-social-community' ); ?>
+					<?php esc_html_e( 'Back', '6arshid social community' ); ?>
 				</button>
 				<div class="arshid6social-mkt-publish-actions">
 					<button type="button" id="arshid6social-mkt-save-draft" class="arshid6social-mkt-btn arshid6social-mkt-btn--outline">
-						<?php esc_html_e( 'Save as Draft', '6arshid-social-community' ); ?>
+						<?php esc_html_e( 'Save as Draft', '6arshid social community' ); ?>
 					</button>
 					<button type="button" id="arshid6social-mkt-publish" class="arshid6social-mkt-btn arshid6social-mkt-btn--primary">
 						<span class="arshid6social-mkt-btn-text">
 							<?php echo 'manual' === $moderation
-								? esc_html__( 'Submit for Review', '6arshid-social-community' )
-								: esc_html__( 'Publish Listing', '6arshid-social-community' ); ?>
+								? esc_html__( 'Submit for Review', '6arshid social community' )
+								: esc_html__( 'Publish Listing', '6arshid social community' ); ?>
 						</span>
 						<span class="arshid6social-mkt-btn-spinner" hidden aria-hidden="true">
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="arshid6social-spin" aria-label="<?php esc_attr_e( 'Loading', '6arshid-social-community' ); ?>"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="arshid6social-spin" aria-label="<?php esc_attr_e( 'Loading', '6arshid social community' ); ?>"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
 						</span>
 					</button>
 				</div>
@@ -550,8 +550,8 @@ function validateStep( step ) {
 	if ( step === 1 ) {
 		const title = document.getElementById( 'mkt-title' ).value.trim();
 		const cat   = document.getElementById( 'mkt-category' ).value;
-		if ( ! title ) { showErr( '<?php echo esc_js( __( 'Please enter a title for your listing.', '6arshid-social-community' ) ); ?>' ); return false; }
-		if ( ! cat )   { showErr( '<?php echo esc_js( __( 'Please select a category.', '6arshid-social-community' ) ); ?>' ); return false; }
+		if ( ! title ) { showErr( '<?php echo esc_js( __( 'Please enter a title for your listing.', '6arshid social community' ) ); ?>' ); return false; }
+		if ( ! cat )   { showErr( '<?php echo esc_js( __( 'Please select a category.', '6arshid social community' ) ); ?>' ); return false; }
 	}
 	return true;
 }
@@ -592,7 +592,7 @@ const cntLabel   = document.getElementById( 'arshid6social-mkt-photo-count-label
 let uploadedPhotos = []; // [{id, url, thumb}]
 
 function updatePhotoCount() {
-	if ( cntLabel ) cntLabel.textContent = uploadedPhotos.length + ' / ' + MAX_PH + ' <?php echo esc_js( __( 'photos', '6arshid-social-community' ) ); ?>';
+	if ( cntLabel ) cntLabel.textContent = uploadedPhotos.length + ' / ' + MAX_PH + ' <?php echo esc_js( __( 'photos', '6arshid social community' ) ); ?>';
 	if ( photoInput ) photoInput.disabled = uploadedPhotos.length >= MAX_PH;
 }
 
@@ -611,20 +611,20 @@ function renderPhotoGrid() {
 
 		const img = document.createElement( 'img' );
 		img.src = p.thumb;
-		img.alt = '<?php echo esc_js( __( 'Listing photo', '6arshid-social-community' ) ); ?>';
+		img.alt = '<?php echo esc_js( __( 'Listing photo', '6arshid social community' ) ); ?>';
 		div.appendChild( img );
 
 		if ( i === 0 ) {
 			const badge = document.createElement( 'span' );
 			badge.className = 'arshid6social-mkt-photo-primary';
-			badge.textContent = '<?php echo esc_js( __( 'Cover', '6arshid-social-community' ) ); ?>';
+			badge.textContent = '<?php echo esc_js( __( 'Cover', '6arshid social community' ) ); ?>';
 			div.appendChild( badge );
 		}
 
 		const del = document.createElement( 'button' );
 		del.type = 'button';
 		del.className = 'arshid6social-mkt-photo-del';
-		del.setAttribute( 'aria-label', '<?php echo esc_js( __( 'Remove photo', '6arshid-social-community' ) ); ?>' );
+		del.setAttribute( 'aria-label', '<?php echo esc_js( __( 'Remove photo', '6arshid social community' ) ); ?>' );
 		del.innerHTML = '×';
 		del.addEventListener( 'click', () => removePhoto( p.id ) );
 		div.appendChild( del );
@@ -636,11 +636,11 @@ function renderPhotoGrid() {
 
 async function uploadPhoto( file ) {
 	if ( uploadedPhotos.length >= MAX_PH ) {
-		showPhotoErr( '<?php echo esc_js( __( 'Maximum photos reached.', '6arshid-social-community' ) ); ?>' );
+		showPhotoErr( '<?php echo esc_js( __( 'Maximum photos reached.', '6arshid social community' ) ); ?>' );
 		return;
 	}
 	if ( file.size > MAX_MB * 1024 * 1024 ) {
-		showPhotoErr( '<?php echo esc_js( __( 'File is too large.', '6arshid-social-community' ) ); ?>' );
+		showPhotoErr( '<?php echo esc_js( __( 'File is too large.', '6arshid social community' ) ); ?>' );
 		return;
 	}
 
@@ -673,11 +673,11 @@ async function uploadPhoto( file ) {
 			clearPhotoErr();
 		} else {
 			uploadedPhotos = uploadedPhotos.filter( p => p.id !== tempId );
-			showPhotoErr( ( data.data && data.data.message ) || '<?php echo esc_js( __( 'Upload failed.', '6arshid-social-community' ) ); ?>' );
+			showPhotoErr( ( data.data && data.data.message ) || '<?php echo esc_js( __( 'Upload failed.', '6arshid social community' ) ); ?>' );
 		}
 	} catch ( err ) {
 		uploadedPhotos = uploadedPhotos.filter( p => p.id !== tempId );
-		showPhotoErr( '<?php echo esc_js( __( 'Network error — please try again.', '6arshid-social-community' ) ); ?>' );
+		showPhotoErr( '<?php echo esc_js( __( 'Network error — please try again.', '6arshid social community' ) ); ?>' );
 	}
 
 	renderPhotoGrid();
@@ -728,21 +728,21 @@ const lngInput  = document.getElementById( 'mkt-lng' );
 if ( geoBtn ) {
 	geoBtn.addEventListener( 'click', () => {
 		if ( ! navigator.geolocation ) {
-			geoStatus.textContent = '<?php echo esc_js( __( 'Geolocation not supported.', '6arshid-social-community' ) ); ?>';
+			geoStatus.textContent = '<?php echo esc_js( __( 'Geolocation not supported.', '6arshid social community' ) ); ?>';
 			return;
 		}
-		geoStatus.textContent = '<?php echo esc_js( __( 'Detecting location…', '6arshid-social-community' ) ); ?>';
+		geoStatus.textContent = '<?php echo esc_js( __( 'Detecting location…', '6arshid social community' ) ); ?>';
 		geoBtn.disabled = true;
 
 		navigator.geolocation.getCurrentPosition(
 			pos => {
 				latInput.value = pos.coords.latitude.toFixed( 7 );
 				lngInput.value = pos.coords.longitude.toFixed( 7 );
-				geoStatus.textContent = '<?php echo esc_js( __( 'Location captured!', '6arshid-social-community' ) ); ?>';
+				geoStatus.textContent = '<?php echo esc_js( __( 'Location captured!', '6arshid social community' ) ); ?>';
 				geoBtn.disabled = false;
 			},
 			() => {
-				geoStatus.textContent = '<?php echo esc_js( __( 'Could not get location.', '6arshid-social-community' ) ); ?>';
+				geoStatus.textContent = '<?php echo esc_js( __( 'Could not get location.', '6arshid social community' ) ); ?>';
 				geoBtn.disabled = false;
 			},
 			{ timeout: 8000 }
@@ -752,7 +752,7 @@ if ( geoBtn ) {
 
 // ── Step 5: Preview builder ─────────────────────────────────────────────────
 function buildPreview() {
-	const title     = ( document.getElementById( 'mkt-title' )?.value.trim() ) || '(<?php echo esc_js( __( 'no title', '6arshid-social-community' ) ); ?>)';
+	const title     = ( document.getElementById( 'mkt-title' )?.value.trim() ) || '(<?php echo esc_js( __( 'no title', '6arshid social community' ) ); ?>)';
 	const isFreeChk = document.getElementById( 'mkt-is-free' )?.checked;
 	const priceVal  = document.getElementById( 'mkt-price' )?.value;
 	const isNeg     = document.getElementById( 'mkt-is-negotiable' )?.checked;
@@ -761,9 +761,9 @@ function buildPreview() {
 	const symEl     = document.querySelector( '.arshid6social-mkt-currency-sym' );
 	const sym       = symEl?.textContent || '';
 
-	let priceText = isFreeChk ? '<?php echo esc_js( __( 'Free', '6arshid-social-community' ) ); ?>'
+	let priceText = isFreeChk ? '<?php echo esc_js( __( 'Free', '6arshid social community' ) ); ?>'
 		: ( sym + ( parseFloat( priceVal ) || 0 ).toLocaleString() );
-	if ( ! isFreeChk && isNeg ) priceText += ' · <?php echo esc_js( __( 'Negotiable', '6arshid-social-community' ) ); ?>';
+	if ( ! isFreeChk && isNeg ) priceText += ' · <?php echo esc_js( __( 'Negotiable', '6arshid social community' ) ); ?>';
 
 	const condEl   = document.querySelector( 'input[name="item_condition"]:checked' );
 	const condText = condEl ? condEl.closest( '.arshid6social-mkt-condition-opt' ).querySelector( 'span' ).textContent : '';
@@ -809,11 +809,11 @@ async function submitListing( action ) {
 			window.location.href = data.data.url || BACK_URL;
 		} else {
 			setPublishing( false );
-			showErr( ( data.data && data.data.message ) || '<?php echo esc_js( __( 'An error occurred. Please try again.', '6arshid-social-community' ) ); ?>' );
+			showErr( ( data.data && data.data.message ) || '<?php echo esc_js( __( 'An error occurred. Please try again.', '6arshid social community' ) ); ?>' );
 		}
 	} catch ( err ) {
 		setPublishing( false );
-		showErr( '<?php echo esc_js( __( 'Network error. Please check your connection.', '6arshid-social-community' ) ); ?>' );
+		showErr( '<?php echo esc_js( __( 'Network error. Please check your connection.', '6arshid social community' ) ); ?>' );
 	}
 }
 

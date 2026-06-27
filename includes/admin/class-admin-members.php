@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Admin;
 
 /**
@@ -53,7 +53,7 @@ final class Admin_Members {
 		add_screen_option(
 			'per_page',
 			array(
-				'label'   => __( 'Members per page', '6arshid-social-community' ),
+				'label'   => __( 'Members per page', '6arshid social community' ),
 				'default' => 20,
 				'option'  => 'arshid6social_members_per_page',
 			)
@@ -67,11 +67,11 @@ final class Admin_Members {
 	 */
 	public function get_columns(): array {
 		return array(
-			'member'     => __( 'Member', '6arshid-social-community' ),
-			'email'      => __( 'Email', '6arshid-social-community' ),
-			'registered' => __( 'Registered', '6arshid-social-community' ),
-			'status'     => __( 'Status', '6arshid-social-community' ),
-			'actions'    => __( 'Actions', '6arshid-social-community' ),
+			'member'     => __( 'Member', '6arshid social community' ),
+			'email'      => __( 'Email', '6arshid social community' ),
+			'registered' => __( 'Registered', '6arshid social community' ),
+			'status'     => __( 'Status', '6arshid social community' ),
+			'actions'    => __( 'Actions', '6arshid social community' ),
 		);
 	}
 
@@ -95,7 +95,7 @@ final class Admin_Members {
 	 */
 	public function render(): void {
 		if ( ! current_user_can( 'arshid6social_manage_members' ) ) {
-			wp_die( esc_html__( 'Permission denied.', '6arshid-social-community' ) );
+			wp_die( esc_html__( 'Permission denied.', '6arshid social community' ) );
 		}
 
 		// ── Screen Options values ─────────────────────────────────────────────
@@ -126,18 +126,18 @@ final class Admin_Members {
 
 		?>
 		<div class="wrap">
-			<h1 class="wp-heading-inline"><?php esc_html_e( 'Members', '6arshid-social-community' ); ?></h1>
+			<h1 class="wp-heading-inline"><?php esc_html_e( 'Members', '6arshid social community' ); ?></h1>
 			<hr class="wp-header-end">
 
 			<?php // ── Search box ───────────────────────────────────────────── ?>
 			<form method="get">
 				<input type="hidden" name="page" value="arshid6social-members" />
 				<p class="search-box">
-					<label class="screen-reader-text" for="arshid6social-member-search"><?php esc_html_e( 'Search members', '6arshid-social-community' ); ?></label>
+					<label class="screen-reader-text" for="arshid6social-member-search"><?php esc_html_e( 'Search members', '6arshid social community' ); ?></label>
 					<input type="search" id="arshid6social-member-search" name="s"
 						value="<?php echo esc_attr( $search ); ?>"
-						placeholder="<?php esc_attr_e( 'Search members…', '6arshid-social-community' ); ?>" />
-					<?php submit_button( __( 'Search Members', '6arshid-social-community' ), 'secondary', '', false ); ?>
+						placeholder="<?php esc_attr_e( 'Search members…', '6arshid social community' ); ?>" />
+					<?php submit_button( __( 'Search Members', '6arshid social community' ), 'secondary', '', false ); ?>
 				</p>
 			</form>
 
@@ -149,7 +149,7 @@ final class Admin_Members {
 						echo esc_html(
 							sprintf(
 								/* translators: %s: number of members */
-								_n( '%s member', '%s members', $total_users, '6arshid-social-community' ),
+								_n( '%s member', '%s members', $total_users, '6arshid social community' ),
 								number_format_i18n( $total_users )
 							)
 						);
@@ -176,11 +176,11 @@ final class Admin_Members {
 			<table class="wp-list-table widefat fixed striped">
 				<thead>
 					<tr>
-						<th class="manage-column column-member column-primary"><?php esc_html_e( 'Member', '6arshid-social-community' ); ?></th>
-						<th class="manage-column column-email<?php echo esc_attr( $col_class( 'email' ) ); ?>"><?php esc_html_e( 'Email', '6arshid-social-community' ); ?></th>
-						<th class="manage-column column-registered<?php echo esc_attr( $col_class( 'registered' ) ); ?>"><?php esc_html_e( 'Registered', '6arshid-social-community' ); ?></th>
-						<th class="manage-column column-status<?php echo esc_attr( $col_class( 'status' ) ); ?>"><?php esc_html_e( 'Status', '6arshid-social-community' ); ?></th>
-						<th class="manage-column column-actions<?php echo esc_attr( $col_class( 'actions' ) ); ?>"><?php esc_html_e( 'Actions', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-member column-primary"><?php esc_html_e( 'Member', '6arshid social community' ); ?></th>
+						<th class="manage-column column-email<?php echo esc_attr( $col_class( 'email' ) ); ?>"><?php esc_html_e( 'Email', '6arshid social community' ); ?></th>
+						<th class="manage-column column-registered<?php echo esc_attr( $col_class( 'registered' ) ); ?>"><?php esc_html_e( 'Registered', '6arshid social community' ); ?></th>
+						<th class="manage-column column-status<?php echo esc_attr( $col_class( 'status' ) ); ?>"><?php esc_html_e( 'Status', '6arshid social community' ); ?></th>
+						<th class="manage-column column-actions<?php echo esc_attr( $col_class( 'actions' ) ); ?>"><?php esc_html_e( 'Actions', '6arshid social community' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -192,7 +192,7 @@ final class Admin_Members {
 								<strong><?php echo esc_html( $user->display_name ); ?></strong>
 								<div class="row-actions">
 									<span>
-										<a href="<?php echo esc_url( get_edit_user_link( $user->ID ) ); ?>"><?php esc_html_e( 'Edit', '6arshid-social-community' ); ?></a>
+										<a href="<?php echo esc_url( get_edit_user_link( $user->ID ) ); ?>"><?php esc_html_e( 'Edit', '6arshid social community' ); ?></a>
 									</span>
 								</div>
 							</td>
@@ -202,17 +202,17 @@ final class Admin_Members {
 							</td>
 							<td class="status column-status<?php echo esc_attr( $col_class( 'status' ) ); ?>">
 								<?php if ( $suspended ) : ?>
-									<span class="arshid6social-badge arshid6social-badge--suspended"><?php esc_html_e( 'Suspended', '6arshid-social-community' ); ?></span>
+									<span class="arshid6social-badge arshid6social-badge--suspended"><?php esc_html_e( 'Suspended', '6arshid social community' ); ?></span>
 									<?php
 									$susp_reason = get_user_meta( $user->ID, 'arshid6social_suspended_reason', true );
 									if ( $susp_reason && 'auto_threshold' !== $susp_reason ) :
 									?>
 										<br><small style="color:#555;"><?php echo esc_html( $susp_reason ); ?></small>
 									<?php elseif ( 'auto_threshold' === $susp_reason ) : ?>
-										<br><small style="color:#888;"><?php esc_html_e( 'Auto (report threshold)', '6arshid-social-community' ); ?></small>
+										<br><small style="color:#888;"><?php esc_html_e( 'Auto (report threshold)', '6arshid social community' ); ?></small>
 									<?php endif; ?>
 								<?php else : ?>
-									<span class="arshid6social-badge arshid6social-badge--active"><?php esc_html_e( 'Active', '6arshid-social-community' ); ?></span>
+									<span class="arshid6social-badge arshid6social-badge--active"><?php esc_html_e( 'Active', '6arshid social community' ); ?></span>
 								<?php endif; ?>
 							</td>
 							<td class="actions column-actions<?php echo esc_attr( $col_class( 'actions' ) ); ?>">
@@ -221,27 +221,27 @@ final class Admin_Members {
 									data-nonce="<?php echo esc_attr( wp_create_nonce( 'arshid6social_suspend_' . $user->ID ) ); ?>"
 									data-suspended="<?php echo esc_attr( $suspended ? '1' : '0' ); ?>"
 									data-user-name="<?php echo esc_attr( $user->display_name ); ?>">
-									<?php echo $suspended ? esc_html__( 'Unsuspend', '6arshid-social-community' ) : esc_html__( 'Suspend', '6arshid-social-community' ); ?>
+									<?php echo $suspended ? esc_html__( 'Unsuspend', '6arshid social community' ) : esc_html__( 'Suspend', '6arshid social community' ); ?>
 								</button>
 								<a href="<?php echo esc_url( get_edit_user_link( $user->ID ) ); ?>" class="button button-small">
-									<?php esc_html_e( 'Edit', '6arshid-social-community' ); ?>
+									<?php esc_html_e( 'Edit', '6arshid social community' ); ?>
 								</a>
 							</td>
 						</tr>
 					<?php endforeach; ?>
 
 					<?php if ( empty( $users ) ) : ?>
-						<tr><td colspan="5"><?php esc_html_e( 'No members found.', '6arshid-social-community' ); ?></td></tr>
+						<tr><td colspan="5"><?php esc_html_e( 'No members found.', '6arshid social community' ); ?></td></tr>
 					<?php endif; ?>
 				</tbody>
 
 				<tfoot>
 					<tr>
-						<th class="manage-column column-member column-primary"><?php esc_html_e( 'Member', '6arshid-social-community' ); ?></th>
-						<th class="manage-column column-email<?php echo esc_attr( $col_class( 'email' ) ); ?>"><?php esc_html_e( 'Email', '6arshid-social-community' ); ?></th>
-						<th class="manage-column column-registered<?php echo esc_attr( $col_class( 'registered' ) ); ?>"><?php esc_html_e( 'Registered', '6arshid-social-community' ); ?></th>
-						<th class="manage-column column-status<?php echo esc_attr( $col_class( 'status' ) ); ?>"><?php esc_html_e( 'Status', '6arshid-social-community' ); ?></th>
-						<th class="manage-column column-actions<?php echo esc_attr( $col_class( 'actions' ) ); ?>"><?php esc_html_e( 'Actions', '6arshid-social-community' ); ?></th>
+						<th class="manage-column column-member column-primary"><?php esc_html_e( 'Member', '6arshid social community' ); ?></th>
+						<th class="manage-column column-email<?php echo esc_attr( $col_class( 'email' ) ); ?>"><?php esc_html_e( 'Email', '6arshid social community' ); ?></th>
+						<th class="manage-column column-registered<?php echo esc_attr( $col_class( 'registered' ) ); ?>"><?php esc_html_e( 'Registered', '6arshid social community' ); ?></th>
+						<th class="manage-column column-status<?php echo esc_attr( $col_class( 'status' ) ); ?>"><?php esc_html_e( 'Status', '6arshid social community' ); ?></th>
+						<th class="manage-column column-actions<?php echo esc_attr( $col_class( 'actions' ) ); ?>"><?php esc_html_e( 'Actions', '6arshid social community' ); ?></th>
 					</tr>
 				</tfoot>
 			</table>
@@ -274,21 +274,21 @@ final class Admin_Members {
 		?>
 		<div id="arshid6social-suspend-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100000;align-items:center;justify-content:center;">
 			<div style="background:#fff;border-radius:6px;padding:24px;max-width:480px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.2);">
-				<h2 style="margin-top:0;" id="arshid6social-sm-title"><?php esc_html_e( 'Suspend User', '6arshid-social-community' ); ?></h2>
+				<h2 style="margin-top:0;" id="arshid6social-sm-title"><?php esc_html_e( 'Suspend User', '6arshid social community' ); ?></h2>
 				<p id="arshid6social-sm-desc" style="color:#555;margin-bottom:16px;"></p>
-				<label style="display:block;margin-bottom:6px;font-weight:600;"><?php esc_html_e( 'Reason', '6arshid-social-community' ); ?></label>
+				<label style="display:block;margin-bottom:6px;font-weight:600;"><?php esc_html_e( 'Reason', '6arshid social community' ); ?></label>
 				<select id="arshid6social-sm-reason" style="width:100%;margin-bottom:16px;">
-					<option value=""><?php esc_html_e( '— Select a reason —', '6arshid-social-community' ); ?></option>
+					<option value=""><?php esc_html_e( '— Select a reason —', '6arshid social community' ); ?></option>
 					<?php foreach ( $suspend_reasons as $r ) : ?>
 						<option value="<?php echo esc_attr( $r ); ?>"><?php echo esc_html( $r ); ?></option>
 					<?php endforeach; ?>
-					<option value="__custom__"><?php esc_html_e( 'Other (type below)', '6arshid-social-community' ); ?></option>
+					<option value="__custom__"><?php esc_html_e( 'Other (type below)', '6arshid social community' ); ?></option>
 				</select>
-				<input type="text" id="arshid6social-sm-custom" placeholder="<?php esc_attr_e( 'Custom reason…', '6arshid-social-community' ); ?>"
+				<input type="text" id="arshid6social-sm-custom" placeholder="<?php esc_attr_e( 'Custom reason…', '6arshid social community' ); ?>"
 					style="width:100%;display:none;margin-bottom:16px;" />
 				<div style="display:flex;gap:8px;justify-content:flex-end;">
-					<button class="button" id="arshid6social-sm-cancel"><?php esc_html_e( 'Cancel', '6arshid-social-community' ); ?></button>
-					<button class="button button-primary" id="arshid6social-sm-confirm"><?php esc_html_e( 'Confirm', '6arshid-social-community' ); ?></button>
+					<button class="button" id="arshid6social-sm-cancel"><?php esc_html_e( 'Cancel', '6arshid social community' ); ?></button>
+					<button class="button button-primary" id="arshid6social-sm-confirm"><?php esc_html_e( 'Confirm', '6arshid social community' ); ?></button>
 				</div>
 				<input type="hidden" id="arshid6social-sm-user-id" value="" />
 				<input type="hidden" id="arshid6social-sm-nonce" value="" />
@@ -307,15 +307,15 @@ final class Admin_Members {
 		$user_id = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		if ( ! check_ajax_referer( 'arshid6social_suspend_' . $user_id, 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
 		}
 
 		if ( ! current_user_can( 'arshid6social_manage_members' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid social community' ) ), 403 );
 		}
 
 		if ( ! $user_id || ! get_userdata( $user_id ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid user.', '6arshid-social-community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid user.', '6arshid social community' ) ), 400 );
 		}
 
 		$currently_suspended = (bool) get_user_meta( $user_id, 'arshid6social_suspended', true );
@@ -352,8 +352,8 @@ final class Admin_Members {
 				'suspended' => $new_state,
 				'reason'    => $reason,
 				'label'     => $new_state
-					? __( 'Unsuspend', '6arshid-social-community' )
-					: __( 'Suspend', '6arshid-social-community' ),
+					? __( 'Unsuspend', '6arshid social community' )
+					: __( 'Suspend', '6arshid social community' ),
 			)
 		);
 	}
@@ -434,11 +434,11 @@ final class Admin_Members {
 		$user_id = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		if ( ! check_ajax_referer( 'arshid6social_delete_data_' . $user_id, 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
 		}
 
 		if ( ! current_user_can( 'arshid6social_manage_members' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid social community' ) ), 403 );
 		}
 
 		do_action( 'arshid6social_before_delete_member_data', $user_id );
@@ -447,6 +447,6 @@ final class Admin_Members {
 
 		do_action( 'arshid6social_deleted_member_data', $user_id );
 
-		wp_send_json_success( array( 'message' => __( 'Member data deleted.', '6arshid-social-community' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Member data deleted.', '6arshid social community' ) ) );
 	}
 }

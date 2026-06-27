@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Engagement\Features;
 
 /**
@@ -104,13 +104,13 @@ class Social_Embeds_Renderer {
 
 		$btn_label = $prov_name
 			/* translators: %s: embed provider name */
-			? sprintf( esc_attr__( 'Load %s embed', '6arshid-social-community' ), $prov_name )
-			: esc_attr__( 'Load embed', '6arshid-social-community' );
+			? sprintf( esc_attr__( 'Load %s embed', '6arshid social community' ), $prov_name )
+			: esc_attr__( 'Load embed', '6arshid social community' );
 
 		$click_label = $prov_name
 			/* translators: %s: embed provider name */
-			? sprintf( esc_html__( 'Click to load %s', '6arshid-social-community' ), $prov_name )
-			: esc_html__( 'Click to load', '6arshid-social-community' );
+			? sprintf( esc_html__( 'Click to load %s', '6arshid social community' ), $prov_name )
+			: esc_html__( 'Click to load', '6arshid social community' );
 
 		$load_btn = '<button type="button" class="arshid6social-embed-load-btn" aria-label="' . $btn_label . '">'
 			. '<span class="arshid6social-embed-play-icon" aria-hidden="true"></span>'
@@ -120,7 +120,7 @@ class Social_Embeds_Renderer {
 		$meta = '<div class="arshid6social-embed-meta">'
 			. '<span class="arshid6social-embed-provider-name">' . $prov_name . '</span>'
 			. '<a href="' . esc_url( $url ) . '" target="_blank" rel="noopener noreferrer nofollow" class="arshid6social-embed-source-link">'
-			. esc_html__( 'View original', '6arshid-social-community' )
+			. esc_html__( 'View original', '6arshid social community' )
 			. '</a>'
 			. '</div>';
 

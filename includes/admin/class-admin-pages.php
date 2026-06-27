@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Admin;
 
 /**
@@ -38,9 +38,9 @@ class Admin_Pages {
 		$pages = $this->get_page_definitions();
 		?>
 		<div class="wrap arshid6social-admin-pages">
-			<h1><?php esc_html_e( 'Social Network — Pages & Shortcodes', '6arshid-social-community' ); ?></h1>
+			<h1><?php esc_html_e( 'Social Network — Pages & Shortcodes', '6arshid social community' ); ?></h1>
 			<p class="description">
-				<?php esc_html_e( 'These pages were created automatically when the plugin was activated. Each page uses a shortcode to display the social network content. You can copy the shortcode and paste it into any page or widget.', '6arshid-social-community' ); ?>
+				<?php esc_html_e( 'These pages were created automatically when the plugin was activated. Each page uses a shortcode to display the social network content. You can copy the shortcode and paste it into any page or widget.', '6arshid social community' ); ?>
 			</p>
 
 			<?php $this->render_pages_table( $pages ); ?>
@@ -53,9 +53,9 @@ class Admin_Pages {
 		$js_pages  = '(function(){';
 		$js_pages .= 'var nonceRecreate=' . wp_json_encode( $nonce_recreate ) . ';';
 		$js_pages .= 'var nonceAssign=' . wp_json_encode( $nonce_assign ) . ';';
-		$js_pages .= 'var txtRecreate=' . wp_json_encode( __( 'Re-create this page?', '6arshid-social-community' ) ) . ';';
-		$js_pages .= 'var txtSaved=' . wp_json_encode( '✓ ' . __( 'Saved', '6arshid-social-community' ) ) . ';';
-		$js_pages .= 'var txtError=' . wp_json_encode( __( 'Error.', '6arshid-social-community' ) ) . ';';
+		$js_pages .= 'var txtRecreate=' . wp_json_encode( __( 'Re-create this page?', '6arshid social community' ) ) . ';';
+		$js_pages .= 'var txtSaved=' . wp_json_encode( '✓ ' . __( 'Saved', '6arshid social community' ) ) . ';';
+		$js_pages .= 'var txtError=' . wp_json_encode( __( 'Error.', '6arshid social community' ) ) . ';';
 		$js_pages .= <<<'ENDJS'
 document.querySelectorAll('.arshid6social-copy-btn').forEach(function(btn){
 	btn.addEventListener('click',function(){
@@ -114,11 +114,11 @@ ENDJS;
 		<table class="arshid6social-pages-table widefat">
 			<thead>
 				<tr>
-					<th><?php esc_html_e( 'Page', '6arshid-social-community' ); ?></th>
-					<th><?php esc_html_e( 'Status', '6arshid-social-community' ); ?></th>
-					<th><?php esc_html_e( 'Assigned Page', '6arshid-social-community' ); ?></th>
-					<th><?php esc_html_e( 'Shortcode', '6arshid-social-community' ); ?></th>
-					<th><?php esc_html_e( 'Actions', '6arshid-social-community' ); ?></th>
+					<th><?php esc_html_e( 'Page', '6arshid social community' ); ?></th>
+					<th><?php esc_html_e( 'Status', '6arshid social community' ); ?></th>
+					<th><?php esc_html_e( 'Assigned Page', '6arshid social community' ); ?></th>
+					<th><?php esc_html_e( 'Shortcode', '6arshid social community' ); ?></th>
+					<th><?php esc_html_e( 'Actions', '6arshid social community' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -138,15 +138,15 @@ ENDJS;
 						</td>
 						<td>
 							<?php if ( $is_ok ) : ?>
-								<span class="arshid6social-status-ok">&#10003; <?php esc_html_e( 'Active', '6arshid-social-community' ); ?></span>
+								<span class="arshid6social-status-ok">&#10003; <?php esc_html_e( 'Active', '6arshid social community' ); ?></span>
 							<?php else : ?>
-								<span class="arshid6social-status-missing">&#10007; <?php esc_html_e( 'Missing', '6arshid-social-community' ); ?></span>
+								<span class="arshid6social-status-missing">&#10007; <?php esc_html_e( 'Missing', '6arshid social community' ); ?></span>
 							<?php endif; ?>
 						</td>
 						<td>
 							<div class="arshid6social-assign-page-wrap" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
 								<select class="arshid6social-assign-select" data-page-key="<?php echo esc_attr( $key ); ?>" data-option="<?php echo esc_attr( $page['option'] ); ?>" style="max-width:260px;">
-									<option value="0"><?php esc_html_e( '— Not assigned —', '6arshid-social-community' ); ?></option>
+									<option value="0"><?php esc_html_e( '— Not assigned —', '6arshid social community' ); ?></option>
 									<?php foreach ( $all_wp_pages as $wp_p ) : ?>
 										<option value="<?php echo esc_attr( $wp_p->ID ); ?>" <?php selected( $page_id, $wp_p->ID ); ?>>
 											<?php echo esc_html( $wp_p->post_title ); ?>
@@ -154,10 +154,10 @@ ENDJS;
 									<?php endforeach; ?>
 								</select>
 								<button type="button" class="button arshid6social-assign-save" data-page-key="<?php echo esc_attr( $key ); ?>">
-									<?php esc_html_e( 'Save', '6arshid-social-community' ); ?>
+									<?php esc_html_e( 'Save', '6arshid social community' ); ?>
 								</button>
 								<?php if ( $is_ok ) : ?>
-									<a href="<?php echo esc_url( $page_url ); ?>" target="_blank" class="arshid6social-assign-view" title="<?php esc_attr_e( 'View page', '6arshid-social-community' ); ?>">&#128279;</a>
+									<a href="<?php echo esc_url( $page_url ); ?>" target="_blank" class="arshid6social-assign-view" title="<?php esc_attr_e( 'View page', '6arshid social community' ); ?>">&#128279;</a>
 								<?php endif; ?>
 								<span class="arshid6social-assign-msg" style="font-size:.8125rem;color:#16a34a;display:none;"></span>
 							</div>
@@ -165,13 +165,13 @@ ENDJS;
 						<td>
 							<div class="arshid6social-shortcode-box">
 								<span class="arshid6social-shortcode-code"><?php echo esc_html( $page['shortcode'] ); ?></span>
-								<button type="button" class="arshid6social-copy-btn"><?php esc_html_e( 'Copy', '6arshid-social-community' ); ?></button>
+								<button type="button" class="arshid6social-copy-btn"><?php esc_html_e( 'Copy', '6arshid social community' ); ?></button>
 							</div>
 						</td>
 						<td>
 							<?php if ( ! $is_ok ) : ?>
 								<button type="button" class="arshid6social-recreate-btn" data-page-key="<?php echo esc_attr( $key ); ?>">
-									<?php esc_html_e( 'Re-create Page', '6arshid-social-community' ); ?>
+									<?php esc_html_e( 'Re-create Page', '6arshid social community' ); ?>
 								</button>
 							<?php else : ?>
 								—
@@ -192,82 +192,82 @@ ENDJS;
 			array(
 				'code'    => '[arshid6social_members]',
 				'attrs'   => 'per_page="12" show_search="true" type="newest|active|alphabetical"',
-				'desc'    => __( 'Displays the member directory with search bar and pagination.', '6arshid-social-community' ),
+				'desc'    => __( 'Displays the member directory with search bar and pagination.', '6arshid social community' ),
 				'example' => '[arshid6social_members per_page="20" type="active"]',
 			),
 			array(
 				'code'    => '[arshid6social_activity]',
 				'attrs'   => 'per_page="10" show_composer="true" scope="site|friends|self"',
-				'desc'    => __( 'Displays an activity feed with infinite scroll. Logged-in users see a post composer.', '6arshid-social-community' ),
+				'desc'    => __( 'Displays an activity feed with infinite scroll. Logged-in users see a post composer.', '6arshid social community' ),
 				'example' => '[arshid6social_activity scope="friends" show_composer="true"]',
 			),
 			array(
 				'code'    => '[arshid6social_groups]',
 				'attrs'   => 'per_page="9" show_search="true" show_create="true" status="public|all"',
-				'desc'    => __( 'Displays the group directory. Logged-in users see a "Create Group" button.', '6arshid-social-community' ),
+				'desc'    => __( 'Displays the group directory. Logged-in users see a "Create Group" button.', '6arshid social community' ),
 				'example' => '[arshid6social_groups per_page="12" status="public"]',
 			),
 			array(
 				'code'    => '[arshid6social_messages]',
 				'attrs'   => '—',
-				'desc'    => __( 'Displays the private messages inbox. Redirects guests to login.', '6arshid-social-community' ),
+				'desc'    => __( 'Displays the private messages inbox. Redirects guests to login.', '6arshid social community' ),
 				'example' => '[arshid6social_messages]',
 			),
 			array(
 				'code'    => '[arshid6social_notifications]',
 				'attrs'   => '—',
-				'desc'    => __( 'Displays the current user\'s notifications feed with mark-all-read and customizable preferences. Redirects guests to login.', '6arshid-social-community' ),
+				'desc'    => __( 'Displays the current user\'s notifications feed with mark-all-read and customizable preferences. Redirects guests to login.', '6arshid social community' ),
 				'example' => '[arshid6social_notifications]',
 			),
 			array(
 				'code'    => '[arshid6social_profile]',
 				'attrs'   => 'id="0" slug=""',
-				'desc'    => __( 'Displays a user profile. Uses the current logged-in user if no id or slug is given.', '6arshid-social-community' ),
+				'desc'    => __( 'Displays a user profile. Uses the current logged-in user if no id or slug is given.', '6arshid social community' ),
 				'example' => '[arshid6social_profile id="5"]',
 			),
 			array(
 				'code'    => '[arshid6social_login_form]',
 				'attrs'   => 'redirect=""',
-				'desc'    => __( 'Displays a styled login form. Hidden when the user is already logged in.', '6arshid-social-community' ),
+				'desc'    => __( 'Displays a styled login form. Hidden when the user is already logged in.', '6arshid social community' ),
 				'example' => '[arshid6social_login_form redirect="/members/"]',
 			),
 			array(
 				'code'    => '[arshid6social_register_form]',
 				'attrs'   => '—',
-				'desc'    => __( 'Displays a registration form. Respects the "Allow Registration" setting.', '6arshid-social-community' ),
+				'desc'    => __( 'Displays a registration form. Respects the "Allow Registration" setting.', '6arshid social community' ),
 				'example' => '[arshid6social_register_form]',
 			),
 			array(
 				'code'    => '[arshid6social_forgot_password]',
 				'attrs'   => '—',
-				'desc'    => __( 'Custom forgot-password form. Sends a reset email linking to the Reset Password page — no wp-login.php.', '6arshid-social-community' ),
+				'desc'    => __( 'Custom forgot-password form. Sends a reset email linking to the Reset Password page — no wp-login.php.', '6arshid social community' ),
 				'example' => '[arshid6social_forgot_password]',
 			),
 			array(
 				'code'    => '[arshid6social_reset_password]',
 				'attrs'   => '—',
-				'desc'    => __( 'Custom reset-password form. Reads the key and login from the email link and sets a new password — no wp-login.php.', '6arshid-social-community' ),
+				'desc'    => __( 'Custom reset-password form. Reads the key and login from the email link and sets a new password — no wp-login.php.', '6arshid social community' ),
 				'example' => '[arshid6social_reset_password]',
 			),
 			array(
 				'code'    => '[arshid6social_bookmarks]',
 				'attrs'   => 'per_page="20"',
-				'desc'    => __( 'Displays the current user\'s saved posts and bookmarked marketplace listings.', '6arshid-social-community' ),
+				'desc'    => __( 'Displays the current user\'s saved posts and bookmarked marketplace listings.', '6arshid social community' ),
 				'example' => '[arshid6social_bookmarks per_page="20"]',
 			),
 		);
 		?>
 		<div class="arshid6social-sc-ref">
-			<h2><?php esc_html_e( 'Shortcode Reference', '6arshid-social-community' ); ?></h2>
-			<p class="description"><?php esc_html_e( 'All shortcodes can be placed in any page, post, or widget. Gutenberg users can also use the dedicated blocks (search for "Social Network" in the block inserter).', '6arshid-social-community' ); ?></p>
+			<h2><?php esc_html_e( 'Shortcode Reference', '6arshid social community' ); ?></h2>
+			<p class="description"><?php esc_html_e( 'All shortcodes can be placed in any page, post, or widget. Gutenberg users can also use the dedicated blocks (search for "Social Network" in the block inserter).', '6arshid social community' ); ?></p>
 
 			<table class="widefat">
 				<thead>
 					<tr>
-						<th style="width:180px;"><?php esc_html_e( 'Shortcode', '6arshid-social-community' ); ?></th>
-						<th><?php esc_html_e( 'Available Attributes', '6arshid-social-community' ); ?></th>
-						<th><?php esc_html_e( 'Description', '6arshid-social-community' ); ?></th>
-						<th><?php esc_html_e( 'Example', '6arshid-social-community' ); ?></th>
+						<th style="width:180px;"><?php esc_html_e( 'Shortcode', '6arshid social community' ); ?></th>
+						<th><?php esc_html_e( 'Available Attributes', '6arshid social community' ); ?></th>
+						<th><?php esc_html_e( 'Description', '6arshid social community' ); ?></th>
+						<th><?php esc_html_e( 'Example', '6arshid social community' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -276,7 +276,7 @@ ENDJS;
 							<td>
 								<div class="arshid6social-shortcode-box">
 									<code><?php echo esc_html( $sc['code'] ); ?></code>
-									<button type="button" class="arshid6social-copy-btn"><?php esc_html_e( 'Copy', '6arshid-social-community' ); ?></button>
+									<button type="button" class="arshid6social-copy-btn"><?php esc_html_e( 'Copy', '6arshid social community' ); ?></button>
 								</div>
 							</td>
 							<td><code style="font-size:.8125rem;color:#475569;"><?php echo esc_html( $sc['attrs'] ); ?></code></td>
@@ -284,7 +284,7 @@ ENDJS;
 							<td>
 								<div class="arshid6social-shortcode-box">
 									<code><?php echo esc_html( $sc['example'] ); ?></code>
-									<button type="button" class="arshid6social-copy-btn"><?php esc_html_e( 'Copy', '6arshid-social-community' ); ?></button>
+									<button type="button" class="arshid6social-copy-btn"><?php esc_html_e( 'Copy', '6arshid social community' ); ?></button>
 								</div>
 							</td>
 						</tr>
@@ -300,14 +300,14 @@ ENDJS;
 	 */
 	public function ajax_recreate_page(): void {
 		if ( ! check_ajax_referer( 'arshid6social_recreate_page', 'nonce', false ) || ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
 		}
 
 		$page_key = sanitize_key( $_POST['page_key'] ?? '' ); // phpcs:ignore WordPress.Security.NonceVerification
 		$pages    = $this->get_page_definitions();
 
 		if ( ! isset( $pages[ $page_key ] ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unknown page key.', '6arshid-social-community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unknown page key.', '6arshid social community' ) ) );
 		}
 
 		$page    = $pages[ $page_key ];
@@ -336,7 +336,7 @@ ENDJS;
 	 */
 	public function ajax_assign_page(): void {
 		if ( ! check_ajax_referer( 'arshid6social_assign_page', 'nonce', false ) || ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid social community' ) ), 403 );
 		}
 
 		$page_key = sanitize_key( $_POST['page_key'] ?? '' ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -344,11 +344,11 @@ ENDJS;
 		$pages    = $this->get_page_definitions();
 
 		if ( ! isset( $pages[ $page_key ] ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unknown page key.', '6arshid-social-community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Unknown page key.', '6arshid social community' ) ) );
 		}
 
 		if ( $page_id && ! get_post( $page_id ) ) {
-			wp_send_json_error( array( 'message' => __( 'Page not found.', '6arshid-social-community' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Page not found.', '6arshid social community' ) ) );
 		}
 
 		update_option( $pages[ $page_key ]['option'], $page_id );
@@ -365,67 +365,67 @@ ENDJS;
 	private function get_page_definitions(): array {
 		$pages = array(
 			'members'  => array(
-				'title'       => __( 'Members', '6arshid-social-community' ),
+				'title'       => __( 'Members', '6arshid social community' ),
 				'slug'        => 'members',
 				'shortcode'   => '[arshid6social_members]',
 				'option'      => 'arshid6social_page_members',
-				'description' => __( 'Member directory with search and filters', '6arshid-social-community' ),
+				'description' => __( 'Member directory with search and filters', '6arshid social community' ),
 			),
 			'activity' => array(
-				'title'       => __( 'Activity', '6arshid-social-community' ),
+				'title'       => __( 'Activity', '6arshid social community' ),
 				'slug'        => 'activity',
 				'shortcode'   => '[arshid6social_activity]',
 				'option'      => 'arshid6social_page_activity',
-				'description' => __( 'Site-wide activity feed', '6arshid-social-community' ),
+				'description' => __( 'Site-wide activity feed', '6arshid social community' ),
 			),
 			'groups'   => array(
-				'title'       => __( 'Groups', '6arshid-social-community' ),
+				'title'       => __( 'Groups', '6arshid social community' ),
 				'slug'        => 'groups',
 				'shortcode'   => '[arshid6social_groups]',
 				'option'      => 'arshid6social_page_groups',
-				'description' => __( 'Group directory with join buttons', '6arshid-social-community' ),
+				'description' => __( 'Group directory with join buttons', '6arshid social community' ),
 			),
 			'messages' => array(
-				'title'       => __( 'Messages', '6arshid-social-community' ),
+				'title'       => __( 'Messages', '6arshid social community' ),
 				'slug'        => 'messages',
 				'shortcode'   => '[arshid6social_messages]',
 				'option'      => 'arshid6social_page_messages',
-				'description' => __( 'Private messaging inbox', '6arshid-social-community' ),
+				'description' => __( 'Private messaging inbox', '6arshid social community' ),
 			),
 			'notifications' => array(
-				'title'       => __( 'Notifications', '6arshid-social-community' ),
+				'title'       => __( 'Notifications', '6arshid social community' ),
 				'slug'        => 'notifications',
 				'shortcode'   => '[arshid6social_notifications]',
 				'option'      => 'arshid6social_page_notifications',
-				'description' => __( 'Personal notifications feed with customize options', '6arshid-social-community' ),
+				'description' => __( 'Personal notifications feed with customize options', '6arshid social community' ),
 			),
 			'register' => array(
-				'title'       => __( 'Register', '6arshid-social-community' ),
+				'title'       => __( 'Register', '6arshid social community' ),
 				'slug'        => 'register',
 				'shortcode'   => '[arshid6social_register_form]',
 				'option'      => 'arshid6social_page_register',
-				'description' => __( 'Member registration form', '6arshid-social-community' ),
+				'description' => __( 'Member registration form', '6arshid social community' ),
 			),
 			'login' => array(
-				'title'       => __( 'Login', '6arshid-social-community' ),
+				'title'       => __( 'Login', '6arshid social community' ),
 				'slug'        => 'login',
 				'shortcode'   => '[arshid6social_login_form]',
 				'option'      => 'arshid6social_page_login',
-				'description' => __( 'Member login form', '6arshid-social-community' ),
+				'description' => __( 'Member login form', '6arshid social community' ),
 			),
 			'forgot-password' => array(
-				'title'       => __( 'Forgot Password', '6arshid-social-community' ),
+				'title'       => __( 'Forgot Password', '6arshid social community' ),
 				'slug'        => 'forgot-password',
 				'shortcode'   => '[arshid6social_forgot_password]',
 				'option'      => 'arshid6social_page_forgot_password',
-				'description' => __( 'Password reset request form (no wp-login.php)', '6arshid-social-community' ),
+				'description' => __( 'Password reset request form (no wp-login.php)', '6arshid social community' ),
 			),
 			'reset-password' => array(
-				'title'       => __( 'Reset Password', '6arshid-social-community' ),
+				'title'       => __( 'Reset Password', '6arshid social community' ),
 				'slug'        => 'reset-password',
 				'shortcode'   => '[arshid6social_reset_password]',
 				'option'      => 'arshid6social_page_reset_password',
-				'description' => __( 'Set new password via email link (no wp-login.php)', '6arshid-social-community' ),
+				'description' => __( 'Set new password via email link (no wp-login.php)', '6arshid social community' ),
 			),
 		);
 

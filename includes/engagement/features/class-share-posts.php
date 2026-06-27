@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Engagement\Features;
 
 /**
@@ -68,7 +68,7 @@ class Share_Posts {
 		}
 		$content .= '<blockquote class="arshid6social-share-original" data-original-id="' . esc_attr( $root_id ) . '">';
 		$content .= '<cite><a href="' . esc_url( home_url( '/members/' . ( $orig_author ? $orig_author->user_nicename : '' ) . '/' ) ) . '">'
-			. esc_html( $orig_author ? $orig_author->display_name : __( 'Deleted user', '6arshid-social-community' ) )
+			. esc_html( $orig_author ? $orig_author->display_name : __( 'Deleted user', '6arshid social community' ) )
 			. '</a></cite>';
 		$content .= wp_kses_post( $original->content );
 		$content .= '</blockquote>';
@@ -171,7 +171,7 @@ class Share_Posts {
 		$rl_key = 'arshid6social_rl_share_' . get_current_user_id();
 		$count  = (int) get_transient( $rl_key );
 		if ( $count >= $limit ) {
-			wp_send_json_error( array( 'message' => __( 'Rate limit exceeded. Please wait before sharing again.', '6arshid-social-community' ) ), 429 );
+			wp_send_json_error( array( 'message' => __( 'Rate limit exceeded. Please wait before sharing again.', '6arshid social community' ) ), 429 );
 		}
 		set_transient( $rl_key, $count + 1, HOUR_IN_SECONDS );
 
@@ -181,7 +181,7 @@ class Share_Posts {
 
 		$new_id = $this->share( get_current_user_id(), $original_id, $comment, $target_type, $target_id );
 		if ( ! $new_id ) {
-			wp_send_json_error( array( 'message' => __( 'Could not share this post.', '6arshid-social-community' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Could not share this post.', '6arshid social community' ) ), 400 );
 		}
 
 		$activity_comp = ARSHID6SOCIAL()->component( 'activity' );
@@ -216,16 +216,16 @@ class Share_Posts {
 
 		$activity = $activity_comp->get_by_id( $activity_id );
 		if ( ! $activity || 'private' === $activity->privacy ) {
-			wp_send_json_error( array( 'message' => __( 'This post cannot be shared.', '6arshid-social-community' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'This post cannot be shared.', '6arshid social community' ) ), 403 );
 		}
 
 		$url     = \Arshid6Social\Components\Activity\Activity::get_permalink( (int) $activity->id );
 		/* translators: %s: post URL */
-		$content = sprintf( __( 'Shared a post: %s', '6arshid-social-community' ), esc_url( $url ) );
+		$content = sprintf( __( 'Shared a post: %s', '6arshid social community' ), esc_url( $url ) );
 
 		$thread_id = $msg_comp->start_thread(
 			array( $recipient_id ),
-			__( 'Shared post', '6arshid-social-community' ),
+			__( 'Shared post', '6arshid social community' ),
 			$content,
 			get_current_user_id()
 		);
