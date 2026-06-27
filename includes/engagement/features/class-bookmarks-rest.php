@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Engagement\Features;
 
 /**
@@ -18,39 +18,58 @@ class Bookmarks_REST {
 			array(
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_bookmarks' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'require_login' ),
 			),
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'create' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'require_login' ),
 			),
 		) );
 
 		register_rest_route( self::NS, '/bookmarks/(?P<object_type>[a-z]+)/(?P<object_id>\d+)', array(
 			'methods'             => \WP_REST_Server::DELETABLE,
 			'callback'            => array( $this, 'delete' ),
-			'permission_callback' => 'is_user_logged_in',
+			'permission_callback' => array( $this, 'require_login' ),
 		) );
 
 		register_rest_route( self::NS, '/bookmark-collections', array(
 			array(
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_collections' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'require_login' ),
 			),
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'create_collection' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'require_login' ),
 			),
 		) );
 
 		register_rest_route( self::NS, '/bookmark-collections/(?P<id>\d+)', array(
 			'methods'             => \WP_REST_Server::DELETABLE,
 			'callback'            => array( $this, 'delete_collection' ),
-			'permission_callback' => 'is_user_logged_in',
+			'permission_callback' => array( $this, 'can_delete_collection' ),
 		) );
+	}
+
+	public function require_login( \WP_REST_Request $req ): bool {
+		return is_user_logged_in();
+	}
+
+	public function can_delete_collection( \WP_REST_Request $req ): bool {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		$f = $this->feature();
+		if ( ! $f ) {
+			return true; // Feature unavailable; let callback handle it.
+		}
+		$collection_id = absint( $req['id'] );
+		if ( ! $collection_id ) {
+			return true; // Invalid ID; let callback return 404.
+		}
+		return $f->user_owns_collection( get_current_user_id(), $collection_id );
 	}
 
 	private function feature(): ?Bookmarks {
@@ -97,7 +116,7 @@ class Bookmarks_REST {
 		$coll_id     = absint( $req->get_param( 'collection_id' ) ) ?: null;
 
 		if ( ! $object_id ) {
-			return new \WP_REST_Response( array( 'message' => __( 'object_id required.', 'social-network-6' ) ), 400 );
+			return new \WP_REST_Response( array( 'message' => __( 'object_id required.', '6arshid-social-community' ) ), 400 );
 		}
 
 		$ok = $f->add( get_current_user_id(), $object_id, $object_type, $coll_id );

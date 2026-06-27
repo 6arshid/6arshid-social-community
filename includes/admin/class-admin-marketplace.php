@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Admin;
 
 /**
@@ -67,7 +67,7 @@ final class Admin_Marketplace {
 		add_screen_option(
 			'per_page',
 			array(
-				'label'   => __( 'Listings per page', 'social-network-6' ),
+				'label'   => __( 'Listings per page', '6arshid-social-community' ),
 				'default' => 20,
 				'option'  => 'arshid6social_mkt_per_page',
 			)
@@ -82,14 +82,14 @@ final class Admin_Marketplace {
 	public function get_columns(): array {
 		return array(
 			'cb'             => '<input type="checkbox" />',
-			'title'          => __( 'Title', 'social-network-6' ),
-			'seller'         => __( 'Seller', 'social-network-6' ),
-			'category'       => __( 'Category', 'social-network-6' ),
-			'price'          => __( 'Price', 'social-network-6' ),
-			'item_condition' => __( 'Condition', 'social-network-6' ),
-			'location'       => __( 'Location', 'social-network-6' ),
-			'status'         => __( 'Status', 'social-network-6' ),
-			'date'           => __( 'Date', 'social-network-6' ),
+			'title'          => __( 'Title', '6arshid-social-community' ),
+			'seller'         => __( 'Seller', '6arshid-social-community' ),
+			'category'       => __( 'Category', '6arshid-social-community' ),
+			'price'          => __( 'Price', '6arshid-social-community' ),
+			'item_condition' => __( 'Condition', '6arshid-social-community' ),
+			'location'       => __( 'Location', '6arshid-social-community' ),
+			'status'         => __( 'Status', '6arshid-social-community' ),
+			'date'           => __( 'Date', '6arshid-social-community' ),
 		);
 	}
 
@@ -126,7 +126,7 @@ final class Admin_Marketplace {
 			$listing_id = absint( $_GET['listing_id'] ); // phpcs:ignore WordPress.Security.NonceVerification
 
 			if ( ! check_admin_referer( 'arshid6social_mkt_' . $action . '_' . $listing_id ) ) {
-				wp_die( esc_html__( 'Security check failed.', 'social-network-6' ) );
+				wp_die( esc_html__( 'Security check failed.', '6arshid-social-community' ) );
 			}
 
 			$this->process_single_action( $action, $listing_id );
@@ -138,7 +138,7 @@ final class Admin_Marketplace {
 		// Bulk action.
 		if ( ! empty( $_POST['action'] ) && ! empty( $_POST['listing_ids'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			if ( ! check_admin_referer( 'arshid6social_mkt_bulk', '_wpnonce_bulk' ) ) {
-				wp_die( esc_html__( 'Security check failed.', 'social-network-6' ) );
+				wp_die( esc_html__( 'Security check failed.', '6arshid-social-community' ) );
 			}
 
 			$action      = sanitize_key( wp_unslash( $_POST['action'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -157,7 +157,7 @@ final class Admin_Marketplace {
 
 	public function render(): void {
 		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_die( esc_html__( 'You do not have permission to access this page.', 'social-network-6' ) );
+			wp_die( esc_html__( 'You do not have permission to access this page.', '6arshid-social-community' ) );
 		}
 
 		global $wpdb;
@@ -233,10 +233,10 @@ final class Admin_Marketplace {
 
 		// ── Helpers ───────────────────────────────────────────────────────────
 		$status_labels = array(
-			'active'   => __( 'Active', 'social-network-6' ),
-			'draft'    => __( 'Draft', 'social-network-6' ),
-			'archived' => __( 'Archived', 'social-network-6' ),
-			'expired'  => __( 'Expired', 'social-network-6' ),
+			'active'   => __( 'Active', '6arshid-social-community' ),
+			'draft'    => __( 'Draft', '6arshid-social-community' ),
+			'archived' => __( 'Archived', '6arshid-social-community' ),
+			'expired'  => __( 'Expired', '6arshid-social-community' ),
 		);
 
 		$current_url = admin_url( 'admin.php?page=arshid6social-marketplace' );
@@ -246,13 +246,13 @@ final class Admin_Marketplace {
 
 		?>
 		<div class="wrap">
-			<h1 class="wp-heading-inline"><?php esc_html_e( 'Products Archive', 'social-network-6' ); ?></h1>
+			<h1 class="wp-heading-inline"><?php esc_html_e( 'Products Archive', '6arshid-social-community' ); ?></h1>
 			<hr class="wp-header-end">
 
 			<?php // ── Status tabs ──────────────────────────────────────────── ?>
 			<ul class="subsubsub">
 				<?php
-				$tab_items = array( '' => __( 'All', 'social-network-6' ) ) + $status_labels;
+				$tab_items = array( '' => __( 'All', '6arshid-social-community' ) ) + $status_labels;
 				$tab_list  = array();
 				foreach ( $tab_items as $tab_key => $tab_label ) {
 					$count     = ( '' === $tab_key ) ? $counts['all'] : ( $counts[ $tab_key ] ?? 0 );
@@ -278,10 +278,10 @@ final class Admin_Marketplace {
 					<input type="hidden" name="status" value="<?php echo esc_attr( $status_filter ); ?>" />
 				<?php endif; ?>
 				<p class="search-box">
-					<label class="screen-reader-text" for="arshid6social-mkt-search"><?php esc_html_e( 'Search listings', 'social-network-6' ); ?></label>
+					<label class="screen-reader-text" for="arshid6social-mkt-search"><?php esc_html_e( 'Search listings', '6arshid-social-community' ); ?></label>
 					<input type="search" id="arshid6social-mkt-search" name="s" value="<?php echo esc_attr( $search ); ?>"
-						placeholder="<?php esc_attr_e( 'Search by title, seller…', 'social-network-6' ); ?>" />
-					<?php submit_button( __( 'Search Listings', 'social-network-6' ), 'secondary', '', false ); ?>
+						placeholder="<?php esc_attr_e( 'Search by title, seller…', '6arshid-social-community' ); ?>" />
+					<?php submit_button( __( 'Search Listings', '6arshid-social-community' ), 'secondary', '', false ); ?>
 				</p>
 			</form>
 
@@ -297,21 +297,21 @@ final class Admin_Marketplace {
 							<td class="manage-column column-cb check-column">
 								<input type="checkbox" id="arshid6social-mkt-check-all" />
 							</td>
-							<th class="manage-column column-title column-primary"><?php esc_html_e( 'Title', 'social-network-6' ); ?></th>
-							<th class="manage-column column-seller<?php echo esc_attr( $col_class( 'seller' ) ); ?>"><?php esc_html_e( 'Seller', 'social-network-6' ); ?></th>
-							<th class="manage-column column-category<?php echo esc_attr( $col_class( 'category' ) ); ?>"><?php esc_html_e( 'Category', 'social-network-6' ); ?></th>
-							<th class="manage-column column-price<?php echo esc_attr( $col_class( 'price' ) ); ?>"><?php esc_html_e( 'Price', 'social-network-6' ); ?></th>
-							<th class="manage-column column-item_condition<?php echo esc_attr( $col_class( 'item_condition' ) ); ?>"><?php esc_html_e( 'Condition', 'social-network-6' ); ?></th>
-							<th class="manage-column column-location<?php echo esc_attr( $col_class( 'location' ) ); ?>"><?php esc_html_e( 'Location', 'social-network-6' ); ?></th>
-							<th class="manage-column column-status<?php echo esc_attr( $col_class( 'status' ) ); ?>"><?php esc_html_e( 'Status', 'social-network-6' ); ?></th>
-							<th class="manage-column column-date<?php echo esc_attr( $col_class( 'date' ) ); ?>"><?php esc_html_e( 'Date', 'social-network-6' ); ?></th>
+							<th class="manage-column column-title column-primary"><?php esc_html_e( 'Title', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-seller<?php echo esc_attr( $col_class( 'seller' ) ); ?>"><?php esc_html_e( 'Seller', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-category<?php echo esc_attr( $col_class( 'category' ) ); ?>"><?php esc_html_e( 'Category', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-price<?php echo esc_attr( $col_class( 'price' ) ); ?>"><?php esc_html_e( 'Price', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-item_condition<?php echo esc_attr( $col_class( 'item_condition' ) ); ?>"><?php esc_html_e( 'Condition', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-location<?php echo esc_attr( $col_class( 'location' ) ); ?>"><?php esc_html_e( 'Location', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-status<?php echo esc_attr( $col_class( 'status' ) ); ?>"><?php esc_html_e( 'Status', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-date<?php echo esc_attr( $col_class( 'date' ) ); ?>"><?php esc_html_e( 'Date', '6arshid-social-community' ); ?></th>
 						</tr>
 					</thead>
 
 					<tbody>
 						<?php if ( empty( $listings ) ) : ?>
 							<tr>
-								<td colspan="9"><?php esc_html_e( 'No listings found.', 'social-network-6' ); ?></td>
+								<td colspan="9"><?php esc_html_e( 'No listings found.', '6arshid-social-community' ); ?></td>
 							</tr>
 						<?php else : ?>
 							<?php foreach ( $listings as $listing ) : ?>
@@ -348,7 +348,7 @@ final class Admin_Marketplace {
 
 								$location = trim( implode( ', ', array_filter( array( $listing->location_city, strtoupper( $listing->location_country ) ) ) ) );
 								$price    = $listing->is_free
-									? __( 'Free', 'social-network-6' )
+									? __( 'Free', '6arshid-social-community' )
 									: \Arshid6Social\Components\Marketplace\Marketplace::format_price( $listing->price );
 								?>
 								<tr>
@@ -356,23 +356,23 @@ final class Admin_Marketplace {
 										<input type="checkbox" name="listing_ids[]" value="<?php echo esc_attr( $listing->id ); ?>" />
 									</th>
 									<td class="title column-title column-primary has-row-actions">
-										<strong><?php echo esc_html( $listing->title ?: __( '(no title)', 'social-network-6' ) ); ?></strong>
+										<strong><?php echo esc_html( $listing->title ?: __( '(no title)', '6arshid-social-community' ) ); ?></strong>
 										<div class="row-actions">
 											<?php if ( 'active' !== $listing->status ) : ?>
 												<span class="activate">
-													<a href="<?php echo esc_url( $activate_url ); ?>"><?php esc_html_e( 'Activate', 'social-network-6' ); ?></a> |
+													<a href="<?php echo esc_url( $activate_url ); ?>"><?php esc_html_e( 'Activate', '6arshid-social-community' ); ?></a> |
 												</span>
 											<?php endif; ?>
 											<?php if ( 'archived' !== $listing->status ) : ?>
 												<span class="trash">
-													<a href="<?php echo esc_url( $archive_url ); ?>"><?php esc_html_e( 'Archive', 'social-network-6' ); ?></a> |
+													<a href="<?php echo esc_url( $archive_url ); ?>"><?php esc_html_e( 'Archive', '6arshid-social-community' ); ?></a> |
 												</span>
 											<?php endif; ?>
 											<span class="delete">
 												<a href="<?php echo esc_url( $delete_url ); ?>"
 													class="submitdelete"
-													onclick="return confirm('<?php esc_attr_e( 'Delete this listing permanently?', 'social-network-6' ); ?>')">
-													<?php esc_html_e( 'Delete', 'social-network-6' ); ?>
+													onclick="return confirm('<?php esc_attr_e( 'Delete this listing permanently?', '6arshid-social-community' ); ?>')">
+													<?php esc_html_e( 'Delete', '6arshid-social-community' ); ?>
 												</a>
 											</span>
 										</div>
@@ -383,7 +383,7 @@ final class Admin_Marketplace {
 												<?php echo esc_html( $listing->seller_name ); ?>
 											</a>
 										<?php else : ?>
-											<span style="color:#999;"><?php esc_html_e( 'Unknown', 'social-network-6' ); ?></span>
+											<span style="color:#999;"><?php esc_html_e( 'Unknown', '6arshid-social-community' ); ?></span>
 										<?php endif; ?>
 									</td>
 									<td class="category column-category<?php echo esc_attr( $col_class( 'category' ) ); ?>"><?php echo esc_html( $listing->category_name ?: '—' ); ?></td>
@@ -410,14 +410,14 @@ final class Admin_Marketplace {
 							<td class="manage-column column-cb check-column">
 								<input type="checkbox" />
 							</td>
-							<th class="manage-column column-title column-primary"><?php esc_html_e( 'Title', 'social-network-6' ); ?></th>
-							<th class="manage-column column-seller<?php echo esc_attr( $col_class( 'seller' ) ); ?>"><?php esc_html_e( 'Seller', 'social-network-6' ); ?></th>
-							<th class="manage-column column-category<?php echo esc_attr( $col_class( 'category' ) ); ?>"><?php esc_html_e( 'Category', 'social-network-6' ); ?></th>
-							<th class="manage-column column-price<?php echo esc_attr( $col_class( 'price' ) ); ?>"><?php esc_html_e( 'Price', 'social-network-6' ); ?></th>
-							<th class="manage-column column-item_condition<?php echo esc_attr( $col_class( 'item_condition' ) ); ?>"><?php esc_html_e( 'Condition', 'social-network-6' ); ?></th>
-							<th class="manage-column column-location<?php echo esc_attr( $col_class( 'location' ) ); ?>"><?php esc_html_e( 'Location', 'social-network-6' ); ?></th>
-							<th class="manage-column column-status<?php echo esc_attr( $col_class( 'status' ) ); ?>"><?php esc_html_e( 'Status', 'social-network-6' ); ?></th>
-							<th class="manage-column column-date<?php echo esc_attr( $col_class( 'date' ) ); ?>"><?php esc_html_e( 'Date', 'social-network-6' ); ?></th>
+							<th class="manage-column column-title column-primary"><?php esc_html_e( 'Title', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-seller<?php echo esc_attr( $col_class( 'seller' ) ); ?>"><?php esc_html_e( 'Seller', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-category<?php echo esc_attr( $col_class( 'category' ) ); ?>"><?php esc_html_e( 'Category', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-price<?php echo esc_attr( $col_class( 'price' ) ); ?>"><?php esc_html_e( 'Price', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-item_condition<?php echo esc_attr( $col_class( 'item_condition' ) ); ?>"><?php esc_html_e( 'Condition', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-location<?php echo esc_attr( $col_class( 'location' ) ); ?>"><?php esc_html_e( 'Location', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-status<?php echo esc_attr( $col_class( 'status' ) ); ?>"><?php esc_html_e( 'Status', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-date<?php echo esc_attr( $col_class( 'date' ) ); ?>"><?php esc_html_e( 'Date', '6arshid-social-community' ); ?></th>
 						</tr>
 					</tfoot>
 				</table>
@@ -442,16 +442,16 @@ final class Admin_Marketplace {
 				var select = form.querySelector("select[name=\'action\']");
 				var action = select ? select.value : "";
 				if ( ! action ) {
-					alert(' . wp_json_encode( __( 'Please select a bulk action.', 'social-network-6' ) ) . ');
+					alert(' . wp_json_encode( __( 'Please select a bulk action.', '6arshid-social-community' ) ) . ');
 					return false;
 				}
 				var checked = form.querySelectorAll("input[name=\'listing_ids[]\']:checked");
 				if ( ! checked.length ) {
-					alert(' . wp_json_encode( __( 'Please select at least one listing.', 'social-network-6' ) ) . ');
+					alert(' . wp_json_encode( __( 'Please select at least one listing.', '6arshid-social-community' ) ) . ');
 					return false;
 				}
 				if ( action === "delete" ) {
-					return confirm(' . wp_json_encode( __( 'Delete selected listings permanently?', 'social-network-6' ) ) . ');
+					return confirm(' . wp_json_encode( __( 'Delete selected listings permanently?', '6arshid-social-community' ) ) . ');
 				}
 				return true;
 			};
@@ -476,16 +476,16 @@ final class Admin_Marketplace {
 		<div class="tablenav <?php echo esc_attr( $position ); ?>">
 			<div class="alignleft actions bulkactions">
 				<label class="screen-reader-text" for="bulk-action-selector-<?php echo esc_attr( $position ); ?>">
-					<?php esc_html_e( 'Select bulk action', 'social-network-6' ); ?>
+					<?php esc_html_e( 'Select bulk action', '6arshid-social-community' ); ?>
 				</label>
 				<select name="action" id="bulk-action-selector-<?php echo esc_attr( $position ); ?>">
-					<option value=""><?php esc_html_e( 'Bulk actions', 'social-network-6' ); ?></option>
-					<option value="set_active"><?php esc_html_e( 'Set Active', 'social-network-6' ); ?></option>
-					<option value="set_archived"><?php esc_html_e( 'Set Archived', 'social-network-6' ); ?></option>
-					<option value="delete"><?php esc_html_e( 'Delete', 'social-network-6' ); ?></option>
+					<option value=""><?php esc_html_e( 'Bulk actions', '6arshid-social-community' ); ?></option>
+					<option value="set_active"><?php esc_html_e( 'Set Active', '6arshid-social-community' ); ?></option>
+					<option value="set_archived"><?php esc_html_e( 'Set Archived', '6arshid-social-community' ); ?></option>
+					<option value="delete"><?php esc_html_e( 'Delete', '6arshid-social-community' ); ?></option>
 				</select>
 				<input type="submit" class="button action"
-					value="<?php esc_attr_e( 'Apply', 'social-network-6' ); ?>"
+					value="<?php esc_attr_e( 'Apply', '6arshid-social-community' ); ?>"
 					onclick="return arshid6social_mkt_confirm_bulk(this);" />
 			</div>
 			<div class="tablenav-pages<?php echo 1 === $total_pages ? ' one-page' : ''; ?>">
@@ -494,7 +494,7 @@ final class Admin_Marketplace {
 					echo esc_html(
 						sprintf(
 							/* translators: %s: number of items */
-							_n( '%s item', '%s items', $total, 'social-network-6' ),
+							_n( '%s item', '%s items', $total, '6arshid-social-community' ),
 							number_format_i18n( $total )
 						)
 					);

@@ -18,7 +18,7 @@ class Sticky_Posts_REST {
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'pin' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'can_pin_activity' ),
 				'args'                => array(
 					'scope'      => array( 'default' => 'profile', 'sanitize_callback' => 'sanitize_key' ),
 					'scope_id'   => array( 'default' => 0, 'sanitize_callback' => 'absint' ),
@@ -28,7 +28,7 @@ class Sticky_Posts_REST {
 			array(
 				'methods'             => \WP_REST_Server::DELETABLE,
 				'callback'            => array( $this, 'unpin' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'can_pin_activity' ),
 				'args'                => array(
 					'scope'    => array( 'default' => 'profile', 'sanitize_callback' => 'sanitize_key' ),
 					'scope_id' => array( 'default' => 0, 'sanitize_callback' => 'absint' ),
@@ -47,6 +47,19 @@ class Sticky_Posts_REST {
 		) );
 	}
 
+	public function can_pin_activity( \WP_REST_Request $req ): bool {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		$activity_comp = ARSHID6SOCIAL()->component( 'activity' );
+		$activity      = $activity_comp ? $activity_comp->get_by_id( absint( $req['id'] ) ) : null;
+		if ( ! $activity ) {
+			return true; // Activity not found; let the callback return a proper 404.
+		}
+		return (int) $activity->user_id === get_current_user_id()
+			|| current_user_can( 'arshid6social_manage_activity' );
+	}
+
 	private function feature(): ?Sticky_Posts {
 		/** @var Sticky_Posts|null $f */
 		return arshid6social_eng()->feature( 'sticky_posts' );
@@ -62,16 +75,6 @@ class Sticky_Posts_REST {
 		$current_user_id = get_current_user_id();
 		$scope           = in_array( $req['scope'], array( 'profile', 'group', 'site' ), true ) ? $req['scope'] : 'profile';
 
-		// Only the activity author or admins may pin to profile; site-wide pins require admin.
-		$activity_comp = ARSHID6SOCIAL()->component( 'activity' );
-		$activity      = $activity_comp ? $activity_comp->get_by_id( $activity_id ) : null;
-		$is_author     = $activity && ( (int) $activity->user_id === $current_user_id );
-		$is_admin      = current_user_can( 'arshid6social_manage_activity' );
-
-		if ( ! $is_author && ! $is_admin ) {
-			return new \WP_REST_Response( null, 403 );
-		}
-
 		$id = $f->pin( $activity_id, $scope, (int) $req['scope_id'], $current_user_id, $req['expires_at'] ?: null );
 
 		return $id
@@ -85,19 +88,8 @@ class Sticky_Posts_REST {
 			return new \WP_REST_Response( null, 503 );
 		}
 
-		$activity_id     = absint( $req['id'] );
-		$current_user_id = get_current_user_id();
-		$scope           = in_array( $req['scope'], array( 'profile', 'group', 'site' ), true ) ? $req['scope'] : 'profile';
-
-		// Only the activity author or admins may unpin.
-		$activity_comp = ARSHID6SOCIAL()->component( 'activity' );
-		$activity      = $activity_comp ? $activity_comp->get_by_id( $activity_id ) : null;
-		$is_author     = $activity && ( (int) $activity->user_id === $current_user_id );
-		$is_admin      = current_user_can( 'arshid6social_manage_activity' );
-
-		if ( ! $is_author && ! $is_admin ) {
-			return new \WP_REST_Response( null, 403 );
-		}
+		$activity_id = absint( $req['id'] );
+		$scope       = in_array( $req['scope'], array( 'profile', 'group', 'site' ), true ) ? $req['scope'] : 'profile';
 
 		$f->unpin( $activity_id, $scope, (int) $req['scope_id'] );
 		return new \WP_REST_Response( null, 204 );

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Single listing detail page template.
  *
@@ -49,32 +49,32 @@ foreach ( $photos as $ph ) {
 // Price display
 $price_html = '';
 if ( $listing->is_free ) {
-	$price_html = '<span class="arshid6social-mkt-s-free">' . esc_html__( 'Free', 'social-network-6' ) . '</span>';
+	$price_html = '<span class="arshid6social-mkt-s-free">' . esc_html__( 'Free', '6arshid-social-community' ) . '</span>';
 } else {
 	$price_html = '<span class="arshid6social-mkt-s-price">' . esc_html( Marketplace::format_price( $listing->price ) ) . '</span>';
 	if ( $listing->is_negotiable ) {
-		$price_html .= ' <span class="arshid6social-mkt-s-neg">' . esc_html__( 'Negotiable', 'social-network-6' ) . '</span>';
+		$price_html .= ' <span class="arshid6social-mkt-s-neg">' . esc_html__( 'Negotiable', '6arshid-social-community' ) . '</span>';
 	}
 }
 
 // Condition label
 $condition_labels = array(
-	'new'      => __( 'New', 'social-network-6' ),
-	'like_new' => __( 'Like New', 'social-network-6' ),
-	'good'     => __( 'Good', 'social-network-6' ),
-	'fair'     => __( 'Fair', 'social-network-6' ),
-	'poor'     => __( 'Poor', 'social-network-6' ),
-	'used'     => __( 'Used', 'social-network-6' ),
+	'new'      => __( 'New', '6arshid-social-community' ),
+	'like_new' => __( 'Like New', '6arshid-social-community' ),
+	'good'     => __( 'Good', '6arshid-social-community' ),
+	'fair'     => __( 'Fair', '6arshid-social-community' ),
+	'poor'     => __( 'Poor', '6arshid-social-community' ),
+	'used'     => __( 'Used', '6arshid-social-community' ),
 );
 $condition_label = $condition_labels[ $listing->item_condition ] ?? ucfirst( $listing->item_condition );
 
 // Status badge
 $status_label = array(
 	'active'  => '',
-	'pending' => __( 'Pending Review', 'social-network-6' ),
-	'sold'    => __( 'Sold', 'social-network-6' ),
-	'draft'   => __( 'Draft', 'social-network-6' ),
-	'archived'=> __( 'Archived', 'social-network-6' ),
+	'pending' => __( 'Pending Review', '6arshid-social-community' ),
+	'sold'    => __( 'Sold', '6arshid-social-community' ),
+	'draft'   => __( 'Draft', '6arshid-social-community' ),
+	'archived'=> __( 'Archived', '6arshid-social-community' ),
 );
 ?>
 
@@ -95,8 +95,8 @@ $status_label = array(
 	?>">
 
 	<?php /* ── Breadcrumb ──────────────────────────────────────────────────── */ ?>
-	<nav class="arshid6social-mkt-breadcrumb" aria-label="<?php esc_attr_e( 'Breadcrumb', 'social-network-6' ); ?>">
-		<a href="<?php echo esc_url( $base_url ); ?>"><?php esc_html_e( 'Marketplace', 'social-network-6' ); ?></a>
+	<nav class="arshid6social-mkt-breadcrumb" aria-label="<?php esc_attr_e( 'Breadcrumb', '6arshid-social-community' ); ?>">
+		<a href="<?php echo esc_url( $base_url ); ?>"><?php esc_html_e( 'Marketplace', '6arshid-social-community' ); ?></a>
 		<?php if ( $category ) : ?>
 			<span aria-hidden="true">›</span>
 			<a href="<?php echo esc_url( add_query_arg( 'cat', $listing->category_id, $base_url ) ); ?>">
@@ -131,7 +131,7 @@ $status_label = array(
 					loading="eager">
 				<?php if ( 'sold' === $listing->status ) : ?>
 				<div class="arshid6social-mkt-sold-overlay">
-					<span><?php esc_html_e( 'SOLD', 'social-network-6' ); ?></span>
+					<span><?php esc_html_e( 'SOLD', '6arshid-social-community' ); ?></span>
 				</div>
 				<?php endif; ?>
 			</div>
@@ -145,7 +145,7 @@ $status_label = array(
 					data-index="<?php echo esc_attr( $i ); ?>"
 					aria-label="<?php
 					/* translators: %d: photo number */
-					printf( esc_attr__( 'Photo %d', 'social-network-6' ), absint( $i + 1 ) ); ?>"
+					printf( esc_attr__( 'Photo %d', '6arshid-social-community' ), absint( $i + 1 ) ); ?>"
 					role="listitem">
 					<img src="<?php echo esc_url( $ph['thumb'] ); ?>" alt="" loading="lazy">
 				</button>
@@ -156,7 +156,7 @@ $status_label = array(
 			<?php else : ?>
 			<div class="arshid6social-mkt-gallery-placeholder">
 				<svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-				<p><?php esc_html_e( 'No photos', 'social-network-6' ); ?></p>
+				<p><?php esc_html_e( 'No photos', '6arshid-social-community' ); ?></p>
 			</div>
 			<?php endif; ?>
 
@@ -185,11 +185,11 @@ $status_label = array(
 				<?php endif; ?>
 				<span>
 					<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-					<?php echo esc_html( human_time_diff( strtotime( $listing->created_at ), time() ) . ' ' . __( 'ago', 'social-network-6' ) ); ?>
+					<?php echo esc_html( human_time_diff( strtotime( $listing->created_at ), time() ) . ' ' . __( 'ago', '6arshid-social-community' ) ); ?>
 				</span>
 				<span>
 					<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-					<?php echo esc_html( number_format_i18n( (int) $listing->views ) . ' ' . __( 'views', 'social-network-6' ) ); ?>
+					<?php echo esc_html( number_format_i18n( (int) $listing->views ) . ' ' . __( 'views', '6arshid-social-community' ) ); ?>
 				</span>
 			</div>
 
@@ -200,25 +200,25 @@ $status_label = array(
 				<button type="button" class="arshid6social-mkt-btn arshid6social-mkt-btn--primary arshid6social-mkt-btn--full" id="arshid6social-mkt-contact-btn"
 					<?php echo ! is_user_logged_in() ? 'data-login="' . esc_url( wp_login_url( get_permalink() ) ) . '"' : ''; ?>>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-					<?php esc_html_e( 'Message Seller', 'social-network-6' ); ?>
+					<?php esc_html_e( 'Message Seller', '6arshid-social-community' ); ?>
 				</button>
 				<?php endif; ?>
 
 				<div class="arshid6social-mkt-s-secondary-actions">
 					<button type="button" class="arshid6social-mkt-s-icon-btn<?php echo $is_saved ? ' is-saved' : ''; ?>" id="arshid6social-mkt-save-btn"
-						aria-label="<?php esc_attr_e( 'Save listing', 'social-network-6' ); ?>"
-						data-label-save="<?php esc_attr_e( 'Save', 'social-network-6' ); ?>"
-						data-label-saved="<?php esc_attr_e( 'Saved', 'social-network-6' ); ?>">
+						aria-label="<?php esc_attr_e( 'Save listing', '6arshid-social-community' ); ?>"
+						data-label-save="<?php esc_attr_e( 'Save', '6arshid-social-community' ); ?>"
+						data-label-saved="<?php esc_attr_e( 'Saved', '6arshid-social-community' ); ?>">
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="<?php echo $is_saved ? 'currentColor' : 'none'; ?>" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-						<?php echo $is_saved ? esc_html__( 'Saved', 'social-network-6' ) : esc_html__( 'Save', 'social-network-6' ); ?>
+						<?php echo $is_saved ? esc_html__( 'Saved', '6arshid-social-community' ) : esc_html__( 'Save', '6arshid-social-community' ); ?>
 					</button>
-					<button type="button" class="arshid6social-mkt-s-icon-btn" id="arshid6social-mkt-share-btn" aria-label="<?php esc_attr_e( 'Share listing', 'social-network-6' ); ?>">
+					<button type="button" class="arshid6social-mkt-s-icon-btn" id="arshid6social-mkt-share-btn" aria-label="<?php esc_attr_e( 'Share listing', '6arshid-social-community' ); ?>">
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-						<?php esc_html_e( 'Share', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Share', '6arshid-social-community' ); ?>
 					</button>
-					<button type="button" class="arshid6social-mkt-s-icon-btn arshid6social-mkt-s-icon-btn--danger" id="arshid6social-mkt-report-btn" aria-label="<?php esc_attr_e( 'Report listing', 'social-network-6' ); ?>">
+					<button type="button" class="arshid6social-mkt-s-icon-btn arshid6social-mkt-s-icon-btn--danger" id="arshid6social-mkt-report-btn" aria-label="<?php esc_attr_e( 'Report listing', '6arshid-social-community' ); ?>">
 						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-						<?php esc_html_e( 'Report', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Report', '6arshid-social-community' ); ?>
 					</button>
 				</div>
 			</div>
@@ -226,26 +226,26 @@ $status_label = array(
 
 			<?php /* Owner controls */ ?>
 			<div class="arshid6social-mkt-s-owner-bar">
-				<strong><?php esc_html_e( 'Your listing', 'social-network-6' ); ?></strong>
+				<strong><?php esc_html_e( 'Your listing', '6arshid-social-community' ); ?></strong>
 				<div class="arshid6social-mkt-s-owner-actions">
 					<?php if ( 'active' === $listing->status ) : ?>
 					<button type="button" class="arshid6social-mkt-btn arshid6social-mkt-btn--outline arshid6social-mkt-btn--sm arshid6social-mkt-mark-sold"
 						data-id="<?php echo esc_attr( $listing_id ); ?>">
-						<?php esc_html_e( 'Mark as Sold', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Mark as Sold', '6arshid-social-community' ); ?>
 					</button>
 					<?php elseif ( 'sold' === $listing->status ) : ?>
 					<button type="button" class="arshid6social-mkt-btn arshid6social-mkt-btn--outline arshid6social-mkt-btn--sm arshid6social-mkt-reactivate"
 						data-id="<?php echo esc_attr( $listing_id ); ?>">
-						<?php esc_html_e( 'Re-activate', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Re-activate', '6arshid-social-community' ); ?>
 					</button>
 					<?php endif; ?>
 					<a href="<?php echo esc_url( add_query_arg( array( 'action' => 'edit', 'id' => $uid ), $base_url ) ); ?>"
 						class="arshid6social-mkt-btn arshid6social-mkt-btn--outline arshid6social-mkt-btn--sm">
-						<?php esc_html_e( 'Edit', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Edit', '6arshid-social-community' ); ?>
 					</a>
 					<button type="button" class="arshid6social-mkt-btn arshid6social-mkt-btn--danger arshid6social-mkt-btn--sm arshid6social-mkt-delete-listing"
 						data-id="<?php echo esc_attr( $listing_id ); ?>">
-						<?php esc_html_e( 'Delete', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Delete', '6arshid-social-community' ); ?>
 					</button>
 				</div>
 			</div>
@@ -265,7 +265,7 @@ $status_label = array(
 					<span class="arshid6social-mkt-seller-since">
 						<?php printf(
 							/* translators: %s: date user joined */
-							esc_html__( 'Member since %s', 'social-network-6' ),
+							esc_html__( 'Member since %s', '6arshid-social-community' ),
 							esc_html( date_i18n( 'M Y', strtotime( $seller->user_registered ) ) )
 						); ?>
 					</span>
@@ -279,7 +279,7 @@ $status_label = array(
 	<?php /* ── Description ────────────────────────────────────────────────── */ ?>
 	<?php if ( $listing->description ) : ?>
 	<div class="arshid6social-mkt-s-desc-wrap">
-		<h2 class="arshid6social-mkt-s-section-title"><?php esc_html_e( 'Description', 'social-network-6' ); ?></h2>
+		<h2 class="arshid6social-mkt-s-section-title"><?php esc_html_e( 'Description', '6arshid-social-community' ); ?></h2>
 		<div class="arshid6social-mkt-s-desc">
 			<?php echo wp_kses_post( nl2br( $listing->description ) ); ?>
 		</div>
@@ -291,11 +291,11 @@ $status_label = array(
 	<div class="arshid6social-mkt-safety-tips">
 		<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
 		<div>
-			<strong><?php esc_html_e( 'Stay safe', 'social-network-6' ); ?></strong>
+			<strong><?php esc_html_e( 'Stay safe', '6arshid-social-community' ); ?></strong>
 			<ul>
-				<li><?php esc_html_e( 'Meet in a safe, public place.', 'social-network-6' ); ?></li>
-				<li><?php esc_html_e( 'Inspect items before you pay.', 'social-network-6' ); ?></li>
-				<li><?php esc_html_e( 'Never send money in advance.', 'social-network-6' ); ?></li>
+				<li><?php esc_html_e( 'Meet in a safe, public place.', '6arshid-social-community' ); ?></li>
+				<li><?php esc_html_e( 'Inspect items before you pay.', '6arshid-social-community' ); ?></li>
+				<li><?php esc_html_e( 'Never send money in advance.', '6arshid-social-community' ); ?></li>
 			</ul>
 		</div>
 	</div>
@@ -471,8 +471,8 @@ if ( shareBtn ) {
 			try { await navigator.share( { title, url } ); } catch (e) {}
 		} else {
 			await navigator.clipboard.writeText( url ).catch( () => {} );
-			shareBtn.textContent = '<?php echo esc_js( __( 'Link copied!', 'social-network-6' ) ); ?>';
-			setTimeout( () => { shareBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg><?php echo esc_js( __( 'Share', 'social-network-6' ) ); ?>'; }, 2500 );
+			shareBtn.textContent = '<?php echo esc_js( __( 'Link copied!', '6arshid-social-community' ) ); ?>';
+			setTimeout( () => { shareBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg><?php echo esc_js( __( 'Share', '6arshid-social-community' ) ); ?>'; }, 2500 );
 		}
 	} );
 }
@@ -497,7 +497,7 @@ if ( contactBtn ) {
 			if ( data.success && data.data.thread_uid ) {
 				window.location.href = MESSAGES_URL.replace( /\/?$/, '/' ) + 'thread/' + data.data.thread_uid + '/';
 			} else {
-				alert( data.data?.message || '<?php echo esc_js( __( 'Could not open conversation.', 'social-network-6' ) ); ?>' );
+				alert( data.data?.message || '<?php echo esc_js( __( 'Could not open conversation.', '6arshid-social-community' ) ); ?>' );
 				contactBtn.disabled = false;
 				contactBtn.style.opacity = '';
 			}
@@ -529,11 +529,11 @@ if ( saveBtn ) {
 				saveBtn.classList.toggle( 'is-saved', saved );
 				if ( saved ) {
 					const linkHtml = SAVED_POSTS_URL
-						? ' <a href="' + SAVED_POSTS_URL + '" style="color:inherit;text-decoration:underline;font-weight:600;"><?php echo esc_js( __( 'View saved posts', 'social-network-6' ) ); ?></a>'
+						? ' <a href="' + SAVED_POSTS_URL + '" style="color:inherit;text-decoration:underline;font-weight:600;"><?php echo esc_js( __( 'View saved posts', '6arshid-social-community' ) ); ?></a>'
 						: '';
-					ARSHID6SOCIALShowToast( '<?php echo esc_js( __( 'Listing saved!', 'social-network-6' ) ); ?>' + linkHtml, 'success' );
+					ARSHID6SOCIALShowToast( '<?php echo esc_js( __( 'Listing saved!', '6arshid-social-community' ) ); ?>' + linkHtml, 'success' );
 				} else {
-					ARSHID6SOCIALShowToast( '<?php echo esc_js( __( 'Removed from saved posts.', 'social-network-6' ) ); ?>', 'info' );
+					ARSHID6SOCIALShowToast( '<?php echo esc_js( __( 'Removed from saved posts.', '6arshid-social-community' ) ); ?>', 'info' );
 				}
 			}
 		} catch (e) {}
@@ -546,7 +546,7 @@ const reportBtn = document.getElementById( 'arshid6social-mkt-report-btn' );
 if ( reportBtn ) {
 	reportBtn.addEventListener( 'click', async () => {
 		if ( LOGIN_URL ) { window.location.href = LOGIN_URL; return; }
-		const reason = prompt( '<?php echo esc_js( __( 'Why are you reporting this listing?', 'social-network-6' ) ); ?>' );
+		const reason = prompt( '<?php echo esc_js( __( 'Why are you reporting this listing?', '6arshid-social-community' ) ); ?>' );
 		if ( null === reason ) return;
 		reportBtn.disabled = true;
 		const fd = new FormData();
@@ -558,9 +558,9 @@ if ( reportBtn ) {
 			const res  = await fetch( AJAX, { method: 'POST', body: fd } );
 			const data = await res.json();
 			if ( data.success ) {
-				reportBtn.textContent = '<?php echo esc_js( __( 'Reported', 'social-network-6' ) ); ?>';
+				reportBtn.textContent = '<?php echo esc_js( __( 'Reported', '6arshid-social-community' ) ); ?>';
 			} else {
-				alert( data.data?.message || '<?php echo esc_js( __( 'Could not submit report.', 'social-network-6' ) ); ?>' );
+				alert( data.data?.message || '<?php echo esc_js( __( 'Could not submit report.', '6arshid-social-community' ) ); ?>' );
 				reportBtn.disabled = false;
 			}
 		} catch (e) {
@@ -583,7 +583,7 @@ async function changeStatus( listingId, status ) {
 
 document.querySelectorAll( '.arshid6social-mkt-mark-sold' ).forEach( btn => {
 	btn.addEventListener( 'click', () => {
-		if ( confirm( '<?php echo esc_js( __( 'Mark this listing as sold?', 'social-network-6' ) ); ?>' ) ) {
+		if ( confirm( '<?php echo esc_js( __( 'Mark this listing as sold?', '6arshid-social-community' ) ); ?>' ) ) {
 			changeStatus( btn.dataset.id, 'sold' );
 		}
 	} );
@@ -595,7 +595,7 @@ document.querySelectorAll( '.arshid6social-mkt-reactivate' ).forEach( btn => {
 // ── Delete listing ────────────────────────────────────────────────────────
 document.querySelectorAll( '.arshid6social-mkt-delete-listing' ).forEach( btn => {
 	btn.addEventListener( 'click', async () => {
-		if ( ! confirm( '<?php echo esc_js( __( 'Permanently delete this listing? This cannot be undone.', 'social-network-6' ) ); ?>' ) ) return;
+		if ( ! confirm( '<?php echo esc_js( __( 'Permanently delete this listing? This cannot be undone.', '6arshid-social-community' ) ); ?>' ) ) return;
 		const fd = new FormData();
 		fd.append( 'action',     'arshid6social_mkt_delete_listing' );
 		fd.append( 'nonce',      NONCE );

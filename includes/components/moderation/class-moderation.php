@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Moderation;
 
 /**
@@ -369,11 +369,11 @@ class Moderation {
 	 */
 	public function ajax_submit_report(): void {
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in to report.', 'social-network-6' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in to report.', '6arshid-social-community' ) ), 401 );
 		}
 
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification
@@ -384,16 +384,16 @@ class Moderation {
 		// phpcs:enable
 
 		if ( ! $item_id || ! in_array( $item_type, array( 'profile', 'group' ), true ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid report target.', 'social-network-6' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid report target.', '6arshid-social-community' ) ), 400 );
 		}
 
 		if ( ! $reason ) {
-			wp_send_json_error( array( 'message' => __( 'Please select a reason.', 'social-network-6' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Please select a reason.', '6arshid-social-community' ) ), 400 );
 		}
 
 		// Cannot report yourself.
 		if ( 'profile' === $item_type && (int) $item_id === get_current_user_id() ) {
-			wp_send_json_error( array( 'message' => __( 'You cannot report yourself.', 'social-network-6' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'You cannot report yourself.', '6arshid-social-community' ) ), 400 );
 		}
 
 		$attachment_url = '';
@@ -408,12 +408,12 @@ class Moderation {
 			$file_mime    = isset( $_FILES['attachment']['type'] ) ? sanitize_mime_type( wp_unslash( $_FILES['attachment']['type'] ) ) : '';
 
 			if ( ! in_array( $file_mime, $allowed_mime, true ) ) {
-				wp_send_json_error( array( 'message' => __( 'Only image files are allowed as attachments.', 'social-network-6' ) ), 400 );
+				wp_send_json_error( array( 'message' => __( 'Only image files are allowed as attachments.', '6arshid-social-community' ) ), 400 );
 			}
 
 			$max_size = (int) get_option( 'arshid6social_max_upload_size_mb', 5 ) * 1024 * 1024;
 			if ( (int) ( $_FILES['attachment']['size'] ?? 0 ) > $max_size ) {
-				wp_send_json_error( array( 'message' => __( 'Attachment file is too large.', 'social-network-6' ) ), 400 );
+				wp_send_json_error( array( 'message' => __( 'Attachment file is too large.', '6arshid-social-community' ) ), 400 );
 			}
 
 			$uploaded = wp_handle_upload(
@@ -436,10 +436,10 @@ class Moderation {
 		);
 
 		if ( ! $report_id ) {
-			wp_send_json_error( array( 'message' => __( 'You have already reported this. It is pending review.', 'social-network-6' ) ) );
+			wp_send_json_error( array( 'message' => __( 'You have already reported this. It is pending review.', '6arshid-social-community' ) ) );
 		}
 
-		wp_send_json_success( array( 'message' => __( 'Thank you. Your report has been submitted for review.', 'social-network-6' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Thank you. Your report has been submitted for review.', '6arshid-social-community' ) ) );
 	}
 
 	// ─────────────────────────────────────────────────────────────────────────
@@ -636,10 +636,10 @@ class Moderation {
 		echo '<div class="arshid6social-wrap"><div class="arshid6social-container" style="padding-block:4rem;">';
 		echo '<div class="arshid6social-suspended-notice">';
 		echo '<div class="arshid6social-suspended-notice__icon">&#128683;</div>';
-		echo '<h2 class="arshid6social-suspended-notice__title">' . esc_html__( 'Content Not Available', 'social-network-6' ) . '</h2>';
-		echo '<p class="arshid6social-suspended-notice__text">' . esc_html__( 'This content belongs to a suspended account and is not available.', 'social-network-6' ) . '</p>';
+		echo '<h2 class="arshid6social-suspended-notice__title">' . esc_html__( 'Content Not Available', '6arshid-social-community' ) . '</h2>';
+		echo '<p class="arshid6social-suspended-notice__text">' . esc_html__( 'This content belongs to a suspended account and is not available.', '6arshid-social-community' ) . '</p>';
 		echo '<div class="arshid6social-suspended-notice__actions">';
-		echo '<a href="' . esc_url( home_url( '/' ) ) . '" class="arshid6social-btn arshid6social-btn-primary">' . esc_html__( 'Back to Home', 'social-network-6' ) . '</a>';
+		echo '<a href="' . esc_url( home_url( '/' ) ) . '" class="arshid6social-btn arshid6social-btn-primary">' . esc_html__( 'Back to Home', '6arshid-social-community' ) . '</a>';
 		echo '</div>';
 		echo '</div>';
 		echo '</div></div>';
@@ -674,11 +674,11 @@ class Moderation {
 		$group_id = absint( $_POST['group_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		if ( ! check_ajax_referer( 'arshid6social_suspend_group_' . $group_id, 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		if ( ! current_user_can( 'arshid6social_manage_reports' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'social-network-6' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
 		}
 
 		$reason = sanitize_text_field( wp_unslash( $_POST['reason'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -688,7 +688,7 @@ class Moderation {
 		$group = $wpdb->get_row( $wpdb->prepare( "SELECT id, name, is_suspended FROM {$wpdb->prefix}sn_groups WHERE id = %d", $group_id ) );
 
 		if ( ! $group ) {
-			wp_send_json_error( array( 'message' => __( 'Group not found.', 'social-network-6' ) ), 404 );
+			wp_send_json_error( array( 'message' => __( 'Group not found.', '6arshid-social-community' ) ), 404 );
 		}
 
 		$new_state = ! (bool) $group->is_suspended;
@@ -717,8 +717,8 @@ class Moderation {
 			array(
 				'suspended' => $new_state,
 				'label'     => $new_state
-					? __( 'Unsuspend Group', 'social-network-6' )
-					: __( 'Suspend Group', 'social-network-6' ),
+					? __( 'Unsuspend Group', '6arshid-social-community' )
+					: __( 'Suspend Group', '6arshid-social-community' ),
 			)
 		);
 	}
@@ -778,7 +778,7 @@ class Moderation {
 		// Show suspended notice but don't completely lock out.
 		add_action( 'wp_footer', function () {
 			echo '<div class="arshid6social-suspension-notice" style="position:fixed;bottom:0;left:0;right:0;background:#dc2626;color:#fff;padding:12px;text-align:center;z-index:9999;">'
-				. esc_html__( 'Your account has been suspended. Please contact an administrator.', 'social-network-6' )
+				. esc_html__( 'Your account has been suspended. Please contact an administrator.', '6arshid-social-community' )
 				. '</div>';
 		} );
 	}

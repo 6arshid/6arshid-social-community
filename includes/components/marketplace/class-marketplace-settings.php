@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Marketplace;
 
 /**
@@ -46,7 +46,7 @@ class Marketplace_Settings {
 
 	/** @param array<string,string> $tabs */
 	public function add_tab( array $tabs ): array {
-		$tabs['marketplace'] = __( 'Marketplace', 'social-network-6' );
+		$tabs['marketplace'] = __( 'Marketplace', '6arshid-social-community' );
 		return $tabs;
 	}
 
@@ -60,11 +60,11 @@ class Marketplace_Settings {
 
 		$slug           = (string) get_option( 'arshid6social_marketplace_slug', 'marketplace' );
 		$pages['marketplace'] = array(
-			'title'       => __( 'Marketplace', 'social-network-6' ),
+			'title'       => __( 'Marketplace', '6arshid-social-community' ),
 			'slug'        => $slug,
 			'shortcode'   => '[arshid6social_marketplace]',
 			'option'      => 'arshid6social_page_marketplace',
-			'description' => __( 'Facebook-style peer-to-peer marketplace', 'social-network-6' ),
+			'description' => __( 'Facebook-style peer-to-peer marketplace', '6arshid-social-community' ),
 		);
 
 		return $pages;
@@ -104,7 +104,7 @@ class Marketplace_Settings {
 		}
 
 		$page_id = wp_insert_post( array(
-			'post_title'     => __( 'Marketplace', 'social-network-6' ),
+			'post_title'     => __( 'Marketplace', '6arshid-social-community' ),
 			'post_name'      => $slug,
 			'post_content'   => '[arshid6social_marketplace]',
 			'post_status'    => 'publish',
@@ -206,24 +206,24 @@ class Marketplace_Settings {
 		$page_id  = (int) get_option( 'arshid6social_page_marketplace', 0 );
 		$page_url = ( $page_id && 'publish' === get_post_status( $page_id ) ) ? get_permalink( $page_id ) : '';
 		?>
-		<h2><?php esc_html_e( 'General', 'social-network-6' ); ?></h2>
+		<h2><?php esc_html_e( 'General', '6arshid-social-community' ); ?></h2>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Enable Marketplace', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Enable Marketplace', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_marketplace_enabled" value="1"
 							<?php checked( get_option( 'arshid6social_marketplace_enabled', false ) ); ?> />
-						<?php esc_html_e( 'Activate the Marketplace module. Disabling this removes all Marketplace hooks, assets, REST routes, and cron jobs.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Activate the Marketplace module. Disabling this removes all Marketplace hooks, assets, REST routes, and cron jobs.', '6arshid-social-community' ); ?>
 					</label>
 					<?php if ( $page_url ) : ?>
 						<p class="description">
-							<?php esc_html_e( 'Marketplace page:', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Marketplace page:', '6arshid-social-community' ); ?>
 							<a href="<?php echo esc_url( $page_url ); ?>" target="_blank"><?php echo esc_html( $page_url ); ?></a>
 						</p>
 					<?php else : ?>
 						<p class="description" style="color:#b91c1c;">
-							<?php esc_html_e( 'No Marketplace page found. Save settings while enabled to auto-create one.', 'social-network-6' ); ?>
+							<?php esc_html_e( 'No Marketplace page found. Save settings while enabled to auto-create one.', '6arshid-social-community' ); ?>
 						</p>
 					<?php endif; ?>
 				</td>
@@ -236,18 +236,18 @@ class Marketplace_Settings {
 
 	private function render_section_social_share(): void {
 		?>
-		<h2><?php esc_html_e( 'Social Sharing', 'social-network-6' ); ?></h2>
+		<h2><?php esc_html_e( 'Social Sharing', '6arshid-social-community' ); ?></h2>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'External Social Sharing', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'External Social Sharing', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_marketplace_social_share" value="1"
 							<?php checked( get_option( 'arshid6social_marketplace_social_share', true ) ); ?> />
-						<?php esc_html_e( 'Show social sharing buttons on marketplace listings (Facebook, WhatsApp, Telegram, X, and more).', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Show social sharing buttons on marketplace listings (Facebook, WhatsApp, Telegram, X, and more).', '6arshid-social-community' ); ?>
 					</label>
 					<p class="description">
-						<?php esc_html_e( 'Requires External Social Sharing to be enabled in the Engagement settings.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Requires External Social Sharing to be enabled in the Engagement settings.', '6arshid-social-community' ); ?>
 					</p>
 				</td>
 			</tr>
@@ -271,9 +271,9 @@ class Marketplace_Settings {
 			$name_map[ (int) $cat->id ] = $cat->name;
 		}
 		?>
-		<h2><?php esc_html_e( 'Categories', 'social-network-6' ); ?></h2>
+		<h2><?php esc_html_e( 'Categories', '6arshid-social-community' ); ?></h2>
 		<p class="description" style="margin-bottom:12px">
-			<?php esc_html_e( 'Create and manage hierarchical listing categories. Drag rows to reorder.', 'social-network-6' ); ?>
+			<?php esc_html_e( 'Create and manage hierarchical listing categories. Drag rows to reorder.', '6arshid-social-community' ); ?>
 		</p>
 
 		<div id="arshid6social-mkt-cats-wrap" data-nonce="<?php echo esc_attr( $nonce ); ?>">
@@ -283,19 +283,19 @@ class Marketplace_Settings {
 				<thead>
 					<tr>
 						<th style="width:32px"></th>
-						<th style="width:52px"><?php esc_html_e( 'Icon', 'social-network-6' ); ?></th>
-						<th><?php esc_html_e( 'Name', 'social-network-6' ); ?></th>
-						<th><?php esc_html_e( 'Slug', 'social-network-6' ); ?></th>
-						<th><?php esc_html_e( 'Parent', 'social-network-6' ); ?></th>
-						<th style="width:60px"><?php esc_html_e( 'Order', 'social-network-6' ); ?></th>
-						<th style="width:120px"><?php esc_html_e( 'Actions', 'social-network-6' ); ?></th>
+						<th style="width:52px"><?php esc_html_e( 'Icon', '6arshid-social-community' ); ?></th>
+						<th><?php esc_html_e( 'Name', '6arshid-social-community' ); ?></th>
+						<th><?php esc_html_e( 'Slug', '6arshid-social-community' ); ?></th>
+						<th><?php esc_html_e( 'Parent', '6arshid-social-community' ); ?></th>
+						<th style="width:60px"><?php esc_html_e( 'Order', '6arshid-social-community' ); ?></th>
+						<th style="width:120px"><?php esc_html_e( 'Actions', '6arshid-social-community' ); ?></th>
 					</tr>
 				</thead>
 				<tbody id="arshid6social-mkt-cat-list">
 					<?php foreach ( $categories as $cat ) : ?>
 						<?php $parent_name = $cat->parent_id ? ( $name_map[ (int) $cat->parent_id ] ?? '—' ) : '—'; ?>
 						<tr data-id="<?php echo esc_attr( $cat->id ); ?>" class="arshid6social-mkt-cat-row">
-							<td class="arshid6social-drag-handle" title="<?php esc_attr_e( 'Drag to reorder', 'social-network-6' ); ?>" style="cursor:grab;color:#94a3b8;font-size:1.1rem;text-align:center">⠿</td>
+							<td class="arshid6social-drag-handle" title="<?php esc_attr_e( 'Drag to reorder', '6arshid-social-community' ); ?>" style="cursor:grab;color:#94a3b8;font-size:1.1rem;text-align:center">⠿</td>
 							<td style="font-size:1.4rem;text-align:center"><?php echo esc_html( $cat->icon ); ?></td>
 							<td>
 								<strong><?php echo esc_html( $cat->name ); ?></strong>
@@ -314,13 +314,13 @@ class Marketplace_Settings {
 									data-icon="<?php echo esc_attr( $cat->icon ); ?>"
 									data-parent="<?php echo esc_attr( $cat->parent_id ); ?>"
 									data-order="<?php echo esc_attr( $cat->sort_order ); ?>">
-									<?php esc_html_e( 'Edit', 'social-network-6' ); ?>
+									<?php esc_html_e( 'Edit', '6arshid-social-community' ); ?>
 								</button>
 								<button type="button" class="button button-small button-link-delete arshid6social-mkt-cat-delete"
 									data-id="<?php echo esc_attr( $cat->id ); ?>"
 									data-name="<?php echo esc_attr( $cat->name ); ?>"
 									style="color:#dc2626;margin-left:4px">
-									<?php esc_html_e( 'Delete', 'social-network-6' ); ?>
+									<?php esc_html_e( 'Delete', '6arshid-social-community' ); ?>
 								</button>
 							</td>
 						</tr>
@@ -328,7 +328,7 @@ class Marketplace_Settings {
 					<?php if ( empty( $categories ) ) : ?>
 						<tr id="arshid6social-mkt-cat-empty">
 							<td colspan="7" style="text-align:center;color:#94a3b8;padding:1.5rem">
-								<?php esc_html_e( 'No categories yet. Add one below.', 'social-network-6' ); ?>
+								<?php esc_html_e( 'No categories yet. Add one below.', '6arshid-social-community' ); ?>
 							</td>
 						</tr>
 					<?php endif; ?>
@@ -337,37 +337,37 @@ class Marketplace_Settings {
 
 			<!-- Add / Edit form -->
 			<div id="arshid6social-mkt-cat-form-wrap" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:16px;margin-bottom:16px;display:none">
-				<h4 id="arshid6social-mkt-cat-form-title" style="margin:0 0 12px"><?php esc_html_e( 'Add Category', 'social-network-6' ); ?></h4>
+				<h4 id="arshid6social-mkt-cat-form-title" style="margin:0 0 12px"><?php esc_html_e( 'Add Category', '6arshid-social-community' ); ?></h4>
 				<input type="hidden" id="arshid6social-mkt-cat-id" value="0" />
 				<table class="form-table" role="presentation" style="margin:0">
 					<tr>
-						<th scope="row" style="width:100px;padding:8px 0"><?php esc_html_e( 'Icon', 'social-network-6' ); ?></th>
+						<th scope="row" style="width:100px;padding:8px 0"><?php esc_html_e( 'Icon', '6arshid-social-community' ); ?></th>
 						<td style="padding:8px 0">
 							<input type="text" id="arshid6social-mkt-cat-icon" value="" maxlength="10"
 								placeholder="🚗" class="small-text" style="font-size:1.3rem;width:60px" />
-							<span class="description" style="margin-left:8px"><?php esc_html_e( 'Emoji or short text', 'social-network-6' ); ?></span>
+							<span class="description" style="margin-left:8px"><?php esc_html_e( 'Emoji or short text', '6arshid-social-community' ); ?></span>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row" style="padding:8px 0"><?php esc_html_e( 'Name', 'social-network-6' ); ?></th>
+						<th scope="row" style="padding:8px 0"><?php esc_html_e( 'Name', '6arshid-social-community' ); ?></th>
 						<td style="padding:8px 0">
 							<input type="text" id="arshid6social-mkt-cat-name" value="" class="regular-text"
-								placeholder="<?php esc_attr_e( 'e.g. Vehicles', 'social-network-6' ); ?>" />
+								placeholder="<?php esc_attr_e( 'e.g. Vehicles', '6arshid-social-community' ); ?>" />
 						</td>
 					</tr>
 					<tr>
-						<th scope="row" style="padding:8px 0"><?php esc_html_e( 'Slug', 'social-network-6' ); ?></th>
+						<th scope="row" style="padding:8px 0"><?php esc_html_e( 'Slug', '6arshid-social-community' ); ?></th>
 						<td style="padding:8px 0">
 							<input type="text" id="arshid6social-mkt-cat-slug" value="" class="regular-text"
-								placeholder="<?php esc_attr_e( 'auto-generated from name', 'social-network-6' ); ?>" />
-							<span class="description"><?php esc_html_e( 'Leave blank to auto-generate.', 'social-network-6' ); ?></span>
+								placeholder="<?php esc_attr_e( 'auto-generated from name', '6arshid-social-community' ); ?>" />
+							<span class="description"><?php esc_html_e( 'Leave blank to auto-generate.', '6arshid-social-community' ); ?></span>
 						</td>
 					</tr>
 					<tr>
-						<th scope="row" style="padding:8px 0"><?php esc_html_e( 'Parent', 'social-network-6' ); ?></th>
+						<th scope="row" style="padding:8px 0"><?php esc_html_e( 'Parent', '6arshid-social-community' ); ?></th>
 						<td style="padding:8px 0">
 							<select id="arshid6social-mkt-cat-parent">
-								<option value="0"><?php esc_html_e( '— Top Level —', 'social-network-6' ); ?></option>
+								<option value="0"><?php esc_html_e( '— Top Level —', '6arshid-social-community' ); ?></option>
 								<?php foreach ( $categories as $cat ) :
 									if ( $cat->parent_id ) continue; // Only top-level as parents.
 								?>
@@ -379,7 +379,7 @@ class Marketplace_Settings {
 						</td>
 					</tr>
 					<tr>
-						<th scope="row" style="padding:8px 0"><?php esc_html_e( 'Sort Order', 'social-network-6' ); ?></th>
+						<th scope="row" style="padding:8px 0"><?php esc_html_e( 'Sort Order', '6arshid-social-community' ); ?></th>
 						<td style="padding:8px 0">
 							<input type="number" id="arshid6social-mkt-cat-order" value="0" min="0" max="999" class="small-text" />
 						</td>
@@ -387,17 +387,17 @@ class Marketplace_Settings {
 				</table>
 				<div style="margin-top:12px;display:flex;gap:8px;align-items:center">
 					<button type="button" id="arshid6social-mkt-cat-save" class="button button-primary">
-						<?php esc_html_e( 'Save Category', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Save Category', '6arshid-social-community' ); ?>
 					</button>
 					<button type="button" id="arshid6social-mkt-cat-cancel" class="button">
-						<?php esc_html_e( 'Cancel', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Cancel', '6arshid-social-community' ); ?>
 					</button>
 					<span id="arshid6social-mkt-cat-msg" style="font-size:.875rem"></span>
 				</div>
 			</div>
 
 			<button type="button" id="arshid6social-mkt-cat-add-btn" class="button button-secondary">
-				+ <?php esc_html_e( 'Add Category', 'social-network-6' ); ?>
+				+ <?php esc_html_e( 'Add Category', '6arshid-social-community' ); ?>
 			</button>
 		</div>
 		<hr style="margin:24px 0">
@@ -408,32 +408,32 @@ class Marketplace_Settings {
 
 	private function render_section_currency(): void {
 		?>
-		<h2><?php esc_html_e( 'Currency', 'social-network-6' ); ?></h2>
+		<h2><?php esc_html_e( 'Currency', '6arshid-social-community' ); ?></h2>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Currency Symbol', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Currency Symbol', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="text" name="arshid6social_marketplace_currency_symbol"
 						value="<?php echo esc_attr( get_option( 'arshid6social_marketplace_currency_symbol', '$' ) ); ?>"
 						class="small-text" maxlength="5" />
-					<p class="description"><?php esc_html_e( 'e.g. $, €, £, ﷼', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'e.g. $, €, £, ﷼', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Symbol Position', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Symbol Position', '6arshid-social-community' ); ?></th>
 				<td>
 					<select name="arshid6social_marketplace_currency_position">
 						<option value="before" <?php selected( get_option( 'arshid6social_marketplace_currency_position', 'before' ), 'before' ); ?>>
-							<?php esc_html_e( 'Before amount ($100)', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Before amount ($100)', '6arshid-social-community' ); ?>
 						</option>
 						<option value="after" <?php selected( get_option( 'arshid6social_marketplace_currency_position', 'before' ), 'after' ); ?>>
-							<?php esc_html_e( 'After amount (100$)', 'social-network-6' ); ?>
+							<?php esc_html_e( 'After amount (100$)', '6arshid-social-community' ); ?>
 						</option>
 					</select>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Decimal Places', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Decimal Places', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_marketplace_currency_decimals" min="0" max="4"
 						value="<?php echo esc_attr( get_option( 'arshid6social_marketplace_currency_decimals', 2 ) ); ?>"
@@ -441,12 +441,12 @@ class Marketplace_Settings {
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Thousands Separator', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Thousands Separator', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="text" name="arshid6social_marketplace_currency_thousands"
 						value="<?php echo esc_attr( get_option( 'arshid6social_marketplace_currency_thousands', ',' ) ); ?>"
 						class="small-text" maxlength="1" />
-					<p class="description"><?php esc_html_e( 'e.g. , or . or leave blank', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'e.g. , or . or leave blank', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -457,19 +457,19 @@ class Marketplace_Settings {
 
 	private function render_section_listings(): void {
 		?>
-		<h2><?php esc_html_e( 'Listings', 'social-network-6' ); ?></h2>
+		<h2><?php esc_html_e( 'Listings', '6arshid-social-community' ); ?></h2>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Max Photos Per Listing', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Max Photos Per Listing', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_marketplace_max_photos" min="1" max="30"
 						value="<?php echo esc_attr( get_option( 'arshid6social_marketplace_max_photos', 10 ) ); ?>"
 						class="small-text" />
-					<p class="description"><?php esc_html_e( 'Maximum photos per listing (1–30).', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Maximum photos per listing (1–30).', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Max Photo Size (MB)', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Max Photo Size (MB)', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_marketplace_max_photo_size_mb" min="1" max="50"
 						value="<?php echo esc_attr( get_option( 'arshid6social_marketplace_max_photo_size_mb', 5 ) ); ?>"
@@ -477,12 +477,12 @@ class Marketplace_Settings {
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Listing Expiry (Days)', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Listing Expiry (Days)', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_marketplace_expiry_days" min="0" max="365"
 						value="<?php echo esc_attr( get_option( 'arshid6social_marketplace_expiry_days', 30 ) ); ?>"
 						class="small-text" />
-					<p class="description"><?php esc_html_e( 'Auto-archive listings after this many days. 0 = never expire.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Auto-archive listings after this many days. 0 = never expire.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -493,46 +493,46 @@ class Marketplace_Settings {
 
 	private function render_section_moderation(): void {
 		?>
-		<h2><?php esc_html_e( 'Moderation', 'social-network-6' ); ?></h2>
+		<h2><?php esc_html_e( 'Moderation', '6arshid-social-community' ); ?></h2>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Moderation Mode', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Moderation Mode', '6arshid-social-community' ); ?></th>
 				<td>
 					<select name="arshid6social_marketplace_moderation">
 						<option value="auto" <?php selected( get_option( 'arshid6social_marketplace_moderation', 'auto' ), 'auto' ); ?>>
-							<?php esc_html_e( 'Auto-publish (listings go live immediately)', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Auto-publish (listings go live immediately)', '6arshid-social-community' ); ?>
 						</option>
 						<option value="manual" <?php selected( get_option( 'arshid6social_marketplace_moderation', 'auto' ), 'manual' ); ?>>
-							<?php esc_html_e( 'Manual approval (admin must review before listing is visible)', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Manual approval (admin must review before listing is visible)', '6arshid-social-community' ); ?>
 						</option>
 					</select>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Require Verified Account to Post', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Require Verified Account to Post', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_marketplace_require_verified" value="1"
 							<?php checked( get_option( 'arshid6social_marketplace_require_verified', false ) ); ?> />
-						<?php esc_html_e( 'Only users with a verified badge can create listings.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Only users with a verified badge can create listings.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Auto-hide After N Reports', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Auto-hide After N Reports', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_marketplace_auto_hide_threshold" min="0" max="100"
 						value="<?php echo esc_attr( get_option( 'arshid6social_marketplace_auto_hide_threshold', 3 ) ); ?>"
 						class="small-text" />
-					<p class="description"><?php esc_html_e( 'Set listing to "pending review" after this many reports. 0 = disabled.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Set listing to "pending review" after this many reports. 0 = disabled.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Banned Words / Phrases', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Banned Words / Phrases', '6arshid-social-community' ); ?></th>
 				<td>
 					<textarea name="arshid6social_marketplace_banned_words" rows="4"
 						class="large-text"><?php echo esc_textarea( get_option( 'arshid6social_marketplace_banned_words', '' ) ); ?></textarea>
-					<p class="description"><?php esc_html_e( 'One word or phrase per line. Listings matching these will be held for moderation.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'One word or phrase per line. Listings matching these will be held for moderation.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -543,20 +543,20 @@ class Marketplace_Settings {
 
 	private function render_section_access(): void {
 		?>
-		<h2><?php esc_html_e( 'Access & Limits', 'social-network-6' ); ?></h2>
+		<h2><?php esc_html_e( 'Access & Limits', '6arshid-social-community' ); ?></h2>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Allow Guests to Browse', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Allow Guests to Browse', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_marketplace_allow_guests" value="1"
 							<?php checked( get_option( 'arshid6social_marketplace_allow_guests', true ) ); ?> />
-						<?php esc_html_e( 'Logged-out visitors can view listings. Contacting a seller always requires login.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Logged-out visitors can view listings. Contacting a seller always requires login.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Max Active Listings Per User', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Max Active Listings Per User', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_marketplace_max_active_listings" min="1" max="9999"
 						value="<?php echo esc_attr( get_option( 'arshid6social_marketplace_max_active_listings', 20 ) ); ?>"
@@ -564,7 +564,7 @@ class Marketplace_Settings {
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Max New Listings Per Day', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Max New Listings Per Day', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_marketplace_daily_new_listings" min="1" max="9999"
 						value="<?php echo esc_attr( get_option( 'arshid6social_marketplace_daily_new_listings', 5 ) ); ?>"
@@ -579,22 +579,22 @@ class Marketplace_Settings {
 
 	private function render_section_content(): void {
 		?>
-		<h2><?php esc_html_e( 'Policy & Safety Content', 'social-network-6' ); ?></h2>
+		<h2><?php esc_html_e( 'Policy & Safety Content', '6arshid-social-community' ); ?></h2>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Safety Tips', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Safety Tips', '6arshid-social-community' ); ?></th>
 				<td>
 					<textarea name="arshid6social_marketplace_safety_tips" rows="4"
 						class="large-text"><?php echo esc_textarea( get_option( 'arshid6social_marketplace_safety_tips', '' ) ); ?></textarea>
-					<p class="description"><?php esc_html_e( 'Shown to buyers before their first message to a seller. Plain text only.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Shown to buyers before their first message to a seller. Plain text only.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Prohibited Items Policy', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Prohibited Items Policy', '6arshid-social-community' ); ?></th>
 				<td>
 					<textarea name="arshid6social_marketplace_prohibited_policy" rows="4"
 						class="large-text"><?php echo esc_textarea( get_option( 'arshid6social_marketplace_prohibited_policy', '' ) ); ?></textarea>
-					<p class="description"><?php esc_html_e( 'Shown (with a required checkbox) at the start of the Create Listing wizard.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Shown (with a required checkbox) at the start of the Create Listing wizard.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -605,15 +605,15 @@ class Marketplace_Settings {
 
 	private function render_section_homepage(): void {
 		?>
-		<h2><?php esc_html_e( 'Homepage Placement', 'social-network-6' ); ?></h2>
+		<h2><?php esc_html_e( 'Homepage Placement', '6arshid-social-community' ); ?></h2>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Set Marketplace as Site Landing Page', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Set Marketplace as Site Landing Page', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_marketplace_as_homepage" value="1"
 							<?php checked( get_option( 'arshid6social_marketplace_as_homepage', false ) ); ?> />
-						<?php esc_html_e( 'Use the Marketplace page as the front page. Reversible — uncheck to restore previous front page.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Use the Marketplace page as the front page. Reversible — uncheck to restore previous front page.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
@@ -621,8 +621,8 @@ class Marketplace_Settings {
 
 		<div class="notice notice-info inline" style="margin-top:16px">
 			<p>
-				<strong><?php esc_html_e( 'Payment & Liability Notice', 'social-network-6' ); ?></strong><br>
-				<?php esc_html_e( 'This plugin does NOT process, hold, or facilitate payments. All transactions are arranged directly between buyer and seller via private messages (peer-to-peer). The plugin operator assumes no liability for any transaction.', 'social-network-6' ); ?>
+				<strong><?php esc_html_e( 'Payment & Liability Notice', '6arshid-social-community' ); ?></strong><br>
+				<?php esc_html_e( 'This plugin does NOT process, hold, or facilitate payments. All transactions are arranged directly between buyer and seller via private messages (peer-to-peer). The plugin operator assumes no liability for any transaction.', '6arshid-social-community' ); ?>
 			</p>
 		</div>
 		<?php
@@ -633,7 +633,7 @@ class Marketplace_Settings {
 	public function ajax_save_category(): void {
 		if ( ! check_ajax_referer( 'arshid6social_marketplace_categories', 'nonce', false )
 			|| ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		global $wpdb;
@@ -647,7 +647,7 @@ class Marketplace_Settings {
 		$sort_order = absint( $_POST['sort_order'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		if ( ! $name ) {
-			wp_send_json_error( array( 'message' => __( 'Name is required.', 'social-network-6' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Name is required.', '6arshid-social-community' ) ) );
 		}
 
 		$slug = $slug_input ?: sanitize_title( $name );
@@ -686,7 +686,7 @@ class Marketplace_Settings {
 	public function ajax_delete_category(): void {
 		if ( ! check_ajax_referer( 'arshid6social_marketplace_categories', 'nonce', false )
 			|| ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		global $wpdb;
@@ -694,7 +694,7 @@ class Marketplace_Settings {
 		$table = $wpdb->prefix . 'arshid6social_categories';
 
 		if ( ! $id ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid ID.', 'social-network-6' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid ID.', '6arshid-social-community' ) ) );
 		}
 
 		// Move children to top level before deleting the parent.
@@ -707,7 +707,7 @@ class Marketplace_Settings {
 	public function ajax_reorder_categories(): void {
 		if ( ! check_ajax_referer( 'arshid6social_marketplace_categories', 'nonce', false )
 			|| ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'social-network-6' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		global $wpdb;
@@ -728,177 +728,59 @@ class Marketplace_Settings {
 	// ── Inline JS for categories manager ─────────────────────────────────────
 
 	private function enqueue_categories_script(): void {
-		$confirm_delete = __( 'Delete this category? Its sub-categories will be moved to the top level.', 'social-network-6' );
-		$label_add      = __( 'Add Category', 'social-network-6' );
-		$label_edit     = __( 'Edit Category', 'social-network-6' );
-		$label_saving   = __( 'Saving…', 'social-network-6' );
-		$label_saved    = __( 'Saved.', 'social-network-6' );
-		$label_error    = __( 'Error. Please try again.', 'social-network-6' );
-		?>
-		<script>
-		(function() {
-			const wrap    = document.getElementById( 'arshid6social-mkt-cats-wrap' );
-			if ( ! wrap ) return;
-
-			const nonce   = wrap.dataset.nonce;
-			const form    = document.getElementById( 'arshid6social-mkt-cat-form-wrap' );
-			const list    = document.getElementById( 'arshid6social-mkt-cat-list' );
-			const idField = document.getElementById( 'arshid6social-mkt-cat-id' );
-			const fTitle  = document.getElementById( 'arshid6social-mkt-cat-form-title' );
-			const fIcon   = document.getElementById( 'arshid6social-mkt-cat-icon' );
-			const fName   = document.getElementById( 'arshid6social-mkt-cat-name' );
-			const fSlug   = document.getElementById( 'arshid6social-mkt-cat-slug' );
-			const fParent = document.getElementById( 'arshid6social-mkt-cat-parent' );
-			const fOrder  = document.getElementById( 'arshid6social-mkt-cat-order' );
-			const msg     = document.getElementById( 'arshid6social-mkt-cat-msg' );
-			const addBtn  = document.getElementById( 'arshid6social-mkt-cat-add-btn' );
-
-			// Open form for a new category.
-			addBtn.addEventListener( 'click', () => {
-				idField.value = '0';
-				fTitle.textContent = '<?php echo esc_js( $label_add ); ?>';
-				fIcon.value = ''; fName.value = ''; fSlug.value = '';
-				fParent.value = '0'; fOrder.value = '0';
-				msg.textContent = '';
-				form.style.display = 'block';
-				fName.focus();
-			} );
-
-			// Cancel form.
-			document.getElementById( 'arshid6social-mkt-cat-cancel' ).addEventListener( 'click', () => {
-				form.style.display = 'none';
-			} );
-
-			// Open form to edit an existing row.
-			list.addEventListener( 'click', e => {
-				const editBtn = e.target.closest( '.arshid6social-mkt-cat-edit' );
-				if ( ! editBtn ) return;
-				idField.value      = editBtn.dataset.id;
-				fTitle.textContent = '<?php echo esc_js( $label_edit ); ?>';
-				fIcon.value        = editBtn.dataset.icon;
-				fName.value        = editBtn.dataset.name;
-				fSlug.value        = editBtn.dataset.slug;
-				fParent.value      = editBtn.dataset.parent;
-				fOrder.value       = editBtn.dataset.order;
-				msg.textContent    = '';
-				form.style.display = 'block';
-				fName.focus();
-			} );
-
-			// Delete a category.
-			list.addEventListener( 'click', async e => {
-				const delBtn = e.target.closest( '.arshid6social-mkt-cat-delete' );
-				if ( ! delBtn ) return;
-				if ( ! confirm( '<?php echo esc_js( $confirm_delete ); ?>' ) ) return;
-
-				delBtn.disabled = true;
-				const body = new FormData();
-				body.append( 'action', 'arshid6social_marketplace_delete_category' );
-				body.append( 'nonce',  nonce );
-				body.append( 'id',     delBtn.dataset.id );
-
-				const res  = await fetch( ajaxurl, { method: 'POST', body } );
-				const data = await res.json();
-				if ( data.success ) {
-					delBtn.closest( 'tr' ).remove();
-					removeParentOption( delBtn.dataset.id );
-				} else {
-					alert( data.data?.message || '<?php echo esc_js( $label_error ); ?>' );
-					delBtn.disabled = false;
-				}
-			} );
-
-			// Save category (add or edit).
-			document.getElementById( 'arshid6social-mkt-cat-save' ).addEventListener( 'click', async () => {
-				const saveBtn = document.getElementById( 'arshid6social-mkt-cat-save' );
-				saveBtn.disabled   = true;
-				msg.style.color    = '#64748b';
-				msg.textContent    = '<?php echo esc_js( $label_saving ); ?>';
-
-				const body = new FormData();
-				body.append( 'action',     'arshid6social_marketplace_save_category' );
-				body.append( 'nonce',      nonce );
-				body.append( 'id',         idField.value );
-				body.append( 'name',       fName.value.trim() );
-				body.append( 'slug',       fSlug.value.trim() );
-				body.append( 'icon',       fIcon.value.trim() );
-				body.append( 'parent_id',  fParent.value );
-				body.append( 'sort_order', fOrder.value );
-
-				const res  = await fetch( ajaxurl, { method: 'POST', body } );
-				const data = await res.json();
-				saveBtn.disabled = false;
-
-				if ( ! data.success ) {
-					msg.style.color  = '#dc2626';
-					msg.textContent  = data.data?.message || '<?php echo esc_js( $label_error ); ?>';
-					return;
-				}
-
-				msg.style.color = '#16a34a';
-				msg.textContent = '<?php echo esc_js( $label_saved ); ?>';
-
-				// Reload page so table reflects changes (simple, reliable).
-				setTimeout( () => location.reload(), 700 );
-			} );
-
-			// ── Drag-to-reorder ────────────────────────────────────────────
-			let dragRow = null;
-
-			list.addEventListener( 'dragstart', e => {
-				dragRow = e.target.closest( 'tr' );
-				if ( dragRow ) dragRow.style.opacity = '0.5';
-			} );
-
-			list.addEventListener( 'dragend', e => {
-				if ( dragRow ) dragRow.style.opacity = '';
-				dragRow = null;
-			} );
-
-			list.addEventListener( 'dragover', e => {
-				e.preventDefault();
-				const target = e.target.closest( 'tr' );
-				if ( target && dragRow && target !== dragRow ) {
-					const rows       = [...list.querySelectorAll( 'tr[data-id]' )];
-					const dragIdx    = rows.indexOf( dragRow );
-					const targetIdx  = rows.indexOf( target );
-					if ( dragIdx > targetIdx ) {
-						list.insertBefore( dragRow, target );
-					} else {
-						list.insertBefore( dragRow, target.nextSibling );
-					}
-				}
-			} );
-
-			list.addEventListener( 'drop', async e => {
-				e.preventDefault();
-				const order = [...list.querySelectorAll( 'tr[data-id]' )].map( r => r.dataset.id );
-				const body  = new FormData();
-				body.append( 'action', 'arshid6social_marketplace_reorder_categories' );
-				body.append( 'nonce',  nonce );
-				order.forEach( id => body.append( 'order[]', id ) );
-				await fetch( ajaxurl, { method: 'POST', body } );
-			} );
-
-			// Make rows draggable.
-			list.querySelectorAll( 'tr[data-id]' ).forEach( row => {
-				row.draggable = true;
-				const handle = row.querySelector( '.arshid6social-drag-handle' );
-				if ( handle ) {
-					row.addEventListener( 'mousedown', e => {
-						if ( e.target.closest( '.arshid6social-drag-handle' ) ) {
-							row.draggable = true;
-						}
-					} );
-				}
-			} );
-
-			function removeParentOption( id ) {
-				const opt = fParent.querySelector( 'option[value="' + id + '"]' );
-				if ( opt ) opt.remove();
-			}
-		})();
-		</script>
-		<?php
+		$js_mkt  = '(function(){';
+		$js_mkt .= 'var lblAdd=' . wp_json_encode( __( 'Add Category', '6arshid-social-community' ) ) . ';';
+		$js_mkt .= 'var lblEdit=' . wp_json_encode( __( 'Edit Category', '6arshid-social-community' ) ) . ';';
+		$js_mkt .= 'var lblSaving=' . wp_json_encode( __( 'Saving…', '6arshid-social-community' ) ) . ';';
+		$js_mkt .= 'var lblSaved=' . wp_json_encode( __( 'Saved.', '6arshid-social-community' ) ) . ';';
+		$js_mkt .= 'var lblError=' . wp_json_encode( __( 'Error. Please try again.', '6arshid-social-community' ) ) . ';';
+		$js_mkt .= 'var txtConfirmDel=' . wp_json_encode( __( 'Delete this category? Its sub-categories will be moved to the top level.', '6arshid-social-community' ) ) . ';';
+		$js_mkt .= <<<'ENDJS'
+var wrap=document.getElementById('arshid6social-mkt-cats-wrap');if(!wrap)return;
+var nonce=wrap.dataset.nonce;
+var form=document.getElementById('arshid6social-mkt-cat-form-wrap');
+var list=document.getElementById('arshid6social-mkt-cat-list');
+var idField=document.getElementById('arshid6social-mkt-cat-id');
+var fTitle=document.getElementById('arshid6social-mkt-cat-form-title');
+var fIcon=document.getElementById('arshid6social-mkt-cat-icon');
+var fName=document.getElementById('arshid6social-mkt-cat-name');
+var fSlug=document.getElementById('arshid6social-mkt-cat-slug');
+var fParent=document.getElementById('arshid6social-mkt-cat-parent');
+var fOrder=document.getElementById('arshid6social-mkt-cat-order');
+var msg=document.getElementById('arshid6social-mkt-cat-msg');
+var addBtn=document.getElementById('arshid6social-mkt-cat-add-btn');
+addBtn.addEventListener('click',function(){idField.value='0';fTitle.textContent=lblAdd;fIcon.value='';fName.value='';fSlug.value='';fParent.value='0';fOrder.value='0';msg.textContent='';form.style.display='block';fName.focus();});
+document.getElementById('arshid6social-mkt-cat-cancel').addEventListener('click',function(){form.style.display='none';});
+list.addEventListener('click',function(e){
+	var editBtn=e.target.closest('.arshid6social-mkt-cat-edit');
+	if(!editBtn)return;
+	idField.value=editBtn.dataset.id;fTitle.textContent=lblEdit;fIcon.value=editBtn.dataset.icon;fName.value=editBtn.dataset.name;fSlug.value=editBtn.dataset.slug;fParent.value=editBtn.dataset.parent;fOrder.value=editBtn.dataset.order;msg.textContent='';form.style.display='block';fName.focus();
+});
+list.addEventListener('click',async function(e){
+	var delBtn=e.target.closest('.arshid6social-mkt-cat-delete');if(!delBtn)return;
+	if(!confirm(txtConfirmDel))return;
+	delBtn.disabled=true;
+	var body=new FormData();body.append('action','arshid6social_marketplace_delete_category');body.append('nonce',nonce);body.append('id',delBtn.dataset.id);
+	var res=await fetch(ajaxurl,{method:'POST',body:body});var data=await res.json();
+	if(data.success){delBtn.closest('tr').remove();removeParentOption(delBtn.dataset.id);}
+	else{alert(data.data&&data.data.message?data.data.message:lblError);delBtn.disabled=false;}
+});
+document.getElementById('arshid6social-mkt-cat-save').addEventListener('click',async function(){
+	var saveBtn=document.getElementById('arshid6social-mkt-cat-save');saveBtn.disabled=true;msg.style.color='#64748b';msg.textContent=lblSaving;
+	var body=new FormData();body.append('action','arshid6social_marketplace_save_category');body.append('nonce',nonce);body.append('id',idField.value);body.append('name',fName.value.trim());body.append('slug',fSlug.value.trim());body.append('icon',fIcon.value.trim());body.append('parent_id',fParent.value);body.append('sort_order',fOrder.value);
+	var res=await fetch(ajaxurl,{method:'POST',body:body});var data=await res.json();saveBtn.disabled=false;
+	if(!data.success){msg.style.color='#dc2626';msg.textContent=(data.data&&data.data.message)?data.data.message:lblError;return;}
+	msg.style.color='#16a34a';msg.textContent=lblSaved;setTimeout(function(){location.reload();},700);
+});
+var dragRow=null;
+list.addEventListener('dragstart',function(e){dragRow=e.target.closest('tr');if(dragRow)dragRow.style.opacity='0.5';});
+list.addEventListener('dragend',function(){if(dragRow)dragRow.style.opacity='';dragRow=null;});
+list.addEventListener('dragover',function(e){e.preventDefault();var target=e.target.closest('tr');if(target&&dragRow&&target!==dragRow){var rows=[...list.querySelectorAll('tr[data-id]')];var dragIdx=rows.indexOf(dragRow);var targetIdx=rows.indexOf(target);if(dragIdx>targetIdx){list.insertBefore(dragRow,target);}else{list.insertBefore(dragRow,target.nextSibling);}}});
+list.addEventListener('drop',async function(e){e.preventDefault();var order=[...list.querySelectorAll('tr[data-id]')].map(function(r){return r.dataset.id;});var body=new FormData();body.append('action','arshid6social_marketplace_reorder_categories');body.append('nonce',nonce);order.forEach(function(id){body.append('order[]',id);});await fetch(ajaxurl,{method:'POST',body:body});});
+list.querySelectorAll('tr[data-id]').forEach(function(row){row.draggable=true;});
+function removeParentOption(id){var opt=fParent.querySelector('option[value="'+id+'"]');if(opt)opt.remove();}
+})();
+ENDJS;
+		wp_add_inline_script( 'arshid6social-admin', $js_mkt );
 	}
 }

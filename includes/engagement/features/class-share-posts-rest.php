@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Engagement\Features;
 
 /**
@@ -48,7 +48,7 @@ class Share_Posts_REST {
 
 			// Verify the current user can view the original activity before sharing it.
 			if ( ! arshid6social_current_user_can_view_activity( $original_id ) ) {
-				return new \WP_REST_Response( array( 'message' => __( 'Permission denied.', 'social-network-6' ) ), 403 );
+				return new \WP_REST_Response( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
 			}
 
 			$target_type = in_array( $req['target_type'], array( 'profile', 'group' ), true ) ? $req['target_type'] : 'profile';
@@ -56,7 +56,7 @@ class Share_Posts_REST {
 			$new_id = $f->share( get_current_user_id(), $original_id, (string) $req['comment'], $target_type, (int) $req['target_id'] );
 
 			if ( ! $new_id ) {
-				return new \WP_REST_Response( array( 'message' => __( 'Could not share this post.', 'social-network-6' ) ), 400 );
+				return new \WP_REST_Response( array( 'message' => __( 'Could not share this post.', '6arshid-social-community' ) ), 400 );
 			}
 
 			$activity_comp = ARSHID6SOCIAL()->component( 'activity' );
@@ -70,7 +70,7 @@ class Share_Posts_REST {
 			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
 			error_log( '[WPSN Share] ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() );
 			return new \WP_REST_Response(
-				array( 'message' => __( 'Could not share this post.', 'social-network-6' ) ),
+				array( 'message' => __( 'Could not share this post.', '6arshid-social-community' ) ),
 				500
 			);
 		}

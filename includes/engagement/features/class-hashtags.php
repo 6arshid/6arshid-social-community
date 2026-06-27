@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Engagement\Features;
 
 /**
@@ -466,7 +466,7 @@ class Hashtags {
 		$atts   = shortcode_atts( array( 'period' => '24h', 'limit' => 10 ), $atts );
 		$tags   = $this->get_trending( $atts['period'], (int) $atts['limit'] );
 		if ( empty( $tags ) ) {
-			return '<p class="arshid6social-no-trending">' . esc_html__( 'No trending hashtags yet.', 'social-network-6' ) . '</p>';
+			return '<p class="arshid6social-no-trending">' . esc_html__( 'No trending hashtags yet.', '6arshid-social-community' ) . '</p>';
 		}
 
 		$tag_base = sanitize_title( get_option( 'arshid6social_permalink_tag_base', 'hashtags' ) );

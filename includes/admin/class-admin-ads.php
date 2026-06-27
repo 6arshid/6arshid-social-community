@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Admin;
 
 /**
@@ -28,8 +28,17 @@ final class Admin_Ads {
 
 	private function hooks(): void {
 		add_action( 'admin_init',                       array( $this, 'handle_save' ) );
+		add_action( 'admin_enqueue_scripts',            array( $this, 'enqueue_page_styles' ) );
 		add_action( 'wp_ajax_arshid6social_delete_ad',        array( $this, 'ajax_delete' ) );
 		add_action( 'wp_ajax_arshid6social_toggle_ad_status', array( $this, 'ajax_toggle_status' ) );
+	}
+
+	public function enqueue_page_styles(): void {
+		$screen = get_current_screen();
+		if ( ! $screen || false === strpos( $screen->id, 'arshid6social-ads' ) ) {
+			return;
+		}
+		wp_add_inline_style( 'arshid6social-admin', '.arshid6social-status-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600}.arshid6social-status-active{background:#d4edda;color:#155724}.arshid6social-status-inactive{background:#f8d7da;color:#721c24}.arshid6social-ads-table td{vertical-align:middle}' );
 	}
 
 	// ── Save (add / edit) ─────────────────────────────────────────────────────
@@ -39,10 +48,10 @@ final class Admin_Ads {
 			return;
 		}
 		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['arshid6social_ads_nonce'] ) ), 'arshid6social_save_ad' ) ) {
-			wp_die( esc_html__( 'Nonce check failed.', 'social-network-6' ) );
+			wp_die( esc_html__( 'Nonce check failed.', '6arshid-social-community' ) );
 		}
 		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_die( esc_html__( 'Forbidden.', 'social-network-6' ) );
+			wp_die( esc_html__( 'Forbidden.', '6arshid-social-community' ) );
 		}
 
 		$ad_id      = absint( $_POST['ad_id'] ?? 0 );
@@ -90,7 +99,7 @@ final class Admin_Ads {
 	public function ajax_delete(): void {
 		check_ajax_referer( 'arshid6social_admin_ads_nonce', 'nonce' );
 		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_send_json_error( __( 'Forbidden', 'social-network-6' ) );
+			wp_send_json_error( __( 'Forbidden', '6arshid-social-community' ) );
 		}
 		$ad_id = absint( $_POST['ad_id'] ?? 0 );
 		global $wpdb;
@@ -103,7 +112,7 @@ final class Admin_Ads {
 	public function ajax_toggle_status(): void {
 		check_ajax_referer( 'arshid6social_admin_ads_nonce', 'nonce' );
 		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_send_json_error( __( 'Forbidden', 'social-network-6' ) );
+			wp_send_json_error( __( 'Forbidden', '6arshid-social-community' ) );
 		}
 		$ad_id = absint( $_POST['ad_id'] ?? 0 );
 		global $wpdb;
@@ -115,8 +124,8 @@ final class Admin_Ads {
 		$wpdb->update( $wpdb->prefix . 'sn_ads', array( 'status' => $new_status ), array( 'id' => $ad_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		wp_send_json_success( array(
 			'status'       => $new_status,
-			'status_label' => 'active' === $new_status ? __( 'Active', 'social-network-6' ) : __( 'Inactive', 'social-network-6' ),
-			'label'        => 'active' === $new_status ? __( 'Deactivate', 'social-network-6' ) : __( 'Activate', 'social-network-6' ),
+			'status_label' => 'active' === $new_status ? __( 'Active', '6arshid-social-community' ) : __( 'Inactive', '6arshid-social-community' ),
+			'label'        => 'active' === $new_status ? __( 'Deactivate', '6arshid-social-community' ) : __( 'Activate', '6arshid-social-community' ),
 		) );
 	}
 
@@ -124,7 +133,7 @@ final class Admin_Ads {
 
 	public function render(): void {
 		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_die( esc_html__( 'You do not have permission to access this page.', 'social-network-6' ) );
+			wp_die( esc_html__( 'You do not have permission to access this page.', '6arshid-social-community' ) );
 		}
 
 		$action = sanitize_key( $_GET['action'] ?? 'list' );
@@ -151,39 +160,39 @@ final class Admin_Ads {
 		$ajax    = admin_url( 'admin-ajax.php' );
 		?>
 		<div class="wrap arshid6social-admin-ads">
-			<h1 class="wp-heading-inline"><?php esc_html_e( 'Ads Manager', 'social-network-6' ); ?></h1>
-			<a href="<?php echo esc_url( $add_url ); ?>" class="page-title-action"><?php esc_html_e( '+ Add New Ad', 'social-network-6' ); ?></a>
+			<h1 class="wp-heading-inline"><?php esc_html_e( 'Ads Manager', '6arshid-social-community' ); ?></h1>
+			<a href="<?php echo esc_url( $add_url ); ?>" class="page-title-action"><?php esc_html_e( '+ Add New Ad', '6arshid-social-community' ); ?></a>
 			<hr class="wp-header-end">
 
 			<?php if ( $saved ) : ?>
-				<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Ad saved.', 'social-network-6' ); ?></p></div>
+				<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Ad saved.', '6arshid-social-community' ); ?></p></div>
 			<?php endif; ?>
 
 			<table class="wp-list-table widefat fixed striped arshid6social-ads-table">
 				<thead>
 					<tr>
 						<th style="width:40px">ID</th>
-						<th><?php esc_html_e( 'Title', 'social-network-6' ); ?></th>
-						<th style="width:80px"><?php esc_html_e( 'Type', 'social-network-6' ); ?></th>
-						<th style="width:90px"><?php esc_html_e( 'Placement', 'social-network-6' ); ?></th>
-						<th style="width:80px"><?php esc_html_e( 'Every N', 'social-network-6' ); ?></th>
-						<th style="width:80px"><?php esc_html_e( 'Impressions', 'social-network-6' ); ?></th>
-						<th style="width:60px"><?php esc_html_e( 'Clicks', 'social-network-6' ); ?></th>
+						<th><?php esc_html_e( 'Title', '6arshid-social-community' ); ?></th>
+						<th style="width:80px"><?php esc_html_e( 'Type', '6arshid-social-community' ); ?></th>
+						<th style="width:90px"><?php esc_html_e( 'Placement', '6arshid-social-community' ); ?></th>
+						<th style="width:80px"><?php esc_html_e( 'Every N', '6arshid-social-community' ); ?></th>
+						<th style="width:80px"><?php esc_html_e( 'Impressions', '6arshid-social-community' ); ?></th>
+						<th style="width:60px"><?php esc_html_e( 'Clicks', '6arshid-social-community' ); ?></th>
 						<th style="width:60px">CTR</th>
-						<th style="width:80px"><?php esc_html_e( 'Status', 'social-network-6' ); ?></th>
-						<th style="width:180px"><?php esc_html_e( 'Actions', 'social-network-6' ); ?></th>
+						<th style="width:80px"><?php esc_html_e( 'Status', '6arshid-social-community' ); ?></th>
+						<th style="width:180px"><?php esc_html_e( 'Actions', '6arshid-social-community' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
 				<?php if ( ! $ads ) : ?>
-					<tr><td colspan="10"><?php esc_html_e( 'No ads yet. Click "+ Add New Ad" to create one.', 'social-network-6' ); ?></td></tr>
+					<tr><td colspan="10"><?php esc_html_e( 'No ads yet. Click "+ Add New Ad" to create one.', '6arshid-social-community' ); ?></td></tr>
 				<?php else : ?>
 					<?php foreach ( $ads as $ad ) :
 						$edit_url   = add_query_arg( array( 'page' => 'arshid6social-ads', 'action' => 'edit', 'ad_id' => $ad['id'] ), admin_url( 'admin.php' ) );
 						$ctr        = $ad['impressions'] > 0 ? round( ( $ad['clicks'] / $ad['impressions'] ) * 100, 2 ) : 0;
 						$is_active  = 'active' === $ad['status'];
-						$toggle_lbl = $is_active ? __( 'Deactivate', 'social-network-6' ) : __( 'Activate', 'social-network-6' );
-						$status_lbl = $is_active ? __( 'Active', 'social-network-6' ) : __( 'Inactive', 'social-network-6' );
+						$toggle_lbl = $is_active ? __( 'Deactivate', '6arshid-social-community' ) : __( 'Activate', '6arshid-social-community' );
+						$status_lbl = $is_active ? __( 'Active', '6arshid-social-community' ) : __( 'Inactive', '6arshid-social-community' );
 					?>
 					<tr id="arshid6social-ad-row-<?php echo (int) $ad['id']; ?>">
 						<td><?php echo (int) $ad['id']; ?></td>
@@ -201,7 +210,7 @@ final class Admin_Ads {
 							</span>
 						</td>
 						<td>
-							<a href="<?php echo esc_url( $edit_url ); ?>" class="button button-small"><?php esc_html_e( 'Edit', 'social-network-6' ); ?></a>
+							<a href="<?php echo esc_url( $edit_url ); ?>" class="button button-small"><?php esc_html_e( 'Edit', '6arshid-social-community' ); ?></a>
 							<button type="button"
 								class="button button-small arshid6social-ad-toggle <?php echo $is_active ? 'button-secondary' : 'button-primary'; ?>"
 								data-id="<?php echo (int) $ad['id']; ?>">
@@ -211,7 +220,7 @@ final class Admin_Ads {
 								class="button button-small arshid6social-ad-del"
 								data-id="<?php echo (int) $ad['id']; ?>"
 								style="color:#b32d2e">
-								<?php esc_html_e( 'Delete', 'social-network-6' ); ?>
+								<?php esc_html_e( 'Delete', '6arshid-social-community' ); ?>
 							</button>
 						</td>
 					</tr>
@@ -220,65 +229,49 @@ final class Admin_Ads {
 				</tbody>
 			</table>
 
-			<style>
-			.arshid6social-status-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:600}
-			.arshid6social-status-active{background:#d4edda;color:#155724}
-			.arshid6social-status-inactive{background:#f8d7da;color:#721c24}
-			.arshid6social-ads-table td{vertical-align:middle}
-			</style>
 		</div>
 
-		<script>
-		(function(){
-			var nonce   = '<?php echo esc_js( $nonce ); ?>';
-			var ajaxUrl = '<?php echo esc_js( $ajax ); ?>';
-			var confirmTxt = '<?php echo esc_js( __( 'Delete this ad?', 'social-network-6' ) ); ?>';
-
-			document.querySelectorAll('.arshid6social-ad-del').forEach(function(btn){
-				btn.addEventListener('click', function(){
-					if(!confirm(confirmTxt)) return;
-					var id = btn.dataset.id;
-					var fd = new FormData();
-					fd.append('action','arshid6social_delete_ad');
-					fd.append('nonce', nonce);
-					fd.append('ad_id', id);
-					fetch(ajaxUrl,{method:'POST',body:fd})
-						.then(function(r){return r.json();})
-						.then(function(r){
-							if(r.success){
-								var row = document.getElementById('arshid6social-ad-row-'+id);
-								if(row) row.remove();
-							} else { alert(r.data||'Error'); }
-						});
-				});
-			});
-
-			document.querySelectorAll('.arshid6social-ad-toggle').forEach(function(btn){
-				btn.addEventListener('click', function(){
-					var id = btn.dataset.id;
-					var fd = new FormData();
-					fd.append('action','arshid6social_toggle_ad_status');
-					fd.append('nonce', nonce);
-					fd.append('ad_id', id);
-					fetch(ajaxUrl,{method:'POST',body:fd})
-						.then(function(r){return r.json();})
-						.then(function(r){
-							if(r.success){
-								btn.textContent = r.data.label;
-								btn.classList.toggle('button-primary',   r.data.status==='active');
-								btn.classList.toggle('button-secondary', r.data.status!=='active');
-								var badge = document.getElementById('arshid6social-ad-status-badge-'+id);
-								if(badge){
-									badge.textContent = r.data.status_label;
-									badge.className = 'arshid6social-status-badge arshid6social-status-'+r.data.status;
-								}
-							}
-						});
-				});
-			});
-		})();
-		</script>
 		<?php
+		$js_list  = '(function(){';
+		$js_list .= 'var nonce=' . wp_json_encode( $nonce ) . ';';
+		$js_list .= 'var ajaxUrl=' . wp_json_encode( $ajax ) . ';';
+		$js_list .= 'var confirmTxt=' . wp_json_encode( __( 'Delete this ad?', '6arshid-social-community' ) ) . ';';
+		$js_list .= <<<'ENDJS'
+document.querySelectorAll('.arshid6social-ad-del').forEach(function(btn){
+	btn.addEventListener('click',function(){
+		if(!confirm(confirmTxt))return;
+		var id=btn.dataset.id;
+		var fd=new FormData();
+		fd.append('action','arshid6social_delete_ad');
+		fd.append('nonce',nonce);
+		fd.append('ad_id',id);
+		fetch(ajaxUrl,{method:'POST',body:fd}).then(function(r){return r.json();}).then(function(r){
+			if(r.success){var row=document.getElementById('arshid6social-ad-row-'+id);if(row)row.remove();}
+			else{alert(r.data||'Error');}
+		});
+	});
+});
+document.querySelectorAll('.arshid6social-ad-toggle').forEach(function(btn){
+	btn.addEventListener('click',function(){
+		var id=btn.dataset.id;
+		var fd=new FormData();
+		fd.append('action','arshid6social_toggle_ad_status');
+		fd.append('nonce',nonce);
+		fd.append('ad_id',id);
+		fetch(ajaxUrl,{method:'POST',body:fd}).then(function(r){return r.json();}).then(function(r){
+			if(r.success){
+				btn.textContent=r.data.label;
+				btn.classList.toggle('button-primary',r.data.status==='active');
+				btn.classList.toggle('button-secondary',r.data.status!=='active');
+				var badge=document.getElementById('arshid6social-ad-status-badge-'+id);
+				if(badge){badge.textContent=r.data.status_label;badge.className='arshid6social-status-badge arshid6social-status-'+r.data.status;}
+			}
+		});
+	});
+});
+})();
+ENDJS;
+		wp_add_inline_script( 'arshid6social-admin', $js_list );
 	}
 
 	// ── Form view (add / edit) ────────────────────────────────────────────────
@@ -310,13 +303,13 @@ final class Admin_Ads {
 		}
 
 		$list_url   = add_query_arg( array( 'page' => 'arshid6social-ads' ), admin_url( 'admin.php' ) );
-		$page_title = $ad_id ? __( 'Edit Ad', 'social-network-6' ) : __( 'Add New Ad', 'social-network-6' );
+		$page_title = $ad_id ? __( 'Edit Ad', '6arshid-social-community' ) : __( 'Add New Ad', '6arshid-social-community' );
 		$ajax_url   = admin_url( 'admin-ajax.php' );
 		$nonce      = wp_create_nonce( 'arshid6social_admin_ads_nonce' );
 		?>
 		<div class="wrap arshid6social-admin-ads">
 			<h1><?php echo esc_html( $page_title ); ?></h1>
-			<a href="<?php echo esc_url( $list_url ); ?>">&larr; <?php esc_html_e( 'Back to list', 'social-network-6' ); ?></a>
+			<a href="<?php echo esc_url( $list_url ); ?>">&larr; <?php esc_html_e( 'Back to list', '6arshid-social-community' ); ?></a>
 			<hr>
 
 			<form method="post" action="" style="max-width:760px">
@@ -326,25 +319,25 @@ final class Admin_Ads {
 
 				<table class="form-table">
 					<tr>
-						<th><label for="arshid6social-ad-title"><?php esc_html_e( 'Title', 'social-network-6' ); ?></label></th>
+						<th><label for="arshid6social-ad-title"><?php esc_html_e( 'Title', '6arshid-social-community' ); ?></label></th>
 						<td><input type="text" id="arshid6social-ad-title" name="ad_title" value="<?php echo esc_attr( $ad['title'] ); ?>" class="regular-text" required></td>
 					</tr>
 					<tr>
-						<th><label for="arshid6social-ad-type"><?php esc_html_e( 'Ad Type', 'social-network-6' ); ?></label></th>
+						<th><label for="arshid6social-ad-type"><?php esc_html_e( 'Ad Type', '6arshid-social-community' ); ?></label></th>
 						<td>
 							<select id="arshid6social-ad-type" name="ad_type">
-								<option value="image" <?php selected( $ad['ad_type'], 'image' ); ?>><?php esc_html_e( 'Image', 'social-network-6' ); ?></option>
-								<option value="video" <?php selected( $ad['ad_type'], 'video' ); ?>><?php esc_html_e( 'Video', 'social-network-6' ); ?></option>
-								<option value="html"  <?php selected( $ad['ad_type'], 'html' ); ?>><?php esc_html_e( 'HTML / JS Code', 'social-network-6' ); ?></option>
+								<option value="image" <?php selected( $ad['ad_type'], 'image' ); ?>><?php esc_html_e( 'Image', '6arshid-social-community' ); ?></option>
+								<option value="video" <?php selected( $ad['ad_type'], 'video' ); ?>><?php esc_html_e( 'Video', '6arshid-social-community' ); ?></option>
+								<option value="html"  <?php selected( $ad['ad_type'], 'html' ); ?>><?php esc_html_e( 'HTML / JS Code', '6arshid-social-community' ); ?></option>
 							</select>
 						</td>
 					</tr>
 
 					<tr class="arshid6social-ad-field-file">
-						<th><?php esc_html_e( 'Media File', 'social-network-6' ); ?></th>
+						<th><?php esc_html_e( 'Media File', '6arshid-social-community' ); ?></th>
 						<td>
 							<button type="button" id="arshid6social-ad-upload-btn" class="button">
-								<?php esc_html_e( 'Choose file', 'social-network-6' ); ?>
+								<?php esc_html_e( 'Choose file', '6arshid-social-community' ); ?>
 							</button>
 							<span id="arshid6social-ad-upload-status" style="margin-left:8px;color:#666;font-size:13px"></span>
 							<div id="arshid6social-ad-file-preview" style="margin-top:8px">
@@ -362,145 +355,108 @@ final class Admin_Ads {
 					</tr>
 
 					<tr class="arshid6social-ad-field-click">
-						<th><label for="arshid6social-ad-click-url"><?php esc_html_e( 'Destination URL (on click)', 'social-network-6' ); ?></label></th>
+						<th><label for="arshid6social-ad-click-url"><?php esc_html_e( 'Destination URL (on click)', '6arshid-social-community' ); ?></label></th>
 						<td><input type="url" id="arshid6social-ad-click-url" name="ad_click_url" value="<?php echo esc_url( $ad['click_url'] ); ?>" class="regular-text" placeholder="https://"></td>
 					</tr>
 
 					<tr class="arshid6social-ad-field-code">
-						<th><label for="arshid6social-ad-js-code"><?php esc_html_e( 'HTML / JS Code', 'social-network-6' ); ?></label></th>
+						<th><label for="arshid6social-ad-js-code"><?php esc_html_e( 'HTML / JS Code', '6arshid-social-community' ); ?></label></th>
 						<td>
 							<textarea id="arshid6social-ad-js-code" name="ad_js_code" rows="8" class="large-text code"><?php echo esc_textarea( $ad['js_code'] ); ?></textarea>
-							<p class="description"><?php esc_html_e( 'Paste raw HTML or JavaScript (e.g. an ad network snippet).', 'social-network-6' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Paste raw HTML or JavaScript (e.g. an ad network snippet).', '6arshid-social-community' ); ?></p>
 						</td>
 					</tr>
 
 					<tr>
-						<th><label for="arshid6social-ad-placement"><?php esc_html_e( 'Placement', 'social-network-6' ); ?></label></th>
+						<th><label for="arshid6social-ad-placement"><?php esc_html_e( 'Placement', '6arshid-social-community' ); ?></label></th>
 						<td>
 							<select id="arshid6social-ad-placement" name="ad_placement">
-								<option value="both"    <?php selected( $ad['placement'], 'both' ); ?>><?php esc_html_e( 'Feed + Sidebar', 'social-network-6' ); ?></option>
-								<option value="feed"    <?php selected( $ad['placement'], 'feed' ); ?>><?php esc_html_e( 'Feed only', 'social-network-6' ); ?></option>
-								<option value="sidebar" <?php selected( $ad['placement'], 'sidebar' ); ?>><?php esc_html_e( 'Sidebar only', 'social-network-6' ); ?></option>
+								<option value="both"    <?php selected( $ad['placement'], 'both' ); ?>><?php esc_html_e( 'Feed + Sidebar', '6arshid-social-community' ); ?></option>
+								<option value="feed"    <?php selected( $ad['placement'], 'feed' ); ?>><?php esc_html_e( 'Feed only', '6arshid-social-community' ); ?></option>
+								<option value="sidebar" <?php selected( $ad['placement'], 'sidebar' ); ?>><?php esc_html_e( 'Sidebar only', '6arshid-social-community' ); ?></option>
 							</select>
 						</td>
 					</tr>
 
 					<tr>
-						<th><label for="arshid6social-ad-every-n"><?php esc_html_e( 'Show in feed every N posts', 'social-network-6' ); ?></label></th>
+						<th><label for="arshid6social-ad-every-n"><?php esc_html_e( 'Show in feed every N posts', '6arshid-social-community' ); ?></label></th>
 						<td>
 							<input type="number" id="arshid6social-ad-every-n" name="ad_every_n_posts" value="<?php echo (int) $ad['every_n_posts']; ?>" min="1" max="100" class="small-text">
-							<p class="description"><?php esc_html_e( 'Ad appears after every N posts in the feed. Ignored for sidebar-only ads.', 'social-network-6' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Ad appears after every N posts in the feed. Ignored for sidebar-only ads.', '6arshid-social-community' ); ?></p>
 						</td>
 					</tr>
 
 					<tr>
-						<th><label for="arshid6social-ad-status"><?php esc_html_e( 'Status', 'social-network-6' ); ?></label></th>
+						<th><label for="arshid6social-ad-status"><?php esc_html_e( 'Status', '6arshid-social-community' ); ?></label></th>
 						<td>
 							<select id="arshid6social-ad-status" name="ad_status">
-								<option value="active"   <?php selected( $ad['status'], 'active' ); ?>><?php esc_html_e( 'Active', 'social-network-6' ); ?></option>
-								<option value="inactive" <?php selected( $ad['status'], 'inactive' ); ?>><?php esc_html_e( 'Inactive', 'social-network-6' ); ?></option>
+								<option value="active"   <?php selected( $ad['status'], 'active' ); ?>><?php esc_html_e( 'Active', '6arshid-social-community' ); ?></option>
+								<option value="inactive" <?php selected( $ad['status'], 'inactive' ); ?>><?php esc_html_e( 'Inactive', '6arshid-social-community' ); ?></option>
 							</select>
 						</td>
 					</tr>
 
 					<tr>
-						<th><?php esc_html_e( 'Date range', 'social-network-6' ); ?></th>
+						<th><?php esc_html_e( 'Date range', '6arshid-social-community' ); ?></th>
 						<td>
-							<label><?php esc_html_e( 'From', 'social-network-6' ); ?>
+							<label><?php esc_html_e( 'From', '6arshid-social-community' ); ?>
 								<input type="date" name="ad_start_date" value="<?php echo esc_attr( $ad['start_date'] ?? '' ); ?>">
 							</label>
 							&nbsp;&nbsp;
-							<label><?php esc_html_e( 'To', 'social-network-6' ); ?>
+							<label><?php esc_html_e( 'To', '6arshid-social-community' ); ?>
 								<input type="date" name="ad_end_date" value="<?php echo esc_attr( $ad['end_date'] ?? '' ); ?>">
 							</label>
-							<p class="description"><?php esc_html_e( 'Leave blank for no date restriction.', 'social-network-6' ); ?></p>
+							<p class="description"><?php esc_html_e( 'Leave blank for no date restriction.', '6arshid-social-community' ); ?></p>
 						</td>
 					</tr>
 				</table>
 
-				<?php submit_button( $ad_id ? __( 'Update Ad', 'social-network-6' ) : __( 'Create Ad', 'social-network-6' ) ); ?>
+				<?php submit_button( $ad_id ? __( 'Update Ad', '6arshid-social-community' ) : __( 'Create Ad', '6arshid-social-community' ) ); ?>
 			</form>
 		</div>
 
-		<script>
-		(function(){
-			var ajaxUrl    = '<?php echo esc_js( $ajax_url ); ?>';
-			var nonce      = '<?php echo esc_js( $nonce ); ?>';
-			var uploadErr  = '<?php echo esc_js( __( 'Upload failed. Please try again.', 'social-network-6' ) ); ?>';
-
-			/* ── Type switcher ─────────────────────────────────────────────── */
-			var typeSelect = document.getElementById('arshid6social-ad-type');
-			function applyType(){
-				var t = typeSelect.value;
-				var showFile = (t === 'image' || t === 'video');
-				document.querySelectorAll('.arshid6social-ad-field-file,.arshid6social-ad-field-click').forEach(function(r){
-					r.style.display = showFile ? '' : 'none';
-				});
-				var codeRow = document.querySelector('.arshid6social-ad-field-code');
-				if(codeRow) codeRow.style.display = (t === 'html') ? '' : 'none';
-			}
-			typeSelect.addEventListener('change', applyType);
-			applyType();
-
-			/* ── File upload ───────────────────────────────────────────────── */
-			var uploadBtn  = document.getElementById('arshid6social-ad-upload-btn');
-			var urlField   = document.getElementById('arshid6social-ad-file-url');
-			var preview    = document.getElementById('arshid6social-ad-file-preview');
-			var statusSpan = document.getElementById('arshid6social-ad-upload-status');
-
-			/* Create a real file input at runtime — keeps it out of the form submit */
-			var fileInput = document.createElement('input');
-			fileInput.type   = 'file';
-			fileInput.accept = 'image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/ogg';
-			fileInput.style.display = 'none';
-			document.body.appendChild(fileInput);
-
-			uploadBtn.addEventListener('click', function(e){
-				e.preventDefault();
-				fileInput.click();
-			});
-
-			fileInput.addEventListener('change', function(){
-				var file = fileInput.files[0];
-				if(!file) return;
-
-				uploadBtn.disabled   = true;
-				statusSpan.textContent = '<?php echo esc_js( __( 'Uploading…', 'social-network-6' ) ); ?>';
-
-				var fd = new FormData();
-				fd.append('action', 'arshid6social_upload_ad_media');
-				fd.append('nonce',  nonce);
-				fd.append('file',   file);
-
-				fetch(ajaxUrl, { method: 'POST', body: fd })
-					.then(function(r){ return r.json(); })
-					.then(function(r){
-						if(r && r.success){
-							var url = r.data.url;
-							urlField.value = url;
-							statusSpan.textContent = '✓ ' + file.name;
-							statusSpan.style.color = '#2ea44f';
-							var isVideo = /\.(mp4|webm|ogg|ogv)$/i.test(url);
-							preview.innerHTML = isVideo
-								? '<video src="'+url+'" controls style="max-width:100%;max-height:180px"></video>'
-								: '<img src="'+url+'" style="max-width:100%;max-height:180px" alt="">';
-						} else {
-							statusSpan.textContent = '';
-							statusSpan.style.color = '';
-							alert((r && r.data) ? r.data : uploadErr);
-						}
-					})
-					.catch(function(){
-						statusSpan.textContent = '';
-						alert(uploadErr);
-					})
-					.finally(function(){
-						uploadBtn.disabled = false;
-						fileInput.value    = '';
-					});
-			});
-		})();
-		</script>
 		<?php
+		$js_form  = '(function(){';
+		$js_form .= 'var ajaxUrl=' . wp_json_encode( $ajax_url ) . ';';
+		$js_form .= 'var nonce=' . wp_json_encode( $nonce ) . ';';
+		$js_form .= 'var uploadErr=' . wp_json_encode( __( 'Upload failed. Please try again.', '6arshid-social-community' ) ) . ';';
+		$js_form .= 'var uploadingTxt=' . wp_json_encode( __( 'Uploading…', '6arshid-social-community' ) ) . ';';
+		$js_form .= <<<'ENDJS'
+var typeSelect=document.getElementById('arshid6social-ad-type');
+function applyType(){
+	var t=typeSelect.value;
+	var showFile=(t==='image'||t==='video');
+	document.querySelectorAll('.arshid6social-ad-field-file,.arshid6social-ad-field-click').forEach(function(r){r.style.display=showFile?'':'none';});
+	var codeRow=document.querySelector('.arshid6social-ad-field-code');
+	if(codeRow)codeRow.style.display=(t==='html')?'':'none';
+}
+typeSelect.addEventListener('change',applyType);applyType();
+var uploadBtn=document.getElementById('arshid6social-ad-upload-btn');
+var urlField=document.getElementById('arshid6social-ad-file-url');
+var preview=document.getElementById('arshid6social-ad-file-preview');
+var statusSpan=document.getElementById('arshid6social-ad-upload-status');
+var fileInput=document.createElement('input');
+fileInput.type='file';fileInput.accept='image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,video/ogg';
+fileInput.style.display='none';document.body.appendChild(fileInput);
+uploadBtn.addEventListener('click',function(e){e.preventDefault();fileInput.click();});
+fileInput.addEventListener('change',function(){
+	var file=fileInput.files[0];if(!file)return;
+	uploadBtn.disabled=true;statusSpan.textContent=uploadingTxt;
+	var fd=new FormData();fd.append('action','arshid6social_upload_ad_media');fd.append('nonce',nonce);fd.append('file',file);
+	fetch(ajaxUrl,{method:'POST',body:fd})
+		.then(function(r){return r.json();})
+		.then(function(r){
+			if(r&&r.success){
+				var url=r.data.url;urlField.value=url;statusSpan.textContent='✓ '+file.name;statusSpan.style.color='#2ea44f';
+				var isVideo=/\.(mp4|webm|ogg|ogv)$/i.test(url);
+				preview.innerHTML=isVideo?'<video src="'+url+'" controls style="max-width:100%;max-height:180px"></video>':'<img src="'+url+'" style="max-width:100%;max-height:180px" alt="">';
+			}else{statusSpan.textContent='';statusSpan.style.color='';alert((r&&r.data)?r.data:uploadErr);}
+		})
+		.catch(function(){statusSpan.textContent='';alert(uploadErr);})
+		.finally(function(){uploadBtn.disabled=false;fileInput.value='';});
+});
+})();
+ENDJS;
+		wp_add_inline_script( 'arshid6social-admin', $js_form );
 	}
 }

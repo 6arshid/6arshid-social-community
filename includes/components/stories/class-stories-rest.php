@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Stories;
 
 /**
@@ -51,7 +51,7 @@ class Stories_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::DELETABLE,
 				'callback'            => array( $this, 'delete_story' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'can_delete_story' ),
 				'args'                => array(
 					'id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
 				),
@@ -75,7 +75,7 @@ class Stories_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_viewers' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'can_view_viewers' ),
 				'args'                => array(
 					'id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
 				),
@@ -197,7 +197,7 @@ class Stories_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::DELETABLE,
 				'callback'            => array( $this, 'delete_highlight' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'can_delete_highlight' ),
 				'args'                => array(
 					'id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
 				),
@@ -230,7 +230,7 @@ class Stories_REST extends \WP_REST_Controller {
 		$user_id = get_current_user_id();
 
 		if ( ! arshid6social_check_rate_limit( 'arshid6social_rl_stories', $user_id, (int) get_option( 'arshid6social_stories_rate_limit', 20 ) ) ) {
-			return new \WP_Error( 'rate_limited', __( 'Too many stories.', 'social-network-6' ), array( 'status' => 429 ) );
+			return new \WP_Error( 'rate_limited', __( 'Too many stories.', '6arshid-social-community' ), array( 'status' => 429 ) );
 		}
 
 		$item = array(
@@ -242,7 +242,7 @@ class Stories_REST extends \WP_REST_Controller {
 
 		$story_id = $this->stories->create( $user_id, $request->get_param( 'privacy' ), array( $item ) );
 		if ( ! $story_id ) {
-			return new \WP_Error( 'create_failed', __( 'Could not create story.', 'social-network-6' ), array( 'status' => 500 ) );
+			return new \WP_Error( 'create_failed', __( 'Could not create story.', '6arshid-social-community' ), array( 'status' => 500 ) );
 		}
 
 		return rest_ensure_response( array( 'story_id' => $story_id ) );
@@ -252,7 +252,7 @@ class Stories_REST extends \WP_REST_Controller {
 		$ok = $this->stories->delete( $request->get_param( 'id' ), get_current_user_id() );
 		return $ok
 			? rest_ensure_response( array( 'deleted' => true ) )
-			: new \WP_Error( 'not_found', __( 'Story not found or permission denied.', 'social-network-6' ), array( 'status' => 404 ) );
+			: new \WP_Error( 'not_found', __( 'Story not found or permission denied.', '6arshid-social-community' ), array( 'status' => 404 ) );
 	}
 
 	public function get_items( $request ): \WP_REST_Response {
@@ -283,7 +283,7 @@ class Stories_REST extends \WP_REST_Controller {
 		);
 		return $thread_id
 			? rest_ensure_response( array( 'thread_id' => $thread_id ) )
-			: new \WP_Error( 'reply_failed', __( 'Could not send reply.', 'social-network-6' ), array( 'status' => 400 ) );
+			: new \WP_Error( 'reply_failed', __( 'Could not send reply.', '6arshid-social-community' ), array( 'status' => 400 ) );
 	}
 
 	public function report( \WP_REST_Request $request ): \WP_REST_Response {
@@ -346,14 +346,14 @@ class Stories_REST extends \WP_REST_Controller {
 		);
 		return $id
 			? rest_ensure_response( array( 'highlight_id' => $id ) )
-			: new \WP_Error( 'create_failed', __( 'Could not create highlight.', 'social-network-6' ), array( 'status' => 500 ) );
+			: new \WP_Error( 'create_failed', __( 'Could not create highlight.', '6arshid-social-community' ), array( 'status' => 500 ) );
 	}
 
 	public function delete_highlight( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
 		$ok = $this->stories->delete_highlight( $request->get_param( 'id' ), get_current_user_id() );
 		return $ok
 			? rest_ensure_response( array( 'deleted' => true ) )
-			: new \WP_Error( 'not_found', __( 'Highlight not found.', 'social-network-6' ), array( 'status' => 404 ) );
+			: new \WP_Error( 'not_found', __( 'Highlight not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
 	}
 
 	public function add_to_highlight( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
@@ -364,6 +364,53 @@ class Stories_REST extends \WP_REST_Controller {
 		);
 		return $ok
 			? rest_ensure_response( array( 'added' => true ) )
-			: new \WP_Error( 'failed', __( 'Could not add to highlight.', 'social-network-6' ), array( 'status' => 400 ) );
+			: new \WP_Error( 'failed', __( 'Could not add to highlight.', '6arshid-social-community' ), array( 'status' => 400 ) );
+	}
+
+	// ── Permission callbacks ──────────────────────────────────────────────────
+
+	public function can_delete_story( \WP_REST_Request $request ): bool {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		global $wpdb;
+		$owner_id = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			"SELECT user_id FROM {$wpdb->prefix}sn_stories WHERE id = %d",
+			absint( $request['id'] )
+		) );
+		if ( ! $owner_id ) {
+			return true; // Resource not found; let the callback return a 404.
+		}
+		return $owner_id === get_current_user_id() || current_user_can( 'arshid6social_manage_activity' );
+	}
+
+	public function can_view_viewers( \WP_REST_Request $request ): bool {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		global $wpdb;
+		$owner_id = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			"SELECT user_id FROM {$wpdb->prefix}sn_stories WHERE id = %d",
+			absint( $request['id'] )
+		) );
+		if ( ! $owner_id ) {
+			return true; // Resource not found; let the callback return an empty result.
+		}
+		return $owner_id === get_current_user_id();
+	}
+
+	public function can_delete_highlight( \WP_REST_Request $request ): bool {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		global $wpdb;
+		$owner_id = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			"SELECT user_id FROM {$wpdb->prefix}sn_story_highlights WHERE id = %d",
+			absint( $request['id'] )
+		) );
+		if ( ! $owner_id ) {
+			return true; // Resource not found; let the callback return a 404.
+		}
+		return $owner_id === get_current_user_id();
 	}
 }

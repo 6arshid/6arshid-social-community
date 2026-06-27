@@ -48,12 +48,12 @@ class Friends_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'follow' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'can_follow_user' ),
 			),
 			array(
 				'methods'             => \WP_REST_Server::DELETABLE,
 				'callback'            => array( $this, 'unfollow' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'can_follow_user' ),
 			),
 		) );
 
@@ -77,6 +77,20 @@ class Friends_REST extends \WP_REST_Controller {
 			'callback'            => array( $this, 'suggestions' ),
 			'permission_callback' => 'is_user_logged_in',
 		) );
+	}
+
+	public function can_follow_user( \WP_REST_Request $request ): bool|\WP_Error {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		$target = absint( $request['id'] );
+		if ( $target === get_current_user_id() ) {
+			return new \WP_Error( 'arshid6social_self_follow', __( 'You cannot follow yourself.', '6arshid-social-community' ), array( 'status' => 400 ) );
+		}
+		if ( ! get_userdata( $target ) ) {
+			return true; // Target user not found; let the callback return a 404.
+		}
+		return true;
 	}
 
 	public function get_status( $request ): \WP_REST_Response {

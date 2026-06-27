@@ -21,19 +21,19 @@ registerBlockType( 'arshid6social/activity-feed', {
 				null,
 				wp.element.createElement(
 					PanelBody,
-					{ title: __( 'Activity Feed Settings', 'social-network-6' ), initialOpen: true },
+					{ title: __( 'Activity Feed Settings', '6arshid-social-community' ), initialOpen: true },
 					wp.element.createElement( SelectControl, {
-						label:    __( 'Feed scope', 'social-network-6' ),
+						label:    __( 'Feed scope', '6arshid-social-community' ),
 						value:    scope,
 						options:  [
-							{ label: __( 'Site-wide', 'social-network-6' ), value: 'site'    },
-							{ label: __( 'Friends only', 'social-network-6' ), value: 'friends' },
-							{ label: __( 'My activity', 'social-network-6' ), value: 'self'    },
+							{ label: __( 'Site-wide', '6arshid-social-community' ), value: 'site'    },
+							{ label: __( 'Friends only', '6arshid-social-community' ), value: 'friends' },
+							{ label: __( 'My activity', '6arshid-social-community' ), value: 'self'    },
 						],
 						onChange: val => setAttributes( { scope: val } ),
 					} ),
 					wp.element.createElement( RangeControl, {
-						label:    __( 'Items per page', 'social-network-6' ),
+						label:    __( 'Items per page', '6arshid-social-community' ),
 						value:    perPage,
 						min:      5,
 						max:      50,
@@ -41,7 +41,7 @@ registerBlockType( 'arshid6social/activity-feed', {
 						onChange: val => setAttributes( { perPage: val } ),
 					} ),
 					wp.element.createElement( ToggleControl, {
-						label:    __( 'Show post composer', 'social-network-6' ),
+						label:    __( 'Show post composer', '6arshid-social-community' ),
 						checked:  showComposer,
 						onChange: val => setAttributes( { showComposer: val } ),
 					} ),

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Admin;
 
 /**
@@ -38,7 +38,7 @@ class Admin_Notifications {
 	 */
 	public function render(): void {
 		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_die( esc_html__( 'Permission denied.', 'social-network-6' ) );
+			wp_die( esc_html__( 'Permission denied.', '6arshid-social-community' ) );
 		}
 
 		global $wpdb;
@@ -76,7 +76,7 @@ class Admin_Notifications {
 		?>
 		<div class="wrap arshid6social-admin-notif">
 			<h1 class="wp-heading-inline">
-				<?php esc_html_e( 'Notifications', 'social-network-6' ); ?>
+				<?php esc_html_e( 'Notifications', '6arshid-social-community' ); ?>
 			</h1>
 
 			<!-- ── Stat cards ── -->
@@ -84,17 +84,17 @@ class Admin_Notifications {
 				<div class="arshid6social-stat-card">
 					<span class="dashicons dashicons-bell" style="font-size:2rem;color:#2563eb;"></span>
 					<strong><?php echo esc_html( number_format_i18n( $total_notifs ) ); ?></strong>
-					<p><?php esc_html_e( 'Total Notifications', 'social-network-6' ); ?></p>
+					<p><?php esc_html_e( 'Total Notifications', '6arshid-social-community' ); ?></p>
 				</div>
 				<div class="arshid6social-stat-card">
 					<span style="font-size:2rem;">🔴</span>
 					<strong><?php echo esc_html( number_format_i18n( $unread_notifs ) ); ?></strong>
-					<p><?php esc_html_e( 'Unread', 'social-network-6' ); ?></p>
+					<p><?php esc_html_e( 'Unread', '6arshid-social-community' ); ?></p>
 				</div>
 				<div class="arshid6social-stat-card">
 					<span class="dashicons dashicons-admin-users" style="font-size:2rem;color:#16a34a;"></span>
 					<strong><?php echo esc_html( number_format_i18n( $users_count ) ); ?></strong>
-					<p><?php esc_html_e( 'Members with unread', 'social-network-6' ); ?></p>
+					<p><?php esc_html_e( 'Members with unread', '6arshid-social-community' ); ?></p>
 				</div>
 			</div>
 
@@ -103,19 +103,19 @@ class Admin_Notifications {
 				<!-- ── Global type toggles ── -->
 				<div class="postbox">
 					<div class="postbox-header">
-						<h2><?php esc_html_e( 'Notification Types', 'social-network-6' ); ?></h2>
+						<h2><?php esc_html_e( 'Notification Types', '6arshid-social-community' ); ?></h2>
 					</div>
 					<div class="inside">
 						<p class="description" style="margin-bottom:1rem;">
-							<?php esc_html_e( 'Disable a type to stop generating those notifications site-wide. Existing notifications are not deleted.', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Disable a type to stop generating those notifications site-wide. Existing notifications are not deleted.', '6arshid-social-community' ); ?>
 						</p>
 						<form id="arshid6social-admin-notif-types-form">
 							<table class="widefat striped" style="border:none;">
 								<thead>
 									<tr>
-										<th><?php esc_html_e( 'Type', 'social-network-6' ); ?></th>
-										<th style="text-align:center;"><?php esc_html_e( 'Total sent', 'social-network-6' ); ?></th>
-										<th style="text-align:center;"><?php esc_html_e( 'Enabled', 'social-network-6' ); ?></th>
+										<th><?php esc_html_e( 'Type', '6arshid-social-community' ); ?></th>
+										<th style="text-align:center;"><?php esc_html_e( 'Total sent', '6arshid-social-community' ); ?></th>
+										<th style="text-align:center;"><?php esc_html_e( 'Enabled', '6arshid-social-community' ); ?></th>
 									</tr>
 								</thead>
 								<tbody>
@@ -146,10 +146,10 @@ class Admin_Notifications {
 
 							<p style="margin-top:1rem;">
 								<button type="submit" class="button button-primary">
-									<?php esc_html_e( 'Save Type Settings', 'social-network-6' ); ?>
+									<?php esc_html_e( 'Save Type Settings', '6arshid-social-community' ); ?>
 								</button>
 								<span id="arshid6social-admin-types-saved" style="display:none;margin-left:.75rem;color:#16a34a;">
-									&#10003; <?php esc_html_e( 'Saved!', 'social-network-6' ); ?>
+									&#10003; <?php esc_html_e( 'Saved!', '6arshid-social-community' ); ?>
 								</span>
 							</p>
 						</form>
@@ -159,35 +159,35 @@ class Admin_Notifications {
 				<!-- ── Email & digest settings ── -->
 				<div class="postbox">
 					<div class="postbox-header">
-						<h2><?php esc_html_e( 'Email Settings', 'social-network-6' ); ?></h2>
+						<h2><?php esc_html_e( 'Email Settings', '6arshid-social-community' ); ?></h2>
 					</div>
 					<div class="inside">
 						<form method="post" action="options.php">
 							<?php settings_fields( 'arshid6social_notifications' ); ?>
 							<table class="form-table" role="presentation">
 								<tr>
-									<th scope="row"><?php esc_html_e( 'Email Notifications', 'social-network-6' ); ?></th>
+									<th scope="row"><?php esc_html_e( 'Email Notifications', '6arshid-social-community' ); ?></th>
 									<td>
 										<label>
 											<input type="checkbox" name="arshid6social_email_notifications" value="1"
 												<?php checked( get_option( 'arshid6social_email_notifications', true ) ); ?> />
-											<?php esc_html_e( 'Send email notifications to members.', 'social-network-6' ); ?>
+											<?php esc_html_e( 'Send email notifications to members.', '6arshid-social-community' ); ?>
 										</label>
 									</td>
 								</tr>
 								<tr>
-									<th scope="row"><?php esc_html_e( 'Default Email Digest', 'social-network-6' ); ?></th>
+									<th scope="row"><?php esc_html_e( 'Default Email Digest', '6arshid-social-community' ); ?></th>
 									<td>
 										<select name="arshid6social_email_digest">
-											<option value="none"   <?php selected( get_option( 'arshid6social_email_digest', 'daily' ), 'none' ); ?>><?php esc_html_e( 'Never', 'social-network-6' ); ?></option>
-											<option value="daily"  <?php selected( get_option( 'arshid6social_email_digest', 'daily' ), 'daily' ); ?>><?php esc_html_e( 'Daily digest', 'social-network-6' ); ?></option>
-											<option value="weekly" <?php selected( get_option( 'arshid6social_email_digest', 'daily' ), 'weekly' ); ?>><?php esc_html_e( 'Weekly digest', 'social-network-6' ); ?></option>
+											<option value="none"   <?php selected( get_option( 'arshid6social_email_digest', 'daily' ), 'none' ); ?>><?php esc_html_e( 'Never', '6arshid-social-community' ); ?></option>
+											<option value="daily"  <?php selected( get_option( 'arshid6social_email_digest', 'daily' ), 'daily' ); ?>><?php esc_html_e( 'Daily digest', '6arshid-social-community' ); ?></option>
+											<option value="weekly" <?php selected( get_option( 'arshid6social_email_digest', 'daily' ), 'weekly' ); ?>><?php esc_html_e( 'Weekly digest', '6arshid-social-community' ); ?></option>
 										</select>
-										<p class="description"><?php esc_html_e( 'Members can override this per their own profile settings.', 'social-network-6' ); ?></p>
+										<p class="description"><?php esc_html_e( 'Members can override this per their own profile settings.', '6arshid-social-community' ); ?></p>
 									</td>
 								</tr>
 							</table>
-							<?php submit_button( __( 'Save Email Settings', 'social-network-6' ) ); ?>
+							<?php submit_button( __( 'Save Email Settings', '6arshid-social-community' ) ); ?>
 						</form>
 					</div>
 				</div>
@@ -197,27 +197,27 @@ class Admin_Notifications {
 			<!-- ── Recent notifications log ── -->
 			<div class="postbox" style="margin-top:2rem;">
 				<div class="postbox-header" style="display:flex;align-items:center;justify-content:space-between;">
-					<h2><?php esc_html_e( 'Recent Notifications', 'social-network-6' ); ?></h2>
+					<h2><?php esc_html_e( 'Recent Notifications', '6arshid-social-community' ); ?></h2>
 					<div style="padding:.75rem 1rem;">
 						<button id="arshid6social-admin-delete-all" class="button button-link-delete">
-							<?php esc_html_e( 'Delete all notifications', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Delete all notifications', '6arshid-social-community' ); ?>
 						</button>
 					</div>
 				</div>
 				<div class="inside" style="padding:0;">
 					<?php if ( empty( $recent ) ) : ?>
-						<p style="padding:1.5rem;"><?php esc_html_e( 'No notifications found.', 'social-network-6' ); ?></p>
+						<p style="padding:1.5rem;"><?php esc_html_e( 'No notifications found.', '6arshid-social-community' ); ?></p>
 					<?php else : ?>
 					<table class="wp-list-table widefat fixed striped" id="arshid6social-notif-log">
 						<thead>
 							<tr>
 								<th style="width:36px;"><input type="checkbox" id="arshid6social-log-select-all" /></th>
-								<th><?php esc_html_e( 'Recipient', 'social-network-6' ); ?></th>
-								<th><?php esc_html_e( 'From', 'social-network-6' ); ?></th>
-								<th><?php esc_html_e( 'Type', 'social-network-6' ); ?></th>
-								<th><?php esc_html_e( 'Status', 'social-network-6' ); ?></th>
-								<th><?php esc_html_e( 'Date', 'social-network-6' ); ?></th>
-								<th><?php esc_html_e( 'Actions', 'social-network-6' ); ?></th>
+								<th><?php esc_html_e( 'Recipient', '6arshid-social-community' ); ?></th>
+								<th><?php esc_html_e( 'From', '6arshid-social-community' ); ?></th>
+								<th><?php esc_html_e( 'Type', '6arshid-social-community' ); ?></th>
+								<th><?php esc_html_e( 'Status', '6arshid-social-community' ); ?></th>
+								<th><?php esc_html_e( 'Date', '6arshid-social-community' ); ?></th>
+								<th><?php esc_html_e( 'Actions', '6arshid-social-community' ); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -236,15 +236,15 @@ class Admin_Notifications {
 								</td>
 								<td>
 									<?php if ( $notif->is_new ) : ?>
-										<span style="color:#dc2626;font-weight:600;"><?php esc_html_e( 'Unread', 'social-network-6' ); ?></span>
+										<span style="color:#dc2626;font-weight:600;"><?php esc_html_e( 'Unread', '6arshid-social-community' ); ?></span>
 									<?php else : ?>
-										<span style="color:#16a34a;"><?php esc_html_e( 'Read', 'social-network-6' ); ?></span>
+										<span style="color:#16a34a;"><?php esc_html_e( 'Read', '6arshid-social-community' ); ?></span>
 									<?php endif; ?>
 								</td>
 								<td><?php echo esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $notif->date_notified ) ) ); ?></td>
 								<td>
 									<button class="button button-small arshid6social-admin-del-notif" data-id="<?php echo esc_attr( $notif->id ); ?>">
-										<?php esc_html_e( 'Delete', 'social-network-6' ); ?>
+										<?php esc_html_e( 'Delete', '6arshid-social-community' ); ?>
 									</button>
 								</td>
 							</tr>
@@ -254,7 +254,7 @@ class Admin_Notifications {
 
 					<div style="padding:.75rem 1rem;border-top:1px solid #ddd;display:flex;align-items:center;gap:.75rem;">
 						<button id="arshid6social-admin-delete-selected" class="button button-link-delete" disabled>
-							<?php esc_html_e( 'Delete selected', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Delete selected', '6arshid-social-community' ); ?>
 						</button>
 						<span id="arshid6social-admin-log-msg" style="color:#16a34a;display:none;"></span>
 					</div>
@@ -322,7 +322,7 @@ class Admin_Notifications {
 			document.addEventListener("click", async function(e) {
 				const btn = e.target.closest(".arshid6social-admin-del-notif");
 				if (!btn) return;
-				if (!confirm(' . wp_json_encode( __( 'Delete this notification?', 'social-network-6' ) ) . ')) return;
+				if (!confirm(' . wp_json_encode( __( 'Delete this notification?', '6arshid-social-community' ) ) . ')) return;
 				const id = btn.dataset.id;
 				const res = await deleteNotifRows([id]);
 				if (res.success) btn.closest("tr").remove();
@@ -331,7 +331,7 @@ class Admin_Notifications {
 			// Delete selected.
 			document.getElementById("arshid6social-admin-delete-selected")?.addEventListener("click", async function() {
 				const ids = [...document.querySelectorAll(".arshid6social-log-cb:checked")].map(c => c.value);
-				if (!ids.length || !confirm(' . wp_json_encode( __( 'Delete selected notifications?', 'social-network-6' ) ) . ')) return;
+				if (!ids.length || !confirm(' . wp_json_encode( __( 'Delete selected notifications?', '6arshid-social-community' ) ) . ')) return;
 				const res = await deleteNotifRows(ids);
 				if (res.success) {
 					ids.forEach(id => document.querySelector(`tr[data-id="${id}"]`)?.remove());
@@ -341,7 +341,7 @@ class Admin_Notifications {
 
 			// Delete all.
 			document.getElementById("arshid6social-admin-delete-all")?.addEventListener("click", async function() {
-				if (!confirm(' . wp_json_encode( __( 'Delete ALL notifications? This cannot be undone.', 'social-network-6' ) ) . ')) return;
+				if (!confirm(' . wp_json_encode( __( 'Delete ALL notifications? This cannot be undone.', '6arshid-social-community' ) ) . ')) return;
 				const body = new FormData();
 				body.append("action", "arshid6social_admin_delete_notifications");
 				body.append("nonce", nonce);
@@ -350,7 +350,7 @@ class Admin_Notifications {
 				if (res.success) {
 					document.querySelectorAll("#arshid6social-notif-log tbody tr").forEach(r => r.remove());
 					document.getElementById("arshid6social-admin-log-msg").style.display = "inline";
-					document.getElementById("arshid6social-admin-log-msg").textContent = ' . wp_json_encode( __( 'All notifications deleted.', 'social-network-6' ) ) . ';
+					document.getElementById("arshid6social-admin-log-msg").textContent = ' . wp_json_encode( __( 'All notifications deleted.', '6arshid-social-community' ) ) . ';
 				}
 			});
 		})();';

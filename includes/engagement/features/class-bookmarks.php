@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Engagement\Features;
 
 /**
@@ -100,11 +100,11 @@ class Bookmarks {
 		}
 
 		$pages['saved_posts'] = array(
-			'title'       => __( 'Saved Posts', 'social-network-6' ),
+			'title'       => __( 'Saved Posts', '6arshid-social-community' ),
 			'slug'        => 'saved-posts',
 			'shortcode'   => '[arshid6social_bookmarks]',
 			'option'      => 'arshid6social_page_saved_posts',
-			'description' => __( 'Bookmarked posts and saved marketplace listings', 'social-network-6' ),
+			'description' => __( 'Bookmarked posts and saved marketplace listings', '6arshid-social-community' ),
 		);
 		return $pages;
 	}
@@ -256,7 +256,7 @@ class Bookmarks {
 		return (bool) $deleted;
 	}
 
-	private function user_owns_collection( int $user_id, int $collection_id ): bool {
+	public function user_owns_collection( int $user_id, int $collection_id ): bool {
 		global $wpdb;
 		return (bool) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			"SELECT id FROM {$wpdb->prefix}sn_bookmark_collections WHERE id = %d AND user_id = %d",
@@ -419,7 +419,7 @@ class Bookmarks {
 					$uid = ! empty( $listing->uid ) ? $listing->uid : $listing->id;
 
 					if ( ! empty( $listing->is_free ) ) {
-						$price_formatted = __( 'Free', 'social-network-6' );
+						$price_formatted = __( 'Free', '6arshid-social-community' );
 					} else {
 						$num = number_format( (float) $listing->price, $currency_decimals, '.', $currency_thousands );
 						$price_formatted = 'before' === $currency_position
@@ -454,7 +454,7 @@ class Bookmarks {
 
 	public function shortcode( array $atts ): string {
 		if ( ! is_user_logged_in() ) {
-			return '<p>' . esc_html__( 'Please log in to view your bookmarks.', 'social-network-6' ) . '</p>';
+			return '<p>' . esc_html__( 'Please log in to view your bookmarks.', '6arshid-social-community' ) . '</p>';
 		}
 
 		$atts     = shortcode_atts( array( 'per_page' => 20 ), $atts );

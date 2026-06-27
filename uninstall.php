@@ -241,7 +241,6 @@ $sn_dir     = trailingslashit( $upload_dir['basedir'] ) . 'social-network/';
 
 if ( is_dir( $sn_dir ) ) {
 	require_once ABSPATH . 'wp-admin/includes/image.php';
-	require_once ABSPATH . 'wp-admin/includes/media.php';
 	require_once ABSPATH . 'wp-admin/includes/file.php';
 
 	$allowed_mime_types = array(

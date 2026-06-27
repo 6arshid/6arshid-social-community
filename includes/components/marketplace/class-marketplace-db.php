@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Components\Marketplace;
 
 /**
@@ -308,8 +308,8 @@ class Marketplace_DB {
 			'arshid6social_marketplace_allow_guests'       => true,
 			'arshid6social_marketplace_max_active_listings'=> 20,
 			'arshid6social_marketplace_daily_new_listings' => 5,
-			'arshid6social_marketplace_safety_tips'        => __( 'Meet in a public place. Inspect the item before paying. Never share personal financial information.', 'social-network-6' ),
-			'arshid6social_marketplace_prohibited_policy'  => __( 'The following items are prohibited: weapons, illegal substances, counterfeit goods, and any other items prohibited by local law.', 'social-network-6' ),
+			'arshid6social_marketplace_safety_tips'        => __( 'Meet in a public place. Inspect the item before paying. Never share personal financial information.', '6arshid-social-community' ),
+			'arshid6social_marketplace_prohibited_policy'  => __( 'The following items are prohibited: weapons, illegal substances, counterfeit goods, and any other items prohibited by local law.', '6arshid-social-community' ),
 			'arshid6social_marketplace_as_homepage'        => false,
 		);
 

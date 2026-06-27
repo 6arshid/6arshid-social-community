@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Admin;
 
 /**
@@ -47,11 +47,11 @@ final class Admin_Settings {
 		check_ajax_referer( 'arshid6social_upload_video', 'nonce' );
 
 		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'social-network-6' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ) );
 		}
 
 		if ( empty( $_FILES['arshid6social_video_file'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'No file received.', 'social-network-6' ) ) );
+			wp_send_json_error( array( 'message' => __( 'No file received.', '6arshid-social-community' ) ) );
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/image.php';
@@ -80,123 +80,49 @@ final class Admin_Settings {
 		$bundled_video = plugins_url( 'assets/videos/home-bg.mp4', ARSHID6SOCIAL_PLUGIN_FILE );
 		$nonce         = wp_create_nonce( 'arshid6social_upload_video' );
 		$ajax_url      = admin_url( 'admin-ajax.php' );
-		?>
-		<script>
-		jQuery(function($){
-			var $btn          = $('#arshid6social-video-upload-btn');
-			var $rmBtn        = $('#arshid6social-video-remove-btn');
-			var $fileInput    = $('#arshid6social-video-file-input');
-			var $urlText      = $('#arshid6social-video-url-text');
-			var $hidden       = $('#arshid6social-video-url');
-			var $bgType       = $('#arshid6social-bg-type');
-			var $previewImg   = $('#arshid6social-video-preview');
-			var $previewVid   = $('#arshid6social-video-preview-video');
-			var $desc         = $('#arshid6social-video-desc');
-			var $progress     = $('#arshid6social-video-progress');
 
-			var bundled    = <?php echo wp_json_encode( $bundled_video ); ?>;
-			var ajaxUrl    = <?php echo wp_json_encode( $ajax_url ); ?>;
-			var nonce      = <?php echo wp_json_encode( $nonce ); ?>;
-
-			if ( ! $btn.length ) return;
-
-			var pendingType = null;
-
-			/* ── Upload button → trigger hidden file input ── */
-			$btn.on('click', function(e){
-				e.preventDefault();
-				$fileInput.trigger('click');
-			});
-
-			/* ── File selected → upload via AJAX ── */
-			$fileInput.on('change', function(){
-				var file = this.files[0];
-				if ( ! file ) return;
-
-				pendingType = file.type.startsWith('image/') ? 'image' : 'video';
-
-				var fd = new FormData();
-				fd.append('action',             'arshid6social_upload_video');
-				fd.append('nonce',              nonce);
-				fd.append('arshid6social_video_file', file, file.name);
-
-				$btn.prop('disabled', true).text(<?php echo wp_json_encode( __( 'Uploading…', 'social-network-6' ) ); ?>);
-				$progress.show();
-
-				$.ajax({
-					url        : ajaxUrl,
-					type       : 'POST',
-					data       : fd,
-					processData: false,
-					contentType: false,
-					xhr: function(){
-						var xhr = new window.XMLHttpRequest();
-						xhr.upload.addEventListener('progress', function(ev){
-							if ( ev.lengthComputable ){
-								var pct = Math.round( ev.loaded / ev.total * 100 );
-								$progress.find('.arshid6social-progress-bar').css('width', pct + '%');
-								$progress.find('.arshid6social-progress-label').text( pct + '%' );
-							}
-						}, false);
-						return xhr;
-					},
-					success: function(res){
-						if ( res.success ){
-							setMedia( res.data.url, pendingType || 'video' );
-						} else {
-							alert( res.data.message || <?php echo wp_json_encode( __( 'Upload failed.', 'social-network-6' ) ); ?> );
-						}
-					},
-					error: function(){
-						alert(<?php echo wp_json_encode( __( 'Upload error. Please try again.', 'social-network-6' ) ); ?>);
-					},
-					complete: function(){
-						$btn.prop('disabled', false).text(<?php echo wp_json_encode( __( 'Choose / Upload Video or Image', 'social-network-6' ) ); ?>);
-						$progress.hide();
-						$fileInput.val('');
-						pendingType = null;
-					}
-				});
-			});
-
-			/* ── Remove button ── */
-			$rmBtn.on('click', function(e){
-				e.preventDefault();
-				$hidden.val('');
-				$bgType.val('video');
-				$urlText.val('');
-				$previewImg.hide();
-				$previewVid.attr('src', bundled).show()[0].load();
-				$desc.text(<?php echo wp_json_encode( __( 'Using default video.', 'social-network-6' ) ); ?>);
-				$(this).hide();
-			});
-
-			/* ── Paste URL directly ── */
-			$urlText.on('input change', function(){
-				var url = $(this).val().trim();
-				if ( url ) {
-					var type = /\.(jpe?g|png|gif|webp|avif|svg)(\?.*)?$/i.test( url ) ? 'image' : 'video';
-					setMedia( url, type );
-				}
-			});
-
-			function setMedia( url, type ){
-				$hidden.val( url );
-				$bgType.val( type );
-				$urlText.val( url );
-				if ( type === 'image' ) {
-					$previewVid.hide();
-					$previewImg.attr('src', url).show();
-				} else {
-					$previewImg.hide();
-					$previewVid.attr('src', url).show()[0].load();
-				}
-				$desc.text(<?php echo wp_json_encode( __( 'Custom background is active.', 'social-network-6' ) ); ?>);
-				$rmBtn.show();
-			}
-		});
-		</script>
-		<?php
+		$js_vid  = 'jQuery(function($){';
+		$js_vid .= 'var bundled=' . wp_json_encode( $bundled_video ) . ';';
+		$js_vid .= 'var ajaxUrl=' . wp_json_encode( $ajax_url ) . ';';
+		$js_vid .= 'var nonce=' . wp_json_encode( $nonce ) . ';';
+		$js_vid .= 'var txtUploading=' . wp_json_encode( __( 'Uploading…', '6arshid-social-community' ) ) . ';';
+		$js_vid .= 'var txtUploadFailed=' . wp_json_encode( __( 'Upload failed.', '6arshid-social-community' ) ) . ';';
+		$js_vid .= 'var txtUploadError=' . wp_json_encode( __( 'Upload error. Please try again.', '6arshid-social-community' ) ) . ';';
+		$js_vid .= 'var txtChoose=' . wp_json_encode( __( 'Choose / Upload Video or Image', '6arshid-social-community' ) ) . ';';
+		$js_vid .= 'var txtDefaultVideo=' . wp_json_encode( __( 'Using default video.', '6arshid-social-community' ) ) . ';';
+		$js_vid .= 'var txtCustomActive=' . wp_json_encode( __( 'Custom background is active.', '6arshid-social-community' ) ) . ';';
+		$js_vid .= <<<'ENDJS'
+var $btn=$('#arshid6social-video-upload-btn');
+var $rmBtn=$('#arshid6social-video-remove-btn');
+var $fileInput=$('#arshid6social-video-file-input');
+var $urlText=$('#arshid6social-video-url-text');
+var $hidden=$('#arshid6social-video-url');
+var $bgType=$('#arshid6social-bg-type');
+var $previewImg=$('#arshid6social-video-preview');
+var $previewVid=$('#arshid6social-video-preview-video');
+var $desc=$('#arshid6social-video-desc');
+var $progress=$('#arshid6social-video-progress');
+if(!$btn.length)return;
+var pendingType=null;
+$btn.on('click',function(e){e.preventDefault();$fileInput.trigger('click');});
+$fileInput.on('change',function(){
+	var file=this.files[0];if(!file)return;
+	pendingType=file.type.startsWith('image/')?'image':'video';
+	var fd=new FormData();fd.append('action','arshid6social_upload_video');fd.append('nonce',nonce);fd.append('arshid6social_video_file',file,file.name);
+	$btn.prop('disabled',true).text(txtUploading);$progress.show();
+	$.ajax({url:ajaxUrl,type:'POST',data:fd,processData:false,contentType:false,
+		xhr:function(){var xhr=new window.XMLHttpRequest();xhr.upload.addEventListener('progress',function(ev){if(ev.lengthComputable){var pct=Math.round(ev.loaded/ev.total*100);$progress.find('.arshid6social-progress-bar').css('width',pct+'%');$progress.find('.arshid6social-progress-label').text(pct+'%');}},false);return xhr;},
+		success:function(res){if(res.success){setMedia(res.data.url,pendingType||'video');}else{alert(res.data.message||txtUploadFailed);}},
+		error:function(){alert(txtUploadError);},
+		complete:function(){$btn.prop('disabled',false).text(txtChoose);$progress.hide();$fileInput.val('');pendingType=null;}
+	});
+});
+$rmBtn.on('click',function(e){e.preventDefault();$hidden.val('');$bgType.val('video');$urlText.val('');$previewImg.hide();$previewVid.attr('src',bundled).show()[0].load();$desc.text(txtDefaultVideo);$(this).hide();});
+$urlText.on('input change',function(){var url=$(this).val().trim();if(url){var type=/\.(jpe?g|png|gif|webp|avif|svg)(\?.*)?$/i.test(url)?'image':'video';setMedia(url,type);}});
+function setMedia(url,type){$hidden.val(url);$bgType.val(type);$urlText.val(url);if(type==='image'){$previewVid.hide();$previewImg.attr('src',url).show();}else{$previewImg.hide();$previewVid.attr('src',url).show()[0].load();}$desc.text(txtCustomActive);$rmBtn.show();}
+});
+ENDJS;
+		wp_add_inline_script( 'arshid6social-admin', $js_vid );
 	}
 
 	/** @return array<string, string> Tab key → label. */
@@ -204,19 +130,19 @@ final class Admin_Settings {
 		return apply_filters(
 			'arshid6social_settings_tabs',
 			array(
-				'general'       => __( 'General', 'social-network-6' ),
-				'components'    => __( 'Components', 'social-network-6' ),
-				'members'       => __( 'Members', 'social-network-6' ),
-				'activity'      => __( 'Activity', 'social-network-6' ),
-				'groups'        => __( 'Groups', 'social-network-6' ),
-				'messages'      => __( 'Messages', 'social-network-6' ),
-				'notifications' => __( 'Notifications', 'social-network-6' ),
-				'security'      => __( 'Security', 'social-network-6' ),
-				'emails'        => __( 'Emails', 'social-network-6' ),
-				'appearance'    => __( 'Appearance', 'social-network-6' ),
-				'search'        => __( 'Search', 'social-network-6' ),
-				'tools'         => __( 'Tools', 'social-network-6' ),
-				'permalinks'    => __( 'Permalinks', 'social-network-6' ),
+				'general'       => __( 'General', '6arshid-social-community' ),
+				'components'    => __( 'Components', '6arshid-social-community' ),
+				'members'       => __( 'Members', '6arshid-social-community' ),
+				'activity'      => __( 'Activity', '6arshid-social-community' ),
+				'groups'        => __( 'Groups', '6arshid-social-community' ),
+				'messages'      => __( 'Messages', '6arshid-social-community' ),
+				'notifications' => __( 'Notifications', '6arshid-social-community' ),
+				'security'      => __( 'Security', '6arshid-social-community' ),
+				'emails'        => __( 'Emails', '6arshid-social-community' ),
+				'appearance'    => __( 'Appearance', '6arshid-social-community' ),
+				'search'        => __( 'Search', '6arshid-social-community' ),
+				'tools'         => __( 'Tools', '6arshid-social-community' ),
+				'permalinks'    => __( 'Permalinks', '6arshid-social-community' ),
 			)
 		);
 	}
@@ -352,9 +278,20 @@ final class Admin_Settings {
 			return (bool) $value;
 		}
 
-		// Background media URL — sanitize as URL; empty string means "use bundled default".
-		if ( 'arshid6social_home_video_url' === $option ) {
+		// URL fields.
+		if ( in_array( $option, array( 'arshid6social_home_video_url', 'arshid6social_logo_mobile', 'arshid6social_logo_mobile_dark' ), true ) ) {
 			return esc_url_raw( (string) $value );
+		}
+
+		// Dark mode: 'auto', 'light', or 'dark'.
+		if ( 'arshid6social_dark_mode' === $option ) {
+			return in_array( $value, array( 'auto', 'light', 'dark' ), true ) ? $value : 'auto';
+		}
+
+		// Date format whitelist.
+		if ( 'arshid6social_date_format' === $option ) {
+			$allowed_formats = array( 'relative', 'F j, Y', 'Y-m-d', 'd/m/Y', 'm/d/Y', 'j F Y' );
+			return in_array( $value, $allowed_formats, true ) ? $value : 'relative';
 		}
 
 		// Background media type: 'video' or 'image'.
@@ -405,7 +342,7 @@ final class Admin_Settings {
 	 */
 	public function render(): void {
 		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_die( esc_html__( 'Permission denied.', 'social-network-6' ) );
+			wp_die( esc_html__( 'Permission denied.', '6arshid-social-community' ) );
 		}
 
 		$current_tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'general'; // phpcs:ignore WordPress.Security.NonceVerification
@@ -418,7 +355,7 @@ final class Admin_Settings {
 		$option_group = 'ARSHID6SOCIAL_' . $current_tab;
 		?>
 		<div class="wrap arshid6social-admin-settings">
-			<h1><?php esc_html_e( 'Social Network Settings', 'social-network-6' ); ?></h1>
+			<h1><?php esc_html_e( 'Social Network Settings', '6arshid-social-community' ); ?></h1>
 
 			<nav class="nav-tab-wrapper arshid6social-nav-tabs">
 				<?php foreach ( $tabs as $tab => $label ) : ?>
@@ -436,7 +373,7 @@ final class Admin_Settings {
 					<?php
 					settings_fields( $option_group );
 					$this->render_tab( $current_tab );
-					submit_button( __( 'Save Settings', 'social-network-6' ) );
+					submit_button( __( 'Save Settings', '6arshid-social-community' ) );
 					?>
 				</form>
 			<?php endif; ?>
@@ -496,33 +433,33 @@ final class Admin_Settings {
 		?>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Search Pagination Style', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Search Pagination Style', '6arshid-social-community' ); ?></th>
 				<td>
 					<select name="arshid6social_search_pagination_type">
 						<option value="pagination" <?php selected( get_option( 'arshid6social_search_pagination_type', 'pagination' ), 'pagination' ); ?>>
-							<?php esc_html_e( 'Page Numbers (Basic Pagination)', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Page Numbers (Basic Pagination)', '6arshid-social-community' ); ?>
 						</option>
 						<option value="infinite_scroll" <?php selected( get_option( 'arshid6social_search_pagination_type', 'pagination' ), 'infinite_scroll' ); ?>>
-							<?php esc_html_e( 'Infinite Scroll', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Infinite Scroll', '6arshid-social-community' ); ?>
 						</option>
 					</select>
-					<p class="description"><?php esc_html_e( 'How results are paginated when viewing a single search section (People, Groups, etc.).', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'How results are paginated when viewing a single search section (People, Groups, etc.).', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Results Per Section (Overview)', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Results Per Section (Overview)', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_search_results_per_section" min="3" max="20"
 						value="<?php echo esc_attr( get_option( 'arshid6social_search_results_per_section', 5 ) ); ?>" />
-					<p class="description"><?php esc_html_e( 'Minimum number of items shown per section in the "All" overview tab. Must be between 3 and 20.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Minimum number of items shown per section in the "All" overview tab. Must be between 3 and 20.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Results Per Page (Section View)', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Results Per Page (Section View)', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_search_per_page" min="5" max="50"
 						value="<?php echo esc_attr( get_option( 'arshid6social_search_per_page', 10 ) ); ?>" />
-					<p class="description"><?php esc_html_e( 'Number of items per page when viewing a specific section (Activity, People, Groups, or Marketplace).', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Number of items per page when viewing a specific section (Activity, People, Groups, or Marketplace).', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -535,36 +472,36 @@ final class Admin_Settings {
 		?>
 		<div style="max-width:640px;margin-top:1.5rem;">
 
-			<h2 style="margin-top:0;"><?php esc_html_e( 'Sample Data', 'social-network-6' ); ?></h2>
+			<h2 style="margin-top:0;"><?php esc_html_e( 'Sample Data', '6arshid-social-community' ); ?></h2>
 			<p style="color:#64748b;">
-				<?php esc_html_e( 'Use the tools below to import or remove demo content from your social network.', 'social-network-6' ); ?>
+				<?php esc_html_e( 'Use the tools below to import or remove demo content from your social network.', '6arshid-social-community' ); ?>
 			</p>
 
 			<table class="form-table" role="presentation">
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Import Sample Data', 'social-network-6' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Import Sample Data', '6arshid-social-community' ); ?></th>
 					<td>
 						<p class="description" style="margin-bottom:.75rem;">
-							<?php esc_html_e( 'Creates 50 users, 50 activity posts, 100 notifications for admin, 50 marketplace listings, 50 groups, 50 saved posts (admin), 50 message threads (to admin), 30 text stories, and 1 ad.', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Creates 50 users, 50 activity posts, 100 notifications for admin, 50 marketplace listings, 50 groups, 50 saved posts (admin), 50 message threads (to admin), 30 text stories, and 1 ad.', '6arshid-social-community' ); ?>
 						</p>
 						<button type="button" id="arshid6social-import-sample" class="button button-primary"
 							<?php disabled( $imported ); ?>>
 							<?php echo $imported
-								? esc_html__( 'Already Imported', 'social-network-6' )
-								: esc_html__( 'Import Sample Data', 'social-network-6' ); ?>
+								? esc_html__( 'Already Imported', '6arshid-social-community' )
+								: esc_html__( 'Import Sample Data', '6arshid-social-community' ); ?>
 						</button>
 						<span id="arshid6social-import-status" style="display:none;margin-inline-start:.75rem;font-size:.875rem;vertical-align:middle;"></span>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Delete Sample Data', 'social-network-6' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Delete Sample Data', '6arshid-social-community' ); ?></th>
 					<td>
 						<p class="description" style="margin-bottom:.75rem;">
-							<?php esc_html_e( 'Permanently removes all previously imported sample users, posts, notifications, listings, groups, and bookmarks.', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Permanently removes all previously imported sample users, posts, notifications, listings, groups, and bookmarks.', '6arshid-social-community' ); ?>
 						</p>
 						<button type="button" id="arshid6social-delete-sample" class="button button-secondary"
 							<?php disabled( ! $imported ); ?>>
-							<?php esc_html_e( 'Delete Sample Data', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Delete Sample Data', '6arshid-social-community' ); ?>
 						</button>
 						<span id="arshid6social-delete-status" style="display:none;margin-inline-start:.75rem;font-size:.875rem;vertical-align:middle;"></span>
 					</td>
@@ -572,106 +509,71 @@ final class Admin_Settings {
 			</table>
 		</div>
 
-		<script>
-		( function() {
-			const ajaxUrl = <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>;
-			const nonce   = <?php echo wp_json_encode( $nonce ); ?>;
-
-			async function runAction( action, btn, statusEl, successLabel, errorLabel ) {
-				btn.disabled = true;
-				statusEl.style.display = 'none';
-				const orig = btn.textContent;
-				btn.textContent = '<?php echo esc_js( __( 'Working…', 'social-network-6' ) ); ?>';
-
-				const body = new FormData();
-				body.append( 'action', action );
-				body.append( 'nonce', nonce );
-
-				try {
-					const resp = await fetch( ajaxUrl, { method: 'POST', body } );
-					const json = await resp.json();
-					statusEl.style.display = 'inline';
-					if ( json.success ) {
-						btn.textContent = successLabel;
-						statusEl.style.color = '#16a34a';
-						statusEl.textContent = json.data?.message ?? '';
-						setTimeout( () => location.reload(), 1200 );
-					} else {
-						btn.disabled = false;
-						btn.textContent = orig;
-						statusEl.style.color = '#dc2626';
-						statusEl.textContent = json.data?.message ?? errorLabel;
-					}
-				} catch ( e ) {
-					btn.disabled = false;
-					btn.textContent = orig;
-				}
-			}
-
-			const importBtn = document.getElementById( 'arshid6social-import-sample' );
-			if ( importBtn ) {
-				importBtn.addEventListener( 'click', () => runAction(
-					'arshid6social_import_sample_data',
-					importBtn,
-					document.getElementById( 'arshid6social-import-status' ),
-					<?php echo wp_json_encode( __( 'Imported!', 'social-network-6' ) ); ?>,
-					<?php echo wp_json_encode( __( 'Import failed.', 'social-network-6' ) ); ?>
-				) );
-			}
-
-			const deleteBtn = document.getElementById( 'arshid6social-delete-sample' );
-			if ( deleteBtn ) {
-				deleteBtn.addEventListener( 'click', () => {
-					if ( ! confirm( <?php echo wp_json_encode( __( 'Delete all sample data? This cannot be undone.', 'social-network-6' ) ); ?> ) ) return;
-					runAction(
-						'arshid6social_delete_sample_data',
-						deleteBtn,
-						document.getElementById( 'arshid6social-delete-status' ),
-						<?php echo wp_json_encode( __( 'Deleted!', 'social-network-6' ) ); ?>,
-						<?php echo wp_json_encode( __( 'Delete failed.', 'social-network-6' ) ); ?>
-					);
-				} );
-			}
-		} )();
-		</script>
 		<?php
+		$js_tools  = '(function(){';
+		$js_tools .= 'var ajaxUrl=' . wp_json_encode( admin_url( 'admin-ajax.php' ) ) . ';';
+		$js_tools .= 'var nonce=' . wp_json_encode( $nonce ) . ';';
+		$js_tools .= 'var txtWorking=' . wp_json_encode( __( 'Working…', '6arshid-social-community' ) ) . ';';
+		$js_tools .= 'var txtImported=' . wp_json_encode( __( 'Imported!', '6arshid-social-community' ) ) . ';';
+		$js_tools .= 'var txtImportFailed=' . wp_json_encode( __( 'Import failed.', '6arshid-social-community' ) ) . ';';
+		$js_tools .= 'var txtDeleted=' . wp_json_encode( __( 'Deleted!', '6arshid-social-community' ) ) . ';';
+		$js_tools .= 'var txtDeleteFailed=' . wp_json_encode( __( 'Delete failed.', '6arshid-social-community' ) ) . ';';
+		$js_tools .= 'var txtConfirmDelete=' . wp_json_encode( __( 'Delete all sample data? This cannot be undone.', '6arshid-social-community' ) ) . ';';
+		$js_tools .= <<<'ENDJS'
+async function runAction(action,btn,statusEl,successLabel,errorLabel){
+	btn.disabled=true;statusEl.style.display='none';var orig=btn.textContent;btn.textContent=txtWorking;
+	var body=new FormData();body.append('action',action);body.append('nonce',nonce);
+	try{
+		var resp=await fetch(ajaxUrl,{method:'POST',body:body});var json=await resp.json();
+		statusEl.style.display='inline';
+		if(json.success){btn.textContent=successLabel;statusEl.style.color='#16a34a';statusEl.textContent=json.data&&json.data.message?json.data.message:'';setTimeout(function(){location.reload();},1200);}
+		else{btn.disabled=false;btn.textContent=orig;statusEl.style.color='#dc2626';statusEl.textContent=json.data&&json.data.message?json.data.message:errorLabel;}
+	}catch(e){btn.disabled=false;btn.textContent=orig;}
+}
+var importBtn=document.getElementById('arshid6social-import-sample');
+if(importBtn){importBtn.addEventListener('click',function(){runAction('arshid6social_import_sample_data',importBtn,document.getElementById('arshid6social-import-status'),txtImported,txtImportFailed);});}
+var deleteBtn=document.getElementById('arshid6social-delete-sample');
+if(deleteBtn){deleteBtn.addEventListener('click',function(){if(!confirm(txtConfirmDelete))return;runAction('arshid6social_delete_sample_data',deleteBtn,document.getElementById('arshid6social-delete-status'),txtDeleted,txtDeleteFailed);});}
+})();
+ENDJS;
+		wp_add_inline_script( 'arshid6social-admin', $js_tools );
 	}
 
 	private function render_general_tab(): void {
 		?>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Allow Registration', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Allow Registration', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_allow_registration" value="1"
 							<?php checked( get_option( 'arshid6social_allow_registration', true ) ); ?> />
-						<?php esc_html_e( 'Allow new users to register on the social network.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Allow new users to register on the social network.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Date Format', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Date Format', '6arshid-social-community' ); ?></th>
 				<td>
 					<select name="arshid6social_date_format">
 						<option value="relative" <?php selected( get_option( 'arshid6social_date_format', 'relative' ), 'relative' ); ?>>
-							<?php esc_html_e( 'Relative (e.g. 5 minutes ago)', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Relative (e.g. 5 minutes ago)', '6arshid-social-community' ); ?>
 						</option>
 						<option value="absolute" <?php selected( get_option( 'arshid6social_date_format', 'relative' ), 'absolute' ); ?>>
-							<?php esc_html_e( 'Absolute (e.g. June 12, 2026)', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Absolute (e.g. June 12, 2026)', '6arshid-social-community' ); ?>
 						</option>
 						<option value="jalali" <?php selected( get_option( 'arshid6social_date_format', 'relative' ), 'jalali' ); ?>>
-							<?php esc_html_e( 'Jalali / Persian calendar', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Jalali / Persian calendar', '6arshid-social-community' ); ?>
 						</option>
 					</select>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Invitation Limit', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Invitation Limit', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_invitation_limit" min="0" max="1000"
 						value="<?php echo esc_attr( get_option( 'arshid6social_invitation_limit', 20 ) ); ?>" />
-					<p class="description"><?php esc_html_e( 'Maximum invitations a member can send. 0 = unlimited.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Maximum invitations a member can send. 0 = unlimited.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -681,39 +583,39 @@ final class Admin_Settings {
 	private function render_components_tab(): void {
 		$enabled = (array) get_option( 'arshid6social_enabled_components', array() );
 		$all     = array(
-			'activity'      => array( 'label' => __( 'Activity Streams', 'social-network-6' ),  'desc' => __( 'News feed, posts, reactions, comments', 'social-network-6' ) ),
-			'groups'        => array( 'label' => __( 'Groups', 'social-network-6' ),             'desc' => __( 'Public, private, and hidden groups', 'social-network-6' ) ),
-			'friends'       => array( 'label' => __( 'Friends & Follow', 'social-network-6' ),   'desc' => __( 'Friend requests, follow, block', 'social-network-6' ) ),
-			'messages'      => array( 'label' => __( 'Private Messages', 'social-network-6' ),   'desc' => __( 'One-to-one and group messaging', 'social-network-6' ) ),
-			'notifications' => array( 'label' => __( 'Notifications', 'social-network-6' ),      'desc' => __( 'On-site and email notifications', 'social-network-6' ) ),
-			'moderation'    => array( 'label' => __( 'Moderation', 'social-network-6' ),         'desc' => __( 'Reports, bans, audit log', 'social-network-6' ) ),
+			'activity'      => array( 'label' => __( 'Activity Streams', '6arshid-social-community' ),  'desc' => __( 'News feed, posts, reactions, comments', '6arshid-social-community' ) ),
+			'groups'        => array( 'label' => __( 'Groups', '6arshid-social-community' ),             'desc' => __( 'Public, private, and hidden groups', '6arshid-social-community' ) ),
+			'friends'       => array( 'label' => __( 'Friends & Follow', '6arshid-social-community' ),   'desc' => __( 'Friend requests, follow, block', '6arshid-social-community' ) ),
+			'messages'      => array( 'label' => __( 'Private Messages', '6arshid-social-community' ),   'desc' => __( 'One-to-one and group messaging', '6arshid-social-community' ) ),
+			'notifications' => array( 'label' => __( 'Notifications', '6arshid-social-community' ),      'desc' => __( 'On-site and email notifications', '6arshid-social-community' ) ),
+			'moderation'    => array( 'label' => __( 'Moderation', '6arshid-social-community' ),         'desc' => __( 'Reports, bans, audit log', '6arshid-social-community' ) ),
 		);
 
 		// Engagement Pack options (stored in their own flags, not arshid6social_enabled_components).
 		$pack = array(
 			'arshid6social_stories_enabled'      => array(
-				'label' => __( 'Stories', 'social-network-6' ),
-				'desc'  => __( '24-hour ephemeral photo, video, and text stories', 'social-network-6' ),
+				'label' => __( 'Stories', '6arshid-social-community' ),
+				'desc'  => __( '24-hour ephemeral photo, video, and text stories', '6arshid-social-community' ),
 			),
 			'arshid6social_verification_enabled' => array(
-				'label' => __( 'Verification Badges', 'social-network-6' ),
-				'desc'  => __( 'Verified badge + user request flow and admin queue', 'social-network-6' ),
+				'label' => __( 'Verification Badges', '6arshid-social-community' ),
+				'desc'  => __( 'Verified badge + user request flow and admin queue', '6arshid-social-community' ),
 			),
 			'arshid6social_blocking_enabled'     => array(
-				'label' => __( 'Block System', 'social-network-6' ),
-				'desc'  => __( 'Block / unblock users with optional reason', 'social-network-6' ),
+				'label' => __( 'Block System', '6arshid-social-community' ),
+				'desc'  => __( 'Block / unblock users with optional reason', '6arshid-social-community' ),
 			),
 			'arshid6social_activity_stats_bar'   => array(
-				'label' => __( 'Activity Stats Bar', 'social-network-6' ),
-				'desc'  => __( 'Show engagement counts (comments, reposts, likes, views) below each post', 'social-network-6' ),
+				'label' => __( 'Activity Stats Bar', '6arshid-social-community' ),
+				'desc'  => __( 'Show engagement counts (comments, reposts, likes, views) below each post', '6arshid-social-community' ),
 			),
 		);
 		?>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Active Components', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Active Components', '6arshid-social-community' ); ?></th>
 				<td>
-					<p class="description"><?php esc_html_e( 'The Members component is always active.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'The Members component is always active.', '6arshid-social-community' ); ?></p>
 					<?php foreach ( $all as $key => $info ) : ?>
 						<label style="display:block;margin-top:8px;">
 							<input type="checkbox" name="arshid6social_enabled_components[]"
@@ -726,10 +628,10 @@ final class Admin_Settings {
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Engagement Pack', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Engagement Pack', '6arshid-social-community' ); ?></th>
 				<td>
 					<p class="description" style="margin-bottom:8px;">
-						<?php esc_html_e( 'Optional features. Each has its own settings under the relevant tab.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Optional features. Each has its own settings under the relevant tab.', '6arshid-social-community' ); ?>
 					</p>
 					<?php foreach ( $pack as $option_key => $info ) : ?>
 						<label style="display:block;margin-top:8px;">
@@ -750,67 +652,67 @@ final class Admin_Settings {
 		?>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Members Per Page', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Members Per Page', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_members_per_page" min="5" max="100"
 						value="<?php echo esc_attr( get_option( 'arshid6social_members_per_page', 20 ) ); ?>" />
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Members Pagination Style', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Members Pagination Style', '6arshid-social-community' ); ?></th>
 				<td>
 					<select name="arshid6social_members_pagination_type">
 						<option value="pagination" <?php selected( get_option( 'arshid6social_members_pagination_type', 'pagination' ), 'pagination' ); ?>>
-							<?php esc_html_e( 'Page Numbers (Basic Pagination)', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Page Numbers (Basic Pagination)', '6arshid-social-community' ); ?>
 						</option>
 						<option value="infinite_scroll" <?php selected( get_option( 'arshid6social_members_pagination_type', 'pagination' ), 'infinite_scroll' ); ?>>
-							<?php esc_html_e( 'Infinite Scroll', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Infinite Scroll', '6arshid-social-community' ); ?>
 						</option>
 					</select>
-					<p class="description"><?php esc_html_e( 'How members are paginated on the /members/ directory page.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'How members are paginated on the /members/ directory page.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( '"Who to Follow" Count', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( '"Who to Follow" Count', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_who_to_follow_per_page" min="1" max="20"
 						value="<?php echo esc_attr( get_option( 'arshid6social_who_to_follow_per_page', 3 ) ); ?>" />
-					<p class="description"><?php esc_html_e( 'Number of suggested members shown in the right sidebar "Who to Follow" widget.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Number of suggested members shown in the right sidebar "Who to Follow" widget.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Show Friend Count in Members Directory', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Show Friend Count in Members Directory', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_members_show_friend_count" value="1"
 							<?php checked( get_option( 'arshid6social_members_show_friend_count', false ) ); ?> />
-						<?php esc_html_e( 'Display the number of friends each member has on the /members/ directory page.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Display the number of friends each member has on the /members/ directory page.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Avatar Size (px)', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Avatar Size (px)', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_profile_photo_size" min="50" max="500"
 						value="<?php echo esc_attr( get_option( 'arshid6social_profile_photo_size', 150 ) ); ?>" />
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Cover Photo Width (px)', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Cover Photo Width (px)', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_cover_photo_width" min="400" max="3840"
 						value="<?php echo esc_attr( get_option( 'arshid6social_cover_photo_width', 1200 ) ); ?>" />
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Cover Photo Height (px)', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Cover Photo Height (px)', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_cover_photo_height" min="100" max="1000"
 						value="<?php echo esc_attr( get_option( 'arshid6social_cover_photo_height', 350 ) ); ?>" />
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Max Upload Size (MB)', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Max Upload Size (MB)', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_max_upload_size_mb" min="1" max="100"
 						value="<?php echo esc_attr( get_option( 'arshid6social_max_upload_size_mb', 5 ) ); ?>" />
@@ -826,55 +728,55 @@ final class Admin_Settings {
 		$badge_img_id  = (int) get_option( 'arshid6social_verification_badge_image', 0 );
 		$badge_img_url = $badge_img_id ? wp_get_attachment_image_url( $badge_img_id, array( 32, 32 ) ) : '';
 		?>
-		<h2><?php esc_html_e( 'Verification Badges', 'social-network-6' ); ?></h2>
+		<h2><?php esc_html_e( 'Verification Badges', '6arshid-social-community' ); ?></h2>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Enable Verification', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Enable Verification', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_verification_enabled" value="1"
 							<?php checked( get_option( 'arshid6social_verification_enabled', false ) ); ?> />
-						<?php esc_html_e( 'Show verified badge on profiles, posts, and stories.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Show verified badge on profiles, posts, and stories.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Require Document Upload', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Require Document Upload', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_verification_require_doc" value="1"
 							<?php checked( get_option( 'arshid6social_verification_require_doc', false ) ); ?> />
-						<?php esc_html_e( 'Make document upload mandatory in the verification request form.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Make document upload mandatory in the verification request form.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Badge Expiry (months)', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Badge Expiry (months)', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_verification_expiry_months" min="0" max="120"
 						value="<?php echo esc_attr( get_option( 'arshid6social_verification_expiry_months', 0 ) ); ?>" />
-					<p class="description"><?php esc_html_e( '0 = never expires.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( '0 = never expires.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Auto-Purge Documents After Decision', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Auto-Purge Documents After Decision', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_verification_doc_purge" value="1"
 							<?php checked( get_option( 'arshid6social_verification_doc_purge', true ) ); ?> />
-						<?php esc_html_e( 'Delete uploaded identity documents after the request is approved or rejected.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Delete uploaded identity documents after the request is approved or rejected.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Rate Limit: Requests per hour', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Rate Limit: Requests per hour', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_verification_rate_limit" min="1" max="20"
 						value="<?php echo esc_attr( get_option( 'arshid6social_verification_rate_limit', 3 ) ); ?>" />
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Badge Image', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Badge Image', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="hidden" name="arshid6social_verification_badge_image" id="arshid6social-badge-img-id"
 						value="<?php echo esc_attr( $badge_img_id ?: '' ); ?>" />
@@ -889,62 +791,48 @@ final class Admin_Settings {
 						</div>
 
 						<button type="button" class="button" id="arshid6social-badge-img-select">
-							<?php esc_html_e( 'Select / Upload Image', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Select / Upload Image', '6arshid-social-community' ); ?>
 						</button>
 
 						<button type="button" class="button" id="arshid6social-badge-img-remove"
 							<?php echo $badge_img_id ? '' : 'style="display:none;"'; ?>>
-							<?php esc_html_e( 'Remove', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Remove', '6arshid-social-community' ); ?>
 						</button>
 					</div>
 
 					<p class="description" style="margin-top:8px;">
-						<?php esc_html_e( 'Upload a custom image for the verified badge (PNG/SVG recommended, square, 32–64px). Leave empty to use the text badge character defined in each type below.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Upload a custom image for the verified badge (PNG/SVG recommended, square, 32–64px). Leave empty to use the text badge character defined in each type below.', '6arshid-social-community' ); ?>
 					</p>
 
-					<script>
-					( function () {
-						var frame;
-						var btnSelect  = document.getElementById( 'arshid6social-badge-img-select' );
-						var btnRemove  = document.getElementById( 'arshid6social-badge-img-remove' );
-						var inputId    = document.getElementById( 'arshid6social-badge-img-id' );
-						var preview    = document.getElementById( 'arshid6social-badge-img-preview' );
-
-						btnSelect.addEventListener( 'click', function () {
-							if ( frame ) { frame.open(); return; }
-							frame = wp.media( {
-								title:    '<?php echo esc_js( __( 'Select Verification Badge Image', 'social-network-6' ) ); ?>',
-								button:   { text: '<?php echo esc_js( __( 'Use this image', 'social-network-6' ) ); ?>' },
-								multiple: false,
-								library:  { type: 'image' },
-							} );
-							frame.on( 'select', function () {
-								var attachment = frame.state().get( 'selection' ).first().toJSON();
-								inputId.value    = attachment.id;
-								var src          = attachment.sizes && attachment.sizes.thumbnail
-									? attachment.sizes.thumbnail.url
-									: attachment.url;
-								preview.innerHTML = '<img src="' + src + '" style="width:100%;height:100%;object-fit:contain;" alt="" />';
-								btnRemove.style.display = '';
-							} );
-							frame.open();
-						} );
-
-						btnRemove.addEventListener( 'click', function () {
-							inputId.value     = '';
-							preview.innerHTML = '<span style="color:#9ca3af;font-size:20px;">🏅</span>';
-							btnRemove.style.display = 'none';
-						} );
-					} )();
-					</script>
+					<?php
+					$js_badge  = '(function(){';
+					$js_badge .= 'var titleBadge=' . wp_json_encode( __( 'Select Verification Badge Image', '6arshid-social-community' ) ) . ';';
+					$js_badge .= 'var txtUseImg=' . wp_json_encode( __( 'Use this image', '6arshid-social-community' ) ) . ';';
+					$js_badge .= <<<'ENDJS'
+var frame;
+var btnSelect=document.getElementById('arshid6social-badge-img-select');
+var btnRemove=document.getElementById('arshid6social-badge-img-remove');
+var inputId=document.getElementById('arshid6social-badge-img-id');
+var preview=document.getElementById('arshid6social-badge-img-preview');
+btnSelect.addEventListener('click',function(){
+	if(frame){frame.open();return;}
+	frame=wp.media({title:titleBadge,button:{text:txtUseImg},multiple:false,library:{type:'image'}});
+	frame.on('select',function(){var att=frame.state().get('selection').first().toJSON();inputId.value=att.id;var src=att.sizes&&att.sizes.thumbnail?att.sizes.thumbnail.url:att.url;preview.innerHTML='<img src="'+src+'" style="width:100%;height:100%;object-fit:contain;" alt="" />';btnRemove.style.display='';});
+	frame.open();
+});
+btnRemove.addEventListener('click',function(){inputId.value='';preview.innerHTML='<span style="color:#9ca3af;font-size:20px;">🏅</span>';btnRemove.style.display='none';});
+})();
+ENDJS;
+					wp_add_inline_script( 'arshid6social-admin', $js_badge );
+					?>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Verification Types (JSON)', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Verification Types (JSON)', '6arshid-social-community' ); ?></th>
 				<td>
 					<textarea name="arshid6social_verification_types_json" rows="8" class="large-text code"
 						id="arshid6social-vtypes-json"><?php echo esc_textarea( wp_json_encode( $types, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) ); ?></textarea>
-					<p class="description"><?php esc_html_e( 'JSON array — each item: { "key": "general", "label": "Verified", "badge": "✓", "color": "#2563eb" }.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'JSON array — each item: { "key": "general", "label": "Verified", "badge": "✓", "color": "#2563eb" }.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -956,55 +844,55 @@ final class Admin_Settings {
 		?>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Activity Items Per Page', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Activity Items Per Page', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_activity_per_page" min="5" max="100"
 						value="<?php echo esc_attr( get_option( 'arshid6social_activity_per_page', 20 ) ); ?>" />
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Pagination Style', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Pagination Style', '6arshid-social-community' ); ?></th>
 				<td>
 					<select name="arshid6social_activity_pagination_type">
 						<option value="infinite_scroll" <?php selected( get_option( 'arshid6social_activity_pagination_type', 'infinite_scroll' ), 'infinite_scroll' ); ?>>
-							<?php esc_html_e( 'Infinite Scroll', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Infinite Scroll', '6arshid-social-community' ); ?>
 						</option>
 						<option value="pagination" <?php selected( get_option( 'arshid6social_activity_pagination_type', 'infinite_scroll' ), 'pagination' ); ?>>
-							<?php esc_html_e( 'Page Numbers (Basic Pagination)', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Page Numbers (Basic Pagination)', '6arshid-social-community' ); ?>
 						</option>
 					</select>
-					<p class="description"><?php esc_html_e( 'Infinite scroll loads more posts automatically; basic pagination shows numbered pages.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Infinite scroll loads more posts automatically; basic pagination shows numbered pages.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Allow Comments', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Allow Comments', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_activity_allow_comments" value="1"
 							<?php checked( get_option( 'arshid6social_activity_allow_comments', true ) ); ?> />
-						<?php esc_html_e( 'Allow members to comment on activity posts.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Allow members to comment on activity posts.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Allow Media Uploads', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Allow Media Uploads', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_activity_allow_media" value="1"
 							<?php checked( get_option( 'arshid6social_activity_allow_media', true ) ); ?> />
-						<?php esc_html_e( 'Allow members to attach files to activity posts.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Allow members to attach files to activity posts.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Allowed Media Types', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Allowed Media Types', '6arshid-social-community' ); ?></th>
 				<td>
 					<?php
 					$media_types = array(
-						'image'    => __( 'Images (JPEG, PNG, GIF, WebP)', 'social-network-6' ),
-						'video'    => __( 'Videos (MP4, WebM, OGG)', 'social-network-6' ),
-						'audio'    => __( 'Audio (MP3, WAV, OGG)', 'social-network-6' ),
-						'document' => __( 'Documents (PDF)', 'social-network-6' ),
+						'image'    => __( 'Images (JPEG, PNG, GIF, WebP)', '6arshid-social-community' ),
+						'video'    => __( 'Videos (MP4, WebM, OGG)', '6arshid-social-community' ),
+						'audio'    => __( 'Audio (MP3, WAV, OGG)', '6arshid-social-community' ),
+						'document' => __( 'Documents (PDF)', '6arshid-social-community' ),
 					);
 					foreach ( $media_types as $key => $label ) :
 						?>
@@ -1015,7 +903,7 @@ final class Admin_Settings {
 							<?php echo esc_html( $label ); ?>
 						</label>
 					<?php endforeach; ?>
-					<p class="description"><?php esc_html_e( 'Only applies when "Allow Media Uploads" is enabled above.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Only applies when "Allow Media Uploads" is enabled above.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -1027,7 +915,7 @@ final class Admin_Settings {
 		?>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Groups Per Page', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Groups Per Page', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_groups_per_page" min="5" max="100"
 						value="<?php echo esc_attr( get_option( 'arshid6social_groups_per_page', 20 ) ); ?>" />
@@ -1041,21 +929,21 @@ final class Admin_Settings {
 		?>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Messages Per Page', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Messages Per Page', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_messages_per_page" min="5" max="100"
 						value="<?php echo esc_attr( get_option( 'arshid6social_messages_per_page', 20 ) ); ?>" />
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Story Reply in Messages', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Story Reply in Messages', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_messages_story_enabled" value="1"
 							<?php checked( get_option( 'arshid6social_messages_story_enabled', false ) ); ?> />
-						<?php esc_html_e( 'Allow users to reply to stories via private message.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Allow users to reply to stories via private message.', '6arshid-social-community' ); ?>
 					</label>
-					<p class="description"><?php esc_html_e( 'When disabled, the reply input is hidden from the story viewer and story replies are blocked. Disabled by default.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'When disabled, the reply input is hidden from the story viewer and story replies are blocked. Disabled by default.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -1066,27 +954,27 @@ final class Admin_Settings {
 		?>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Email Notifications', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Email Notifications', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_email_notifications" value="1"
 							<?php checked( get_option( 'arshid6social_email_notifications', true ) ); ?> />
-						<?php esc_html_e( 'Send email notifications to members.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Send email notifications to members.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Email Digest', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Email Digest', '6arshid-social-community' ); ?></th>
 				<td>
 					<select name="arshid6social_email_digest">
 						<option value="none" <?php selected( get_option( 'arshid6social_email_digest', 'daily' ), 'none' ); ?>>
-							<?php esc_html_e( 'Disabled', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Disabled', '6arshid-social-community' ); ?>
 						</option>
 						<option value="daily" <?php selected( get_option( 'arshid6social_email_digest', 'daily' ), 'daily' ); ?>>
-							<?php esc_html_e( 'Daily digest', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Daily digest', '6arshid-social-community' ); ?>
 						</option>
 						<option value="weekly" <?php selected( get_option( 'arshid6social_email_digest', 'daily' ), 'weekly' ); ?>>
-							<?php esc_html_e( 'Weekly digest', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Weekly digest', '6arshid-social-community' ); ?>
 						</option>
 					</select>
 				</td>
@@ -1097,87 +985,87 @@ final class Admin_Settings {
 
 	private function render_stories_settings(): void {
 		?>
-		<h2><?php esc_html_e( 'Stories', 'social-network-6' ); ?></h2>
+		<h2><?php esc_html_e( 'Stories', '6arshid-social-community' ); ?></h2>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Enable Stories', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Enable Stories', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_stories_enabled" value="1"
 							<?php checked( get_option( 'arshid6social_stories_enabled', false ) ); ?> />
-						<?php esc_html_e( 'Show 24-hour ephemeral stories tray on activity page and profiles.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Show 24-hour ephemeral stories tray on activity page and profiles.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Story Expiry (hours)', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Story Expiry (hours)', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_stories_expiry_hours" min="1" max="72"
 						value="<?php echo esc_attr( get_option( 'arshid6social_stories_expiry_hours', 24 ) ); ?>" />
-					<p class="description"><?php esc_html_e( 'How long stories stay visible before auto-expiring.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'How long stories stay visible before auto-expiring.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Max Video Length (seconds)', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Max Video Length (seconds)', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_stories_max_video_secs" min="5" max="300"
 						value="<?php echo esc_attr( get_option( 'arshid6social_stories_max_video_secs', 30 ) ); ?>" />
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Allow Video Stories', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Allow Video Stories', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_stories_allow_video" value="1"
 							<?php checked( get_option( 'arshid6social_stories_allow_video', true ) ); ?> />
-						<?php esc_html_e( 'Members can upload short video stories.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Members can upload short video stories.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Enable Highlights', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Enable Highlights', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_stories_highlights" value="1"
 							<?php checked( get_option( 'arshid6social_stories_highlights', true ) ); ?> />
-						<?php esc_html_e( 'Allow members to save expired stories as permanent Highlights on their profile.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Allow members to save expired stories as permanent Highlights on their profile.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Rate Limit: Stories per hour', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Rate Limit: Stories per hour', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_stories_rate_limit" min="1" max="200"
 						value="<?php echo esc_attr( get_option( 'arshid6social_stories_rate_limit', 20 ) ); ?>" />
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Show Bottom Bar', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Show Bottom Bar', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_stories_bottom_bar" value="1"
 							<?php checked( get_option( 'arshid6social_stories_bottom_bar', false ) ); ?> />
-						<?php esc_html_e( 'Show a fixed stories bar at the bottom of every page on the site.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Show a fixed stories bar at the bottom of every page on the site.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Show in Marketplace', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Show in Marketplace', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_stories_bottom_bar_marketplace" value="1"
 							<?php checked( get_option( 'arshid6social_stories_bottom_bar_marketplace', false ) ); ?> />
-						<?php esc_html_e( 'Show the stories bar on the Marketplace page. Disabled by default.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Show the stories bar on the Marketplace page. Disabled by default.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Show in Messages &amp; Inbox', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Show in Messages &amp; Inbox', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_stories_bottom_bar_messages" value="1"
 							<?php checked( get_option( 'arshid6social_stories_bottom_bar_messages', false ) ); ?> />
-						<?php esc_html_e( 'Show the stories bar on the Messages and Inbox pages. Disabled by default.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Show the stories bar on the Messages and Inbox pages. Disabled by default.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
@@ -1199,8 +1087,8 @@ final class Admin_Settings {
 			$tray = $stories_obj->get_tray( $viewer_id );
 		}
 		?>
-		<h3 style="margin-top:2em;"><?php esc_html_e( 'Stories Bar Preview', 'social-network-6' ); ?></h3>
-		<p class="description"><?php esc_html_e( 'This is how the fixed bottom stories bar appears to logged-in users on the site.', 'social-network-6' ); ?></p>
+		<h3 style="margin-top:2em;"><?php esc_html_e( 'Stories Bar Preview', '6arshid-social-community' ); ?></h3>
+		<p class="description"><?php esc_html_e( 'This is how the fixed bottom stories bar appears to logged-in users on the site.', '6arshid-social-community' ); ?></p>
 
 		<div style="
 			background:#1a1a2e;
@@ -1233,7 +1121,7 @@ final class Admin_Settings {
 					">+</span>
 				</div>
 				<span style="color:#ccc;font-size:11px;max-width:60px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-					<?php esc_html_e( 'Your Story', 'social-network-6' ); ?>
+					<?php esc_html_e( 'Your Story', '6arshid-social-community' ); ?>
 				</span>
 			</div>
 
@@ -1260,7 +1148,7 @@ final class Admin_Settings {
 			</div>
 			<?php endforeach; ?>
 			<span style="color:#666;font-size:12px;align-self:center;padding-left:4px;font-style:italic;">
-				<?php esc_html_e( '← placeholder (no active stories)', 'social-network-6' ); ?>
+				<?php esc_html_e( '← placeholder (no active stories)', '6arshid-social-community' ); ?>
 			</span>
 
 			<?php else : ?>
@@ -1301,80 +1189,80 @@ final class Admin_Settings {
 		?>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Akismet Integration', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Akismet Integration', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_enable_akismet" value="1"
 							<?php checked( get_option( 'arshid6social_enable_akismet', true ) ); ?> />
-						<?php esc_html_e( 'Use Akismet to filter activity and message spam.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Use Akismet to filter activity and message spam.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'reCAPTCHA / Turnstile', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'reCAPTCHA / Turnstile', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_enable_recaptcha" value="1"
 							<?php checked( get_option( 'arshid6social_enable_recaptcha', false ) ); ?> />
-						<?php esc_html_e( 'Enable CAPTCHA on registration and contact forms.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Enable CAPTCHA on registration and contact forms.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'CAPTCHA Site Key', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'CAPTCHA Site Key', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="text" name="arshid6social_recaptcha_site_key" class="regular-text"
 						value="<?php echo esc_attr( get_option( 'arshid6social_recaptcha_site_key', '' ) ); ?>" />
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'CAPTCHA Secret Key', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'CAPTCHA Secret Key', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="password" name="arshid6social_recaptcha_secret_key" class="regular-text"
 						value="<?php echo esc_attr( get_option( 'arshid6social_recaptcha_secret_key', '' ) ); ?>" />
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Moderate New Members', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Moderate New Members', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_new_member_moderation" value="1"
 							<?php checked( get_option( 'arshid6social_new_member_moderation', false ) ); ?> />
-						<?php esc_html_e( 'Hold new members for admin approval before they can post.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Hold new members for admin approval before they can post.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Auto-Suspend Threshold', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Auto-Suspend Threshold', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_auto_suspend_threshold" min="0" max="100"
 						value="<?php echo esc_attr( get_option( 'arshid6social_auto_suspend_threshold', 5 ) ); ?>" />
-					<p class="description"><?php esc_html_e( 'Number of reports before a user is auto-suspended. 0 = disabled.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Number of reports before a user is auto-suspended. 0 = disabled.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Banned Words', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Banned Words', '6arshid-social-community' ); ?></th>
 				<td>
 					<textarea name="arshid6social_banned_words" rows="5" class="large-text"><?php echo esc_textarea( get_option( 'arshid6social_banned_words', '' ) ); ?></textarea>
-					<p class="description"><?php esc_html_e( 'One word or phrase per line. Matched content will be blocked.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'One word or phrase per line. Matched content will be blocked.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Rate Limit: Posts per hour', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Rate Limit: Posts per hour', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_rate_limit_posts" min="1" max="500"
 						value="<?php echo esc_attr( get_option( 'arshid6social_rate_limit_posts', 10 ) ); ?>" />
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Rate Limit: Messages per hour', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Rate Limit: Messages per hour', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_rate_limit_messages" min="1" max="500"
 						value="<?php echo esc_attr( get_option( 'arshid6social_rate_limit_messages', 20 ) ); ?>" />
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Rate Limit: Friend Requests per hour', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Rate Limit: Friend Requests per hour', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_rate_limit_friends" min="1" max="500"
 						value="<?php echo esc_attr( get_option( 'arshid6social_rate_limit_friends', 50 ) ); ?>" />
@@ -1389,21 +1277,21 @@ final class Admin_Settings {
 
 	private function render_username_restrictions(): void {
 		?>
-		<h2><?php esc_html_e( 'Username Restrictions', 'social-network-6' ); ?></h2>
+		<h2><?php esc_html_e( 'Username Restrictions', '6arshid-social-community' ); ?></h2>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Minimum Username Length', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Minimum Username Length', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="number" name="arshid6social_username_min_length" min="1" max="60"
 						value="<?php echo esc_attr( get_option( 'arshid6social_username_min_length', 4 ) ); ?>" />
-					<p class="description"><?php esc_html_e( 'Minimum number of characters required for a username. Default: 4.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Minimum number of characters required for a username. Default: 4.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Reserved Usernames', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Reserved Usernames', '6arshid-social-community' ); ?></th>
 				<td>
 					<textarea name="arshid6social_reserved_usernames" rows="8" class="large-text"><?php echo esc_textarea( get_option( 'arshid6social_reserved_usernames', '' ) ); ?></textarea>
-					<p class="description"><?php esc_html_e( 'One username per line. These usernames cannot be registered by anyone. Case-insensitive.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'One username per line. These usernames cannot be registered by anyone. Case-insensitive.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 		</table>
@@ -1412,25 +1300,25 @@ final class Admin_Settings {
 
 	private function render_blocking_settings(): void {
 		?>
-		<h2><?php esc_html_e( 'User Blocking', 'social-network-6' ); ?></h2>
+		<h2><?php esc_html_e( 'User Blocking', '6arshid-social-community' ); ?></h2>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Enable Block System', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Enable Block System', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_blocking_enabled" value="1"
 							<?php checked( get_option( 'arshid6social_blocking_enabled', true ) ); ?> />
-						<?php esc_html_e( 'Allow members to block other members.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Allow members to block other members.', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Allow Block Reasons', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Allow Block Reasons', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_blocking_show_reason" value="1"
 							<?php checked( get_option( 'arshid6social_blocking_show_reason', true ) ); ?> />
-						<?php esc_html_e( 'Show optional reason field when blocking (private, for blocker only).', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Show optional reason field when blocking (private, for blocker only).', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
@@ -1442,29 +1330,29 @@ final class Admin_Settings {
 		$default_report_reasons  = "Spam\nHarassment or bullying\nHate speech\nInappropriate content\nFalse information\nImpersonation\nOther";
 		$default_suspend_reasons = "Spam activity\nHarassment\nHate speech or discrimination\nInappropriate content\nMultiple violations\nViolation of community guidelines\nOther";
 		?>
-		<h2><?php esc_html_e( 'Reporting', 'social-network-6' ); ?></h2>
+		<h2><?php esc_html_e( 'Reporting', '6arshid-social-community' ); ?></h2>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Report Reasons', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Report Reasons', '6arshid-social-community' ); ?></th>
 				<td>
 					<textarea name="arshid6social_report_reasons" rows="8" class="large-text"><?php echo esc_textarea( get_option( 'arshid6social_report_reasons', $default_report_reasons ) ); ?></textarea>
-					<p class="description"><?php esc_html_e( 'One reason per line. Shown to users when reporting a profile or group.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'One reason per line. Shown to users when reporting a profile or group.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Suspension Reasons', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Suspension Reasons', '6arshid-social-community' ); ?></th>
 				<td>
 					<textarea name="arshid6social_suspend_reasons" rows="8" class="large-text"><?php echo esc_textarea( get_option( 'arshid6social_suspend_reasons', $default_suspend_reasons ) ); ?></textarea>
-					<p class="description"><?php esc_html_e( 'One reason per line. Shown to admins when suspending a user from the Members or Moderation pages.', 'social-network-6' ); ?></p>
+					<p class="description"><?php esc_html_e( 'One reason per line. Shown to admins when suspending a user from the Members or Moderation pages.', '6arshid-social-community' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Allow File Attachments in Reports', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Allow File Attachments in Reports', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_report_allow_attachments" value="1"
 							<?php checked( get_option( 'arshid6social_report_allow_attachments', false ) ); ?> />
-						<?php esc_html_e( 'Allow users to attach a screenshot when submitting a report (images only).', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Allow users to attach a screenshot when submitting a report (images only).', '6arshid-social-community' ); ?>
 					</label>
 				</td>
 			</tr>
@@ -1475,19 +1363,19 @@ final class Admin_Settings {
 	private function render_emails_tab(): void {
 		?>
 		<div class="arshid6social-admin-notice notice notice-info inline">
-			<p><?php esc_html_e( 'Email templates can be overridden by placing them in your theme\'s /social-network/emails/ folder.', 'social-network-6' ); ?></p>
+			<p><?php esc_html_e( 'Email templates can be overridden by placing them in your theme\'s /social-network/emails/ folder.', '6arshid-social-community' ); ?></p>
 		</div>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th><?php esc_html_e( 'New Friendship Request', 'social-network-6' ); ?></th>
+				<th><?php esc_html_e( 'New Friendship Request', '6arshid-social-community' ); ?></th>
 				<td><code><?php echo esc_html( get_template_directory() . '/social-network/emails/new-friendship-request.php' ); ?></code></td>
 			</tr>
 			<tr>
-				<th><?php esc_html_e( 'New Message', 'social-network-6' ); ?></th>
+				<th><?php esc_html_e( 'New Message', '6arshid-social-community' ); ?></th>
 				<td><code><?php echo esc_html( get_template_directory() . '/social-network/emails/new-message.php' ); ?></code></td>
 			</tr>
 			<tr>
-				<th><?php esc_html_e( 'Activity Mention', 'social-network-6' ); ?></th>
+				<th><?php esc_html_e( 'Activity Mention', '6arshid-social-community' ); ?></th>
 				<td><code><?php echo esc_html( get_template_directory() . '/social-network/emails/activity-mention.php' ); ?></code></td>
 			</tr>
 		</table>
@@ -1505,21 +1393,21 @@ final class Admin_Settings {
 		?>
 		<table class="form-table" role="presentation">
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Desktop Logo', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Desktop Logo', '6arshid-social-community' ); ?></th>
 				<td>
 					<p class="description" style="max-width:560px;">
 						<?php
 						printf(
 							/* translators: %s: link to the Site Editor */
-							esc_html__( 'The desktop sidebar logo is now managed with the native WordPress Site Logo block. Edit it directly in the left sidebar via %s — click the logo placeholder to upload an image.', 'social-network-6' ),
-							'<a href="' . esc_url( admin_url( 'site-editor.php' ) ) . '">' . esc_html__( 'Appearance → Editor', 'social-network-6' ) . '</a>'
+							esc_html__( 'The desktop sidebar logo is now managed with the native WordPress Site Logo block. Edit it directly in the left sidebar via %s — click the logo placeholder to upload an image.', '6arshid-social-community' ),
+							'<a href="' . esc_url( admin_url( 'site-editor.php' ) ) . '">' . esc_html__( 'Appearance → Editor', '6arshid-social-community' ) . '</a>'
 						);
 						?>
 					</p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Mobile / Tablet Logo', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Mobile / Tablet Logo', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="hidden" id="arshid6social-logo-mobile-id" name="arshid6social_logo_mobile" value="<?php echo esc_attr( (string) $logo_mobile_id ); ?>" />
 					<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
@@ -1532,72 +1420,62 @@ final class Admin_Settings {
 						</div>
 						<div>
 							<button type="button" id="arshid6social-logo-mobile-select" class="button button-primary">
-								<?php esc_html_e( 'Select Image', 'social-network-6' ); ?>
+								<?php esc_html_e( 'Select Image', '6arshid-social-community' ); ?>
 							</button>
 							<button type="button" id="arshid6social-logo-mobile-remove" class="button button-link-delete" style="margin-left:8px;<?php echo $logo_mobile_id ? '' : 'display:none;'; ?>">
-								<?php esc_html_e( 'Remove', 'social-network-6' ); ?>
+								<?php esc_html_e( 'Remove', '6arshid-social-community' ); ?>
 							</button>
-							<p class="description" style="margin-top:6px;"><?php esc_html_e( 'Shown in the mobile/tablet side menu. Falls back to the WordPress site logo if not set.', 'social-network-6' ); ?></p>
+							<p class="description" style="margin-top:6px;"><?php esc_html_e( 'Shown in the mobile/tablet side menu. Falls back to the WordPress site logo if not set.', '6arshid-social-community' ); ?></p>
 						</div>
 					</div>
-					<script>
-					( function () {
-						var frame;
-						var btnSelect  = document.getElementById( 'arshid6social-logo-mobile-select' );
-						var btnRemove  = document.getElementById( 'arshid6social-logo-mobile-remove' );
-						var inputId    = document.getElementById( 'arshid6social-logo-mobile-id' );
-						var preview    = document.getElementById( 'arshid6social-logo-mobile-preview' );
-						btnSelect.addEventListener( 'click', function () {
-							if ( frame ) { frame.open(); return; }
-							frame = wp.media( {
-								title:    '<?php echo esc_js( __( 'Select Mobile Logo', 'social-network-6' ) ); ?>',
-								button:   { text: '<?php echo esc_js( __( 'Use this image', 'social-network-6' ) ); ?>' },
-								multiple: false,
-								library:  { type: 'image' },
-							} );
-							frame.on( 'select', function () {
-								var att = frame.state().get( 'selection' ).first().toJSON();
-								inputId.value = att.id;
-								var src = att.sizes && att.sizes.thumbnail ? att.sizes.thumbnail.url : att.url;
-								preview.innerHTML = '<img src="' + src + '" style="width:100%;height:100%;object-fit:contain;" alt="" />';
-								btnRemove.style.display = '';
-							} );
-							frame.open();
-						} );
-						btnRemove.addEventListener( 'click', function () {
-							inputId.value     = '0';
-							preview.innerHTML = '<span style="color:#9ca3af;font-size:22px;">📱</span>';
-							btnRemove.style.display = 'none';
-						} );
-					} )();
-					</script>
+					<?php
+					$js_logo  = '(function(){';
+					$js_logo .= 'var titleLogo=' . wp_json_encode( __( 'Select Mobile Logo', '6arshid-social-community' ) ) . ';';
+					$js_logo .= 'var txtUseImg=' . wp_json_encode( __( 'Use this image', '6arshid-social-community' ) ) . ';';
+					$js_logo .= <<<'ENDJS'
+var frame;
+var btnSelect=document.getElementById('arshid6social-logo-mobile-select');
+var btnRemove=document.getElementById('arshid6social-logo-mobile-remove');
+var inputId=document.getElementById('arshid6social-logo-mobile-id');
+var preview=document.getElementById('arshid6social-logo-mobile-preview');
+btnSelect.addEventListener('click',function(){
+	if(frame){frame.open();return;}
+	frame=wp.media({title:titleLogo,button:{text:txtUseImg},multiple:false,library:{type:'image'}});
+	frame.on('select',function(){var att=frame.state().get('selection').first().toJSON();inputId.value=att.id;var src=att.sizes&&att.sizes.thumbnail?att.sizes.thumbnail.url:att.url;preview.innerHTML='<img src="'+src+'" style="width:100%;height:100%;object-fit:contain;" alt="" />';btnRemove.style.display='';});
+	frame.open();
+});
+btnRemove.addEventListener('click',function(){inputId.value='0';preview.innerHTML='<span style="color:#9ca3af;font-size:22px;">📱</span>';btnRemove.style.display='none';});
+})();
+ENDJS;
+					wp_add_inline_script( 'arshid6social-admin', $js_logo );
+					?>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Primary Colour', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Primary Colour', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="color" name="arshid6social_primary_color"
 						value="<?php echo esc_attr( get_option( 'arshid6social_primary_color', '#2563eb' ) ); ?>" />
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Dark Mode', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Dark Mode', '6arshid-social-community' ); ?></th>
 				<td>
 					<select name="arshid6social_dark_mode">
 						<option value="off" <?php selected( get_option( 'arshid6social_dark_mode', 'auto' ), 'off' ); ?>>
-							<?php esc_html_e( 'Always off', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Always off', '6arshid-social-community' ); ?>
 						</option>
 						<option value="auto" <?php selected( get_option( 'arshid6social_dark_mode', 'auto' ), 'auto' ); ?>>
-							<?php esc_html_e( 'Follow system preference', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Follow system preference', '6arshid-social-community' ); ?>
 						</option>
 						<option value="on" <?php selected( get_option( 'arshid6social_dark_mode', 'auto' ), 'on' ); ?>>
-							<?php esc_html_e( 'Always on', 'social-network-6' ); ?>
+							<?php esc_html_e( 'Always on', '6arshid-social-community' ); ?>
 						</option>
 					</select>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Home Page Background', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Home Page Background', '6arshid-social-community' ); ?></th>
 				<td>
 					<input type="hidden" id="arshid6social-video-url"  name="arshid6social_home_video_url" value="<?php echo esc_attr( $saved_video ); ?>" />
 					<input type="hidden" id="arshid6social-bg-type"    name="arshid6social_home_bg_type"   value="<?php echo esc_attr( $saved_type ); ?>" />
@@ -1608,11 +1486,11 @@ final class Admin_Settings {
 
 							<div style="margin-bottom:10px;">
 								<button type="button" id="arshid6social-video-upload-btn" class="button button-primary">
-									<?php esc_html_e( 'Choose / Upload Video or Image', 'social-network-6' ); ?>
+									<?php esc_html_e( 'Choose / Upload Video or Image', '6arshid-social-community' ); ?>
 								</button>
 								<button type="button" id="arshid6social-video-remove-btn" class="button button-link-delete"
 									style="margin-left:10px;<?php echo $saved_video ? '' : 'display:none;'; ?>">
-									<?php esc_html_e( 'Remove (use default)', 'social-network-6' ); ?>
+									<?php esc_html_e( 'Remove (use default)', '6arshid-social-community' ); ?>
 								</button>
 							</div>
 
@@ -1625,7 +1503,7 @@ final class Admin_Settings {
 
 							<div style="margin-bottom:10px;">
 								<label style="display:block;margin-bottom:4px;font-size:12px;color:#666;">
-									<?php esc_html_e( '-- or paste a URL directly --', 'social-network-6' ); ?>
+									<?php esc_html_e( '-- or paste a URL directly --', '6arshid-social-community' ); ?>
 								</label>
 								<input type="url" id="arshid6social-video-url-text"
 									placeholder="https://example.com/video.mp4 or image.jpg"
@@ -1635,14 +1513,14 @@ final class Admin_Settings {
 
 							<p id="arshid6social-video-desc" class="description">
 								<?php echo $saved_video
-									? esc_html__( 'Custom background is active.', 'social-network-6' )
-									: esc_html__( 'Using default video.', 'social-network-6' );
+									? esc_html__( 'Custom background is active.', '6arshid-social-community' )
+									: esc_html__( 'Using default video.', '6arshid-social-community' );
 								?>
 							</p>
 						</div>
 
 						<div>
-							<p style="margin:0 0 6px;font-size:12px;color:#666;"><?php esc_html_e( 'Preview:', 'social-network-6' ); ?></p>
+							<p style="margin:0 0 6px;font-size:12px;color:#666;"><?php esc_html_e( 'Preview:', '6arshid-social-community' ); ?></p>
 							<?php if ( $saved_video && $saved_type === 'image' ) : ?>
 							<img id="arshid6social-video-preview"
 								src="<?php echo esc_url( $preview_url ); ?>"
@@ -1669,77 +1547,77 @@ final class Admin_Settings {
 		$uid_enabled   = (bool) get_option( 'arshid6social_activity_uid_enabled', false );
 		?>
 		<div class="notice notice-info inline" style="margin:12px 0;">
-			<p><?php esc_html_e( 'After saving, WordPress rewrite rules are flushed automatically. No need to visit Settings → Permalinks.', 'social-network-6' ); ?></p>
+			<p><?php esc_html_e( 'After saving, WordPress rewrite rules are flushed automatically. No need to visit Settings → Permalinks.', '6arshid-social-community' ); ?></p>
 		</div>
 		<table class="form-table" role="presentation">
 			<?php if ( get_option( 'arshid6social_marketplace_enabled', false ) ) : ?>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Marketplace Slug', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Marketplace Slug', '6arshid-social-community' ); ?></th>
 				<td>
 					<code><?php echo esc_html( home_url( '/' ) ); ?></code>
 					<input type="text" name="arshid6social_marketplace_slug" class="regular-text"
 						value="<?php echo esc_attr( get_option( 'arshid6social_marketplace_slug', 'marketplace' ) ); ?>"
 						placeholder="marketplace"
 						pattern="[a-z0-9\-]+"
-						title="<?php esc_attr_e( 'Lowercase letters, digits and hyphens only.', 'social-network-6' ); ?>" />
+						title="<?php esc_attr_e( 'Lowercase letters, digits and hyphens only.', '6arshid-social-community' ); ?>" />
 					<code>/</code>
 					<p class="description">
 						<?php
 						$mkt_slug = get_option( 'arshid6social_marketplace_slug', 'marketplace' );
 						/* translators: %s example URL */
-						printf( esc_html__( 'Current example: %s', 'social-network-6' ), '<code>' . esc_html( home_url( '/' . $mkt_slug . '/' ) ) . '</code>' );
+						printf( esc_html__( 'Current example: %s', '6arshid-social-community' ), '<code>' . esc_html( home_url( '/' . $mkt_slug . '/' ) ) . '</code>' );
 						?>
 					</p>
 				</td>
 			</tr>
 			<?php endif; ?>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Tag Base', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Tag Base', '6arshid-social-community' ); ?></th>
 				<td>
 					<code><?php echo esc_html( home_url( '/' ) ); ?></code>
 					<input type="text" name="arshid6social_permalink_tag_base" class="regular-text"
 						value="<?php echo esc_attr( $tag_base ); ?>"
 						placeholder="hashtags"
 						pattern="[a-z0-9\-]+"
-						title="<?php esc_attr_e( 'Lowercase letters, digits and hyphens only.', 'social-network-6' ); ?>" />
+						title="<?php esc_attr_e( 'Lowercase letters, digits and hyphens only.', '6arshid-social-community' ); ?>" />
 					<code>/&lt;hashtag&gt;/</code>
 					<p class="description">
 						<?php
 						/* translators: %s example URL */
-						printf( esc_html__( 'Current example: %s', 'social-network-6' ), '<code>' . esc_html( home_url( '/' . $tag_base . '/php/' ) ) . '</code>' );
+						printf( esc_html__( 'Current example: %s', '6arshid-social-community' ), '<code>' . esc_html( home_url( '/' . $tag_base . '/php/' ) ) . '</code>' );
 						?>
 					</p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Activity Base', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Activity Base', '6arshid-social-community' ); ?></th>
 				<td>
 					<code><?php echo esc_html( home_url( '/' ) ); ?></code>
 					<input type="text" name="arshid6social_permalink_activity_base" class="regular-text"
 						value="<?php echo esc_attr( $activity_base ); ?>"
 						placeholder="activity"
 						pattern="[a-z0-9\-]+"
-						title="<?php esc_attr_e( 'Lowercase letters, digits and hyphens only.', 'social-network-6' ); ?>" />
+						title="<?php esc_attr_e( 'Lowercase letters, digits and hyphens only.', '6arshid-social-community' ); ?>" />
 					<code>/&lt;id&gt;/</code>
 					<p class="description">
 						<?php
 						$example_id = $uid_enabled ? '64c3f4a2b1e8f' : '123';
 						/* translators: %s: example URL */
-						printf( esc_html__( 'Current example: %s', 'social-network-6' ), '<code>' . esc_html( home_url( '/' . $activity_base . '/' . $example_id . '/' ) ) . '</code>' );
+						printf( esc_html__( 'Current example: %s', '6arshid-social-community' ), '<code>' . esc_html( home_url( '/' . $activity_base . '/' . $example_id . '/' ) ) . '</code>' );
 						?>
 					</p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Activity ID Format', 'social-network-6' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Activity ID Format', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
 						<input type="checkbox" name="arshid6social_activity_uid_enabled" value="1"
 							<?php checked( $uid_enabled ); ?> />
-						<?php esc_html_e( 'Use unique ID (uniqid) instead of numeric ID in activity URLs.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'Use unique ID (uniqid) instead of numeric ID in activity URLs.', '6arshid-social-community' ); ?>
 					</label>
 					<p class="description">
-						<?php esc_html_e( 'When enabled, activity links use a 13-character hexadecimal unique ID (e.g. 64c3f4a2b1e8f). Numeric links to older posts continue to work.', 'social-network-6' ); ?>
+						<?php esc_html_e( 'When enabled, activity links use a 13-character hexadecimal unique ID (e.g. 64c3f4a2b1e8f). Numeric links to older posts continue to work.', '6arshid-social-community' ); ?>
 					</p>
 				</td>
 			</tr>

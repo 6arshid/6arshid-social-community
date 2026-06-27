@@ -347,14 +347,23 @@ When Social Embeds are enabled and a user pastes a supported URL into a post, co
 * Dailymotion: https://www.dailymotion.com/services/oembed — Privacy Policy: https://www.dailymotion.com/legal/privacy
 * Apple Music / Podcasts: https://music.apple.com — Privacy Policy: https://www.apple.com/legal/privacy/
 * LinkedIn: https://www.linkedin.com — Privacy Policy: https://www.linkedin.com/legal/privacy-policy
-* Threads: https://www.threads.net/oembed/ — Privacy Policy: https://privacycenter.instagram.com/policy/
-* Bluesky: https://bsky.app — Privacy Policy: https://bsky.social/about/support/privacy-policy
+* Threads: https://www.threads.net/oembed/ — Privacy Policy: https://privacycenter.instagram.com/policy/ — Terms of Service: https://help.instagram.com/581066165581870
+* Bluesky: https://bsky.app — Privacy Policy: https://bsky.social/about/support/privacy-policy — Terms of Service: https://bsky.social/about/support/tos
 
-= WhatsApp, Social Sharing =
-The social sharing feature generates links that open WhatsApp and other social networks in a new tab/window. No data is sent automatically — these are user-initiated sharing actions.
+= QR Code Generation (WeChat Sharing) =
+When a user opens the WeChat share option in the Social Share widget, this plugin fetches a QR code image from the QRServer API. The shared page URL is sent to QRServer's servers at that moment to generate the QR code image. No personal user data is sent — only the public page URL.
+* Service: https://goqr.me/api/
+* Privacy Policy: https://goqr.me/privacy-policy/
+* Terms of Service: https://goqr.me/terms-of-service/
+
+= WhatsApp, Social Sharing (AOL Mail, Papaly, Twiddla, and 80+ networks) =
+The social sharing feature generates links that open third-party social networks or email clients in a new browser tab/window when the user explicitly clicks a share button. No data is sent automatically by the plugin — all sharing actions are user-initiated and subject to each platform's own privacy policy. Networks include (but are not limited to): WhatsApp, Facebook, Twitter/X, Telegram, LinkedIn, Reddit, Pinterest, Tumblr, AOL Mail, Papaly, Twiddla, and many others.
 * WhatsApp: https://www.whatsapp.com
   * Privacy Policy: https://www.whatsapp.com/legal/privacy-policy
   * Terms of Service: https://www.whatsapp.com/legal/terms-of-service
+* AOL Mail: https://mail.aol.com — Privacy Policy: https://legal.oath.com/us/en/oath/privacy/products/aolmail/index.html
+* Papaly: https://papaly.com — Privacy Policy: https://papaly.com/privacy
+* Twiddla: https://www.twiddla.com — Privacy Policy: https://www.twiddla.com/Privacy.aspx
 
 = Stripe (Monetization) =
 When the Monetization module is enabled, creator onboarding and payment processing are handled by Stripe Connect. The plugin communicates with the Stripe API to create and manage Stripe Connect accounts, subscriptions, and payment intents. The plugin does NOT store raw bank details — Stripe handles creator identity verification (KYC) and bank payouts directly.

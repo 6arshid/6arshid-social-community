@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Admin;
 
 /**
@@ -50,7 +50,7 @@ final class Admin_Activity {
 		add_screen_option(
 			'per_page',
 			array(
-				'label'   => __( 'Activity items per page', 'social-network-6' ),
+				'label'   => __( 'Activity items per page', '6arshid-social-community' ),
 				'default' => 20,
 				'option'  => 'arshid6social_activity_per_page',
 			)
@@ -60,12 +60,12 @@ final class Admin_Activity {
 	/** @return array<string,string> */
 	public function get_columns(): array {
 		return array(
-			'author'    => __( 'Author', 'social-network-6' ),
-			'type'      => __( 'Type', 'social-network-6' ),
-			'component' => __( 'Component', 'social-network-6' ),
-			'content'   => __( 'Content', 'social-network-6' ),
-			'flags'     => __( 'Flags', 'social-network-6' ),
-			'date'      => __( 'Date', 'social-network-6' ),
+			'author'    => __( 'Author', '6arshid-social-community' ),
+			'type'      => __( 'Type', '6arshid-social-community' ),
+			'component' => __( 'Component', '6arshid-social-community' ),
+			'content'   => __( 'Content', '6arshid-social-community' ),
+			'flags'     => __( 'Flags', '6arshid-social-community' ),
+			'date'      => __( 'Date', '6arshid-social-community' ),
 		);
 	}
 
@@ -97,7 +97,7 @@ final class Admin_Activity {
 			$activity_id = absint( $_GET['activity_id'] ); // phpcs:ignore WordPress.Security.NonceVerification
 
 			if ( ! check_admin_referer( 'arshid6social_act_' . $action . '_' . $activity_id ) ) {
-				wp_die( esc_html__( 'Security check failed.', 'social-network-6' ) );
+				wp_die( esc_html__( 'Security check failed.', '6arshid-social-community' ) );
 			}
 
 			$this->process_single_action( $action, $activity_id );
@@ -109,7 +109,7 @@ final class Admin_Activity {
 		// Bulk action.
 		if ( ! empty( $_POST['action'] ) && ! empty( $_POST['activity_ids'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			if ( ! check_admin_referer( 'arshid6social_act_bulk', '_wpnonce_bulk' ) ) {
-				wp_die( esc_html__( 'Security check failed.', 'social-network-6' ) );
+				wp_die( esc_html__( 'Security check failed.', '6arshid-social-community' ) );
 			}
 
 			$action       = sanitize_key( wp_unslash( $_POST['action'] ) ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -128,7 +128,7 @@ final class Admin_Activity {
 
 	public function render(): void {
 		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_die( esc_html__( 'You do not have permission to access this page.', 'social-network-6' ) );
+			wp_die( esc_html__( 'You do not have permission to access this page.', '6arshid-social-community' ) );
 		}
 
 		global $wpdb;
@@ -204,16 +204,16 @@ final class Admin_Activity {
 
 		?>
 		<div class="wrap">
-			<h1 class="wp-heading-inline"><?php esc_html_e( 'Activity Items', 'social-network-6' ); ?></h1>
+			<h1 class="wp-heading-inline"><?php esc_html_e( 'Activity Items', '6arshid-social-community' ); ?></h1>
 			<hr class="wp-header-end">
 
 			<?php // ── Status tabs ──────────────────────────────────────────── ?>
 			<ul class="subsubsub">
 				<?php
 				$tabs = array(
-					''       => array( __( 'All', 'social-network-6' ),    $all_count ),
-					'spam'   => array( __( 'Spam', 'social-network-6' ),   $spam_count ),
-					'hidden' => array( __( 'Hidden', 'social-network-6' ), $hidden_count ),
+					''       => array( __( 'All', '6arshid-social-community' ),    $all_count ),
+					'spam'   => array( __( 'Spam', '6arshid-social-community' ),   $spam_count ),
+					'hidden' => array( __( 'Hidden', '6arshid-social-community' ), $hidden_count ),
 				);
 				$tab_list = array();
 				foreach ( $tabs as $key => list( $label, $count ) ) {
@@ -239,11 +239,11 @@ final class Admin_Activity {
 					<input type="hidden" name="status" value="<?php echo esc_attr( $tab ); ?>" />
 				<?php endif; ?>
 				<p class="search-box">
-					<label class="screen-reader-text" for="arshid6social-act-search"><?php esc_html_e( 'Search activity', 'social-network-6' ); ?></label>
+					<label class="screen-reader-text" for="arshid6social-act-search"><?php esc_html_e( 'Search activity', '6arshid-social-community' ); ?></label>
 					<input type="search" id="arshid6social-act-search" name="s"
 						value="<?php echo esc_attr( $search ); ?>"
-						placeholder="<?php esc_attr_e( 'Search by content, author…', 'social-network-6' ); ?>" />
-					<?php submit_button( __( 'Search Activity', 'social-network-6' ), 'secondary', '', false ); ?>
+						placeholder="<?php esc_attr_e( 'Search by content, author…', '6arshid-social-community' ); ?>" />
+					<?php submit_button( __( 'Search Activity', '6arshid-social-community' ), 'secondary', '', false ); ?>
 				</p>
 			</form>
 
@@ -259,19 +259,19 @@ final class Admin_Activity {
 							<td class="manage-column column-cb check-column">
 								<input type="checkbox" id="arshid6social-act-check-all" />
 							</td>
-							<th class="manage-column column-author column-primary"><?php esc_html_e( 'Author', 'social-network-6' ); ?></th>
-							<th class="manage-column column-type<?php echo esc_attr( $col_class( 'type' ) ); ?>"><?php esc_html_e( 'Type', 'social-network-6' ); ?></th>
-							<th class="manage-column column-component<?php echo esc_attr( $col_class( 'component' ) ); ?>"><?php esc_html_e( 'Component', 'social-network-6' ); ?></th>
-							<th class="manage-column column-content<?php echo esc_attr( $col_class( 'content' ) ); ?>"><?php esc_html_e( 'Content', 'social-network-6' ); ?></th>
-							<th class="manage-column column-flags<?php echo esc_attr( $col_class( 'flags' ) ); ?>"><?php esc_html_e( 'Flags', 'social-network-6' ); ?></th>
-							<th class="manage-column column-date<?php echo esc_attr( $col_class( 'date' ) ); ?>"><?php esc_html_e( 'Date', 'social-network-6' ); ?></th>
+							<th class="manage-column column-author column-primary"><?php esc_html_e( 'Author', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-type<?php echo esc_attr( $col_class( 'type' ) ); ?>"><?php esc_html_e( 'Type', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-component<?php echo esc_attr( $col_class( 'component' ) ); ?>"><?php esc_html_e( 'Component', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-content<?php echo esc_attr( $col_class( 'content' ) ); ?>"><?php esc_html_e( 'Content', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-flags<?php echo esc_attr( $col_class( 'flags' ) ); ?>"><?php esc_html_e( 'Flags', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-date<?php echo esc_attr( $col_class( 'date' ) ); ?>"><?php esc_html_e( 'Date', '6arshid-social-community' ); ?></th>
 						</tr>
 					</thead>
 
 					<tbody>
 						<?php if ( empty( $items ) ) : ?>
 							<tr>
-								<td colspan="7"><?php esc_html_e( 'No activity items found.', 'social-network-6' ); ?></td>
+								<td colspan="7"><?php esc_html_e( 'No activity items found.', '6arshid-social-community' ); ?></td>
 							</tr>
 						<?php else : ?>
 							<?php foreach ( $items as $item ) : ?>
@@ -319,26 +319,26 @@ final class Admin_Activity {
 												</a>
 											</strong>
 										<?php else : ?>
-											<span style="color:#999;"><?php esc_html_e( 'System', 'social-network-6' ); ?></span>
+											<span style="color:#999;"><?php esc_html_e( 'System', '6arshid-social-community' ); ?></span>
 										<?php endif; ?>
 										<div class="row-actions">
 											<span>
 												<a href="<?php echo esc_url( $spam_url ); ?>">
-													<?php echo $item->is_spam ? esc_html__( 'Not Spam', 'social-network-6' ) : esc_html__( 'Spam', 'social-network-6' ); ?>
+													<?php echo $item->is_spam ? esc_html__( 'Not Spam', '6arshid-social-community' ) : esc_html__( 'Spam', '6arshid-social-community' ); ?>
 												</a>
 											</span>
 											|
 											<span>
 												<a href="<?php echo esc_url( $hide_url ); ?>">
-													<?php echo $item->hide_sitewide ? esc_html__( 'Show', 'social-network-6' ) : esc_html__( 'Hide', 'social-network-6' ); ?>
+													<?php echo $item->hide_sitewide ? esc_html__( 'Show', '6arshid-social-community' ) : esc_html__( 'Hide', '6arshid-social-community' ); ?>
 												</a>
 											</span>
 											|
 											<span class="delete">
 												<a href="<?php echo esc_url( $delete_url ); ?>"
 													class="submitdelete"
-													onclick="return confirm('<?php esc_attr_e( 'Delete this activity item permanently?', 'social-network-6' ); ?>')">
-													<?php esc_html_e( 'Delete', 'social-network-6' ); ?>
+													onclick="return confirm('<?php esc_attr_e( 'Delete this activity item permanently?', '6arshid-social-community' ); ?>')">
+													<?php esc_html_e( 'Delete', '6arshid-social-community' ); ?>
 												</a>
 											</span>
 										</div>
@@ -361,12 +361,12 @@ final class Admin_Activity {
 									<td class="flags column-flags<?php echo esc_attr( $col_class( 'flags' ) ); ?>">
 										<?php if ( $item->is_spam ) : ?>
 											<span style="display:inline-block;padding:2px 7px;border-radius:3px;font-size:11px;font-weight:600;color:#fff;background:#d63638;margin-bottom:3px;">
-												<?php esc_html_e( 'Spam', 'social-network-6' ); ?>
+												<?php esc_html_e( 'Spam', '6arshid-social-community' ); ?>
 											</span>
 										<?php endif; ?>
 										<?php if ( $item->hide_sitewide ) : ?>
 											<span style="display:inline-block;padding:2px 7px;border-radius:3px;font-size:11px;font-weight:600;color:#fff;background:#8c8f94;">
-												<?php esc_html_e( 'Hidden', 'social-network-6' ); ?>
+												<?php esc_html_e( 'Hidden', '6arshid-social-community' ); ?>
 											</span>
 										<?php endif; ?>
 										<?php if ( ! $item->is_spam && ! $item->hide_sitewide ) : ?>
@@ -388,12 +388,12 @@ final class Admin_Activity {
 							<td class="manage-column column-cb check-column">
 								<input type="checkbox" />
 							</td>
-							<th class="manage-column column-author column-primary"><?php esc_html_e( 'Author', 'social-network-6' ); ?></th>
-							<th class="manage-column column-type<?php echo esc_attr( $col_class( 'type' ) ); ?>"><?php esc_html_e( 'Type', 'social-network-6' ); ?></th>
-							<th class="manage-column column-component<?php echo esc_attr( $col_class( 'component' ) ); ?>"><?php esc_html_e( 'Component', 'social-network-6' ); ?></th>
-							<th class="manage-column column-content<?php echo esc_attr( $col_class( 'content' ) ); ?>"><?php esc_html_e( 'Content', 'social-network-6' ); ?></th>
-							<th class="manage-column column-flags<?php echo esc_attr( $col_class( 'flags' ) ); ?>"><?php esc_html_e( 'Flags', 'social-network-6' ); ?></th>
-							<th class="manage-column column-date<?php echo esc_attr( $col_class( 'date' ) ); ?>"><?php esc_html_e( 'Date', 'social-network-6' ); ?></th>
+							<th class="manage-column column-author column-primary"><?php esc_html_e( 'Author', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-type<?php echo esc_attr( $col_class( 'type' ) ); ?>"><?php esc_html_e( 'Type', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-component<?php echo esc_attr( $col_class( 'component' ) ); ?>"><?php esc_html_e( 'Component', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-content<?php echo esc_attr( $col_class( 'content' ) ); ?>"><?php esc_html_e( 'Content', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-flags<?php echo esc_attr( $col_class( 'flags' ) ); ?>"><?php esc_html_e( 'Flags', '6arshid-social-community' ); ?></th>
+							<th class="manage-column column-date<?php echo esc_attr( $col_class( 'date' ) ); ?>"><?php esc_html_e( 'Date', '6arshid-social-community' ); ?></th>
 						</tr>
 					</tfoot>
 				</table>
@@ -402,38 +402,27 @@ final class Admin_Activity {
 			</form>
 		</div>
 
-		<script>
-		(function(){
-			var checkAll = document.getElementById('arshid6social-act-check-all');
-			if ( checkAll ) {
-				checkAll.addEventListener('change', function(){
-					document.querySelectorAll('#arshid6social-act-bulk-form input[name="activity_ids[]"]').forEach(function(cb){
-						cb.checked = this.checked;
-					}, this);
-				});
-			}
-
-			window.arshid6social_act_confirm_bulk = function() {
-				var form   = document.getElementById('arshid6social-act-bulk-form');
-				var select = form.querySelector('select[name="action"]');
-				var action = select ? select.value : '';
-				if ( ! action ) {
-					alert('<?php echo esc_js( __( 'Please select a bulk action.', 'social-network-6' ) ); ?>');
-					return false;
-				}
-				var checked = form.querySelectorAll('input[name="activity_ids[]"]:checked');
-				if ( ! checked.length ) {
-					alert('<?php echo esc_js( __( 'Please select at least one item.', 'social-network-6' ) ); ?>');
-					return false;
-				}
-				if ( action === 'delete' ) {
-					return confirm('<?php echo esc_js( __( 'Delete selected activity items permanently?', 'social-network-6' ) ); ?>');
-				}
-				return true;
-			};
-		})();
-		</script>
 		<?php
+		$js_act  = '(function(){';
+		$js_act .= 'var txtSelectAction=' . wp_json_encode( __( 'Please select a bulk action.', '6arshid-social-community' ) ) . ';';
+		$js_act .= 'var txtSelectItem=' . wp_json_encode( __( 'Please select at least one item.', '6arshid-social-community' ) ) . ';';
+		$js_act .= 'var txtConfirmDelete=' . wp_json_encode( __( 'Delete selected activity items permanently?', '6arshid-social-community' ) ) . ';';
+		$js_act .= <<<'ENDJS'
+var checkAll=document.getElementById('arshid6social-act-check-all');
+if(checkAll){checkAll.addEventListener('change',function(){document.querySelectorAll('#arshid6social-act-bulk-form input[name="activity_ids[]"]').forEach(function(cb){cb.checked=this.checked;},this);});}
+window.arshid6social_act_confirm_bulk=function(){
+	var form=document.getElementById('arshid6social-act-bulk-form');
+	var select=form.querySelector('select[name="action"]');
+	var action=select?select.value:'';
+	if(!action){alert(txtSelectAction);return false;}
+	var checked=form.querySelectorAll('input[name="activity_ids[]"]:checked');
+	if(!checked.length){alert(txtSelectItem);return false;}
+	if(action==='delete'){return confirm(txtConfirmDelete);}
+	return true;
+};
+})();
+ENDJS;
+		wp_add_inline_script( 'arshid6social-admin', $js_act );
 	}
 
 	// ── Private helpers ───────────────────────────────────────────────────────
@@ -443,18 +432,18 @@ final class Admin_Activity {
 		<div class="tablenav <?php echo esc_attr( $position ); ?>">
 			<div class="alignleft actions bulkactions">
 				<label class="screen-reader-text" for="bulk-action-selector-<?php echo esc_attr( $position ); ?>">
-					<?php esc_html_e( 'Select bulk action', 'social-network-6' ); ?>
+					<?php esc_html_e( 'Select bulk action', '6arshid-social-community' ); ?>
 				</label>
 				<select name="action" id="bulk-action-selector-<?php echo esc_attr( $position ); ?>">
-					<option value=""><?php esc_html_e( 'Bulk actions', 'social-network-6' ); ?></option>
-					<option value="spam"><?php esc_html_e( 'Mark as Spam', 'social-network-6' ); ?></option>
-					<option value="unspam"><?php esc_html_e( 'Not Spam', 'social-network-6' ); ?></option>
-					<option value="hide"><?php esc_html_e( 'Hide', 'social-network-6' ); ?></option>
-					<option value="show"><?php esc_html_e( 'Show', 'social-network-6' ); ?></option>
-					<option value="delete"><?php esc_html_e( 'Delete', 'social-network-6' ); ?></option>
+					<option value=""><?php esc_html_e( 'Bulk actions', '6arshid-social-community' ); ?></option>
+					<option value="spam"><?php esc_html_e( 'Mark as Spam', '6arshid-social-community' ); ?></option>
+					<option value="unspam"><?php esc_html_e( 'Not Spam', '6arshid-social-community' ); ?></option>
+					<option value="hide"><?php esc_html_e( 'Hide', '6arshid-social-community' ); ?></option>
+					<option value="show"><?php esc_html_e( 'Show', '6arshid-social-community' ); ?></option>
+					<option value="delete"><?php esc_html_e( 'Delete', '6arshid-social-community' ); ?></option>
 				</select>
 				<input type="submit" class="button action"
-					value="<?php esc_attr_e( 'Apply', 'social-network-6' ); ?>"
+					value="<?php esc_attr_e( 'Apply', '6arshid-social-community' ); ?>"
 					onclick="return arshid6social_act_confirm_bulk();" />
 			</div>
 			<div class="tablenav-pages<?php echo 1 === $total_pages ? ' one-page' : ''; ?>">
@@ -463,7 +452,7 @@ final class Admin_Activity {
 					echo esc_html(
 						sprintf(
 							/* translators: %s: number of items */
-							_n( '%s item', '%s items', $total, 'social-network-6' ),
+							_n( '%s item', '%s items', $total, '6arshid-social-community' ),
 							number_format_i18n( $total )
 						)
 					);

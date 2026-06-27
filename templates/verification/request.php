@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Verification request form — shortcode [sn_verification_request].
  *
@@ -7,7 +7,7 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( ! is_user_logged_in() ) {
-	echo '<p>' . esc_html__( 'You must be logged in to request verification.', 'social-network-6' ) . '</p>';
+	echo '<p>' . esc_html__( 'You must be logged in to request verification.', '6arshid-social-community' ) . '</p>';
 	return;
 }
 
@@ -23,12 +23,12 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 	<?php if ( $is_verified ) : ?>
 	<div class="sn-verification-request__verified sn-alert sn-alert--success">
 		<?php echo wp_kses_post( $verification->get_badge_html( $user_id ) ); ?>
-		<span><?php esc_html_e( 'Your account is verified.', 'social-network-6' ); ?></span>
+		<span><?php esc_html_e( 'Your account is verified.', '6arshid-social-community' ); ?></span>
 	</div>
 
 	<?php elseif ( $pending && 'more_info' === $pending->status ) : ?>
 	<div class="sn-verification-request__more-info sn-alert sn-alert--warning">
-		<strong><?php esc_html_e( 'Additional information required', 'social-network-6' ); ?></strong>
+		<strong><?php esc_html_e( 'Additional information required', '6arshid-social-community' ); ?></strong>
 		<?php if ( ! empty( $pending->reason ) ) : ?>
 		<p><?php echo esc_html( $pending->reason ); ?></p>
 		<?php endif; ?>
@@ -44,7 +44,7 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 
 		<div class="sn-form-field">
 			<label class="sn-form-field__label" for="sn-verify-name">
-				<?php esc_html_e( 'Full Legal Name', 'social-network-6' ); ?> <span aria-hidden="true">*</span>
+				<?php esc_html_e( 'Full Legal Name', '6arshid-social-community' ); ?> <span aria-hidden="true">*</span>
 			</label>
 			<input type="text" id="sn-verify-name" name="full_name"
 			       class="sn-form-field__input"
@@ -54,34 +54,34 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 
 		<div class="sn-form-field">
 			<label class="sn-form-field__label" for="sn-verify-category">
-				<?php esc_html_e( 'Category', 'social-network-6' ); ?>
+				<?php esc_html_e( 'Category', '6arshid-social-community' ); ?>
 			</label>
 			<input type="text" id="sn-verify-category" name="category"
 			       class="sn-form-field__input"
 			       value="<?php echo esc_attr( $saved_fields['category'] ?? '' ); ?>"
-			       placeholder="<?php esc_attr_e( 'e.g. Journalist, Athlete, Business…', 'social-network-6' ); ?>"
+			       placeholder="<?php esc_attr_e( 'e.g. Journalist, Athlete, Business…', '6arshid-social-community' ); ?>"
 			       maxlength="100">
 		</div>
 
 		<div class="sn-form-field">
 			<label class="sn-form-field__label" for="sn-verify-links">
-				<?php esc_html_e( 'Supporting Links', 'social-network-6' ); ?>
+				<?php esc_html_e( 'Supporting Links', '6arshid-social-community' ); ?>
 			</label>
 			<textarea id="sn-verify-links" name="links" class="sn-form-field__textarea" rows="3"
-			          placeholder="<?php esc_attr_e( 'News articles, official pages, Wikipedia, etc. (one per line)', 'social-network-6' ); ?>"
+			          placeholder="<?php esc_attr_e( 'News articles, official pages, Wikipedia, etc. (one per line)', '6arshid-social-community' ); ?>"
 			          maxlength="1000"><?php echo esc_textarea( $saved_fields['links'] ?? '' ); ?></textarea>
 		</div>
 
 		<div class="sn-form-field">
 			<label class="sn-form-field__label" for="sn-verify-doc">
-				<?php esc_html_e( 'Identity Document', 'social-network-6' ); ?>
+				<?php esc_html_e( 'Identity Document', '6arshid-social-community' ); ?>
 				<?php if ( $require_doc ) : ?>
 					<span aria-hidden="true">*</span>
 				<?php else : ?>
-					<span class="sn-form-field__hint"><?php esc_html_e( 'Optional', 'social-network-6' ); ?></span>
+					<span class="sn-form-field__hint"><?php esc_html_e( 'Optional', '6arshid-social-community' ); ?></span>
 				<?php endif; ?>
 				<span class="sn-form-field__hint">
-					<?php esc_html_e( 'PDF or image. Stored securely and not publicly accessible.', 'social-network-6' ); ?>
+					<?php esc_html_e( 'PDF or image. Stored securely and not publicly accessible.', '6arshid-social-community' ); ?>
 				</span>
 			</label>
 			<input type="file" id="sn-verify-doc" name="document"
@@ -93,19 +93,19 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 		<div class="sn-verification-request__feedback" id="sn-verify-feedback" role="alert" hidden></div>
 
 		<button type="submit" class="sn-btn sn-btn--primary" id="sn-verify-submit">
-			<?php esc_html_e( 'Submit Additional Information', 'social-network-6' ); ?>
+			<?php esc_html_e( 'Submit Additional Information', '6arshid-social-community' ); ?>
 		</button>
 	</form>
 
 	<?php elseif ( $pending ) : ?>
 	<div class="sn-verification-request__pending sn-alert sn-alert--info">
-		<strong><?php esc_html_e( 'Request pending', 'social-network-6' ); ?></strong>
-		<p><?php esc_html_e( 'Your verification request is under review. We\'ll notify you when a decision is made.', 'social-network-6' ); ?></p>
+		<strong><?php esc_html_e( 'Request pending', '6arshid-social-community' ); ?></strong>
+		<p><?php esc_html_e( 'Your verification request is under review. We\'ll notify you when a decision is made.', '6arshid-social-community' ); ?></p>
 		<p class="sn-verification-request__submitted">
 			<?php
 			echo esc_html( sprintf(
 				/* translators: %s: date */
-				__( 'Submitted: %s', 'social-network-6' ),
+				__( 'Submitted: %s', '6arshid-social-community' ),
 				wp_date( get_option( 'date_format' ), strtotime( $pending->created_at ) )
 			) );
 			?>
@@ -118,16 +118,16 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 		<?php wp_nonce_field( 'arshid6social_ajax_nonce', 'nonce' ); ?>
 
 		<p class="sn-verification-request__intro">
-			<?php esc_html_e( 'Request account verification. Complete the form below and we\'ll review your application.', 'social-network-6' ); ?>
+			<?php esc_html_e( 'Request account verification. Complete the form below and we\'ll review your application.', '6arshid-social-community' ); ?>
 		</p>
 
 		<!-- Verification type -->
 		<div class="sn-form-field">
 			<label class="sn-form-field__label" for="sn-verify-type">
-				<?php esc_html_e( 'Verification Type', 'social-network-6' ); ?> <span aria-hidden="true">*</span>
+				<?php esc_html_e( 'Verification Type', '6arshid-social-community' ); ?> <span aria-hidden="true">*</span>
 			</label>
 			<select id="sn-verify-type" name="type" class="sn-form-field__select" required>
-				<option value=""><?php esc_html_e( '— Select —', 'social-network-6' ); ?></option>
+				<option value=""><?php esc_html_e( '— Select —', '6arshid-social-community' ); ?></option>
 				<?php foreach ( $types as $key => $type ) : ?>
 				<option value="<?php echo esc_attr( $key ); ?>">
 					<?php echo esc_html( $type['label'] ); ?>
@@ -139,46 +139,46 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 		<!-- Full name -->
 		<div class="sn-form-field">
 			<label class="sn-form-field__label" for="sn-verify-name">
-				<?php esc_html_e( 'Full Legal Name', 'social-network-6' ); ?> <span aria-hidden="true">*</span>
+				<?php esc_html_e( 'Full Legal Name', '6arshid-social-community' ); ?> <span aria-hidden="true">*</span>
 			</label>
 			<input type="text" id="sn-verify-name" name="full_name"
 			       class="sn-form-field__input"
-			       placeholder="<?php esc_attr_e( 'As it appears on your ID', 'social-network-6' ); ?>"
+			       placeholder="<?php esc_attr_e( 'As it appears on your ID', '6arshid-social-community' ); ?>"
 			       maxlength="100" required>
 		</div>
 
 		<!-- Category / niche -->
 		<div class="sn-form-field">
 			<label class="sn-form-field__label" for="sn-verify-category">
-				<?php esc_html_e( 'Category', 'social-network-6' ); ?>
+				<?php esc_html_e( 'Category', '6arshid-social-community' ); ?>
 			</label>
 			<input type="text" id="sn-verify-category" name="category"
 			       class="sn-form-field__input"
-			       placeholder="<?php esc_attr_e( 'e.g. Journalist, Athlete, Business…', 'social-network-6' ); ?>"
+			       placeholder="<?php esc_attr_e( 'e.g. Journalist, Athlete, Business…', '6arshid-social-community' ); ?>"
 			       maxlength="100">
 		</div>
 
 		<!-- Supporting links -->
 		<div class="sn-form-field">
 			<label class="sn-form-field__label" for="sn-verify-links">
-				<?php esc_html_e( 'Supporting Links', 'social-network-6' ); ?>
+				<?php esc_html_e( 'Supporting Links', '6arshid-social-community' ); ?>
 			</label>
 			<textarea id="sn-verify-links" name="links" class="sn-form-field__textarea" rows="3"
-			          placeholder="<?php esc_attr_e( 'News articles, official pages, Wikipedia, etc. (one per line)', 'social-network-6' ); ?>"
+			          placeholder="<?php esc_attr_e( 'News articles, official pages, Wikipedia, etc. (one per line)', '6arshid-social-community' ); ?>"
 			          maxlength="1000"></textarea>
 		</div>
 
 		<!-- Document upload -->
 		<div class="sn-form-field">
 			<label class="sn-form-field__label" for="sn-verify-doc">
-				<?php esc_html_e( 'Identity Document', 'social-network-6' ); ?>
+				<?php esc_html_e( 'Identity Document', '6arshid-social-community' ); ?>
 				<?php if ( $require_doc ) : ?>
 					<span aria-hidden="true">*</span>
 				<?php else : ?>
-					<span class="sn-form-field__hint"><?php esc_html_e( 'Optional', 'social-network-6' ); ?></span>
+					<span class="sn-form-field__hint"><?php esc_html_e( 'Optional', '6arshid-social-community' ); ?></span>
 				<?php endif; ?>
 				<span class="sn-form-field__hint">
-					<?php esc_html_e( 'PDF or image. Stored securely and not publicly accessible.', 'social-network-6' ); ?>
+					<?php esc_html_e( 'PDF or image. Stored securely and not publicly accessible.', '6arshid-social-community' ); ?>
 				</span>
 			</label>
 			<input type="file" id="sn-verify-doc" name="document"
@@ -191,7 +191,7 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 		<div class="sn-verification-request__feedback" id="sn-verify-feedback" role="alert" hidden></div>
 
 		<button type="submit" class="sn-btn sn-btn--primary" id="sn-verify-submit">
-			<?php esc_html_e( 'Submit Request', 'social-network-6' ); ?>
+			<?php esc_html_e( 'Submit Request', '6arshid-social-community' ); ?>
 		</button>
 	</form>
 	<?php endif; ?>

@@ -81,9 +81,9 @@
 
 		return el(
 			Modal,
-			{ title: __( 'Select an Icon', 'social-network-6' ), onRequestClose: props.onClose, className: 'a6sc-icp-modal' },
+			{ title: __( 'Select an Icon', '6arshid-social-community' ), onRequestClose: props.onClose, className: 'a6sc-icp-modal' },
 			el( TextControl, {
-				placeholder: __( 'Search icons…', 'social-network-6' ),
+				placeholder: __( 'Search icons…', '6arshid-social-community' ),
 				value: query, onChange: setQuery, autoComplete: 'off'
 			} ),
 			! icons
@@ -97,7 +97,7 @@
 					} )
 				),
 			icons && names.length > LIMIT
-				? el( 'p', { className: 'a6sc-icp-more' }, __( 'Showing first 150 — keep typing to narrow results.', 'social-network-6' ) )
+				? el( 'p', { className: 'a6sc-icp-more' }, __( 'Showing first 150 — keep typing to narrow results.', '6arshid-social-community' ) )
 				: null
 		);
 	}
@@ -169,14 +169,14 @@
 		}
 		if ( ! list.length ) {
 			return el( 'p', { style: { color: '#888' } },
-				__( 'No pages found. Create a Page, or assign a menu to “Primary Navigation”.', 'social-network-6' ) );
+				__( 'No pages found. Create a Page, or assign a menu to “Primary Navigation”.', '6arshid-social-community' ) );
 		}
 
 		return el(
 			Fragment,
 			null,
 			el( 'p', { className: 'a6sc-icp-hint' },
-				__( 'Drag ⠿ (or use ▲▼) to reorder · click ✎ to change a page’s icon.', 'social-network-6' ) ),
+				__( 'Drag ⠿ (or use ▲▼) to reorder · click ✎ to change a page’s icon.', '6arshid-social-community' ) ),
 			el( 'div', { className: 'a6sc-icp-list' },
 				list.map( function ( item, index ) {
 					var hasIcon  = item.icon_name && icons && icons[ item.icon_name ];
@@ -197,24 +197,24 @@
 							onDrop:      function ( e ) { e.preventDefault(); data.move( dragIndex, index ); setDragIndex( -1 ); },
 							onDragEnd:   function () { setDragIndex( -1 ); }
 						},
-						el( 'span', { className: 'a6sc-icp-row__handle', title: __( 'Drag to reorder', 'social-network-6' ) }, '⠿' ),
+						el( 'span', { className: 'a6sc-icp-row__handle', title: __( 'Drag to reorder', '6arshid-social-community' ) }, '⠿' ),
 						iconCell,
 						el( 'span', { className: 'a6sc-icp-row__label' }, item.label ),
 						el( 'span', { className: 'a6sc-icp-row__btns' },
 							el( Button, {
-								icon: 'arrow-up-alt2', label: __( 'Move up', 'social-network-6' ),
+								icon: 'arrow-up-alt2', label: __( 'Move up', '6arshid-social-community' ),
 								disabled: index === 0,
 								onClick: function () { data.move( index, index - 1 ); }
 							} ),
 							el( Button, {
-								icon: 'arrow-down-alt2', label: __( 'Move down', 'social-network-6' ),
+								icon: 'arrow-down-alt2', label: __( 'Move down', '6arshid-social-community' ),
 								disabled: index === list.length - 1,
 								onClick: function () { data.move( index, index + 1 ); }
 							} ),
 							item.page_id
 								? el( Button, {
 									className: 'a6sc-icp-row__edit',
-									label: __( 'Change icon', 'social-network-6' ),
+									label: __( 'Change icon', '6arshid-social-community' ),
 									onClick: function () { setPicker( item.page_id ); }
 								}, '✎' )
 								: null
@@ -248,12 +248,12 @@
 		}
 		if ( ! list.length ) {
 			return el( 'p', { style: { padding: '16px', color: '#888' } },
-				__( 'No pages yet — manage this nav from the block settings panel on the right.', 'social-network-6' ) );
+				__( 'No pages yet — manage this nav from the block settings panel on the right.', '6arshid-social-community' ) );
 		}
 
 		return el( 'div', { style: PS.wrap },
 			el( 'p', { style: { fontSize: '12px', color: '#888', padding: '0 12px 4px', margin: 0 } },
-				__( '↗ Reorder pages & change icons in the “Navigation” panel on the right.', 'social-network-6' ) ),
+				__( '↗ Reorder pages & change icons in the “Navigation” panel on the right.', '6arshid-social-community' ) ),
 			list.map( function ( item ) {
 				var hasIcon = item.icon_name && icons && icons[ item.icon_name ];
 				return el( 'div', { key: item.key || item.label, style: PS.row },
@@ -269,10 +269,10 @@
 	}
 
 	// ── Block registration ───────────────────────────────────────────────────
-	blocks.registerBlockType( 'social-network-6/page-nav', {
+	blocks.registerBlockType( '6arshid-social-community/page-nav', {
 		apiVersion: 2,
-		title: __( 'Page Navigation (6Arshid Social Community)', 'social-network-6' ),
-		description: __( 'Lists your Pages. Reorder and pick icons from the block settings panel.', 'social-network-6' ),
+		title: __( 'Page Navigation (6Arshid Social Community)', '6arshid-social-community' ),
+		description: __( 'Lists your Pages. Reorder and pick icons from the block settings panel.', '6arshid-social-community' ),
 		category: 'theme',
 		icon: 'menu',
 		supports: { html: false, reusable: false },
@@ -290,15 +290,15 @@
 					{ key: 'inspector' },
 					el(
 						PanelBody,
-						{ title: __( 'Navigation — reorder & icons', 'social-network-6' ), initialOpen: true },
+						{ title: __( 'Navigation — reorder & icons', '6arshid-social-community' ), initialOpen: true },
 						el( NavManager, { data: data } )
 					),
 					el(
 						PanelBody,
-						{ title: __( 'Navigation Source', 'social-network-6' ), initialOpen: false },
+						{ title: __( 'Navigation Source', '6arshid-social-community' ), initialOpen: false },
 						el( TextControl, {
-							label: __( 'Menu location slug', 'social-network-6' ),
-							help: __( 'Reads pages from the menu assigned to this theme location. If none is assigned, the default app nav is used.', 'social-network-6' ),
+							label: __( 'Menu location slug', '6arshid-social-community' ),
+							help: __( 'Reads pages from the menu assigned to this theme location. If none is assigned, the default app nav is used.', '6arshid-social-community' ),
 							value: props.attributes.menu,
 							onChange: function ( v ) { props.setAttributes( { menu: v } ); }
 						} )

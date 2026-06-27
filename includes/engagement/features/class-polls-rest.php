@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social\Engagement\Features;
 
 /**
@@ -17,7 +17,7 @@ class Polls_REST {
 		register_rest_route( self::NS, '/polls', array(
 			'methods'             => \WP_REST_Server::CREATABLE,
 			'callback'            => array( $this, 'create' ),
-			'permission_callback' => 'is_user_logged_in',
+			'permission_callback' => array( $this, 'can_create' ),
 		) );
 
 		register_rest_route( self::NS, '/polls/(?P<id>\d+)', array(
@@ -29,7 +29,7 @@ class Polls_REST {
 		register_rest_route( self::NS, '/polls/(?P<id>\d+)/vote', array(
 			'methods'             => \WP_REST_Server::CREATABLE,
 			'callback'            => array( $this, 'vote' ),
-			'permission_callback' => 'is_user_logged_in',
+			'permission_callback' => array( $this, 'can_vote' ),
 		) );
 
 		register_rest_route( self::NS, '/polls/(?P<id>\d+)/export', array(
@@ -42,6 +42,38 @@ class Polls_REST {
 	private function feature(): ?Polls {
 		/** @var Polls|null $f */
 		return arshid6social_eng()->feature( 'polls' );
+	}
+
+	public function can_create( \WP_REST_Request $req ): bool {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		$activity_id = absint( $req->get_param( 'activity_id' ) );
+		if ( $activity_id ) {
+			$activity = arshid6social()->component( 'activity' );
+			if ( $activity ) {
+				$item = $activity->get_activity( $activity_id );
+				if ( ! $item ) {
+					return false;
+				}
+				if ( (int) $item->user_id !== get_current_user_id() && ! current_user_can( 'arshid6social_manage_activity' ) ) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	public function can_vote( \WP_REST_Request $req ): bool {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		$f    = $this->feature();
+		$poll = $f ? $f->get_poll( absint( $req['id'] ) ) : null;
+		if ( ! $poll ) {
+			return true; // Poll not found; let the callback return a proper 404.
+		}
+		return arshid6social_current_user_can_view_activity( (int) $poll->activity_id );
 	}
 
 	public function can_export( \WP_REST_Request $req ): bool {
@@ -74,7 +106,7 @@ class Polls_REST {
 
 		return $poll_id
 			? new \WP_REST_Response( array( 'poll_id' => $poll_id, 'results' => $f->get_results( $poll_id, get_current_user_id() ) ), 201 )
-			: new \WP_REST_Response( array( 'message' => __( 'Failed to create poll.', 'social-network-6' ) ), 400 );
+			: new \WP_REST_Response( array( 'message' => __( 'Failed to create poll.', '6arshid-social-community' ) ), 400 );
 	}
 
 	public function get( \WP_REST_Request $req ): \WP_REST_Response {
@@ -108,9 +140,6 @@ class Polls_REST {
 		if ( ! $poll ) {
 			return new \WP_REST_Response( null, 404 );
 		}
-		if ( ! arshid6social_current_user_can_view_activity( (int) $poll->activity_id ) ) {
-			return new \WP_REST_Response( null, 403 );
-		}
 
 		$option_ids = array_map( 'absint', (array) ( $req->get_param( 'option_ids' ) ?: array() ) );
 		$result     = $f->vote( absint( $req['id'] ), $option_ids, get_current_user_id() );
@@ -137,7 +166,7 @@ class Polls_REST {
 		header( 'Pragma: no-cache' );
 
 		$out = fopen( 'php://output', 'w' );
-		fputcsv( $out, array( __( 'Option', 'social-network-6' ), __( 'Votes', 'social-network-6' ), __( 'Percentage', 'social-network-6' ) ) );
+		fputcsv( $out, array( __( 'Option', '6arshid-social-community' ), __( 'Votes', '6arshid-social-community' ), __( 'Percentage', '6arshid-social-community' ) ) );
 
 		foreach ( $results['options'] as $opt ) {
 			fputcsv( $out, array( $opt['text'], $opt['voteCount'] ?? 0, ( $opt['percentage'] ?? 0 ) . '%' ) );
@@ -146,7 +175,7 @@ class Polls_REST {
 		// If public voting, append voter list.
 		if ( ! $results['anonymous'] ) {
 			fputcsv( $out, array() );
-			fputcsv( $out, array( __( 'Voter', 'social-network-6' ), __( 'Option', 'social-network-6' ), __( 'Voted At', 'social-network-6' ) ) );
+			fputcsv( $out, array( __( 'Voter', '6arshid-social-community' ), __( 'Option', '6arshid-social-community' ), __( 'Voted At', '6arshid-social-community' ) ) );
 
 			$votes = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT v.user_id, v.voted_at, o.option_text

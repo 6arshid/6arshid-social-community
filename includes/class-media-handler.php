@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 namespace Arshid6Social;
 
 /**
@@ -52,7 +52,7 @@ class Media_Handler {
 	 */
 	public static function handle( array $file, string $context, int $user_id ): array|\WP_Error {
 		if ( ! isset( self::CONTEXTS[ $context ] ) ) {
-			return new \WP_Error( 'invalid_context', __( 'Invalid upload context.', 'social-network-6' ) );
+			return new \WP_Error( 'invalid_context', __( 'Invalid upload context.', '6arshid-social-community' ) );
 		}
 
 		$cfg = self::CONTEXTS[ $context ];
@@ -64,7 +64,7 @@ class Media_Handler {
 				'file_too_large',
 				sprintf(
 					/* translators: %s: max size in MB */
-					__( 'File exceeds the maximum size of %s MB.', 'social-network-6' ),
+					__( 'File exceeds the maximum size of %s MB.', '6arshid-social-community' ),
 					(int) get_option( $cfg['max_size_opt'], 5 )
 				)
 			);
@@ -74,7 +74,7 @@ class Media_Handler {
 		$finfo     = new \finfo( FILEINFO_MIME_TYPE );
 		$real_mime = $finfo->file( $file['tmp_name'] );
 		if ( ! in_array( $real_mime, $cfg['allowed_mime'], true ) ) {
-			return new \WP_Error( 'invalid_mime', __( 'File type not allowed.', 'social-network-6' ) );
+			return new \WP_Error( 'invalid_mime', __( 'File type not allowed.', '6arshid-social-community' ) );
 		}
 
 		// Build destination directory.
@@ -83,7 +83,7 @@ class Media_Handler {
 		$dest_dir   = $base . '/' . $cfg['subdir'] . '/' . $user_id;
 
 		if ( ! wp_mkdir_p( $dest_dir ) ) {
-			return new \WP_Error( 'mkdir_failed', __( 'Could not create upload directory.', 'social-network-6' ) );
+			return new \WP_Error( 'mkdir_failed', __( 'Could not create upload directory.', '6arshid-social-community' ) );
 		}
 
 		// Protect non-public directories with .htaccess.
@@ -97,7 +97,7 @@ class Media_Handler {
 		$dest     = $dest_dir . '/' . $filename;
 
 		if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
-			return new \WP_Error( 'move_failed', __( 'Failed to save uploaded file.', 'social-network-6' ) );
+			return new \WP_Error( 'move_failed', __( 'Failed to save uploaded file.', '6arshid-social-community' ) );
 		}
 		global $wp_filesystem;
 		if ( ! $wp_filesystem ) {
@@ -105,7 +105,7 @@ class Media_Handler {
 			WP_Filesystem();
 		}
 		if ( ! $wp_filesystem || ! $wp_filesystem->move( $file['tmp_name'], $dest, true ) ) {
-			return new \WP_Error( 'move_failed', __( 'Failed to save uploaded file.', 'social-network-6' ) );
+			return new \WP_Error( 'move_failed', __( 'Failed to save uploaded file.', '6arshid-social-community' ) );
 		}
 
 		// Strip EXIF/GPS from images.
@@ -236,8 +236,6 @@ class Media_Handler {
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/image.php';
-		require_once ABSPATH . 'wp-admin/includes/media.php';
-		require_once ABSPATH . 'wp-admin/includes/file.php';
 
 		$attachment = array(
 			'guid'           => $file_url ?: $file_path,

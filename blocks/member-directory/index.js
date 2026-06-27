@@ -24,9 +24,9 @@ registerBlockType( 'arshid6social/member-directory', {
 				null,
 				wp.element.createElement(
 					PanelBody,
-					{ title: __( 'Member Directory Settings', 'social-network-6' ), initialOpen: true },
+					{ title: __( 'Member Directory Settings', '6arshid-social-community' ), initialOpen: true },
 					wp.element.createElement( RangeControl, {
-						label:    __( 'Members per page', 'social-network-6' ),
+						label:    __( 'Members per page', '6arshid-social-community' ),
 						value:    perPage,
 						min:      4,
 						max:      48,
@@ -34,17 +34,17 @@ registerBlockType( 'arshid6social/member-directory', {
 						onChange: val => setAttributes( { perPage: val } ),
 					} ),
 					wp.element.createElement( ToggleControl, {
-						label:    __( 'Show search bar', 'social-network-6' ),
+						label:    __( 'Show search bar', '6arshid-social-community' ),
 						checked:  showSearch,
 						onChange: val => setAttributes( { showSearch: val } ),
 					} ),
 					wp.element.createElement( SelectControl, {
-						label:    __( 'Default sort order', 'social-network-6' ),
+						label:    __( 'Default sort order', '6arshid-social-community' ),
 						value:    defaultType,
 						options:  [
-							{ label: __( 'Newest', 'social-network-6' ),      value: 'newest'       },
-							{ label: __( 'Recently active', 'social-network-6' ), value: 'active'    },
-							{ label: __( 'Alphabetical', 'social-network-6' ), value: 'alphabetical' },
+							{ label: __( 'Newest', '6arshid-social-community' ),      value: 'newest'       },
+							{ label: __( 'Recently active', '6arshid-social-community' ), value: 'active'    },
+							{ label: __( 'Alphabetical', '6arshid-social-community' ), value: 'alphabetical' },
 						],
 						onChange: val => setAttributes( { defaultType: val } ),
 					} ),
