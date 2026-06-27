@@ -174,7 +174,6 @@ class Monetization_Settings {
 	// Render
 	// -------------------------------------------------------------------------
 
-	/**
 	public function enqueue_tab_styles(): void {
 		$screen = get_current_screen();
 		if ( ! $screen || false === strpos( $screen->id, 'arshid6social-settings' ) ) {
