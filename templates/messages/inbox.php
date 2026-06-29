@@ -74,7 +74,13 @@ $_arshid6social_config = array(
 );
 ?>
 <?php
-wp_add_inline_style( 'arshid6social-main', '.socialnetworksix-right{display:none!important}.socialnetworksix-shell{grid-template-columns:var(--a6sc-sidebar-w,275px) 1fr!important}@media(max-width:1280px){.socialnetworksix-shell{grid-template-columns:88px 1fr!important}}@media(max-width:700px){.socialnetworksix-shell{grid-template-columns:1fr!important}}.arshid6social-messages-layout,.arshid6social-thread-list,.arshid6social-thread-list__header,.arshid6social-message-pane,.arshid6social-message-pane__header{background:var(--a6sc-bg,#000)!important}#arshid6social-thread-list-inner{background:var(--a6sc-bg,#000)}' );
+$_msg_handle = 'arshid6social-messages-layout';
+if ( ! wp_style_is( $_msg_handle, 'registered' ) ) {
+	wp_register_style( $_msg_handle, false, array( 'arshid6social-main' ), null );
+	wp_enqueue_style( $_msg_handle );
+	wp_style_add_data( $_msg_handle, 'group', 1 );
+}
+wp_add_inline_style( $_msg_handle, '.socialnetworksix-right{display:none!important}.socialnetworksix-shell{grid-template-columns:var(--a6sc-sidebar-w,275px) 1fr!important}@media(max-width:1280px){.socialnetworksix-shell{grid-template-columns:88px 1fr!important}}@media(max-width:700px){.socialnetworksix-shell{grid-template-columns:1fr!important}}.arshid6social-messages-layout,.arshid6social-thread-list,.arshid6social-thread-list__header,.arshid6social-message-pane,.arshid6social-message-pane__header{background:var(--a6sc-bg,#000)!important}#arshid6social-thread-list-inner{background:var(--a6sc-bg,#000)}' );
 ?>
 <div class="arshid6social-directory-wrap" id="arshid6social-messages-page"
 	data-arshid6social-cfg="<?php echo esc_attr( wp_json_encode( $_arshid6social_config, JSON_UNESCAPED_UNICODE ) ); ?>"

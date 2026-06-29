@@ -482,7 +482,13 @@ $mkt_form_css      = '
 	.arshid6social-mkt-publish-actions .arshid6social-mkt-btn { flex:1; justify-content:center; }
 }
 ';
-wp_add_inline_style( 'arshid6social-main', $mkt_form_css );
+$_mkt_form_handle = 'arshid6social-mkt-form-inline';
+if ( ! wp_style_is( $_mkt_form_handle, 'registered' ) ) {
+	wp_register_style( $_mkt_form_handle, false, array( 'arshid6social-main' ), null );
+	wp_enqueue_style( $_mkt_form_handle );
+	wp_style_add_data( $_mkt_form_handle, 'group', 1 );
+}
+wp_add_inline_style( $_mkt_form_handle, $mkt_form_css );
 
 /* ── JavaScript ──────────────────────────────────────────────────────── */
 $mkt_form_i18n = array(

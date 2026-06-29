@@ -36,10 +36,15 @@ $dark_css = '
 ';
 ?>
 <?php
-if ( $is_dark ) {
-	wp_add_inline_style( 'arshid6social-main', $dark_css );
-} elseif ( $is_auto ) {
-	wp_add_inline_style( 'arshid6social-main', '@media (prefers-color-scheme: dark) { ' . $dark_css . ' }' );
+if ( $is_dark || $is_auto ) {
+	$_notif_css    = $is_dark ? $dark_css : '@media (prefers-color-scheme: dark) { ' . $dark_css . ' }';
+	$_notif_handle = 'arshid6social-notif-dark';
+	if ( ! wp_style_is( $_notif_handle, 'registered' ) ) {
+		wp_register_style( $_notif_handle, false, array( 'arshid6social-main' ), null );
+		wp_enqueue_style( $_notif_handle );
+		wp_style_add_data( $_notif_handle, 'group', 1 );
+	}
+	wp_add_inline_style( $_notif_handle, $_notif_css );
 }
 ?>
 <div id="arshid6social-notifications-page" class="arshid6social-notif-standalone-page<?php echo $is_dark ? ' arshid6social-is-dark' : ''; ?>">
