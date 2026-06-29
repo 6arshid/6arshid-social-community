@@ -19,7 +19,6 @@ class Setup_Wizard {
 		add_action( 'admin_init', array( $this, 'maybe_redirect' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'wp_ajax_arshid6social_wizard_save', array( $this, 'ajax_save' ) );
-		add_action( 'admin_head', array( $this, 'suppress_admin_chrome' ) );
 	}
 
 	public function enqueue_assets( string $hook_suffix ): void {
@@ -44,12 +43,7 @@ class Setup_Wizard {
 				'in_footer' => true,
 			)
 		);
-	}
-	public function suppress_admin_chrome(): void {
-		$screen = get_current_screen();
-		if ( ! $screen || 'dashboard_page_arshid6social-setup' !== $screen->id ) {
-			return;
-		}
+
 		$chrome_css = '#wpadminbar,#adminmenuback,#adminmenuwrap,#adminmenu{display:none!important}#wpcontent{margin-left:0!important}#wpbody-content{padding-bottom:0!important}#wpbody{padding-top:0!important}body.wp-admin{background:#f8fafc!important;margin:0!important}';
 
 

@@ -34,8 +34,8 @@ final class Assets {
 	private function hooks(): void {
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin' ) );
-		add_action( 'wp_head', array( $this, 'output_inline_vars' ) );
-		add_action( 'wp_head', array( $this, 'output_nav_auth_css' ) );
+		add_action( 'wp_head', array( $this, 'output_inline_vars' ), 7 );
+		add_action( 'wp_head', array( $this, 'output_nav_auth_css' ), 7 );
 	}
 
 	/**
