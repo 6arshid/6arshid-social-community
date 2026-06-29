@@ -485,8 +485,30 @@ $mkt_form_css      = '
 wp_add_inline_style( 'arshid6social-main', $mkt_form_css );
 
 /* ── JavaScript ──────────────────────────────────────────────────────── */
-?>
-<script>
+$mkt_form_i18n = array(
+	'titleRequired'     => __( 'Please enter a title for your listing.', '6arshid-social-community-main' ),
+	'catRequired'       => __( 'Please select a category.', '6arshid-social-community-main' ),
+	'photos'            => __( 'photos', '6arshid-social-community-main' ),
+	'listingPhoto'      => __( 'Listing photo', '6arshid-social-community-main' ),
+	'cover'             => __( 'Cover', '6arshid-social-community-main' ),
+	'removePhoto'       => __( 'Remove photo', '6arshid-social-community-main' ),
+	'maxPhotos'         => __( 'Maximum photos reached.', '6arshid-social-community-main' ),
+	'fileTooLarge'      => __( 'File is too large.', '6arshid-social-community-main' ),
+	'uploadFailed'      => __( 'Upload failed.', '6arshid-social-community-main' ),
+	'networkError'      => __( 'Network error — please try again.', '6arshid-social-community-main' ),
+	'geoNotSupported'   => __( 'Geolocation not supported.', '6arshid-social-community-main' ),
+	'detectingLocation' => __( 'Detecting location…', '6arshid-social-community-main' ),
+	'locationCaptured'  => __( 'Location captured!', '6arshid-social-community-main' ),
+	'geoFailed'         => __( 'Could not get location.', '6arshid-social-community-main' ),
+	'noTitle'           => __( 'no title', '6arshid-social-community-main' ),
+	'free'              => __( 'Free', '6arshid-social-community-main' ),
+	'negotiable'        => __( 'Negotiable', '6arshid-social-community-main' ),
+	'submitError'       => __( 'An error occurred. Please try again.', '6arshid-social-community-main' ),
+	'networkErrorConn'  => __( 'Network error. Please check your connection.', '6arshid-social-community-main' ),
+);
+wp_add_inline_script( 'arshid6social-main', 'var ARSHID6SOCIALMktFormI18n=' . wp_json_encode( $mkt_form_i18n ) . ';' );
+
+$mkt_form_js = <<<'ENDMKTJS'
 (function () {
 'use strict';
 
@@ -499,6 +521,7 @@ const TOKEN    = wizard.dataset.token;
 const MAX_PH   = parseInt( wizard.dataset.maxPhotos, 10 ) || 10;
 const MAX_MB   = parseInt( wizard.dataset.maxMb, 10 ) || 5;
 const BACK_URL = wizard.dataset.back;
+const I18N     = window.ARSHID6SOCIALMktFormI18n || {};
 
 const form     = document.getElementById( 'arshid6social-mkt-listing-form' );
 const errBar   = document.getElementById( 'arshid6social-mkt-form-error' );
@@ -550,8 +573,8 @@ function validateStep( step ) {
 	if ( step === 1 ) {
 		const title = document.getElementById( 'mkt-title' ).value.trim();
 		const cat   = document.getElementById( 'mkt-category' ).value;
-		if ( ! title ) { showErr( '<?php echo esc_js( __( 'Please enter a title for your listing.', '6arshid-social-community-main' ) ); ?>' ); return false; }
-		if ( ! cat )   { showErr( '<?php echo esc_js( __( 'Please select a category.', '6arshid-social-community-main' ) ); ?>' ); return false; }
+		if ( ! title ) { showErr( I18N.titleRequired ); return false; }
+		if ( ! cat )   { showErr( I18N.catRequired ); return false; }
 	}
 	return true;
 }
@@ -592,7 +615,7 @@ const cntLabel   = document.getElementById( 'arshid6social-mkt-photo-count-label
 let uploadedPhotos = []; // [{id, url, thumb}]
 
 function updatePhotoCount() {
-	if ( cntLabel ) cntLabel.textContent = uploadedPhotos.length + ' / ' + MAX_PH + ' <?php echo esc_js( __( 'photos', '6arshid-social-community-main' ) ); ?>';
+	if ( cntLabel ) cntLabel.textContent = uploadedPhotos.length + ' / ' + MAX_PH + ' ' + I18N.photos;
 	if ( photoInput ) photoInput.disabled = uploadedPhotos.length >= MAX_PH;
 }
 
@@ -611,20 +634,20 @@ function renderPhotoGrid() {
 
 		const img = document.createElement( 'img' );
 		img.src = p.thumb;
-		img.alt = '<?php echo esc_js( __( 'Listing photo', '6arshid-social-community-main' ) ); ?>';
+		img.alt = I18N.listingPhoto;
 		div.appendChild( img );
 
 		if ( i === 0 ) {
 			const badge = document.createElement( 'span' );
 			badge.className = 'arshid6social-mkt-photo-primary';
-			badge.textContent = '<?php echo esc_js( __( 'Cover', '6arshid-social-community-main' ) ); ?>';
+			badge.textContent = I18N.cover;
 			div.appendChild( badge );
 		}
 
 		const del = document.createElement( 'button' );
 		del.type = 'button';
 		del.className = 'arshid6social-mkt-photo-del';
-		del.setAttribute( 'aria-label', '<?php echo esc_js( __( 'Remove photo', '6arshid-social-community-main' ) ); ?>' );
+		del.setAttribute( 'aria-label', I18N.removePhoto );
 		del.innerHTML = '×';
 		del.addEventListener( 'click', () => removePhoto( p.id ) );
 		div.appendChild( del );
@@ -636,11 +659,11 @@ function renderPhotoGrid() {
 
 async function uploadPhoto( file ) {
 	if ( uploadedPhotos.length >= MAX_PH ) {
-		showPhotoErr( '<?php echo esc_js( __( 'Maximum photos reached.', '6arshid-social-community-main' ) ); ?>' );
+		showPhotoErr( I18N.maxPhotos );
 		return;
 	}
 	if ( file.size > MAX_MB * 1024 * 1024 ) {
-		showPhotoErr( '<?php echo esc_js( __( 'File is too large.', '6arshid-social-community-main' ) ); ?>' );
+		showPhotoErr( I18N.fileTooLarge );
 		return;
 	}
 
@@ -673,11 +696,11 @@ async function uploadPhoto( file ) {
 			clearPhotoErr();
 		} else {
 			uploadedPhotos = uploadedPhotos.filter( p => p.id !== tempId );
-			showPhotoErr( ( data.data && data.data.message ) || '<?php echo esc_js( __( 'Upload failed.', '6arshid-social-community-main' ) ); ?>' );
+			showPhotoErr( ( data.data && data.data.message ) || I18N.uploadFailed );
 		}
 	} catch ( err ) {
 		uploadedPhotos = uploadedPhotos.filter( p => p.id !== tempId );
-		showPhotoErr( '<?php echo esc_js( __( 'Network error — please try again.', '6arshid-social-community-main' ) ); ?>' );
+		showPhotoErr( I18N.networkError );
 	}
 
 	renderPhotoGrid();
@@ -728,21 +751,21 @@ const lngInput  = document.getElementById( 'mkt-lng' );
 if ( geoBtn ) {
 	geoBtn.addEventListener( 'click', () => {
 		if ( ! navigator.geolocation ) {
-			geoStatus.textContent = '<?php echo esc_js( __( 'Geolocation not supported.', '6arshid-social-community-main' ) ); ?>';
+			geoStatus.textContent = I18N.geoNotSupported;
 			return;
 		}
-		geoStatus.textContent = '<?php echo esc_js( __( 'Detecting location…', '6arshid-social-community-main' ) ); ?>';
+		geoStatus.textContent = I18N.detectingLocation;
 		geoBtn.disabled = true;
 
 		navigator.geolocation.getCurrentPosition(
 			pos => {
 				latInput.value = pos.coords.latitude.toFixed( 7 );
 				lngInput.value = pos.coords.longitude.toFixed( 7 );
-				geoStatus.textContent = '<?php echo esc_js( __( 'Location captured!', '6arshid-social-community-main' ) ); ?>';
+				geoStatus.textContent = I18N.locationCaptured;
 				geoBtn.disabled = false;
 			},
 			() => {
-				geoStatus.textContent = '<?php echo esc_js( __( 'Could not get location.', '6arshid-social-community-main' ) ); ?>';
+				geoStatus.textContent = I18N.geoFailed;
 				geoBtn.disabled = false;
 			},
 			{ timeout: 8000 }
@@ -752,7 +775,7 @@ if ( geoBtn ) {
 
 // ── Step 5: Preview builder ─────────────────────────────────────────────────
 function buildPreview() {
-	const title     = ( document.getElementById( 'mkt-title' )?.value.trim() ) || '(<?php echo esc_js( __( 'no title', '6arshid-social-community-main' ) ); ?>)';
+	const title     = ( document.getElementById( 'mkt-title' )?.value.trim() ) || '(' + I18N.noTitle + ')';
 	const isFreeChk = document.getElementById( 'mkt-is-free' )?.checked;
 	const priceVal  = document.getElementById( 'mkt-price' )?.value;
 	const isNeg     = document.getElementById( 'mkt-is-negotiable' )?.checked;
@@ -761,9 +784,9 @@ function buildPreview() {
 	const symEl     = document.querySelector( '.arshid6social-mkt-currency-sym' );
 	const sym       = symEl?.textContent || '';
 
-	let priceText = isFreeChk ? '<?php echo esc_js( __( 'Free', '6arshid-social-community-main' ) ); ?>'
+	let priceText = isFreeChk ? I18N.free
 		: ( sym + ( parseFloat( priceVal ) || 0 ).toLocaleString() );
-	if ( ! isFreeChk && isNeg ) priceText += ' · <?php echo esc_js( __( 'Negotiable', '6arshid-social-community-main' ) ); ?>';
+	if ( ! isFreeChk && isNeg ) priceText += ' · ' + I18N.negotiable;
 
 	const condEl   = document.querySelector( 'input[name="item_condition"]:checked' );
 	const condText = condEl ? condEl.closest( '.arshid6social-mkt-condition-opt' ).querySelector( 'span' ).textContent : '';
@@ -809,11 +832,11 @@ async function submitListing( action ) {
 			window.location.href = data.data.url || BACK_URL;
 		} else {
 			setPublishing( false );
-			showErr( ( data.data && data.data.message ) || '<?php echo esc_js( __( 'An error occurred. Please try again.', '6arshid-social-community-main' ) ); ?>' );
+			showErr( ( data.data && data.data.message ) || I18N.submitError );
 		}
 	} catch ( err ) {
 		setPublishing( false );
-		showErr( '<?php echo esc_js( __( 'Network error. Please check your connection.', '6arshid-social-community-main' ) ); ?>' );
+		showErr( I18N.networkErrorConn );
 	}
 }
 
@@ -823,4 +846,5 @@ if ( publishBtn ) publishBtn.addEventListener( 'click', () => submitListing( 'pu
 if ( draftBtn )   draftBtn.addEventListener( 'click',   () => submitListing( 'draft' ) );
 
 })();
-</script>
+ENDMKTJS;
+wp_add_inline_script( 'arshid6social-main', $mkt_form_js );

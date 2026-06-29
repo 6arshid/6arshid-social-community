@@ -235,7 +235,9 @@ class Media_Handler {
 			return 0;
 		}
 
-		require_once ABSPATH . 'wp-admin/includes/image.php';
+		if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+		}
 
 		$attachment = array(
 			'guid'           => $file_url ?: $file_path,

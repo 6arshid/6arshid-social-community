@@ -35,11 +35,13 @@ $dark_css = '
 #arshid6social-notifications-page .arshid6social-notif-desc { color: #f1f5f9 !important; }
 ';
 ?>
-<?php if ( $is_dark ) : ?>
-<style><?php echo $dark_css; // phpcs:ignore WordPress.Security.EscapeOutput ?></style>
-<?php elseif ( $is_auto ) : ?>
-<style>@media (prefers-color-scheme: dark) { <?php echo $dark_css; // phpcs:ignore WordPress.Security.EscapeOutput ?> }</style>
-<?php endif; ?>
+<?php
+if ( $is_dark ) {
+	wp_add_inline_style( 'arshid6social-main', $dark_css );
+} elseif ( $is_auto ) {
+	wp_add_inline_style( 'arshid6social-main', '@media (prefers-color-scheme: dark) { ' . $dark_css . ' }' );
+}
+?>
 <div id="arshid6social-notifications-page" class="arshid6social-notif-standalone-page<?php echo $is_dark ? ' arshid6social-is-dark' : ''; ?>">
 
 	<!-- Header bar -->

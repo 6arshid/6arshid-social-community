@@ -354,93 +354,115 @@ if ( ! array_key_exists( $current_tab, $tabs ) ) {
 					</button>
 				</div>
 
-				<script>
-				( function () {
-					// Edit group form.
-					const editForm = document.querySelector( '.arshid6social-edit-group-form' );
-					const msgBox   = document.getElementById( 'arshid6social-edit-group-msg' );
-					const cfg      = window.ARSHID6SOCIALConfig || {};
+				<?php
+				$groups_single_cfg = array(
+					'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
+					'groupsUrl' => home_url( '/groups/' ),
+					'i18n'      => array(
+						'saving'         => __( 'Saving…', '6arshid-social-community-main' ),
+						'saved'          => __( 'Saved.', '6arshid-social-community-main' ),
+						'couldNotSave'   => __( 'Could not save.', '6arshid-social-community-main' ),
+						'networkError'   => __( 'Network error. Please try again.', '6arshid-social-community-main' ),
+						'saveChanges'    => __( 'Save Changes', '6arshid-social-community-main' ),
+						'confirmDelete'  => __( 'Are you sure you want to delete this group? This cannot be undone.', '6arshid-social-community-main' ),
+						'deleting'       => __( 'Deleting…', '6arshid-social-community-main' ),
+						'couldNotDelete' => __( 'Could not delete group.', '6arshid-social-community-main' ),
+						'deleteGroup'    => __( 'Delete Group', '6arshid-social-community-main' ),
+					),
+				);
+				wp_add_inline_script( 'arshid6social-main', 'var ARSHID6SOCIALGroupsSingle=' . wp_json_encode( $groups_single_cfg ) . ';' );
+				$groups_single_js = <<<'ENDGRPJS'
+( function () {
+	const CFG    = window.ARSHID6SOCIALGroupsSingle || {};
+	const I18N   = CFG.i18n || {};
+	const cfg    = window.ARSHID6SOCIALConfig || {};
+	const AJAX   = cfg.ajaxUrl || CFG.ajaxUrl || '';
 
-					if ( editForm ) {
-						editForm.addEventListener( 'submit', async ( e ) => {
-							e.preventDefault();
-							const btn = editForm.querySelector( '[type="submit"]' );
-							btn.disabled = true;
-							btn.textContent = '<?php echo esc_js( __( 'Saving…', '6arshid-social-community-main' ) ); ?>';
-							if ( msgBox ) { msgBox.hidden = true; msgBox.className = 'arshid6social-notice'; }
+	// Edit group form.
+	const editForm = document.querySelector( '.arshid6social-edit-group-form' );
+	const msgBox   = document.getElementById( 'arshid6social-edit-group-msg' );
 
-							const body = new FormData();
-							body.append( 'action',      'arshid6social_update_group' );
-							body.append( 'nonce',       cfg.ajaxNonce || '' );
-							body.append( 'group_id',    editForm.querySelector( '[name="group_id"]' ).value );
-							body.append( 'name',        editForm.querySelector( '[name="name"]' ).value );
-							body.append( 'description', editForm.querySelector( '[name="description"]' ).value );
-							body.append( 'status',      editForm.querySelector( '[name="status"]' ).value );
+	if ( editForm ) {
+		editForm.addEventListener( 'submit', async ( e ) => {
+			e.preventDefault();
+			const btn = editForm.querySelector( '[type="submit"]' );
+			btn.disabled = true;
+			btn.textContent = I18N.saving;
+			if ( msgBox ) { msgBox.hidden = true; msgBox.className = 'arshid6social-notice'; }
 
-							try {
-								const res  = await fetch( cfg.ajaxUrl || '<?php echo esc_js( admin_url( 'admin-ajax.php' ) ); ?>', { method: 'POST', body } );
-								const data = await res.json();
-								if ( data.success ) {
-									if ( msgBox ) {
-										msgBox.textContent = data.data?.message || '<?php echo esc_js( __( 'Saved.', '6arshid-social-community-main' ) ); ?>';
-										msgBox.classList.add( 'arshid6social-notice--success' );
-										msgBox.hidden = false;
-									}
-								} else {
-									if ( msgBox ) {
-										msgBox.textContent = data.data?.message || '<?php echo esc_js( __( 'Could not save.', '6arshid-social-community-main' ) ); ?>';
-										msgBox.classList.add( 'arshid6social-notice--error' );
-										msgBox.hidden = false;
-									}
-								}
-							} catch {
-								if ( msgBox ) {
-									msgBox.textContent = '<?php echo esc_js( __( 'Network error. Please try again.', '6arshid-social-community-main' ) ); ?>';
-									msgBox.classList.add( 'arshid6social-notice--error' );
-									msgBox.hidden = false;
-								}
-							} finally {
-								btn.disabled = false;
-								btn.textContent = '<?php echo esc_js( __( 'Save Changes', '6arshid-social-community-main' ) ); ?>';
-							}
-						} );
+			const body = new FormData();
+			body.append( 'action',      'arshid6social_update_group' );
+			body.append( 'nonce',       cfg.ajaxNonce || '' );
+			body.append( 'group_id',    editForm.querySelector( '[name="group_id"]' ).value );
+			body.append( 'name',        editForm.querySelector( '[name="name"]' ).value );
+			body.append( 'description', editForm.querySelector( '[name="description"]' ).value );
+			body.append( 'status',      editForm.querySelector( '[name="status"]' ).value );
+
+			try {
+				const res  = await fetch( AJAX, { method: 'POST', body } );
+				const data = await res.json();
+				if ( data.success ) {
+					if ( msgBox ) {
+						msgBox.textContent = data.data?.message || I18N.saved;
+						msgBox.classList.add( 'arshid6social-notice--success' );
+						msgBox.hidden = false;
 					}
-
-					// Delete group button.
-					const delBtn = document.querySelector( '.arshid6social-group-delete-btn' );
-					if ( delBtn ) {
-						delBtn.addEventListener( 'click', async () => {
-							const name = delBtn.dataset.groupName || '';
-							if ( ! window.confirm( '<?php echo esc_js( __( 'Are you sure you want to delete this group? This cannot be undone.', '6arshid-social-community-main' ) ); ?>' ) ) {
-								return;
-							}
-							delBtn.disabled = true;
-							delBtn.textContent = '<?php echo esc_js( __( 'Deleting…', '6arshid-social-community-main' ) ); ?>';
-
-							const body = new FormData();
-							body.append( 'action',   'arshid6social_delete_group' );
-							body.append( 'nonce',    delBtn.dataset.nonce );
-							body.append( 'group_id', delBtn.dataset.groupId );
-
-							try {
-								const res  = await fetch( cfg.ajaxUrl || '<?php echo esc_js( admin_url( 'admin-ajax.php' ) ); ?>', { method: 'POST', body } );
-								const data = await res.json();
-								if ( data.success ) {
-									window.location.href = delBtn.dataset.redirect || '<?php echo esc_js( home_url( '/groups/' ) ); ?>';
-								} else {
-									alert( data.data?.message || '<?php echo esc_js( __( 'Could not delete group.', '6arshid-social-community-main' ) ); ?>' );
-									delBtn.disabled = false;
-									delBtn.textContent = '<?php echo esc_js( __( 'Delete Group', '6arshid-social-community-main' ) ); ?>';
-								}
-							} catch {
-								alert( '<?php echo esc_js( __( 'Network error. Please try again.', '6arshid-social-community-main' ) ); ?>' );
-								delBtn.disabled = false;
-								delBtn.textContent = '<?php echo esc_js( __( 'Delete Group', '6arshid-social-community-main' ) ); ?>';
-							}
-						} );
+				} else {
+					if ( msgBox ) {
+						msgBox.textContent = data.data?.message || I18N.couldNotSave;
+						msgBox.classList.add( 'arshid6social-notice--error' );
+						msgBox.hidden = false;
 					}
-				} )();
-				</script>
+				}
+			} catch {
+				if ( msgBox ) {
+					msgBox.textContent = I18N.networkError;
+					msgBox.classList.add( 'arshid6social-notice--error' );
+					msgBox.hidden = false;
+				}
+			} finally {
+				btn.disabled = false;
+				btn.textContent = I18N.saveChanges;
+			}
+		} );
+	}
+
+	// Delete group button.
+	const delBtn = document.querySelector( '.arshid6social-group-delete-btn' );
+	if ( delBtn ) {
+		delBtn.addEventListener( 'click', async () => {
+			if ( ! window.confirm( I18N.confirmDelete ) ) {
+				return;
+			}
+			delBtn.disabled = true;
+			delBtn.textContent = I18N.deleting;
+
+			const body = new FormData();
+			body.append( 'action',   'arshid6social_delete_group' );
+			body.append( 'nonce',    delBtn.dataset.nonce );
+			body.append( 'group_id', delBtn.dataset.groupId );
+
+			try {
+				const res  = await fetch( AJAX, { method: 'POST', body } );
+				const data = await res.json();
+				if ( data.success ) {
+					window.location.href = delBtn.dataset.redirect || CFG.groupsUrl || '/groups/';
+				} else {
+					alert( data.data?.message || I18N.couldNotDelete );
+					delBtn.disabled = false;
+					delBtn.textContent = I18N.deleteGroup;
+				}
+			} catch {
+				alert( I18N.networkError );
+				delBtn.disabled = false;
+				delBtn.textContent = I18N.deleteGroup;
+			}
+		} );
+	}
+} )();
+ENDGRPJS;
+				wp_add_inline_script( 'arshid6social-main', $groups_single_js );
+				?>
 
 			<?php endif; ?>
 

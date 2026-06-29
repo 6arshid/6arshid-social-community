@@ -24,13 +24,10 @@ const BI_VERSION = '1.11.3';
 const ZIP_URL    = 'https://github.com/twbs/icons/releases/download/v' . BI_VERSION . '/bootstrap-icons-' . BI_VERSION . '.zip';
 const OUT_FILE   = __DIR__ . '/../assets/icons/bootstrap-icons.json';
 
-// ── Direct-access protection / CLI only ────────────────────────────────────────
-
-if ( ! defined( 'ABSPATH' ) ) {
-	// Allow CLI execution; block all other direct web access.
-	if ( 'cli' !== PHP_SAPI ) {
-		exit;
-	}
+// ── Direct-access protection ────────────────────────────────────────────────
+// Block direct web access. Allow CLI execution for development builds.
+if ( ! defined( 'ABSPATH' ) && 'cli' !== PHP_SAPI ) {
+	exit;
 }
 
 echo "Downloading Bootstrap Icons v" . BI_VERSION . "…\n";

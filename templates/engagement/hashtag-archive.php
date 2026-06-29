@@ -72,7 +72,13 @@ $post_count  = (int) $hashtag->post_count;
 </div>
 </div>
 
-<script>
+<?php
+$hashtag_i18n = array(
+	'following' => __( 'Following', '6arshid-social-community-main' ),
+	'follow'    => __( 'Follow', '6arshid-social-community-main' ),
+);
+wp_add_inline_script( 'arshid6social-main', 'var ARSHID6SOCIALHashtagArchiveI18n=' . wp_json_encode( $hashtag_i18n ) . ';' );
+$hashtag_archive_js = <<<'ENDHASHJSBLK'
 // Prevent any non-hashtag activity blocks on this page from loading all activities.
 document.addEventListener( 'DOMContentLoaded', function () {
 	document.querySelectorAll( '.arshid6social-activity-block:not([data-hashtag])' ).forEach( function ( el ) {
@@ -82,7 +88,8 @@ document.addEventListener( 'DOMContentLoaded', function () {
 } );
 
 ( function () {
-	const btn = document.querySelector( '.arshid6social-hashtag-follow-btn' );
+	const I18N = window.ARSHID6SOCIALHashtagArchiveI18n || {};
+	const btn  = document.querySelector( '.arshid6social-hashtag-follow-btn' );
 	if ( ! btn ) return;
 
 	btn.addEventListener( 'click', function () {
@@ -100,9 +107,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 				const nowFollowing = ! followed;
 				btn.dataset.followed = nowFollowing ? '1' : '0';
 				btn.setAttribute( 'aria-pressed', nowFollowing ? 'true' : 'false' );
-				btn.textContent = nowFollowing
-					? <?php echo wp_json_encode( __( 'Following', '6arshid-social-community-main' ) ); ?>
-					: <?php echo wp_json_encode( __( 'Follow', '6arshid-social-community-main' ) ); ?>;
+				btn.textContent = nowFollowing ? I18N.following : I18N.follow;
 				btn.classList.toggle( 'arshid6social-btn-primary',   ! nowFollowing );
 				btn.classList.toggle( 'arshid6social-btn-secondary', nowFollowing );
 				btn.classList.toggle( 'arshid6social-hashtag-following', nowFollowing );
@@ -111,4 +116,6 @@ document.addEventListener( 'DOMContentLoaded', function () {
 			.finally( () => { btn.disabled = false; } );
 	} );
 } )();
-</script>
+ENDHASHJSBLK;
+wp_add_inline_script( 'arshid6social-main', $hashtag_archive_js );
+?>

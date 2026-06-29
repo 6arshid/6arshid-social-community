@@ -123,15 +123,33 @@ class Engagement_Settings {
 		);
 
 		foreach ( $options as $opt ) {
-			register_setting( 'arshid6social_engagement', $opt, array( $this, 'sanitize' ) );
+			register_setting( 'arshid6social_engagement', $opt, array(
+				'type'              => 'string',
+				'sanitize_callback' => array( $this, 'sanitize' ),
+			) );
 		}
 
 		// Special-case sanitizers for social-embed fields.
-		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_banned_domains', 'sanitize_textarea_field' );
-		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_max_per_post', 'absint' );
-		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_cache_hours', 'absint' );
-		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_fb_token', 'sanitize_text_field' );
-		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_ig_token', 'sanitize_text_field' );
+		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_banned_domains', array(
+			'type'              => 'string',
+			'sanitize_callback' => 'sanitize_textarea_field',
+		) );
+		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_max_per_post', array(
+			'type'              => 'integer',
+			'sanitize_callback' => 'absint',
+		) );
+		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_cache_hours', array(
+			'type'              => 'integer',
+			'sanitize_callback' => 'absint',
+		) );
+		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_fb_token', array(
+			'type'              => 'string',
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
+		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_ig_token', array(
+			'type'              => 'string',
+			'sanitize_callback' => 'sanitize_text_field',
+		) );
 	}
 
 	public function sanitize( mixed $value ): mixed {

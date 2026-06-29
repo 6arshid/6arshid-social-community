@@ -257,18 +257,18 @@ This plugin connects to several third-party services to deliver certain features
 
 == Installation ==
 
-1. Upload the `social-network-6` folder to `/wp-content/plugins/`
+1. Upload the `6arshid-social-community` folder to `/wp-content/plugins/`
 2. Activate the plugin through the **Plugins** menu in WordPress
 3. Follow the setup wizard that appears after activation
-4. Configure components and settings at **Social Network → Settings**
+4. Configure components and settings at **6arshid Social Community → Settings**
 
 == Frequently Asked Questions ==
 
 = Can I disable specific features? =
-Yes. Go to **Social Network → Settings → Components** and toggle each feature on or off.
+Yes. Go to **6arshid Social Community → Settings → Components** and toggle each feature on or off.
 
 = How do I override a template? =
-Copy the template file from `social-network-6/templates/` into your theme at `{your-theme}/social-network/` with the same relative path.
+Copy the template file from `6arshid-social-community/templates/` into your theme at `{your-theme}/social-network/` with the same relative path.
 
 = Is it compatible with BuddyPress? =
 6Arshid Social Community is an independent plugin and does not require BuddyPress. A data migration tool from BuddyPress is included in the admin Tools page.
@@ -318,6 +318,11 @@ When GIF comments are enabled, this plugin queries the GIPHY API to display tren
 * Privacy Policy: https://support.giphy.com/hc/en-us/articles/360032872931
 * Terms of Service: https://support.giphy.com/hc/en-us/articles/360020027752
 
+= Tenor =
+When the GIF provider is set to Tenor in Engagement settings, this plugin queries the Tenor API (tenor.googleapis.com) to display trending and searchable GIFs. The user's search query and a generated anonymous client ID are sent to Tenor's servers. This happens when a user opens the GIF picker in comments.
+* Service: https://tenor.com
+* Privacy Policy: https://policies.google.com/privacy
+* Terms of Service: https://policies.google.com/terms
 
 = Social Embeds (YouTube, Vimeo, X / Twitter, Instagram, Facebook, TikTok, Spotify, SoundCloud, Pinterest, Reddit, Twitch, Dailymotion, Apple Music / Podcasts, LinkedIn, Telegram, Threads, Bluesky, Aparat) =
 When Social Embeds are enabled and a user pastes a supported URL into a post, comment, or message, this plugin fetches oEmbed data or Open Graph metadata from the respective platform. The URL is sent to the platform's servers only when an embed is requested. Each provider can be individually enabled or disabled in Settings → Engagement.

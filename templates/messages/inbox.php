@@ -73,7 +73,9 @@ $_arshid6social_config = array(
 	),
 );
 ?>
-<style>.socialnetworksix-right{display:none!important}.socialnetworksix-shell{grid-template-columns:var(--a6sc-sidebar-w,275px) 1fr!important}@media(max-width:1280px){.socialnetworksix-shell{grid-template-columns:88px 1fr!important}}@media(max-width:700px){.socialnetworksix-shell{grid-template-columns:1fr!important}}.arshid6social-messages-layout,.arshid6social-thread-list,.arshid6social-thread-list__header,.arshid6social-message-pane,.arshid6social-message-pane__header{background:var(--a6sc-bg,#000)!important}#arshid6social-thread-list-inner{background:var(--a6sc-bg,#000)}</style>
+<?php
+wp_add_inline_style( 'arshid6social-main', '.socialnetworksix-right{display:none!important}.socialnetworksix-shell{grid-template-columns:var(--a6sc-sidebar-w,275px) 1fr!important}@media(max-width:1280px){.socialnetworksix-shell{grid-template-columns:88px 1fr!important}}@media(max-width:700px){.socialnetworksix-shell{grid-template-columns:1fr!important}}.arshid6social-messages-layout,.arshid6social-thread-list,.arshid6social-thread-list__header,.arshid6social-message-pane,.arshid6social-message-pane__header{background:var(--a6sc-bg,#000)!important}#arshid6social-thread-list-inner{background:var(--a6sc-bg,#000)}' );
+?>
 <div class="arshid6social-directory-wrap" id="arshid6social-messages-page"
 	data-arshid6social-cfg="<?php echo esc_attr( wp_json_encode( $_arshid6social_config, JSON_UNESCAPED_UNICODE ) ); ?>"
 >

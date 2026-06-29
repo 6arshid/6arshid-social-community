@@ -146,7 +146,10 @@ class Marketplace_Settings {
 		);
 
 		foreach ( $options as $option_name ) {
-			register_setting( $group, $option_name, array( $this, 'sanitize_option' ) );
+			register_setting( $group, $option_name, array(
+				'type'              => 'string',
+				'sanitize_callback' => array( $this, 'sanitize_option' ),
+			) );
 		}
 	}
 

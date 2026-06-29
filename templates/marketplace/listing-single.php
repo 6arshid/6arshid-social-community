@@ -303,125 +303,104 @@ $status_label = array(
 
 </div><!-- .arshid6social-mkt-single -->
 
-<style id="arshid6social-mkt-single-styles">
-:root {
-	--mkt-primary: <?php echo esc_attr( get_option( 'arshid6social_primary_color', '#2563eb' ) ); ?>;
-	--mkt-radius:  10px;
-	--mkt-border:  #e2e8f0;
-	--mkt-text:    #0f172a;
-	--mkt-muted:   #64748b;
-	--mkt-bg:      #f8fafc;
-	--mkt-error:   #dc2626;
+<?php
+$mkt_single_primary = sanitize_hex_color( get_option( 'arshid6social_primary_color', '#2563eb' ) ) ?: '#2563eb';
+$mkt_single_css     =
+	':root{--mkt-primary:' . esc_attr( $mkt_single_primary ) . ';--mkt-radius:10px;--mkt-border:#e2e8f0;--mkt-text:#0f172a;--mkt-muted:#64748b;--mkt-bg:#f8fafc;--mkt-error:#dc2626}' .
+	'.arshid6social-dark-mode{--mkt-border:#334155;--mkt-text:#f1f5f9;--mkt-muted:#94a3b8;--mkt-bg:#1e293b}' .
+	'.arshid6social-mkt-single{max-width:1100px;margin:0 auto;padding:0 16px 60px}' .
+	'.arshid6social-mkt-breadcrumb{display:flex;align-items:center;gap:8px;font-size:.8125rem;color:var(--mkt-muted);margin:20px 0 16px;flex-wrap:wrap}' .
+	'.arshid6social-mkt-breadcrumb a{color:var(--mkt-muted);text-decoration:none}' .
+	'.arshid6social-mkt-breadcrumb a:hover{color:var(--mkt-primary)}' .
+	'.arshid6social-mkt-breadcrumb span:last-child{color:var(--mkt-text);font-weight:500}' .
+	'.arshid6social-mkt-status-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-radius:var(--mkt-radius);margin-bottom:16px;font-size:.875rem;font-weight:500}' .
+	'.arshid6social-mkt-status-bar--pending{background:#fffbeb;border:1px solid #fde68a;color:#92400e}' .
+	'.arshid6social-mkt-status-bar--sold{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}' .
+	'.arshid6social-mkt-status-bar--draft,.arshid6social-mkt-status-bar--archived{background:#f8fafc;border:1px solid var(--mkt-border);color:var(--mkt-muted)}' .
+	'.arshid6social-mkt-single-layout{display:grid;grid-template-columns:1fr 400px;gap:32px;align-items:start}' .
+	'@media(max-width:860px){.arshid6social-mkt-single-layout{grid-template-columns:1fr}}' .
+	'.arshid6social-mkt-gallery-main{border-radius:var(--mkt-radius);overflow:hidden;background:var(--mkt-bg);border:1px solid var(--mkt-border);position:relative}' .
+	'.arshid6social-mkt-gallery-main-img{width:100%;height:420px;object-fit:cover;display:block;cursor:zoom-in;transition:opacity .2s}' .
+	'.arshid6social-mkt-sold-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.4)}' .
+	'.arshid6social-mkt-sold-overlay span{background:#dc2626;color:#fff;padding:10px 28px;font-size:1.5rem;font-weight:900;letter-spacing:.1em;border-radius:6px;transform:rotate(-8deg)}' .
+	'.arshid6social-mkt-gallery-thumbs{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}' .
+	'.arshid6social-mkt-gallery-thumb{width:72px;height:72px;border-radius:8px;overflow:hidden;border:2px solid var(--mkt-border);padding:0;cursor:pointer;transition:border-color .15s;flex-shrink:0}' .
+	'.arshid6social-mkt-gallery-thumb img{width:100%;height:100%;object-fit:cover;display:block}' .
+	'.arshid6social-mkt-gallery-thumb.is-active{border-color:var(--mkt-primary)}' .
+	'.arshid6social-mkt-gallery-placeholder{border-radius:var(--mkt-radius);background:var(--mkt-bg);border:1px solid var(--mkt-border);height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--mkt-muted)}' .
+	'.arshid6social-mkt-single-details{display:flex;flex-direction:column;gap:20px}' .
+	'.arshid6social-mkt-s-price-wrap{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}' .
+	'.arshid6social-mkt-s-price{font-size:2rem;font-weight:800;color:var(--mkt-primary);line-height:1}' .
+	'.arshid6social-mkt-s-free{font-size:2rem;font-weight:800;color:#16a34a;line-height:1}' .
+	'.arshid6social-mkt-s-neg{font-size:.875rem;font-weight:600;color:var(--mkt-muted);padding:3px 10px;border:1px solid var(--mkt-border);border-radius:20px}' .
+	'.arshid6social-mkt-s-title{font-size:1.375rem;font-weight:700;color:var(--mkt-text);margin:0}' .
+	'.arshid6social-mkt-s-meta{display:flex;align-items:center;flex-wrap:wrap;gap:12px;font-size:.8125rem;color:var(--mkt-muted)}' .
+	'.arshid6social-mkt-s-meta>span{display:inline-flex;align-items:center;gap:4px}' .
+	'.arshid6social-mkt-s-condition-badge{background:var(--mkt-bg);border:1px solid var(--mkt-border);color:var(--mkt-text);padding:3px 10px;border-radius:20px;font-weight:500;font-size:.8rem}' .
+	'.arshid6social-mkt-s-actions{display:flex;flex-direction:column;gap:10px}' .
+	'.arshid6social-mkt-btn--full{width:100%;justify-content:center}' .
+	'.arshid6social-mkt-s-secondary-actions{display:flex;gap:8px}' .
+	'.arshid6social-mkt-s-icon-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border:1px solid var(--mkt-border);border-radius:var(--mkt-radius);background:#fff;cursor:pointer;font-size:.8125rem;color:var(--mkt-text);font-weight:500;transition:border-color .15s,color .15s;flex:1;justify-content:center}' .
+	'.arshid6social-mkt-s-icon-btn:hover{border-color:var(--mkt-primary);color:var(--mkt-primary)}' .
+	'.arshid6social-mkt-s-icon-btn--danger:hover{border-color:var(--mkt-error);color:var(--mkt-error)}' .
+	'.arshid6social-mkt-s-icon-btn.is-saved{color:#e11d48;border-color:#fda4af}' .
+	'.arshid6social-mkt-s-icon-btn.is-saved svg{stroke:#e11d48}' .
+	'.arshid6social-dark-mode .arshid6social-mkt-s-icon-btn{background:#1e293b}' .
+	'.arshid6social-mkt-seller-card{display:flex;gap:14px;align-items:center;padding:16px;background:var(--mkt-bg);border-radius:var(--mkt-radius);border:1px solid var(--mkt-border)}' .
+	'.arshid6social-mkt-seller-avatar img{border-radius:50%}' .
+	'.arshid6social-mkt-seller-name{display:flex;align-items:center;gap:6px;font-weight:700;color:var(--mkt-text);text-decoration:none;font-size:.9375rem}' .
+	'.arshid6social-mkt-seller-name:hover{color:var(--mkt-primary)}' .
+	'.arshid6social-mkt-seller-since{font-size:.78rem;color:var(--mkt-muted);display:block;margin-top:2px}' .
+	'.arshid6social-mkt-seller-info{display:flex;flex-direction:column}' .
+	'.arshid6social-mkt-s-owner-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:14px 16px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:var(--mkt-radius);font-size:.875rem}' .
+	'.arshid6social-mkt-s-owner-actions{display:flex;gap:8px;flex-wrap:wrap}' .
+	'.arshid6social-mkt-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:var(--mkt-radius);font-size:.9rem;font-weight:600;cursor:pointer;border:2px solid transparent;text-decoration:none;transition:all .15s}' .
+	'.arshid6social-mkt-btn--primary{background:var(--mkt-primary);color:#fff;border-color:var(--mkt-primary)}' .
+	'.arshid6social-mkt-btn--primary:hover{opacity:.88}' .
+	'.arshid6social-mkt-btn--outline{background:transparent;color:var(--mkt-text);border-color:var(--mkt-border)}' .
+	'.arshid6social-mkt-btn--outline:hover{border-color:var(--mkt-primary);color:var(--mkt-primary)}' .
+	'.arshid6social-mkt-btn--danger{background:#dc2626;color:#fff;border-color:#dc2626}' .
+	'.arshid6social-mkt-btn--danger:hover{opacity:.88}' .
+	'.arshid6social-mkt-btn--sm{padding:7px 14px;font-size:.8125rem}' .
+	'.arshid6social-mkt-s-desc-wrap{margin-top:28px}' .
+	'.arshid6social-mkt-s-section-title{font-size:1rem;font-weight:700;color:var(--mkt-text);margin:0 0 12px}' .
+	'.arshid6social-mkt-s-desc{font-size:.9375rem;color:var(--mkt-text);line-height:1.7;white-space:pre-wrap;word-break:break-word}' .
+	'.arshid6social-mkt-safety-tips{display:flex;align-items:flex-start;gap:12px;margin-top:24px;padding:14px 16px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:var(--mkt-radius);color:#166534;font-size:.8125rem}' .
+	'.arshid6social-mkt-safety-tips ul{margin:4px 0 0 16px;padding:0}' .
+	'.arshid6social-mkt-safety-tips li{margin-bottom:2px}' .
+	'[dir="rtl"] .arshid6social-mkt-safety-tips ul{margin-left:0;margin-right:16px}' .
+	'[dir="rtl"] .arshid6social-mkt-breadcrumb{direction:rtl}' .
+	'.arshid6social-mkt-toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:#1e293b;color:#fff;padding:12px 20px;border-radius:8px;font-size:.9rem;box-shadow:0 4px 20px rgba(0,0,0,.25);opacity:0;transition:opacity .3s,transform .3s;z-index:99999;white-space:nowrap;pointer-events:none}' .
+	'.arshid6social-mkt-toast a{pointer-events:auto}' .
+	'.arshid6social-mkt-toast--visible{opacity:1;transform:translateX(-50%) translateY(0)}' .
+	'.arshid6social-mkt-toast--success{background:#166534}' .
+	'.arshid6social-mkt-toast--info{background:#1e40af}';
+if ( ! wp_style_is( 'arshid6social-mkt-single-inline', 'registered' ) ) {
+	wp_register_style( 'arshid6social-mkt-single-inline', false, array( 'arshid6social-main' ), null );
+	wp_enqueue_style( 'arshid6social-mkt-single-inline' );
+	wp_style_add_data( 'arshid6social-mkt-single-inline', 'group', 1 );
 }
-.arshid6social-dark-mode { --mkt-border:#334155; --mkt-text:#f1f5f9; --mkt-muted:#94a3b8; --mkt-bg:#1e293b; }
+wp_add_inline_style( 'arshid6social-mkt-single-inline', $mkt_single_css );
 
-/* Wrap */
-.arshid6social-mkt-single { max-width:1100px; margin:0 auto; padding:0 16px 60px; }
-
-/* Breadcrumb */
-.arshid6social-mkt-breadcrumb { display:flex; align-items:center; gap:8px; font-size:.8125rem; color:var(--mkt-muted); margin:20px 0 16px; flex-wrap:wrap; }
-.arshid6social-mkt-breadcrumb a { color:var(--mkt-muted); text-decoration:none; }
-.arshid6social-mkt-breadcrumb a:hover { color:var(--mkt-primary); }
-.arshid6social-mkt-breadcrumb span:last-child { color:var(--mkt-text); font-weight:500; }
-
-/* Status bar */
-.arshid6social-mkt-status-bar { display:flex; align-items:center; gap:8px; padding:12px 16px; border-radius:var(--mkt-radius); margin-bottom:16px; font-size:.875rem; font-weight:500; }
-.arshid6social-mkt-status-bar--pending  { background:#fffbeb; border:1px solid #fde68a; color:#92400e; }
-.arshid6social-mkt-status-bar--sold     { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; }
-.arshid6social-mkt-status-bar--draft    { background:#f8fafc; border:1px solid var(--mkt-border); color:var(--mkt-muted); }
-.arshid6social-mkt-status-bar--archived { background:#f8fafc; border:1px solid var(--mkt-border); color:var(--mkt-muted); }
-
-/* Two-column layout */
-.arshid6social-mkt-single-layout { display:grid; grid-template-columns:1fr 400px; gap:32px; align-items:start; }
-@media (max-width:860px) { .arshid6social-mkt-single-layout { grid-template-columns:1fr; } }
-
-/* Gallery */
-.arshid6social-mkt-gallery-main { border-radius:var(--mkt-radius); overflow:hidden; background:var(--mkt-bg); border:1px solid var(--mkt-border); position:relative; }
-.arshid6social-mkt-gallery-main-img { width:100%; height:420px; object-fit:cover; display:block; cursor:zoom-in; transition:opacity .2s; }
-.arshid6social-mkt-sold-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.4); }
-.arshid6social-mkt-sold-overlay span { background:#dc2626; color:#fff; padding:10px 28px; font-size:1.5rem; font-weight:900; letter-spacing:.1em; border-radius:6px; transform:rotate(-8deg); }
-.arshid6social-mkt-gallery-thumbs { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
-.arshid6social-mkt-gallery-thumb { width:72px; height:72px; border-radius:8px; overflow:hidden; border:2px solid var(--mkt-border); padding:0; cursor:pointer; transition:border-color .15s; flex-shrink:0; }
-.arshid6social-mkt-gallery-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
-.arshid6social-mkt-gallery-thumb.is-active { border-color:var(--mkt-primary); }
-.arshid6social-mkt-gallery-placeholder { border-radius:var(--mkt-radius); background:var(--mkt-bg); border:1px solid var(--mkt-border); height:320px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; color:var(--mkt-muted); }
-
-/* Details panel */
-.arshid6social-mkt-single-details { display:flex; flex-direction:column; gap:20px; }
-.arshid6social-mkt-s-price-wrap { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
-.arshid6social-mkt-s-price  { font-size:2rem; font-weight:800; color:var(--mkt-primary); line-height:1; }
-.arshid6social-mkt-s-free   { font-size:2rem; font-weight:800; color:#16a34a; line-height:1; }
-.arshid6social-mkt-s-neg    { font-size:.875rem; font-weight:600; color:var(--mkt-muted); padding:3px 10px; border:1px solid var(--mkt-border); border-radius:20px; }
-.arshid6social-mkt-s-title  { font-size:1.375rem; font-weight:700; color:var(--mkt-text); margin:0; }
-.arshid6social-mkt-s-meta   { display:flex; align-items:center; flex-wrap:wrap; gap:12px; font-size:.8125rem; color:var(--mkt-muted); }
-.arshid6social-mkt-s-meta > span { display:inline-flex; align-items:center; gap:4px; }
-.arshid6social-mkt-s-condition-badge { background:var(--mkt-bg); border:1px solid var(--mkt-border); color:var(--mkt-text); padding:3px 10px; border-radius:20px; font-weight:500; font-size:.8rem; }
-
-/* Action buttons */
-.arshid6social-mkt-s-actions { display:flex; flex-direction:column; gap:10px; }
-.arshid6social-mkt-btn--full { width:100%; justify-content:center; }
-.arshid6social-mkt-s-secondary-actions { display:flex; gap:8px; }
-.arshid6social-mkt-s-icon-btn { display:inline-flex; align-items:center; gap:6px; padding:9px 14px; border:1px solid var(--mkt-border); border-radius:var(--mkt-radius); background:#fff; cursor:pointer; font-size:.8125rem; color:var(--mkt-text); font-weight:500; transition:border-color .15s, color .15s; flex:1; justify-content:center; }
-.arshid6social-mkt-s-icon-btn:hover { border-color:var(--mkt-primary); color:var(--mkt-primary); }
-.arshid6social-mkt-s-icon-btn--danger:hover { border-color:var(--mkt-error); color:var(--mkt-error); }
-.arshid6social-mkt-s-icon-btn.is-saved { color:#e11d48; border-color:#fda4af; }
-.arshid6social-mkt-s-icon-btn.is-saved svg { stroke:#e11d48; }
-.arshid6social-dark-mode .arshid6social-mkt-s-icon-btn { background:#1e293b; }
-
-/* Seller card */
-.arshid6social-mkt-seller-card { display:flex; gap:14px; align-items:center; padding:16px; background:var(--mkt-bg); border-radius:var(--mkt-radius); border:1px solid var(--mkt-border); }
-.arshid6social-mkt-seller-avatar img { border-radius:50%; }
-.arshid6social-mkt-seller-name { display:flex; align-items:center; gap:6px; font-weight:700; color:var(--mkt-text); text-decoration:none; font-size:.9375rem; }
-.arshid6social-mkt-seller-name:hover { color:var(--mkt-primary); }
-.arshid6social-mkt-seller-since { font-size:.78rem; color:var(--mkt-muted); display:block; margin-top:2px; }
-.arshid6social-mkt-seller-info { display:flex; flex-direction:column; }
-
-/* Owner bar */
-.arshid6social-mkt-s-owner-bar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; padding:14px 16px; background:#f0f9ff; border:1px solid #bae6fd; border-radius:var(--mkt-radius); font-size:.875rem; }
-.arshid6social-mkt-s-owner-actions { display:flex; gap:8px; flex-wrap:wrap; }
-
-/* Buttons */
-.arshid6social-mkt-btn { display:inline-flex; align-items:center; gap:6px; padding:10px 18px; border-radius:var(--mkt-radius); font-size:.9rem; font-weight:600; cursor:pointer; border:2px solid transparent; text-decoration:none; transition:all .15s; }
-.arshid6social-mkt-btn--primary { background:var(--mkt-primary); color:#fff; border-color:var(--mkt-primary); }
-.arshid6social-mkt-btn--primary:hover { opacity:.88; }
-.arshid6social-mkt-btn--outline { background:transparent; color:var(--mkt-text); border-color:var(--mkt-border); }
-.arshid6social-mkt-btn--outline:hover { border-color:var(--mkt-primary); color:var(--mkt-primary); }
-.arshid6social-mkt-btn--danger { background:#dc2626; color:#fff; border-color:#dc2626; }
-.arshid6social-mkt-btn--danger:hover { opacity:.88; }
-.arshid6social-mkt-btn--sm { padding:7px 14px; font-size:.8125rem; }
-
-/* Description */
-.arshid6social-mkt-s-desc-wrap { margin-top:28px; }
-.arshid6social-mkt-s-section-title { font-size:1rem; font-weight:700; color:var(--mkt-text); margin:0 0 12px; }
-.arshid6social-mkt-s-desc { font-size:.9375rem; color:var(--mkt-text); line-height:1.7; white-space:pre-wrap; word-break:break-word; }
-
-/* Safety tips */
-.arshid6social-mkt-safety-tips { display:flex; align-items:flex-start; gap:12px; margin-top:24px; padding:14px 16px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:var(--mkt-radius); color:#166534; font-size:.8125rem; }
-.arshid6social-mkt-safety-tips ul { margin:4px 0 0 16px; padding:0; }
-.arshid6social-mkt-safety-tips li { margin-bottom:2px; }
-
-/* RTL */
-[dir="rtl"] .arshid6social-mkt-safety-tips ul { margin-left:0; margin-right:16px; }
-[dir="rtl"] .arshid6social-mkt-breadcrumb { direction:rtl; }
-
-/* Toast notification */
-.arshid6social-mkt-toast {
-	position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px);
-	background:#1e293b; color:#fff; padding:12px 20px; border-radius:8px;
-	font-size:.9rem; box-shadow:0 4px 20px rgba(0,0,0,.25);
-	opacity:0; transition:opacity .3s,transform .3s; z-index:99999;
-	white-space:nowrap; pointer-events:none;
-}
-.arshid6social-mkt-toast a { pointer-events:auto; }
-.arshid6social-mkt-toast--visible { opacity:1; transform:translateX(-50%) translateY(0); }
-.arshid6social-mkt-toast--success { background:#166534; }
-.arshid6social-mkt-toast--info    { background:#1e40af; }
-</style>
-
-<script>
+$mkt_single_i18n = array(
+	'linkCopied'               => __( 'Link copied!', '6arshid-social-community-main' ),
+	'share'                    => __( 'Share', '6arshid-social-community-main' ),
+	'couldNotOpenConversation' => __( 'Could not open conversation.', '6arshid-social-community-main' ),
+	'viewSavedPosts'           => __( 'View saved posts', '6arshid-social-community-main' ),
+	'listingSaved'             => __( 'Listing saved!', '6arshid-social-community-main' ),
+	'removedFromSaved'         => __( 'Removed from saved posts.', '6arshid-social-community-main' ),
+	'whyReporting'             => __( 'Why are you reporting this listing?', '6arshid-social-community-main' ),
+	'reported'                 => __( 'Reported', '6arshid-social-community-main' ),
+	'couldNotSubmitReport'     => __( 'Could not submit report.', '6arshid-social-community-main' ),
+	'markAsSold'               => __( 'Mark this listing as sold?', '6arshid-social-community-main' ),
+	'confirmDelete'            => __( 'Permanently delete this listing? This cannot be undone.', '6arshid-social-community-main' ),
+);
+wp_add_inline_script( 'arshid6social-main', 'var ARSHID6SOCIALMktSingleI18n=' . wp_json_encode( $mkt_single_i18n ) . ';' );
+$mkt_single_js = <<<'ENDMKTSINGLEJS'
 (function () {
 'use strict';
 
+const I18N  = window.ARSHID6SOCIALMktSingleI18n || {};
 const wrap  = document.getElementById( 'arshid6social-mkt-single' );
 if ( ! wrap ) return;
 
@@ -471,8 +450,8 @@ if ( shareBtn ) {
 			try { await navigator.share( { title, url } ); } catch (e) {}
 		} else {
 			await navigator.clipboard.writeText( url ).catch( () => {} );
-			shareBtn.textContent = '<?php echo esc_js( __( 'Link copied!', '6arshid-social-community-main' ) ); ?>';
-			setTimeout( () => { shareBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg><?php echo esc_js( __( 'Share', '6arshid-social-community-main' ) ); ?>'; }, 2500 );
+			shareBtn.textContent = I18N.linkCopied;
+			setTimeout( () => { shareBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' + I18N.share; }, 2500 );
 		}
 	} );
 }
@@ -497,7 +476,7 @@ if ( contactBtn ) {
 			if ( data.success && data.data.thread_uid ) {
 				window.location.href = MESSAGES_URL.replace( /\/?$/, '/' ) + 'thread/' + data.data.thread_uid + '/';
 			} else {
-				alert( data.data?.message || '<?php echo esc_js( __( 'Could not open conversation.', '6arshid-social-community-main' ) ); ?>' );
+				alert( data.data?.message || I18N.couldNotOpenConversation );
 				contactBtn.disabled = false;
 				contactBtn.style.opacity = '';
 			}
@@ -529,11 +508,11 @@ if ( saveBtn ) {
 				saveBtn.classList.toggle( 'is-saved', saved );
 				if ( saved ) {
 					const linkHtml = SAVED_POSTS_URL
-						? ' <a href="' + SAVED_POSTS_URL + '" style="color:inherit;text-decoration:underline;font-weight:600;"><?php echo esc_js( __( 'View saved posts', '6arshid-social-community-main' ) ); ?></a>'
+						? ' <a href="' + SAVED_POSTS_URL + '" style="color:inherit;text-decoration:underline;font-weight:600;">' + I18N.viewSavedPosts + '</a>'
 						: '';
-					ARSHID6SOCIALShowToast( '<?php echo esc_js( __( 'Listing saved!', '6arshid-social-community-main' ) ); ?>' + linkHtml, 'success' );
+					ARSHID6SOCIALShowToast( I18N.listingSaved + linkHtml, 'success' );
 				} else {
-					ARSHID6SOCIALShowToast( '<?php echo esc_js( __( 'Removed from saved posts.', '6arshid-social-community-main' ) ); ?>', 'info' );
+					ARSHID6SOCIALShowToast( I18N.removedFromSaved, 'info' );
 				}
 			}
 		} catch (e) {}
@@ -546,7 +525,7 @@ const reportBtn = document.getElementById( 'arshid6social-mkt-report-btn' );
 if ( reportBtn ) {
 	reportBtn.addEventListener( 'click', async () => {
 		if ( LOGIN_URL ) { window.location.href = LOGIN_URL; return; }
-		const reason = prompt( '<?php echo esc_js( __( 'Why are you reporting this listing?', '6arshid-social-community-main' ) ); ?>' );
+		const reason = prompt( I18N.whyReporting );
 		if ( null === reason ) return;
 		reportBtn.disabled = true;
 		const fd = new FormData();
@@ -558,9 +537,9 @@ if ( reportBtn ) {
 			const res  = await fetch( AJAX, { method: 'POST', body: fd } );
 			const data = await res.json();
 			if ( data.success ) {
-				reportBtn.textContent = '<?php echo esc_js( __( 'Reported', '6arshid-social-community-main' ) ); ?>';
+				reportBtn.textContent = I18N.reported;
 			} else {
-				alert( data.data?.message || '<?php echo esc_js( __( 'Could not submit report.', '6arshid-social-community-main' ) ); ?>' );
+				alert( data.data?.message || I18N.couldNotSubmitReport );
 				reportBtn.disabled = false;
 			}
 		} catch (e) {
@@ -583,7 +562,7 @@ async function changeStatus( listingId, status ) {
 
 document.querySelectorAll( '.arshid6social-mkt-mark-sold' ).forEach( btn => {
 	btn.addEventListener( 'click', () => {
-		if ( confirm( '<?php echo esc_js( __( 'Mark this listing as sold?', '6arshid-social-community-main' ) ); ?>' ) ) {
+		if ( confirm( I18N.markAsSold ) ) {
 			changeStatus( btn.dataset.id, 'sold' );
 		}
 	} );
@@ -595,7 +574,7 @@ document.querySelectorAll( '.arshid6social-mkt-reactivate' ).forEach( btn => {
 // ── Delete listing ────────────────────────────────────────────────────────
 document.querySelectorAll( '.arshid6social-mkt-delete-listing' ).forEach( btn => {
 	btn.addEventListener( 'click', async () => {
-		if ( ! confirm( '<?php echo esc_js( __( 'Permanently delete this listing? This cannot be undone.', '6arshid-social-community-main' ) ); ?>' ) ) return;
+		if ( ! confirm( I18N.confirmDelete ) ) return;
 		const fd = new FormData();
 		fd.append( 'action',     'arshid6social_mkt_delete_listing' );
 		fd.append( 'nonce',      NONCE );
@@ -607,4 +586,6 @@ document.querySelectorAll( '.arshid6social-mkt-delete-listing' ).forEach( btn =>
 } );
 
 })();
-</script>
+ENDMKTSINGLEJS;
+wp_add_inline_script( 'arshid6social-main', $mkt_single_js );
+?>

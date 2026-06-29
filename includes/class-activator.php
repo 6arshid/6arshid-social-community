@@ -1311,9 +1311,8 @@ class Activator {
 		// e.g. /wp-content/uploads/social-network (works for sub-directory installs too).
 		$sn_path = wp_parse_url( $upload_dir['baseurl'] . '/social-network', PHP_URL_PATH );
 
-		// Build admin-ajax URL path relative to server root.
-		$home_path = wp_parse_url( home_url(), PHP_URL_PATH );
-		$ajax_path = ( $home_path ? rtrim( $home_path, '/' ) : '' ) . '/wp-admin/admin-ajax.php';
+		// Build admin-ajax URL path relative to server root dynamically.
+		$ajax_path = wp_parse_url( admin_url( 'admin-ajax.php' ), PHP_URL_PATH );
 
 		$rules = array(
 			'<IfModule mod_rewrite.c>',
