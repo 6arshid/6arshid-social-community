@@ -95,11 +95,11 @@ class Blocking_REST extends \WP_REST_Controller {
 		$reason    = $request->get_param( 'reason' );
 
 		if ( $target_id === $current ) {
-			return new \WP_Error( 'self_block', __( 'You cannot block yourself.', '6arshid-social-community-main' ), array( 'status' => 400 ) );
+			return new \WP_Error( 'self_block', __( 'You cannot block yourself.', '6arshid-social-community' ), array( 'status' => 400 ) );
 		}
 
 		if ( ! arshid6social_check_rate_limit( 'arshid6social_rl_block', $current, 20 ) ) {
-			return new \WP_Error( 'rate_limited', __( 'Too many block actions.', '6arshid-social-community-main' ), array( 'status' => 429 ) );
+			return new \WP_Error( 'rate_limited', __( 'Too many block actions.', '6arshid-social-community' ), array( 'status' => 429 ) );
 		}
 
 		$friends = ARSHID6SOCIAL()->component( 'friends' );

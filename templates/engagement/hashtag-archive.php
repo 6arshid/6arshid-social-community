@@ -35,7 +35,7 @@ $post_count  = (int) $hashtag->post_count;
 					<?php
 					printf(
 						/* translators: %d: number of posts */
-						esc_html( _n( '%d post', '%d posts', $post_count, '6arshid-social-community-main' ) ),
+						esc_html( _n( '%d post', '%d posts', $post_count, '6arshid-social-community' ) ),
 						absint( $post_count )
 					);
 					?>
@@ -50,8 +50,8 @@ $post_count  = (int) $hashtag->post_count;
 					aria-pressed="<?php echo $is_followed ? 'true' : 'false'; ?>"
 				>
 					<?php echo $is_followed
-						? esc_html__( 'Following', '6arshid-social-community-main' )
-						: esc_html__( 'Follow', '6arshid-social-community-main' );
+						? esc_html__( 'Following', '6arshid-social-community' )
+						: esc_html__( 'Follow', '6arshid-social-community' );
 					?>
 				</button>
 			<?php endif; ?>
@@ -64,7 +64,7 @@ $post_count  = (int) $hashtag->post_count;
 		<div class="arshid6social-activity-feed" role="main"
 			aria-label="<?php
 			/* translators: %s: hashtag */
-			echo esc_attr( sprintf( __( 'Posts tagged %s', '6arshid-social-community-main' ), '#' . $slug ) ); ?>">
+			echo esc_attr( sprintf( __( 'Posts tagged %s', '6arshid-social-community' ), '#' . $slug ) ); ?>">
 		</div>
 		<div class="arshid6social-load-more-sentinel" style="height:1px;"></div>
 	</div>
@@ -74,8 +74,8 @@ $post_count  = (int) $hashtag->post_count;
 
 <?php
 $hashtag_i18n = array(
-	'following' => __( 'Following', '6arshid-social-community-main' ),
-	'follow'    => __( 'Follow', '6arshid-social-community-main' ),
+	'following' => __( 'Following', '6arshid-social-community' ),
+	'follow'    => __( 'Follow', '6arshid-social-community' ),
 );
 wp_add_inline_script( 'arshid6social-main', 'var ARSHID6SOCIALHashtagArchiveI18n=' . wp_json_encode( $hashtag_i18n ) . ';' );
 $hashtag_archive_js = <<<'ENDHASHJSBLK'

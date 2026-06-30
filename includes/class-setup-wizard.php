@@ -53,8 +53,8 @@ class Setup_Wizard {
 
 	public function register_page(): void {
 		add_dashboard_page(
-			__( 'Social Network Setup', '6arshid-social-community-main' ),
-			__( 'Social Network Setup', '6arshid-social-community-main' ),
+			__( 'Social Network Setup', '6arshid-social-community' ),
+			__( 'Social Network Setup', '6arshid-social-community' ),
 			'arshid6social_manage_settings',
 			'arshid6social-setup',
 			array( $this, 'render' )
@@ -93,25 +93,25 @@ class Setup_Wizard {
 				<div class="sn6w-step is-active" id="step-1">
 					<div class="sn6w-card">
 						<div class="sn6w-card-hd">
-							<h2><?php esc_html_e( 'Core Features', '6arshid-social-community-main' ); ?></h2>
-							<p><?php esc_html_e( 'Choose which components to enable. These are the building blocks of your community.', '6arshid-social-community-main' ); ?></p>
+							<h2><?php esc_html_e( 'Core Features', '6arshid-social-community' ); ?></h2>
+							<p><?php esc_html_e( 'Choose which components to enable. These are the building blocks of your community.', '6arshid-social-community' ); ?></p>
 						</div>
 						<div class="sn6w-card-bd">
 
 							<div class="sn6w-sec">
 								<div class="sn6w-sec-hd">
-									<span class="sn6w-sec-ttl"><?php esc_html_e( 'Components', '6arshid-social-community-main' ); ?></span>
-									<button type="button" class="sn6w-tog-all" data-grp="comp"><?php esc_html_e( 'Select all', '6arshid-social-community-main' ); ?></button>
+									<span class="sn6w-sec-ttl"><?php esc_html_e( 'Components', '6arshid-social-community' ); ?></span>
+									<button type="button" class="sn6w-tog-all" data-grp="comp"><?php esc_html_e( 'Select all', '6arshid-social-community' ); ?></button>
 								</div>
 								<div class="sn6w-grid" id="grp-comp">
 									<?php
 									$components = array(
-										'activity'      => array( 'ico' => 'newspaper', 'label' => __( 'Activity Streams', '6arshid-social-community-main' ),  'desc' => __( 'News feed, posts, reactions, comments', '6arshid-social-community-main' ) ),
-										'groups'        => array( 'ico' => 'people', 'label' => __( 'Groups', '6arshid-social-community-main' ),             'desc' => __( 'Public, private, and hidden groups', '6arshid-social-community-main' ) ),
-										'friends'       => array( 'ico' => 'person-plus', 'label' => __( 'Friends & Follow', '6arshid-social-community-main' ),   'desc' => __( 'Friend requests, follow, block', '6arshid-social-community-main' ) ),
-										'messages'      => array( 'ico' => 'chat-dots', 'label' => __( 'Private Messages', '6arshid-social-community-main' ),   'desc' => __( 'One-to-one and group messaging', '6arshid-social-community-main' ) ),
-										'notifications' => array( 'ico' => 'bell', 'label' => __( 'Notifications', '6arshid-social-community-main' ),      'desc' => __( 'On-site and email notifications', '6arshid-social-community-main' ) ),
-										'moderation'    => array( 'ico' => 'shield-check', 'label' => __( 'Moderation', '6arshid-social-community-main' ),        'desc' => __( 'Reports, bans, audit log', '6arshid-social-community-main' ) ),
+										'activity'      => array( 'ico' => 'newspaper', 'label' => __( 'Activity Streams', '6arshid-social-community' ),  'desc' => __( 'News feed, posts, reactions, comments', '6arshid-social-community' ) ),
+										'groups'        => array( 'ico' => 'people', 'label' => __( 'Groups', '6arshid-social-community' ),             'desc' => __( 'Public, private, and hidden groups', '6arshid-social-community' ) ),
+										'friends'       => array( 'ico' => 'person-plus', 'label' => __( 'Friends & Follow', '6arshid-social-community' ),   'desc' => __( 'Friend requests, follow, block', '6arshid-social-community' ) ),
+										'messages'      => array( 'ico' => 'chat-dots', 'label' => __( 'Private Messages', '6arshid-social-community' ),   'desc' => __( 'One-to-one and group messaging', '6arshid-social-community' ) ),
+										'notifications' => array( 'ico' => 'bell', 'label' => __( 'Notifications', '6arshid-social-community' ),      'desc' => __( 'On-site and email notifications', '6arshid-social-community' ) ),
+										'moderation'    => array( 'ico' => 'shield-check', 'label' => __( 'Moderation', '6arshid-social-community' ),        'desc' => __( 'Reports, bans, audit log', '6arshid-social-community' ) ),
 									);
 									$saved_comp = (array) get_option( 'arshid6social_enabled_components', array_keys( $components ) );
 									foreach ( $components as $key => $info ) :
@@ -135,16 +135,16 @@ class Setup_Wizard {
 
 							<div class="sn6w-sec">
 								<div class="sn6w-sec-hd">
-									<span class="sn6w-sec-ttl"><?php esc_html_e( 'Engagement Pack', '6arshid-social-community-main' ); ?></span>
-									<button type="button" class="sn6w-tog-all" data-grp="pack"><?php esc_html_e( 'Select all', '6arshid-social-community-main' ); ?></button>
+									<span class="sn6w-sec-ttl"><?php esc_html_e( 'Engagement Pack', '6arshid-social-community' ); ?></span>
+									<button type="button" class="sn6w-tog-all" data-grp="pack"><?php esc_html_e( 'Select all', '6arshid-social-community' ); ?></button>
 								</div>
 								<div class="sn6w-grid" id="grp-pack">
 									<?php
 									$pack = array(
-										'arshid6social_stories_enabled'      => array( 'ico' => 'film', 'label' => __( 'Stories', '6arshid-social-community-main' ),             'desc' => __( '24-hour ephemeral photo, video & text stories', '6arshid-social-community-main' ) ),
-										'arshid6social_verification_enabled' => array( 'ico' => 'patch-check',  'label' => __( 'Verification Badges', '6arshid-social-community-main' ), 'desc' => __( 'Verified badge & admin approval queue', '6arshid-social-community-main' ) ),
-										'arshid6social_blocking_enabled'     => array( 'ico' => 'slash-circle',  'label' => __( 'Block System', '6arshid-social-community-main' ),         'desc' => __( 'Block / unblock users with optional reason', '6arshid-social-community-main' ) ),
-										'arshid6social_activity_stats_bar'   => array( 'ico' => 'bar-chart',  'label' => __( 'Activity Stats Bar', '6arshid-social-community-main' ),   'desc' => __( 'Engagement counts below each post', '6arshid-social-community-main' ) ),
+										'arshid6social_stories_enabled'      => array( 'ico' => 'film', 'label' => __( 'Stories', '6arshid-social-community' ),             'desc' => __( '24-hour ephemeral photo, video & text stories', '6arshid-social-community' ) ),
+										'arshid6social_verification_enabled' => array( 'ico' => 'patch-check',  'label' => __( 'Verification Badges', '6arshid-social-community' ), 'desc' => __( 'Verified badge & admin approval queue', '6arshid-social-community' ) ),
+										'arshid6social_blocking_enabled'     => array( 'ico' => 'slash-circle',  'label' => __( 'Block System', '6arshid-social-community' ),         'desc' => __( 'Block / unblock users with optional reason', '6arshid-social-community' ) ),
+										'arshid6social_activity_stats_bar'   => array( 'ico' => 'bar-chart',  'label' => __( 'Activity Stats Bar', '6arshid-social-community' ),   'desc' => __( 'Engagement counts below each post', '6arshid-social-community' ) ),
 									);
 									foreach ( $pack as $opt_key => $info ) :
 									?>
@@ -172,29 +172,29 @@ class Setup_Wizard {
 				<div class="sn6w-step" id="step-2">
 					<div class="sn6w-card">
 						<div class="sn6w-card-hd">
-							<h2><?php esc_html_e( 'Engagement & Content', '6arshid-social-community-main' ); ?></h2>
-							<p><?php esc_html_e( 'Extra tools members can use. All optional — change anytime from Settings → Engagement.', '6arshid-social-community-main' ); ?></p>
+							<h2><?php esc_html_e( 'Engagement & Content', '6arshid-social-community' ); ?></h2>
+							<p><?php esc_html_e( 'Extra tools members can use. All optional — change anytime from Settings → Engagement.', '6arshid-social-community' ); ?></p>
 						</div>
 						<div class="sn6w-card-bd">
 
 							<div class="sn6w-sec">
 								<div class="sn6w-sec-hd">
-									<span class="sn6w-sec-ttl"><?php esc_html_e( 'Engagement Features', '6arshid-social-community-main' ); ?></span>
-									<button type="button" class="sn6w-tog-all" data-grp="eng"><?php esc_html_e( 'Select all', '6arshid-social-community-main' ); ?></button>
+									<span class="sn6w-sec-ttl"><?php esc_html_e( 'Engagement Features', '6arshid-social-community' ); ?></span>
+									<button type="button" class="sn6w-tog-all" data-grp="eng"><?php esc_html_e( 'Select all', '6arshid-social-community' ); ?></button>
 								</div>
 								<div class="sn6w-grid" id="grp-eng">
 									<?php
 									$eng_features = array(
-										'hashtags'             => array( 'ico' => 'hash', 'label' => __( 'Hashtags', '6arshid-social-community-main' ),            'desc' => __( '#tags on posts, trending & follow', '6arshid-social-community-main' ) ),
-										'tag_friends'          => array( 'ico' => 'at',    'label' => __( 'Tag & @Mentions', '6arshid-social-community-main' ),      'desc' => __( 'Mention members in posts and comments', '6arshid-social-community-main' ) ),
-										'bookmarks'            => array( 'ico' => 'bookmark',   'label' => __( 'Bookmarks', '6arshid-social-community-main' ),            'desc' => __( 'Save posts to a personal collection', '6arshid-social-community-main' ) ),
-										'sticky_posts'         => array( 'ico' => 'pin-angle',   'label' => __( 'Sticky Posts', '6arshid-social-community-main' ),         'desc' => __( 'Pin posts to the top of the feed', '6arshid-social-community-main' ) ),
-										'share_posts'          => array( 'ico' => 'arrow-repeat',   'label' => __( 'Share / Repost', '6arshid-social-community-main' ),       'desc' => __( 'Reshare posts within the network', '6arshid-social-community-main' ) ),
-										'polls'                => array( 'ico' => 'list-check',   'label' => __( 'Polls', '6arshid-social-community-main' ),                'desc' => __( 'Single and multiple-choice polls', '6arshid-social-community-main' ) ),
-										'advanced_polls'       => array( 'ico' => 'ui-checks-grid',  'label' => __( 'Advanced Polls', '6arshid-social-community-main' ),       'desc' => __( 'Image polls, quiz mode, ranked choice', '6arshid-social-community-main' ) ),
-										'comments_gifs'        => array( 'ico' => 'camera-reels',   'label' => __( 'GIFs in Comments', '6arshid-social-community-main' ),     'desc' => __( 'Giphy / Tenor GIF picker in comments', '6arshid-social-community-main' ) ),
-										'comments_attachments' => array( 'ico' => 'paperclip',   'label' => __( 'Comment Attachments', '6arshid-social-community-main' ),  'desc' => __( 'Upload images or files in comments', '6arshid-social-community-main' ) ),
-										'messages_attachments' => array( 'ico' => 'upload',   'label' => __( 'Message Attachments', '6arshid-social-community-main' ),  'desc' => __( 'Send files in private messages', '6arshid-social-community-main' ) ),
+										'hashtags'             => array( 'ico' => 'hash', 'label' => __( 'Hashtags', '6arshid-social-community' ),            'desc' => __( '#tags on posts, trending & follow', '6arshid-social-community' ) ),
+										'tag_friends'          => array( 'ico' => 'at',    'label' => __( 'Tag & @Mentions', '6arshid-social-community' ),      'desc' => __( 'Mention members in posts and comments', '6arshid-social-community' ) ),
+										'bookmarks'            => array( 'ico' => 'bookmark',   'label' => __( 'Bookmarks', '6arshid-social-community' ),            'desc' => __( 'Save posts to a personal collection', '6arshid-social-community' ) ),
+										'sticky_posts'         => array( 'ico' => 'pin-angle',   'label' => __( 'Sticky Posts', '6arshid-social-community' ),         'desc' => __( 'Pin posts to the top of the feed', '6arshid-social-community' ) ),
+										'share_posts'          => array( 'ico' => 'arrow-repeat',   'label' => __( 'Share / Repost', '6arshid-social-community' ),       'desc' => __( 'Reshare posts within the network', '6arshid-social-community' ) ),
+										'polls'                => array( 'ico' => 'list-check',   'label' => __( 'Polls', '6arshid-social-community' ),                'desc' => __( 'Single and multiple-choice polls', '6arshid-social-community' ) ),
+										'advanced_polls'       => array( 'ico' => 'ui-checks-grid',  'label' => __( 'Advanced Polls', '6arshid-social-community' ),       'desc' => __( 'Image polls, quiz mode, ranked choice', '6arshid-social-community' ) ),
+										'comments_gifs'        => array( 'ico' => 'camera-reels',   'label' => __( 'GIFs in Comments', '6arshid-social-community' ),     'desc' => __( 'Giphy / Tenor GIF picker in comments', '6arshid-social-community' ) ),
+										'comments_attachments' => array( 'ico' => 'paperclip',   'label' => __( 'Comment Attachments', '6arshid-social-community' ),  'desc' => __( 'Upload images or files in comments', '6arshid-social-community' ) ),
+										'messages_attachments' => array( 'ico' => 'upload',   'label' => __( 'Message Attachments', '6arshid-social-community' ),  'desc' => __( 'Send files in private messages', '6arshid-social-community' ) ),
 									);
 									foreach ( $eng_features as $ekey => $einfo ) :
 									?>
@@ -218,7 +218,7 @@ class Setup_Wizard {
 
 							<div class="sn6w-sec">
 								<div class="sn6w-sec-hd">
-									<span class="sn6w-sec-ttl"><?php esc_html_e( 'Marketplace & Media', '6arshid-social-community-main' ); ?></span>
+									<span class="sn6w-sec-ttl"><?php esc_html_e( 'Marketplace & Media', '6arshid-social-community' ); ?></span>
 								</div>
 
 								<div class="sn6w-grid" style="grid-template-columns:1fr;gap:.4rem;margin-bottom:.4rem;">
@@ -227,8 +227,8 @@ class Setup_Wizard {
 										<label class="sn6w-feat-lbl" for="marketplace">
 											<span class="sn6w-feat-ico"><?php echo $this->icon( 'cart', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 											<span class="sn6w-feat-txt">
-												<span class="sn6w-feat-name"><?php esc_html_e( 'Marketplace', '6arshid-social-community-main' ); ?></span>
-												<span class="sn6w-feat-desc"><?php esc_html_e( 'Peer-to-peer listings, categories, and seller messaging', '6arshid-social-community-main' ); ?></span>
+												<span class="sn6w-feat-name"><?php esc_html_e( 'Marketplace', '6arshid-social-community' ); ?></span>
+												<span class="sn6w-feat-desc"><?php esc_html_e( 'Peer-to-peer listings, categories, and seller messaging', '6arshid-social-community' ); ?></span>
 											</span>
 											<span class="sn6w-feat-chk"><?php echo $this->icon( 'check', 10 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 										</label>
@@ -238,8 +238,8 @@ class Setup_Wizard {
 										<label class="sn6w-feat-lbl" for="allow-media">
 											<span class="sn6w-feat-ico"><?php echo $this->icon( 'image', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 											<span class="sn6w-feat-txt">
-												<span class="sn6w-feat-name"><?php esc_html_e( 'Media Uploads', '6arshid-social-community-main' ); ?></span>
-												<span class="sn6w-feat-desc"><?php esc_html_e( 'Allow members to attach files to activity posts', '6arshid-social-community-main' ); ?></span>
+												<span class="sn6w-feat-name"><?php esc_html_e( 'Media Uploads', '6arshid-social-community' ); ?></span>
+												<span class="sn6w-feat-desc"><?php esc_html_e( 'Allow members to attach files to activity posts', '6arshid-social-community' ); ?></span>
 											</span>
 											<span class="sn6w-feat-chk"><?php echo $this->icon( 'check', 10 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 										</label>
@@ -247,7 +247,7 @@ class Setup_Wizard {
 								</div>
 
 								<div id="media-types-wrap" style="padding-left:.25rem;margin-top:.5rem;">
-									<div style="font-size:.75rem;font-weight:600;color:#94a3b8;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em;"><?php esc_html_e( 'Allowed file types', '6arshid-social-community-main' ); ?></div>
+									<div style="font-size:.75rem;font-weight:600;color:#94a3b8;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em;"><?php esc_html_e( 'Allowed file types', '6arshid-social-community' ); ?></div>
 									<div class="sn6w-media-row">
 										<?php
 										$allowed_media_types = (array) get_option( 'arshid6social_activity_allowed_media_types', array( 'image' ) );
@@ -279,13 +279,13 @@ class Setup_Wizard {
 				<div class="sn6w-step" id="step-3">
 					<div class="sn6w-card">
 						<div class="sn6w-card-hd">
-							<h2><?php esc_html_e( 'Appearance', '6arshid-social-community-main' ); ?></h2>
-							<p><?php esc_html_e( 'Set your brand color and default display mode for the community.', '6arshid-social-community-main' ); ?></p>
+							<h2><?php esc_html_e( 'Appearance', '6arshid-social-community' ); ?></h2>
+							<p><?php esc_html_e( 'Set your brand color and default display mode for the community.', '6arshid-social-community' ); ?></p>
 						</div>
 						<div class="sn6w-card-bd">
 
 							<div class="sn6w-field">
-								<label class="sn6w-field-lbl"><?php esc_html_e( 'Brand Color', '6arshid-social-community-main' ); ?></label>
+								<label class="sn6w-field-lbl"><?php esc_html_e( 'Brand Color', '6arshid-social-community' ); ?></label>
 								<div class="sn6w-color-wrap">
 									<input type="color" id="wizard-color" name="primary_color" class="sn6w-color-inp"
 										value="<?php echo esc_attr( get_option( 'arshid6social_primary_color', '#2563eb' ) ); ?>" />
@@ -307,13 +307,13 @@ class Setup_Wizard {
 							<div class="sn6w-div"></div>
 
 							<div class="sn6w-field">
-								<label class="sn6w-field-lbl"><?php esc_html_e( 'Display Mode', '6arshid-social-community-main' ); ?></label>
+								<label class="sn6w-field-lbl"><?php esc_html_e( 'Display Mode', '6arshid-social-community' ); ?></label>
 								<div class="sn6w-mode-row">
 									<?php
 									$modes = array(
-										'off'  => array( 'ico' => 'sun', 'name' => __( 'Light', '6arshid-social-community-main' ), 'ht' => __( 'Always light', '6arshid-social-community-main' ) ),
-										'auto' => array( 'ico' => 'circle-half', 'name' => __( 'Auto', '6arshid-social-community-main' ),  'ht' => __( 'Follows system', '6arshid-social-community-main' ) ),
-										'on'   => array( 'ico' => 'moon', 'name' => __( 'Dark', '6arshid-social-community-main' ),  'ht' => __( 'Always dark', '6arshid-social-community-main' ) ),
+										'off'  => array( 'ico' => 'sun', 'name' => __( 'Light', '6arshid-social-community' ), 'ht' => __( 'Always light', '6arshid-social-community' ) ),
+										'auto' => array( 'ico' => 'circle-half', 'name' => __( 'Auto', '6arshid-social-community' ),  'ht' => __( 'Follows system', '6arshid-social-community' ) ),
+										'on'   => array( 'ico' => 'moon', 'name' => __( 'Dark', '6arshid-social-community' ),  'ht' => __( 'Always dark', '6arshid-social-community' ) ),
 									);
 									$saved_mode = get_option( 'arshid6social_dark_mode', 'auto' );
 									foreach ( $modes as $val => $mode ) :
@@ -338,17 +338,17 @@ class Setup_Wizard {
 				<div class="sn6w-step" id="step-4">
 					<div class="sn6w-card">
 						<div class="sn6w-card-hd">
-							<h2><?php esc_html_e( 'Choose a Theme', '6arshid-social-community-main' ); ?></h2>
-							<p><?php esc_html_e( 'Pick a theme for your social network. You can switch anytime from Appearance → Themes.', '6arshid-social-community-main' ); ?></p>
+							<h2><?php esc_html_e( 'Choose a Theme', '6arshid-social-community' ); ?></h2>
+							<p><?php esc_html_e( 'Pick a theme for your social network. You can switch anytime from Appearance → Themes.', '6arshid-social-community' ); ?></p>
 						</div>
 						<div class="sn6w-card-bd">
-							<?php $saved_theme = get_option( 'arshid6social_chosen_theme', '6arshid-social-community-main' ); ?>
+							<?php $saved_theme = get_option( 'arshid6social_chosen_theme', '6arshid-social-community' ); ?>
 							<div class="sn6w-theme-grid">
 
 								<div class="sn6w-tc">
-									<input type="radio" name="chosen_theme" id="th-socialnetworksix" value="sixarshidsocialcomunity" <?php checked( $saved_theme, '6arshid-social-community-main' ); ?> />
+									<input type="radio" name="chosen_theme" id="th-socialnetworksix" value="sixarshidsocialcomunity" <?php checked( $saved_theme, '6arshid-social-community' ); ?> />
 									<label class="sn6w-tc-card" for="th-socialnetworksix">
-										<span class="sn6w-tc-rec"><?php esc_html_e( 'Recommended', '6arshid-social-community-main' ); ?></span>
+										<span class="sn6w-tc-rec"><?php esc_html_e( 'Recommended', '6arshid-social-community' ); ?></span>
 										<span class="sn6w-tc-chk"><?php echo $this->icon( 'check', 13 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></span>
 										<div class="sn6w-tc-preview">
 											<div class="tp-sn6">
@@ -378,7 +378,7 @@ class Setup_Wizard {
 										</div>
 										<div class="sn6w-tc-body">
 											<p class="sn6w-tc-name">6Arshid Social Community</p>
-											<p class="sn6w-tc-desc"><?php esc_html_e( 'Modern social layout with Stories, dark mode, and Site Editor support.', '6arshid-social-community-main' ); ?></p>
+											<p class="sn6w-tc-desc"><?php esc_html_e( 'Modern social layout with Stories, dark mode, and Site Editor support.', '6arshid-social-community' ); ?></p>
 											<div class="sn6w-tc-tags">
 												<span class="sn6w-tag tag-b">Stories</span>
 												<span class="sn6w-tag tag-g">Dark Mode</span>
@@ -399,8 +399,8 @@ class Setup_Wizard {
 											</div>
 										</div>
 										<div class="sn6w-tc-body">
-											<p class="sn6w-tc-name"><?php esc_html_e( 'Keep Current Theme', '6arshid-social-community-main' ); ?></p>
-											<p class="sn6w-tc-desc"><?php esc_html_e( 'Keep your active WordPress theme and style through Customizer.', '6arshid-social-community-main' ); ?></p>
+											<p class="sn6w-tc-name"><?php esc_html_e( 'Keep Current Theme', '6arshid-social-community' ); ?></p>
+											<p class="sn6w-tc-desc"><?php esc_html_e( 'Keep your active WordPress theme and style through Customizer.', '6arshid-social-community' ); ?></p>
 											<div class="sn6w-tc-tags">
 												<span class="sn6w-tag tag-s"><?php echo esc_html( wp_get_theme()->get( 'Name' ) ); ?></span>
 											</div>
@@ -411,7 +411,7 @@ class Setup_Wizard {
 							</div>
 
 							<div class="sn6w-alert sn6w-alert-info" id="theme-install-note" style="margin-top:1rem;">
-								<?php esc_html_e( 'This theme is not currently installed. It will be installed and activated automatically when you continue.', '6arshid-social-community-main' ); ?>
+								<?php esc_html_e( 'This theme is not currently installed. It will be installed and activated automatically when you continue.', '6arshid-social-community' ); ?>
 							</div>
 						</div>
 					</div>
@@ -421,37 +421,37 @@ class Setup_Wizard {
 				<div class="sn6w-step" id="step-5">
 					<div class="sn6w-card">
 						<div class="sn6w-card-hd">
-							<h2><?php esc_html_e( 'Security', '6arshid-social-community-main' ); ?></h2>
-							<p><?php esc_html_e( 'Configure moderation and spam protection for your community.', '6arshid-social-community-main' ); ?></p>
+							<h2><?php esc_html_e( 'Security', '6arshid-social-community' ); ?></h2>
+							<p><?php esc_html_e( 'Configure moderation and spam protection for your community.', '6arshid-social-community' ); ?></p>
 						</div>
 						<div class="sn6w-card-bd">
 
 							<label class="sn6w-chk-row">
 								<input type="checkbox" name="new_member_moderation" value="1" <?php checked( get_option( 'arshid6social_new_member_moderation', false ) ); ?> />
 								<span>
-									<span class="sn6w-chk-nm"><?php esc_html_e( 'New member moderation', '6arshid-social-community-main' ); ?></span>
-									<span class="sn6w-chk-ht"><?php esc_html_e( 'Require admin approval before new members can post', '6arshid-social-community-main' ); ?></span>
+									<span class="sn6w-chk-nm"><?php esc_html_e( 'New member moderation', '6arshid-social-community' ); ?></span>
+									<span class="sn6w-chk-ht"><?php esc_html_e( 'Require admin approval before new members can post', '6arshid-social-community' ); ?></span>
 								</span>
 							</label>
 
 							<label class="sn6w-chk-row">
 								<input type="checkbox" name="enable_akismet" value="1" <?php checked( get_option( 'arshid6social_enable_akismet', true ) ); ?> />
 								<span>
-									<span class="sn6w-chk-nm"><?php esc_html_e( 'Akismet spam filtering', '6arshid-social-community-main' ); ?></span>
-									<span class="sn6w-chk-ht"><?php esc_html_e( 'Requires Akismet plugin to be installed and configured', '6arshid-social-community-main' ); ?></span>
+									<span class="sn6w-chk-nm"><?php esc_html_e( 'Akismet spam filtering', '6arshid-social-community' ); ?></span>
+									<span class="sn6w-chk-ht"><?php esc_html_e( 'Requires Akismet plugin to be installed and configured', '6arshid-social-community' ); ?></span>
 								</span>
 							</label>
 
 							<div class="sn6w-div"></div>
 
 							<div class="sn6w-field">
-								<label class="sn6w-field-lbl" for="wizard-threshold"><?php esc_html_e( 'Auto-suspend threshold', '6arshid-social-community-main' ); ?></label>
+								<label class="sn6w-field-lbl" for="wizard-threshold"><?php esc_html_e( 'Auto-suspend threshold', '6arshid-social-community' ); ?></label>
 								<div style="display:flex;align-items:center;gap:.75rem;">
 									<input type="number" id="wizard-threshold" name="auto_suspend_threshold" class="sn6w-num"
 										min="0" max="100" value="<?php echo esc_attr( get_option( 'arshid6social_auto_suspend_threshold', 5 ) ); ?>" />
-									<span style="font-size:.875rem;color:#64748b;"><?php esc_html_e( 'reports (0 = disabled)', '6arshid-social-community-main' ); ?></span>
+									<span style="font-size:.875rem;color:#64748b;"><?php esc_html_e( 'reports (0 = disabled)', '6arshid-social-community' ); ?></span>
 								</div>
-								<div style="font-size:.8rem;color:#94a3b8;margin-top:.5rem;"><?php esc_html_e( 'Automatically suspend users that receive this many reports.', '6arshid-social-community-main' ); ?></div>
+								<div style="font-size:.8rem;color:#94a3b8;margin-top:.5rem;"><?php esc_html_e( 'Automatically suspend users that receive this many reports.', '6arshid-social-community' ); ?></div>
 							</div>
 
 						</div>
@@ -464,29 +464,29 @@ class Setup_Wizard {
 						<div class="sn6w-card-bd">
 							<div class="sn6w-done">
 								<div class="sn6w-done-ic"><?php echo $this->icon( 'check-circle-fill', 48 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></div>
-								<h2><?php esc_html_e( "You're all set!", '6arshid-social-community-main' ); ?></h2>
-								<p><?php esc_html_e( 'Your social network is ready. Visit your site to see it in action!', '6arshid-social-community-main' ); ?></p>
+								<h2><?php esc_html_e( "You're all set!", '6arshid-social-community' ); ?></h2>
+								<p><?php esc_html_e( 'Your social network is ready. Visit your site to see it in action!', '6arshid-social-community' ); ?></p>
 
 								<div id="theme-done-note" class="sn6w-alert sn6w-alert-ok" style="max-width:440px;margin:0 auto 1.5rem;text-align:left;"></div>
 
 								<div class="sn6w-sample">
-									<h3><?php esc_html_e( 'Import Sample Data', '6arshid-social-community-main' ); ?></h3>
-									<p><?php esc_html_e( 'Populate with demo content: 50 users, activities, notifications, marketplace listings, groups, messages, stories, and more.', '6arshid-social-community-main' ); ?></p>
+									<h3><?php esc_html_e( 'Import Sample Data', '6arshid-social-community' ); ?></h3>
+									<p><?php esc_html_e( 'Populate with demo content: 50 users, activities, notifications, marketplace listings, groups, messages, stories, and more.', '6arshid-social-community' ); ?></p>
 									<button type="button" id="wizard-import-sample" class="sn6w-btn sn6w-btn-primary"
 										<?php echo get_option( 'arshid6social_sample_data_imported' ) ? 'disabled' : ''; ?>>
 										<?php echo get_option( 'arshid6social_sample_data_imported' )
-											? esc_html__( 'Sample data already imported', '6arshid-social-community-main' )
-											: esc_html__( 'Import Sample Data', '6arshid-social-community-main' ); ?>
+											? esc_html__( 'Sample data already imported', '6arshid-social-community' )
+											: esc_html__( 'Import Sample Data', '6arshid-social-community' ); ?>
 									</button>
 									<span id="wizard-import-status" style="display:none;margin-left:.75rem;font-size:.875rem;"></span>
 								</div>
 
 								<div class="sn6w-done-acts">
 									<a href="<?php echo esc_url( home_url( '/members/' ) ); ?>" class="sn6w-btn sn6w-btn-primary" target="_blank">
-										<?php esc_html_e( 'View Members', '6arshid-social-community-main' ); ?>
+										<?php esc_html_e( 'View Members', '6arshid-social-community' ); ?>
 									</a>
 									<a href="<?php echo esc_url( admin_url( 'admin.php?page=arshid6social-settings' ) ); ?>" class="sn6w-btn sn6w-btn-ghost">
-										<?php esc_html_e( 'Go to Settings', '6arshid-social-community-main' ); ?>
+										<?php esc_html_e( 'Go to Settings', '6arshid-social-community' ); ?>
 									</a>
 								</div>
 							</div>
@@ -498,9 +498,9 @@ class Setup_Wizard {
 		</div><!-- .sn6w -->
 
 		<div class="sn6w-footer">
-			<button class="sn6w-btn sn6w-btn-ghost" id="sn6w-back" style="visibility:hidden;">← <?php esc_html_e( 'Back', '6arshid-social-community-main' ); ?></button>
-			<span class="sn6w-step-lbl" id="sn6w-step-lbl"><?php esc_html_e( 'Step 1 of 6', '6arshid-social-community-main' ); ?></span>
-			<button class="sn6w-btn sn6w-btn-primary" id="sn6w-next"><?php esc_html_e( 'Continue', '6arshid-social-community-main' ); ?> →</button>
+			<button class="sn6w-btn sn6w-btn-ghost" id="sn6w-back" style="visibility:hidden;">← <?php esc_html_e( 'Back', '6arshid-social-community' ); ?></button>
+			<span class="sn6w-step-lbl" id="sn6w-step-lbl"><?php esc_html_e( 'Step 1 of 6', '6arshid-social-community' ); ?></span>
+			<button class="sn6w-btn sn6w-btn-primary" id="sn6w-next"><?php esc_html_e( 'Continue', '6arshid-social-community' ); ?> →</button>
 		</div>
 
 		<?php
@@ -512,14 +512,14 @@ class Setup_Wizard {
 			const instThemes = ' . wp_json_encode( array_keys( wp_get_themes() ) ) . ';
 			const stepNames  = ["Core Features","Engagement","Appearance","Theme","Security","Done"];
 			const i18n = {
-				finish:       ' . wp_json_encode( __( 'Finish', '6arshid-social-community-main' ) ) . ',
-				continue:     ' . wp_json_encode( __( 'Continue', '6arshid-social-community-main' ) ) . ',
-				unselectAll:  ' . wp_json_encode( __( 'Unselect all', '6arshid-social-community-main' ) ) . ',
-				selectAll:    ' . wp_json_encode( __( 'Select all', '6arshid-social-community-main' ) ) . ',
-				importing:    ' . wp_json_encode( __( 'Importing…', '6arshid-social-community-main' ) ) . ',
-				imported:     ' . wp_json_encode( __( 'Imported!', '6arshid-social-community-main' ) ) . ',
-				importSample: ' . wp_json_encode( __( 'Import Sample Data', '6arshid-social-community-main' ) ) . ',
-				importFailed: ' . wp_json_encode( __( 'Import failed.', '6arshid-social-community-main' ) ) . ',
+				finish:       ' . wp_json_encode( __( 'Finish', '6arshid-social-community' ) ) . ',
+				continue:     ' . wp_json_encode( __( 'Continue', '6arshid-social-community' ) ) . ',
+				unselectAll:  ' . wp_json_encode( __( 'Unselect all', '6arshid-social-community' ) ) . ',
+				selectAll:    ' . wp_json_encode( __( 'Select all', '6arshid-social-community' ) ) . ',
+				importing:    ' . wp_json_encode( __( 'Importing…', '6arshid-social-community' ) ) . ',
+				imported:     ' . wp_json_encode( __( 'Imported!', '6arshid-social-community' ) ) . ',
+				importSample: ' . wp_json_encode( __( 'Import Sample Data', '6arshid-social-community' ) ) . ',
+				importFailed: ' . wp_json_encode( __( 'Import failed.', '6arshid-social-community' ) ) . ',
 				sampleNonce:  ' . wp_json_encode( wp_create_nonce( 'arshid6social_sample_data' ) ) . ',
 				dashUrl:      ' . wp_json_encode( admin_url( 'admin.php?page=arshid6social-dashboard' ) ) . ',
 			};
@@ -710,7 +710,7 @@ class Setup_Wizard {
 	 */
 	public function ajax_save(): void {
 		if ( ! check_ajax_referer( 'arshid6social_wizard_save', 'nonce', false ) || ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		$step = absint( $_POST['step'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -764,7 +764,7 @@ class Setup_Wizard {
 				break;
 
 			case 4:
-				$chosen_theme  = sanitize_key( $_POST['chosen_theme'] ?? '6arshid-social-community-main' ); // phpcs:ignore WordPress.Security.NonceVerification
+				$chosen_theme  = sanitize_key( $_POST['chosen_theme'] ?? '6arshid-social-community' ); // phpcs:ignore WordPress.Security.NonceVerification
 				update_option( 'arshid6social_chosen_theme', $chosen_theme );
 				$theme_message = '';
 				if ( 'default' !== $chosen_theme ) {
@@ -792,7 +792,7 @@ class Setup_Wizard {
 	 */
 	private static function activate_theme( string $slug ): string {
 		$current = get_stylesheet();
-		if ( '6arshid-social-community-main' !== $current ) {
+		if ( '6arshid-social-community' !== $current ) {
 			update_option( 'arshid6social_theme_before_activation', $current );
 		}
 
@@ -805,7 +805,7 @@ class Setup_Wizard {
 			switch_theme( $slug );
 			return sprintf(
 				/* translators: %s: theme name */
-				__( 'Theme "%s" activated successfully.', '6arshid-social-community-main' ),
+				__( 'Theme "%s" activated successfully.', '6arshid-social-community' ),
 				$theme->get( 'Name' )
 			);
 		}
@@ -820,12 +820,12 @@ class Setup_Wizard {
 				switch_theme( $slug );
 				return sprintf(
 					/* translators: %s: theme name */
-					__( 'Theme "%s" activated successfully.', '6arshid-social-community-main' ),
+					__( 'Theme "%s" activated successfully.', '6arshid-social-community' ),
 					$theme->get( 'Name' )
 				);
 			}
 			switch_theme( $slug );
-			return __( '6Arshid Social Community theme activated. Reload the page to see it applied.', '6arshid-social-community-main' );
+			return __( '6Arshid Social Community theme activated. Reload the page to see it applied.', '6arshid-social-community' );
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
@@ -840,14 +840,14 @@ class Setup_Wizard {
 			$installed = wp_get_theme( $slug );
 			return sprintf(
 				/* translators: %s: theme name */
-				__( 'Theme "%s" installed and activated.', '6arshid-social-community-main' ),
+				__( 'Theme "%s" installed and activated.', '6arshid-social-community' ),
 				$installed->exists() ? $installed->get( 'Name' ) : $slug
 			);
 		}
 
 		return sprintf(
 			/* translators: %s: theme slug */
-			__( 'Could not install "%s". Please install it manually from Appearance → Themes.', '6arshid-social-community-main' ),
+			__( 'Could not install "%s". Please install it manually from Appearance → Themes.', '6arshid-social-community' ),
 			$slug
 		);
 	}

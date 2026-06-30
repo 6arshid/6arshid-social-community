@@ -33,14 +33,14 @@ class Advanced_Polls {
 		}
 
 		if ( empty( $_FILES['image']['tmp_name'] ) ) {
-			wp_send_json_error( array( 'message' => __( 'No image uploaded.', '6arshid-social-community-main' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'No image uploaded.', '6arshid-social-community' ) ), 400 );
 		}
 
 		$file = $_FILES['image']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 
 		$max_bytes = (int) get_option( 'arshid6social_max_upload_size_mb', 5 ) * MB_IN_BYTES;
 		if ( (int) $file['size'] > $max_bytes ) {
-			wp_send_json_error( array( 'message' => __( 'Image too large.', '6arshid-social-community-main' ) ), 413 );
+			wp_send_json_error( array( 'message' => __( 'Image too large.', '6arshid-social-community' ) ), 413 );
 		}
 
 		$finfo     = new \finfo( FILEINFO_MIME_TYPE );
@@ -48,13 +48,13 @@ class Advanced_Polls {
 		$allowed   = array( 'image/jpeg', 'image/png', 'image/webp' );
 
 		if ( ! in_array( $real_mime, $allowed, true ) ) {
-			wp_send_json_error( array( 'message' => __( 'Only JPEG, PNG, and WebP images are allowed.', '6arshid-social-community-main' ) ), 415 );
+			wp_send_json_error( array( 'message' => __( 'Only JPEG, PNG, and WebP images are allowed.', '6arshid-social-community' ) ), 415 );
 		}
 
 		// Re-encode image to strip EXIF/GPS.
 		$image = $this->re_encode_image( $file['tmp_name'], $real_mime );
 		if ( ! $image ) {
-			wp_send_json_error( array( 'message' => __( 'Could not process image.', '6arshid-social-community-main' ) ), 500 );
+			wp_send_json_error( array( 'message' => __( 'Could not process image.', '6arshid-social-community' ) ), 500 );
 		}
 
 		// Save to randomized path.

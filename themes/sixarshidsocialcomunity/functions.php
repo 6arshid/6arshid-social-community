@@ -28,7 +28,7 @@ function a6sc_flush_templates() {
 	$theme = 'sixarshidsocialcomunity';
 
 	// 1) Delete every template/part linked to this theme (or the old slug) via the wp_theme taxonomy.
-	foreach ( array( $theme, '6arshid-social-community-main' ) as $slug ) {
+	foreach ( array( $theme, '6arshid-social-community' ) as $slug ) {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
 			$wpdb->prepare(
@@ -45,8 +45,8 @@ function a6sc_flush_templates() {
 	}
 
 	// 2) Delete any file-based auto-draft copies (post_name = 'slug//template').
-	// Also purge stale entries that were stored under the old '6arshid-social-community-main' slug.
-	foreach ( array( $theme, '6arshid-social-community-main' ) as $slug ) {
+	// Also purge stale entries that were stored under the old '6arshid-social-community' slug.
+	foreach ( array( $theme, '6arshid-social-community' ) as $slug ) {
 		$like = $wpdb->esc_like( $slug . '//' ) . '%';
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
@@ -99,7 +99,7 @@ add_action( 'after_setup_theme', function () {
 	add_editor_style( 'assets/css/editor-overrides.css' );
 
 	register_nav_menus( array(
-		'socialnetworksix-primary' => __( 'Primary Navigation', '6arshid-social-community-main' ),
+		'socialnetworksix-primary' => __( 'Primary Navigation', '6arshid-social-community' ),
 	) );
 } );
 
@@ -250,7 +250,7 @@ add_action( 'wp_footer', function () {
 add_shortcode( 'a6sc_activity', function () {
 	if ( ! shortcode_exists( 'arshid6social_activity' ) ) {
 		return '<div class="socialnetworksix-feed__placeholder" style="padding:32px 16px;color:#536471;text-align:center;">'
-			. esc_html__( 'Activity feed loads here.', '6arshid-social-community-main' )
+			. esc_html__( 'Activity feed loads here.', '6arshid-social-community' )
 			. '</div>';
 	}
 	try {
@@ -277,7 +277,7 @@ add_shortcode( 'a6sc_story', function () {
 		return '';
 	}
 	return '<div class="socialnetworksix-feed__placeholder" style="padding:24px 16px;color:#536471;text-align:center;">'
-		. esc_html__( 'Stories are turned off.', '6arshid-social-community-main' )
+		. esc_html__( 'Stories are turned off.', '6arshid-social-community' )
 		. '</div>';
 } );
 
@@ -289,7 +289,7 @@ add_shortcode( 'a6sc_story', function () {
 add_shortcode( 'a6sc_new_activity', function () {
 	if ( ! shortcode_exists( 'arshid6social_activity' ) ) {
 		return '<div class="socialnetworksix-feed__placeholder" style="padding:32px 16px;color:#536471;text-align:center;">'
-			. esc_html__( 'Post composer loads here.', '6arshid-social-community-main' )
+			. esc_html__( 'Post composer loads here.', '6arshid-social-community' )
 			. '</div>';
 	}
 	try {
@@ -314,7 +314,7 @@ add_shortcode( 'a6sc_activity_list', function ( $atts ) {
 	);
 	if ( ! shortcode_exists( 'arshid6social_activity' ) ) {
 		return '<div class="socialnetworksix-feed__placeholder" style="padding:32px 16px;color:#536471;text-align:center;">'
-			. esc_html__( 'Activity feed loads here.', '6arshid-social-community-main' )
+			. esc_html__( 'Activity feed loads here.', '6arshid-social-community' )
 			. '</div>';
 	}
 	try {
@@ -340,7 +340,7 @@ add_shortcode( 'a6sc_compose_button', function () {
 	$url     = $page_id ? get_permalink( $page_id ) : home_url( '/activity/' );
 	return '<a href="' . esc_url( (string) $url ) . '" class="a6sc-compose-btn">'
 		. '<span class="a6sc-compose-btn__icon" aria-hidden="true">' . a6sc_svg( 'edit' ) . '</span>'
-		. '<span class="a6sc-compose-btn__label">' . esc_html__( 'Post', '6arshid-social-community-main' ) . '</span>'
+		. '<span class="a6sc-compose-btn__label">' . esc_html__( 'Post', '6arshid-social-community' ) . '</span>'
 		. '</a>';
 } );
 
@@ -352,7 +352,7 @@ add_shortcode( 'a6sc_user_menu', function () {
 		$page_id   = (int) get_option( 'arshid6social_page_login', 0 );
 		$login_url = $page_id ? get_permalink( $page_id ) : wp_login_url();
 		return '<a href="' . esc_url( (string) $login_url ) . '" class="a6sc-user-menu a6sc-user-menu--guest">'
-			. esc_html__( 'Log in', '6arshid-social-community-main' ) . '</a>';
+			. esc_html__( 'Log in', '6arshid-social-community' ) . '</a>';
 	}
 
 	$user        = wp_get_current_user();
@@ -368,7 +368,7 @@ add_shortcode( 'a6sc_user_menu', function () {
 		. '<span class="a6sc-user-menu__handle">@' . esc_html( $user->user_login ) . '</span>'
 		. '</span>'
 		. '</a>'
-		. '<a href="' . esc_url( $logout_url ) . '" class="a6sc-user-menu__logout" title="' . esc_attr__( 'Log out', '6arshid-social-community-main' ) . '">' . a6sc_svg( 'exit' ) . '</a>'
+		. '<a href="' . esc_url( $logout_url ) . '" class="a6sc-user-menu__logout" title="' . esc_attr__( 'Log out', '6arshid-social-community' ) . '">' . a6sc_svg( 'exit' ) . '</a>'
 		. '</div>';
 } );
 
@@ -376,7 +376,7 @@ add_shortcode( 'a6sc_user_menu', function () {
  * [a6sc_theme_toggle] — Dark/light mode toggle button.
  */
 add_shortcode( 'a6sc_theme_toggle', function () {
-	return '<button class="a6sc-theme-toggle" aria-label="' . esc_attr__( 'Toggle dark mode', '6arshid-social-community-main' ) . '">'
+	return '<button class="a6sc-theme-toggle" aria-label="' . esc_attr__( 'Toggle dark mode', '6arshid-social-community' ) . '">'
 		. '<span class="a6sc-icon-sun"  aria-hidden="true">' . a6sc_svg( 'sun' )  . '</span>'
 		. '<span class="a6sc-icon-moon" aria-hidden="true">' . a6sc_svg( 'moon' ) . '</span>'
 		. '</button>';
@@ -448,14 +448,14 @@ function a6sc_nav_items(): array {
 	}
 
 	return array(
-		array( 'page_id' => $front_id,  'fallback' => 'home',     'label' => __( 'Home',          '6arshid-social-community-main' ), 'url' => home_url( '/' ) ),
-		array( 'page_id' => $explore_id,'fallback' => 'explore',  'label' => __( 'Explore',       '6arshid-social-community-main' ), 'url' => $explore_id  ? get_permalink( $explore_id )  : home_url( '/members/' )     ),
-		array( 'page_id' => $notif_id,  'fallback' => 'bell',     'label' => __( 'Notifications', '6arshid-social-community-main' ), 'url' => $notif_id    ? get_permalink( $notif_id )    : home_url( '/notifications/' ), 'badge_id' => 'arshid6social-notification-count' ),
-		array( 'page_id' => $msg_id,    'fallback' => 'message',  'label' => __( 'Messages',      '6arshid-social-community-main' ), 'url' => $msg_id      ? get_permalink( $msg_id )      : home_url( '/messages/' ),     'badge_id' => 'arshid6social-messages-count'     ),
-		array( 'page_id' => $saved_id,  'fallback' => 'bookmark', 'label' => __( 'Saved',         '6arshid-social-community-main' ), 'url' => $saved_id    ? get_permalink( $saved_id )    : home_url( '/saved/' )       ),
-		array( 'page_id' => $groups_id, 'fallback' => 'users',    'label' => __( 'Groups',        '6arshid-social-community-main' ), 'url' => $groups_id   ? get_permalink( $groups_id )   : home_url( '/groups/' )      ),
-		array( 'page_id' => $market_id, 'fallback' => 'verified', 'label' => __( 'Marketplace',   '6arshid-social-community-main' ), 'url' => $market_id   ? get_permalink( $market_id )   : home_url( '/marketplace/' ) ),
-		array( 'page_id' => 0,          'fallback' => 'profile',  'label' => __( 'Profile',       '6arshid-social-community-main' ), 'url' => $profile_url ),
+		array( 'page_id' => $front_id,  'fallback' => 'home',     'label' => __( 'Home',          '6arshid-social-community' ), 'url' => home_url( '/' ) ),
+		array( 'page_id' => $explore_id,'fallback' => 'explore',  'label' => __( 'Explore',       '6arshid-social-community' ), 'url' => $explore_id  ? get_permalink( $explore_id )  : home_url( '/members/' )     ),
+		array( 'page_id' => $notif_id,  'fallback' => 'bell',     'label' => __( 'Notifications', '6arshid-social-community' ), 'url' => $notif_id    ? get_permalink( $notif_id )    : home_url( '/notifications/' ), 'badge_id' => 'arshid6social-notification-count' ),
+		array( 'page_id' => $msg_id,    'fallback' => 'message',  'label' => __( 'Messages',      '6arshid-social-community' ), 'url' => $msg_id      ? get_permalink( $msg_id )      : home_url( '/messages/' ),     'badge_id' => 'arshid6social-messages-count'     ),
+		array( 'page_id' => $saved_id,  'fallback' => 'bookmark', 'label' => __( 'Saved',         '6arshid-social-community' ), 'url' => $saved_id    ? get_permalink( $saved_id )    : home_url( '/saved/' )       ),
+		array( 'page_id' => $groups_id, 'fallback' => 'users',    'label' => __( 'Groups',        '6arshid-social-community' ), 'url' => $groups_id   ? get_permalink( $groups_id )   : home_url( '/groups/' )      ),
+		array( 'page_id' => $market_id, 'fallback' => 'verified', 'label' => __( 'Marketplace',   '6arshid-social-community' ), 'url' => $market_id   ? get_permalink( $market_id )   : home_url( '/marketplace/' ) ),
+		array( 'page_id' => 0,          'fallback' => 'profile',  'label' => __( 'Profile',       '6arshid-social-community' ), 'url' => $profile_url ),
 	);
 }
 
@@ -463,7 +463,7 @@ function a6sc_nav_items(): array {
 
 add_shortcode( 'a6sc_sidebar_nav', function () {
 	$current = trailingslashit( esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ) );
-	$out = '<nav class="a6sc-sidenav" aria-label="' . esc_attr__( 'Primary Navigation', '6arshid-social-community-main' ) . '">';
+	$out = '<nav class="a6sc-sidenav" aria-label="' . esc_attr__( 'Primary Navigation', '6arshid-social-community' ) . '">';
 	foreach ( a6sc_nav_items() as $item ) {
 		$item_path  = trailingslashit( (string) wp_parse_url( $item['url'], PHP_URL_PATH ) );
 		$is_active  = ( $item_path !== '/' && strpos( $current, $item_path ) === 0 )
@@ -627,12 +627,12 @@ function a6sc_render_page_nav( string $menu = 'socialnetworksix-primary', bool $
 	$items = a6sc_page_nav_items( $menu );
 	if ( empty( $items ) ) {
 		return '<nav class="a6sc-sidenav a6sc-sidenav--empty"><p style="padding:12px;color:#888;font-size:13px;">'
-			. esc_html__( 'No pages found. Create a Page (or assign a menu to “Primary Navigation”) to populate this list.', '6arshid-social-community-main' )
+			. esc_html__( 'No pages found. Create a Page (or assign a menu to “Primary Navigation”) to populate this list.', '6arshid-social-community' )
 			. '</p></nav>';
 	}
 
 	$current = trailingslashit( esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ) );
-	$out     = '<nav class="a6sc-sidenav" aria-label="' . esc_attr__( 'Primary Navigation', '6arshid-social-community-main' ) . '">';
+	$out     = '<nav class="a6sc-sidenav" aria-label="' . esc_attr__( 'Primary Navigation', '6arshid-social-community' ) . '">';
 
 	foreach ( $items as $item ) {
 		$item_path = trailingslashit( (string) wp_parse_url( $item['url'], PHP_URL_PATH ) );
@@ -678,10 +678,10 @@ add_action( 'init', function () {
 		'sixarshidsocialcomunity/page-nav',
 		array(
 			'api_version'     => 2,
-			'title'           => __( 'Page Navigation (6Arshid Social Community)', '6arshid-social-community-main' ),
+			'title'           => __( 'Page Navigation (6Arshid Social Community)', '6arshid-social-community' ),
 			'category'        => 'theme',
 			'icon'            => 'menu',
-			'description'     => __( 'Lists your Pages with their Page Icons. Change an icon in Pages → edit → Page Icon.', '6arshid-social-community-main' ),
+			'description'     => __( 'Lists your Pages with their Page Icons. Change an icon in Pages → edit → Page Icon.', '6arshid-social-community' ),
 			'attributes'      => array(
 				'menu' => array(
 					'type'    => 'string',
@@ -750,7 +750,7 @@ add_action( 'rest_api_init', function () {
 				$icon    = sanitize_text_field( (string) $request->get_param( 'icon' ) );
 
 				if ( ! $page_id || ! current_user_can( 'edit_post', $page_id ) ) {
-					return new WP_Error( 'a6sc_forbidden', __( 'You cannot edit this page.', '6arshid-social-community-main' ), array( 'status' => 403 ) );
+					return new WP_Error( 'a6sc_forbidden', __( 'You cannot edit this page.', '6arshid-social-community' ), array( 'status' => 403 ) );
 				}
 
 				$key = class_exists( '\Arshid6Social\Admin\Admin_Page_Icons' )
@@ -838,8 +838,8 @@ add_action( 'enqueue_block_editor_assets', function () {
  */
 add_action( 'admin_menu', function () {
 	add_theme_page(
-		__( 'Sidebar Navigation', '6arshid-social-community-main' ),
-		__( 'Sidebar Navigation', '6arshid-social-community-main' ),
+		__( 'Sidebar Navigation', '6arshid-social-community' ),
+		__( 'Sidebar Navigation', '6arshid-social-community' ),
 		'edit_pages',
 		'a6sc-sidebar-nav',
 		'a6sc_render_nav_admin_page'
@@ -852,12 +852,12 @@ add_action( 'admin_menu', function () {
 function a6sc_render_nav_admin_page() {
 	?>
 	<div class="wrap">
-		<h1><?php esc_html_e( 'Sidebar Navigation', '6arshid-social-community-main' ); ?></h1>
+		<h1><?php esc_html_e( 'Sidebar Navigation', '6arshid-social-community' ); ?></h1>
 		<p class="description">
-			<?php esc_html_e( 'Drag ⠿ (or use ▲▼) to reorder the pages shown in the left sidebar, and click ✎ to change each page’s icon. Changes save automatically.', '6arshid-social-community-main' ); ?>
+			<?php esc_html_e( 'Drag ⠿ (or use ▲▼) to reorder the pages shown in the left sidebar, and click ✎ to change each page’s icon. Changes save automatically.', '6arshid-social-community' ); ?>
 		</p>
 		<div id="a6sc-nav-admin" class="a6sc-nav-admin">
-			<p><span class="spinner is-active" style="float:none;"></span> <?php esc_html_e( 'Loading pages…', '6arshid-social-community-main' ); ?></p>
+			<p><span class="spinner is-active" style="float:none;"></span> <?php esc_html_e( 'Loading pages…', '6arshid-social-community' ); ?></p>
 		</div>
 	</div>
 	<?php
@@ -901,15 +901,15 @@ add_action( 'admin_enqueue_scripts', function ( $hook ) {
 		'restBase' => esc_url_raw( rest_url( 'a6sc/v1' ) ),
 		'nonce'    => wp_create_nonce( 'wp_rest' ),
 		'i18n'     => array(
-			'reorder'  => __( 'Drag ⠿ (or use ▲▼) to reorder · click ✎ to change a page’s icon.', '6arshid-social-community-main' ),
-			'noPages'  => __( 'No pages found. Create a Page first.', '6arshid-social-community-main' ),
-			'pickIcon' => __( 'Select an Icon', '6arshid-social-community-main' ),
-			'search'   => __( 'Search icons…', '6arshid-social-community-main' ),
-			'more'     => __( 'Showing first 150 — keep typing to narrow results.', '6arshid-social-community-main' ),
-			'moveUp'   => __( 'Move up', '6arshid-social-community-main' ),
-			'moveDown' => __( 'Move down', '6arshid-social-community-main' ),
-			'edit'     => __( 'Change icon', '6arshid-social-community-main' ),
-			'close'    => __( 'Close', '6arshid-social-community-main' ),
+			'reorder'  => __( 'Drag ⠿ (or use ▲▼) to reorder · click ✎ to change a page’s icon.', '6arshid-social-community' ),
+			'noPages'  => __( 'No pages found. Create a Page first.', '6arshid-social-community' ),
+			'pickIcon' => __( 'Select an Icon', '6arshid-social-community' ),
+			'search'   => __( 'Search icons…', '6arshid-social-community' ),
+			'more'     => __( 'Showing first 150 — keep typing to narrow results.', '6arshid-social-community' ),
+			'moveUp'   => __( 'Move up', '6arshid-social-community' ),
+			'moveDown' => __( 'Move down', '6arshid-social-community' ),
+			'edit'     => __( 'Change icon', '6arshid-social-community' ),
+			'close'    => __( 'Close', '6arshid-social-community' ),
 		),
 	) );
 } );
@@ -960,7 +960,7 @@ add_shortcode( 'a6sc_sidebar_logo', function () {
 
 add_shortcode( 'a6sc_bottom_nav', function () {
 	$current = trailingslashit( esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ) );
-	$out = '<nav class="a6sc-bnav" aria-label="' . esc_attr__( 'Mobile Navigation', '6arshid-social-community-main' ) . '">';
+	$out = '<nav class="a6sc-bnav" aria-label="' . esc_attr__( 'Mobile Navigation', '6arshid-social-community' ) . '">';
 
 	// Logo at top of mobile side nav — use mobile logo, fall back to desktop logo, then WP site logo
 	$logo_url = a6sc_get_logo_url( 'arshid6social_logo_mobile', 'arshid6social_logo_desktop' );
@@ -1048,9 +1048,9 @@ add_shortcode( 'a6sc_right_sidebar', function () {
 		$members_id  = (int) get_option( 'arshid6social_page_members', 0 );
 		$members_url = $members_id ? (string) get_permalink( $members_id ) : home_url( '/members/' );
 		$panel = '<div class="wp-block-group a6sc-panel">'
-			. '<h2 class="wp-block-heading a6sc-panel__title">' . esc_html__( 'Who to follow', '6arshid-social-community-main' ) . '</h2>'
+			. '<h2 class="wp-block-heading a6sc-panel__title">' . esc_html__( 'Who to follow', '6arshid-social-community' ) . '</h2>'
 			. $who_to_follow
-			. '<p class="a6sc-panel__show-more"><a href="' . esc_url( $members_url ) . '">' . esc_html__( 'View all members →', '6arshid-social-community-main' ) . '</a></p>'
+			. '<p class="a6sc-panel__show-more"><a href="' . esc_url( $members_url ) . '">' . esc_html__( 'View all members →', '6arshid-social-community' ) . '</a></p>'
 			. '</div>';
 	}
 

@@ -1,4 +1,4 @@
-﻿===6Arshid Social Community===
+===6Arshid Social Community===
 Contributors: 6arshid, hassantafreshi , aminkhadivar
 Tags: social network, community, members, activity, groups, buddypress, messaging, profiles
 Requires at least: 6.5
@@ -357,9 +357,8 @@ When Social Embeds are enabled and a user pastes a supported URL into a post, co
 
 = QR Code Generation (WeChat Sharing) =
 When a user opens the WeChat share option in the Social Share widget, this plugin fetches a QR code image from the QRServer API. The shared page URL is sent to QRServer's servers at that moment to generate the QR code image. No personal user data is sent — only the public page URL.
-* Service: https://goqr.me/api/
-* Privacy Policy: https://goqr.me/privacy-policy/
-* Terms of Service: https://goqr.me/terms-of-service/
+* Service: https://goqr.me/
+* Privacy Policy: https://goqr.me/privacy-safety-security/
 
 = WhatsApp, Social Sharing (AOL Mail, Papaly, Twiddla, and 80+ networks) =
 The social sharing feature generates links that open third-party social networks or email clients in a new browser tab/window when the user explicitly clicks a share button. No data is sent automatically by the plugin — all sharing actions are user-initiated and subject to each platform's own privacy policy. Networks include (but are not limited to): WhatsApp, Facebook, Twitter/X, Telegram, LinkedIn, Reddit, Pinterest, Tumblr, AOL Mail, Papaly, Twiddla, and many others.

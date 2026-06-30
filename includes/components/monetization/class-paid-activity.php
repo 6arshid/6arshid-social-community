@@ -162,13 +162,13 @@ class Paid_Activity {
 		) );
 
 		if ( ! $activity ) {
-			return new \WP_Error( 'not_found', __( 'Activity not found.', '6arshid-social-community-main' ), array( 'status' => 404 ) );
+			return new \WP_Error( 'not_found', __( 'Activity not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
 		}
 		if ( 'paid' !== $activity->privacy ) {
-			return new \WP_Error( 'not_paid', __( 'This post is not a paid post.', '6arshid-social-community-main' ), array( 'status' => 400 ) );
+			return new \WP_Error( 'not_paid', __( 'This post is not a paid post.', '6arshid-social-community' ), array( 'status' => 400 ) );
 		}
 		if ( (int) $activity->user_id === $user_id ) {
-			return new \WP_Error( 'owner', __( 'You cannot purchase your own post.', '6arshid-social-community-main' ), array( 'status' => 400 ) );
+			return new \WP_Error( 'owner', __( 'You cannot purchase your own post.', '6arshid-social-community' ), array( 'status' => 400 ) );
 		}
 		if ( self::can_view( $user_id, $activity_id ) ) {
 			return rest_ensure_response( array( 'already_entitled' => true ) );
@@ -181,7 +181,7 @@ class Paid_Activity {
 		) );
 
 		if ( $price_cents <= 0 ) {
-			return new \WP_Error( 'no_price', __( 'This post has no price configured.', '6arshid-social-community-main' ), array( 'status' => 400 ) );
+			return new \WP_Error( 'no_price', __( 'This post has no price configured.', '6arshid-social-community' ), array( 'status' => 400 ) );
 		}
 
 		$currency = strtoupper( (string) get_option( 'sixarshidsc_currency', 'USD' ) );
@@ -196,7 +196,7 @@ class Paid_Activity {
 		if ( ! empty( $pi['error'] ) ) {
 			return new \WP_Error(
 				'stripe_error',
-				$pi['error']['message'] ?? __( 'Payment provider error.', '6arshid-social-community-main' ),
+				$pi['error']['message'] ?? __( 'Payment provider error.', '6arshid-social-community' ),
 				array( 'status' => 502 )
 			);
 		}
@@ -241,7 +241,7 @@ class Paid_Activity {
 		$pi_id       = sanitize_text_field( (string) $request->get_param( 'payment_intent' ) );
 
 		if ( ! $pi_id || ! str_starts_with( $pi_id, 'pi_' ) ) {
-			return new \WP_Error( 'bad_pi', __( 'Invalid payment_intent ID.', '6arshid-social-community-main' ), array( 'status' => 400 ) );
+			return new \WP_Error( 'bad_pi', __( 'Invalid payment_intent ID.', '6arshid-social-community' ), array( 'status' => 400 ) );
 		}
 
 		// Already entitled — nothing to do.
@@ -265,7 +265,7 @@ class Paid_Activity {
 			(int) ( $meta['activity_id'] ?? 0 ) !== $activity_id ||
 			(int) ( $meta['buyer_id']    ?? 0 ) !== $user_id
 		) {
-			return new \WP_Error( 'metadata_mismatch', __( 'Payment metadata does not match.', '6arshid-social-community-main' ), array( 'status' => 403 ) );
+			return new \WP_Error( 'metadata_mismatch', __( 'Payment metadata does not match.', '6arshid-social-community' ), array( 'status' => 403 ) );
 		}
 
 		self::grant_ppv_entitlement( $pi );

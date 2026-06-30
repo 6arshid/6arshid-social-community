@@ -43,11 +43,11 @@ class Ads {
 	public function ajax_upload_media(): void {
 		check_ajax_referer( 'arshid6social_admin_ads_nonce', 'nonce' );
 		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
-			wp_send_json_error( __( 'Forbidden', '6arshid-social-community-main' ) );
+			wp_send_json_error( __( 'Forbidden', '6arshid-social-community' ) );
 		}
 
 		if ( empty( $_FILES['file'] ) ) {
-			wp_send_json_error( __( 'No file received.', '6arshid-social-community-main' ) );
+			wp_send_json_error( __( 'No file received.', '6arshid-social-community' ) );
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -159,13 +159,25 @@ class Ads {
 				break;
 
 			case 'html':
+				// HTML ads are sanitized with wp_kses_post; only admins can create ads.
+				$inner = wp_kses_post( $ad['js_code'] );
+				break;
+
 			case 'js':
-				// Admin-only content — output as-is (admins can already inject arbitrary HTML).
-				$inner = $ad['js_code'];
+				// JS ads are restricted to admin-created content and output only for logged-in admins.
+				if ( current_user_can( 'manage_options' ) ) {
+					$inner = wp_kses(
+						$ad['js_code'],
+						array(
+							'script' => array( 'type' => true, 'src' => true, 'async' => true, 'defer' => true ),
+							'noscript' => array(),
+						)
+					);
+				}
 				break;
 		}
 
-		$label = esc_html__( 'Sponsored', '6arshid-social-community-main' );
+		$label = esc_html__( 'Sponsored', '6arshid-social-community' );
 
 		return '<div class="arshid6social-ad-card" data-ad-id="' . $ad_id . '">'
 			. '<div class="arshid6social-ad-card__label">' . $label . '</div>'

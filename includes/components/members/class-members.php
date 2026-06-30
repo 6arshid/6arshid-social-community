@@ -223,11 +223,11 @@ class Members {
 	 */
 	public function ajax_update_profile(): void {
 		if ( ! check_ajax_referer( 'arshid6social_update_profile', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community-main' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community' ) ), 401 );
 		}
 
 		$user_id = get_current_user_id();
@@ -240,7 +240,7 @@ class Members {
 		}
 
 		do_action( 'arshid6social_profile_updated', $user_id );
-		wp_send_json_success( array( 'message' => __( 'Profile updated.', '6arshid-social-community-main' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Profile updated.', '6arshid-social-community' ) ) );
 	}
 
 	/**
@@ -248,11 +248,11 @@ class Members {
 	 */
 	public function ajax_save_bio(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community-main' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community' ) ), 401 );
 		}
 
 		global $wpdb;
@@ -271,7 +271,7 @@ class Members {
 				"SELECT id FROM {$wpdb->prefix}sn_xprofile_groups ORDER BY group_order ASC LIMIT 1"
 			);
 			if ( ! $group_id ) {
-				wp_send_json_error( array( 'message' => __( 'Profile field group not found.', '6arshid-social-community-main' ) ), 500 );
+				wp_send_json_error( array( 'message' => __( 'Profile field group not found.', '6arshid-social-community' ) ), 500 );
 			}
 			$max_order = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prepare(
@@ -298,7 +298,7 @@ class Members {
 		}
 
 		if ( ! $field_id ) {
-			wp_send_json_error( array( 'message' => __( 'Could not create bio field.', '6arshid-social-community-main' ) ), 500 );
+			wp_send_json_error( array( 'message' => __( 'Could not create bio field.', '6arshid-social-community' ) ), 500 );
 		}
 
 		$this->xprofile->save_field_value( $user_id, $field_id, $bio );
@@ -310,11 +310,11 @@ class Members {
 	 */
 	public function ajax_save_user_setting(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community-main' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community' ) ), 401 );
 		}
 
 		$allowed = array(
@@ -327,15 +327,15 @@ class Members {
 		$value = sanitize_key( wp_unslash( $_POST['setting_value'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		if ( ! array_key_exists( $key, $allowed ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid setting.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid setting.', '6arshid-social-community' ) ) );
 		}
 
 		if ( ! in_array( $value, $allowed[ $key ], true ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid value.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid value.', '6arshid-social-community' ) ) );
 		}
 
 		update_user_meta( get_current_user_id(), $key, $value );
-		wp_send_json_success( array( 'message' => __( 'Saved.', '6arshid-social-community-main' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Saved.', '6arshid-social-community' ) ) );
 	}
 
 	/**
@@ -343,11 +343,11 @@ class Members {
 	 */
 	public function ajax_change_password(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community-main' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community' ) ), 401 );
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification
@@ -357,20 +357,20 @@ class Members {
 		// phpcs:enable
 
 		if ( '' === $current || '' === $new || '' === $confirm ) {
-			wp_send_json_error( array( 'message' => __( 'All fields are required.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'All fields are required.', '6arshid-social-community' ) ) );
 		}
 
 		if ( $new !== $confirm ) {
-			wp_send_json_error( array( 'message' => __( 'New passwords do not match.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'New passwords do not match.', '6arshid-social-community' ) ) );
 		}
 
 		if ( strlen( $new ) < 8 ) {
-			wp_send_json_error( array( 'message' => __( 'Password must be at least 8 characters.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Password must be at least 8 characters.', '6arshid-social-community' ) ) );
 		}
 
 		$user = wp_get_current_user();
 		if ( ! wp_check_password( $current, $user->user_pass, $user->ID ) ) {
-			wp_send_json_error( array( 'message' => __( 'Current password is incorrect.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Current password is incorrect.', '6arshid-social-community' ) ) );
 		}
 
 		wp_set_password( $new, $user->ID );
@@ -378,7 +378,7 @@ class Members {
 		// Re-authenticate so the session stays valid after password change.
 		wp_set_auth_cookie( $user->ID, true );
 
-		wp_send_json_success( array( 'message' => __( 'Password changed successfully.', '6arshid-social-community-main' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Password changed successfully.', '6arshid-social-community' ) ) );
 	}
 
 	/**
@@ -386,7 +386,7 @@ class Members {
 	 */
 	public function ajax_get_members(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification
@@ -424,7 +424,7 @@ class Members {
 			$errors->add(
 				'username_too_short',
 				/* translators: %d: minimum character count */
-				sprintf( __( 'Username must be at least %d characters.', '6arshid-social-community-main' ), $min_len )
+				sprintf( __( 'Username must be at least %d characters.', '6arshid-social-community' ), $min_len )
 			);
 		}
 
@@ -432,7 +432,7 @@ class Members {
 		if ( '' !== $reserved_raw ) {
 			$reserved = array_filter( array_map( 'trim', explode( "\n", mb_strtolower( $reserved_raw ) ) ) );
 			if ( in_array( mb_strtolower( $username ), $reserved, true ) ) {
-				$errors->add( 'username_reserved', __( 'That username is not available.', '6arshid-social-community-main' ) );
+				$errors->add( 'username_reserved', __( 'That username is not available.', '6arshid-social-community' ) );
 			}
 		}
 
@@ -441,13 +441,13 @@ class Members {
 
 	public function ajax_check_username(): void {
 		if ( ! check_ajax_referer( 'arshid6social_check_username', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		$username = sanitize_user( wp_unslash( $_POST['username'] ?? '' ) );
 
 		if ( ! $username ) {
-			wp_send_json_error( array( 'message' => __( 'Please enter a username.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Please enter a username.', '6arshid-social-community' ) ) );
 		}
 
 		$restriction_errors = self::validate_username_restrictions( $username );
@@ -456,10 +456,10 @@ class Members {
 		}
 
 		if ( username_exists( $username ) ) {
-			wp_send_json_error( array( 'message' => __( 'That username is already taken.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'That username is already taken.', '6arshid-social-community' ) ) );
 		}
 
-		wp_send_json_success( array( 'message' => __( 'Username is available!', '6arshid-social-community-main' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Username is available!', '6arshid-social-community' ) ) );
 	}
 
 	/**
@@ -468,17 +468,17 @@ class Members {
 	 */
 	public function ajax_check_username_change(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community-main' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community' ) ), 401 );
 		}
 
 		$username = sanitize_user( wp_unslash( $_POST['username'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		if ( ! $username ) {
-			wp_send_json_error( array( 'message' => __( 'Please enter a username.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Please enter a username.', '6arshid-social-community' ) ) );
 		}
 
 		$restriction_errors = self::validate_username_restrictions( $username );
@@ -487,22 +487,22 @@ class Members {
 		}
 
 		if ( ! preg_match( '/^[a-zA-Z0-9_.\-]+$/', $username ) ) {
-			wp_send_json_error( array( 'message' => __( 'Username may only contain letters, numbers, underscores, dots and hyphens.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Username may only contain letters, numbers, underscores, dots and hyphens.', '6arshid-social-community' ) ) );
 		}
 
 		$current_user = wp_get_current_user();
 
 		// Own username is always "available" (no-op change).
 		if ( $username === $current_user->user_login ) {
-			wp_send_json_success( array( 'message' => __( 'That is your current username.', '6arshid-social-community-main' ), 'is_current' => true ) );
+			wp_send_json_success( array( 'message' => __( 'That is your current username.', '6arshid-social-community' ), 'is_current' => true ) );
 		}
 
 		$existing = get_user_by( 'login', $username );
 		if ( $existing && (int) $existing->ID !== (int) $current_user->ID ) {
-			wp_send_json_error( array( 'message' => __( 'That username is already taken.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'That username is already taken.', '6arshid-social-community' ) ) );
 		}
 
-		wp_send_json_success( array( 'message' => __( 'Username is available!', '6arshid-social-community-main' ), 'is_current' => false ) );
+		wp_send_json_success( array( 'message' => __( 'Username is available!', '6arshid-social-community' ), 'is_current' => false ) );
 	}
 
 	/**
@@ -510,36 +510,36 @@ class Members {
 	 */
 	public function ajax_change_username(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community-main' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community' ) ), 401 );
 		}
 
 		$new_username = sanitize_user( wp_unslash( $_POST['new_username'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		if ( ! $new_username ) {
-			wp_send_json_error( array( 'message' => __( 'Please enter a username.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Please enter a username.', '6arshid-social-community' ) ) );
 		}
 
 		if ( mb_strlen( $new_username ) < 3 ) {
-			wp_send_json_error( array( 'message' => __( 'Username must be at least 3 characters.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Username must be at least 3 characters.', '6arshid-social-community' ) ) );
 		}
 
 		if ( ! preg_match( '/^[a-zA-Z0-9_.\-]+$/', $new_username ) ) {
-			wp_send_json_error( array( 'message' => __( 'Username may only contain letters, numbers, underscores, dots and hyphens.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Username may only contain letters, numbers, underscores, dots and hyphens.', '6arshid-social-community' ) ) );
 		}
 
 		$current_user = wp_get_current_user();
 
 		if ( $new_username === $current_user->user_login ) {
-			wp_send_json_error( array( 'message' => __( 'That is already your username.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'That is already your username.', '6arshid-social-community' ) ) );
 		}
 
 		$existing = get_user_by( 'login', $new_username );
 		if ( $existing && (int) $existing->ID !== (int) $current_user->ID ) {
-			wp_send_json_error( array( 'message' => __( 'That username is already taken.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'That username is already taken.', '6arshid-social-community' ) ) );
 		}
 
 		global $wpdb;
@@ -568,7 +568,7 @@ class Members {
 		);
 
 		if ( false === $updated ) {
-			wp_send_json_error( array( 'message' => __( 'Could not update username. Please try again.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Could not update username. Please try again.', '6arshid-social-community' ) ) );
 		}
 
 		// Flush user caches so the change is seen immediately.
@@ -580,7 +580,7 @@ class Members {
 
 		wp_send_json_success(
 			array(
-				'message'     => __( 'Username changed successfully!', '6arshid-social-community-main' ),
+				'message'     => __( 'Username changed successfully!', '6arshid-social-community' ),
 				'new_url'     => $new_profile_url,
 				'new_username' => $new_username,
 			)
@@ -592,21 +592,21 @@ class Members {
 	 */
 	public function ajax_save_display_name(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community-main' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community' ) ), 401 );
 		}
 
 		$display_name = sanitize_text_field( wp_unslash( $_POST['display_name'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		if ( '' === $display_name ) {
-			wp_send_json_error( array( 'message' => __( 'Display name cannot be empty.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Display name cannot be empty.', '6arshid-social-community' ) ) );
 		}
 
 		if ( mb_strlen( $display_name ) > 100 ) {
-			wp_send_json_error( array( 'message' => __( 'Display name is too long.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Display name is too long.', '6arshid-social-community' ) ) );
 		}
 
 		global $wpdb;
@@ -660,21 +660,21 @@ class Members {
 	 */
 	public function ajax_save_friends_privacy(): void {
 		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community-main' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community-main' ) ), 401 );
+			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community' ) ), 401 );
 		}
 
 		$privacy = sanitize_key( wp_unslash( $_POST['friends_privacy'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		if ( ! in_array( $privacy, array( 'public', 'private' ), true ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid privacy value.', '6arshid-social-community-main' ) ) );
+			wp_send_json_error( array( 'message' => __( 'Invalid privacy value.', '6arshid-social-community' ) ) );
 		}
 
 		update_user_meta( get_current_user_id(), 'arshid6social_friends_list_privacy', $privacy );
-		wp_send_json_success( array( 'message' => __( 'Saved.', '6arshid-social-community-main' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Saved.', '6arshid-social-community' ) ) );
 	}
 
 	/**
@@ -845,7 +845,7 @@ class Members {
 	 */
 	public function register_data_exporter( array $exporters ): array {
 		$exporters[] = array(
-			'exporter_friendly_name' => __( '6Arshid Social Community Profile Data', '6arshid-social-community-main' ),
+			'exporter_friendly_name' => __( '6Arshid Social Community Profile Data', '6arshid-social-community' ),
 			'callback'               => array( $this->xprofile, 'export_data' ),
 		);
 		return $exporters;
@@ -859,7 +859,7 @@ class Members {
 	 */
 	public function register_data_eraser( array $erasers ): array {
 		$erasers[] = array(
-			'eraser_friendly_name' => __( '6Arshid Social Community Profile Data', '6arshid-social-community-main' ),
+			'eraser_friendly_name' => __( '6Arshid Social Community Profile Data', '6arshid-social-community' ),
 			'callback'             => array( $this->xprofile, 'erase_data' ),
 		);
 		return $erasers;

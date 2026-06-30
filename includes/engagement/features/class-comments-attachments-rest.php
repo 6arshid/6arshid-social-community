@@ -18,6 +18,7 @@ class Comments_Attachments_REST {
 			array(
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_attachments' ),
+				// Public endpoint: get_attachments() enforces parent-activity visibility via arshid6social_current_user_can_view_activity().
 				'permission_callback' => '__return_true',
 			),
 		) );

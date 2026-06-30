@@ -8,7 +8,7 @@
 defined( 'ABSPATH' ) || exit;
 
 if ( ! is_user_logged_in() ) {
-	echo '<p class="arshid6social-notice">' . esc_html__( 'Please log in to view your saved posts.', '6arshid-social-community-main' ) . '</p>';
+	echo '<p class="arshid6social-notice">' . esc_html__( 'Please log in to view your saved posts.', '6arshid-social-community' ) . '</p>';
 	return;
 }
 ?>

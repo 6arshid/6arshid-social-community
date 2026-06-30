@@ -85,7 +85,7 @@ class Friends_REST extends \WP_REST_Controller {
 		}
 		$target = absint( $request['id'] );
 		if ( $target === get_current_user_id() ) {
-			return new \WP_Error( 'arshid6social_self_follow', __( 'You cannot follow yourself.', '6arshid-social-community-main' ), array( 'status' => 400 ) );
+			return new \WP_Error( 'arshid6social_self_follow', __( 'You cannot follow yourself.', '6arshid-social-community' ), array( 'status' => 400 ) );
 		}
 		if ( ! get_userdata( $target ) ) {
 			return true; // Target user not found; let the callback return a 404.
@@ -93,13 +93,31 @@ class Friends_REST extends \WP_REST_Controller {
 		return true;
 	}
 
-	public function get_status( $request ): \WP_REST_Response {
+	public function get_status( $request ): \WP_REST_Response|\WP_Error {
 		$component = ARSHID6SOCIAL()->component( 'friends' );
-		$target    = (int) $request['id'];
+		$target    = absint( $request['id'] );
 		$current   = get_current_user_id();
-		$status    = $component->get_friendship_status( $current, $target );
-		$following = $component->is_following( $current, $target );
-		$blocked   = $component->is_blocked( $current, $target );
+
+		// Object-level access check: this endpoint always returns the current user's own
+		// relationship with the target (current user is always party 1, so no IDOR risk).
+		// We additionally deny when the target has explicitly blocked the requester and
+		// they are not friends — a blocked user must not probe the other user's data.
+		// Note: member profiles in this plugin are public by default; no profile-visibility
+		// meta exists in the data model, so friendship is the meaningful access gate.
+		if ( $current !== $target && $component ) {
+			$friendship_status = $component->get_friendship_status( $current, $target );
+			if ( 'friends' !== $friendship_status && $component->is_blocked( $target, $current ) ) {
+				return new \WP_Error(
+					'rest_forbidden',
+					__( 'You do not have permission to view this.', '6arshid-social-community' ),
+					array( 'status' => 403 )
+				);
+			}
+		}
+
+		$status    = $component ? $component->get_friendship_status( $current, $target ) : 'not_friends';
+		$following = $component ? $component->is_following( $current, $target ) : false;
+		$blocked   = $component ? $component->is_blocked( $current, $target ) : false;
 
 		return rest_ensure_response( compact( 'status', 'following', 'blocked' ) );
 	}

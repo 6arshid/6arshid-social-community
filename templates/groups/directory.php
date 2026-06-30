@@ -26,8 +26,8 @@ $nonce              = wp_create_nonce( 'arshid6social_ajax_nonce' );
 		<div class="arshid6social-search-wrap">
 			<input type="search"
 				class="arshid6social-search-input arshid6social-group-search"
-				placeholder="<?php esc_attr_e( 'Search groups…', '6arshid-social-community-main' ); ?>"
-				aria-label="<?php esc_attr_e( 'Search groups', '6arshid-social-community-main' ); ?>"
+				placeholder="<?php esc_attr_e( 'Search groups…', '6arshid-social-community' ); ?>"
+				aria-label="<?php esc_attr_e( 'Search groups', '6arshid-social-community' ); ?>"
 			/>
 		</div>
 		<?php endif; ?>
@@ -36,14 +36,14 @@ $nonce              = wp_create_nonce( 'arshid6social_ajax_nonce' );
 		<div class="arshid6social-toolbar-actions">
 			<a href="<?php echo esc_url( home_url( '/groups/create/' ) ); ?>"
 				class="arshid6social-btn arshid6social-btn-primary">
-				+ <?php esc_html_e( 'Create Group', '6arshid-social-community-main' ); ?>
+				+ <?php esc_html_e( 'Create Group', '6arshid-social-community' ); ?>
 			</a>
 		</div>
 		<?php endif; ?>
 	</div>
 
 	<div class="arshid6social-group-grid" id="arshid6social-group-grid" role="list"
-		aria-label="<?php esc_attr_e( 'Groups directory', '6arshid-social-community-main' ); ?>">
+		aria-label="<?php esc_attr_e( 'Groups directory', '6arshid-social-community' ); ?>">
 
 		<?php if ( ! empty( $groups ) ) : ?>
 			<?php foreach ( $groups as $group ) : ?>
@@ -77,7 +77,7 @@ $nonce              = wp_create_nonce( 'arshid6social_ajax_nonce' );
 							<?php
 							printf(
 								/* translators: %s: member count */
-								esc_html__( '%s members', '6arshid-social-community-main' ),
+								esc_html__( '%s members', '6arshid-social-community' ),
 								esc_html( number_format_i18n( $group['memberCount'] ?? 0 ) )
 							);
 							?>
@@ -86,7 +86,7 @@ $nonce              = wp_create_nonce( 'arshid6social_ajax_nonce' );
 						<button class="arshid6social-btn arshid6social-btn-secondary arshid6social-btn-sm arshid6social-group-join-btn"
 							data-group-id="<?php echo esc_attr( $group['id'] ); ?>"
 							data-nonce="<?php echo esc_attr( wp_create_nonce( 'arshid6social_join_group_' . $group['id'] ) ); ?>">
-							<?php esc_html_e( 'Join', '6arshid-social-community-main' ); ?>
+							<?php esc_html_e( 'Join', '6arshid-social-community' ); ?>
 						</button>
 						<?php endif; ?>
 					</div>
@@ -115,6 +115,6 @@ $nonce              = wp_create_nonce( 'arshid6social_ajax_nonce' );
 	</div>
 
 	<div class="arshid6social-pagination" id="arshid6social-group-pagination"
-		role="navigation" aria-label="<?php esc_attr_e( 'Groups pagination', '6arshid-social-community-main' ); ?>">
+		role="navigation" aria-label="<?php esc_attr_e( 'Groups pagination', '6arshid-social-community' ); ?>">
 	</div>
 </div>

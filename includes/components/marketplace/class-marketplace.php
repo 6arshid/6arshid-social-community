@@ -153,7 +153,7 @@ class Marketplace {
 	 */
 	public static function format_price( $price, bool $is_free = false ): string {
 		if ( $is_free ) {
-			return esc_html__( 'Free', '6arshid-social-community-main' );
+			return esc_html__( 'Free', '6arshid-social-community' );
 		}
 
 		$symbol    = (string) get_option( 'arshid6social_marketplace_currency_symbol',   '$' );

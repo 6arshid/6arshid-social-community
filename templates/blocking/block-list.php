@@ -13,10 +13,10 @@
 defined( 'ABSPATH' ) || exit;
 ?>
 <div class="sn-block-list" id="sn-block-list" data-page="<?php echo esc_attr( $page ); ?>">
-	<h3 class="sn-block-list__title"><?php esc_html_e( 'Blocked Users', '6arshid-social-community-main' ); ?></h3>
+	<h3 class="sn-block-list__title"><?php esc_html_e( 'Blocked Users', '6arshid-social-community' ); ?></h3>
 
 	<?php if ( empty( $blocks ) ) : ?>
-	<p class="sn-block-list__empty"><?php esc_html_e( 'You have not blocked anyone.', '6arshid-social-community-main' ); ?></p>
+	<p class="sn-block-list__empty"><?php esc_html_e( 'You have not blocked anyone.', '6arshid-social-community' ); ?></p>
 	<?php else : ?>
 
 	<ul class="sn-block-list__items" role="list">
@@ -40,8 +40,8 @@ defined( 'ABSPATH' ) || exit;
 				<?php
 				echo esc_html( sprintf(
 					/* translators: %s: human-readable date */
-					__( 'Blocked %s', '6arshid-social-community-main' ),
-					human_time_diff( strtotime( $block->date_created ) ) . ' ' . __( 'ago', '6arshid-social-community-main' )
+					__( 'Blocked %s', '6arshid-social-community' ),
+					human_time_diff( strtotime( $block->date_created ) ) . ' ' . __( 'ago', '6arshid-social-community' )
 				) );
 				?>
 			</span>
@@ -54,7 +54,7 @@ defined( 'ABSPATH' ) || exit;
 		<button class="sn-btn sn-btn--danger-outline sn-unblock-btn"
 		        data-user-id="<?php echo esc_attr( $block->blocked_id ); ?>"
 		        data-nonce="<?php echo esc_attr( wp_create_nonce( 'arshid6social_ajax_nonce' ) ); ?>">
-			<?php esc_html_e( 'Unblock', '6arshid-social-community-main' ); ?>
+			<?php esc_html_e( 'Unblock', '6arshid-social-community' ); ?>
 		</button>
 	</li>
 	<?php endforeach; ?>
@@ -65,13 +65,13 @@ defined( 'ABSPATH' ) || exit;
 		<?php if ( $page > 1 ) : ?>
 		<a class="sn-btn sn-btn--secondary"
 		   href="<?php echo esc_url( add_query_arg( 'block_page', $page - 1 ) ); ?>">
-			<?php esc_html_e( '← Previous', '6arshid-social-community-main' ); ?>
+			<?php esc_html_e( '← Previous', '6arshid-social-community' ); ?>
 		</a>
 		<?php endif; ?>
 		<?php if ( $has_more ) : ?>
 		<a class="sn-btn sn-btn--secondary"
 		   href="<?php echo esc_url( add_query_arg( 'block_page', $page + 1 ) ); ?>">
-			<?php esc_html_e( 'Next →', '6arshid-social-community-main' ); ?>
+			<?php esc_html_e( 'Next →', '6arshid-social-community' ); ?>
 		</a>
 		<?php endif; ?>
 	</div>
