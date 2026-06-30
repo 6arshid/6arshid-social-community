@@ -82,7 +82,7 @@ class Setup_Wizard {
 
 		<div class="sn6w">
 			<div class="sn6w-hdr">
-				<div class="sn6w-logo">Social <em>Network 6</em></div>
+				<div class="sn6w-logo">6arshid <em>Social community</em></div>
 				<div class="sn6w-hdr-step" id="sn6w-hdr-step">Core Features</div>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=arshid6social-dashboard' ) ); ?>" class="sn6w-skip">Skip →</a>
 			</div>
