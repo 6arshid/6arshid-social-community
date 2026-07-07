@@ -362,7 +362,10 @@ class Admin_Notifications {
 	// ── AJAX handlers ─────────────────────────────────────────────────────────
 
 	public function ajax_bulk_delete(): void {
-		if ( ! check_ajax_referer( 'arshid6social_admin_notif_nonce', 'nonce', false ) || ! current_user_can( 'arshid6social_manage_settings' ) ) {
+		if ( ! check_ajax_referer( 'arshid6social_admin_notif_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
 			wp_send_json_error( null, 403 );
 		}
 
@@ -385,7 +388,10 @@ class Admin_Notifications {
 	}
 
 	public function ajax_save_settings(): void {
-		if ( ! check_ajax_referer( 'arshid6social_admin_notif_nonce', 'nonce', false ) || ! current_user_can( 'arshid6social_manage_settings' ) ) {
+		if ( ! check_ajax_referer( 'arshid6social_admin_notif_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
 			wp_send_json_error( null, 403 );
 		}
 

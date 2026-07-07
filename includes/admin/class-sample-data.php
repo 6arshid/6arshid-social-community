@@ -44,7 +44,10 @@ final class Sample_Data {
 	// ── AJAX handlers ─────────────────────────────────────────────────────────
 
 	public function ajax_import(): void {
-		if ( ! check_ajax_referer( 'arshid6social_sample_data', 'nonce', false ) || ! current_user_can( 'arshid6social_manage_settings' ) ) {
+		if ( ! check_ajax_referer( 'arshid6social_sample_data', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
@@ -75,7 +78,10 @@ final class Sample_Data {
 	}
 
 	public function ajax_delete(): void {
-		if ( ! check_ajax_referer( 'arshid6social_sample_data', 'nonce', false ) || ! current_user_can( 'arshid6social_manage_settings' ) ) {
+		if ( ! check_ajax_referer( 'arshid6social_sample_data', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 

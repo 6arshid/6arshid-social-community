@@ -674,7 +674,10 @@ class Stories {
 	}
 
 	private function nonce_check(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 	}
@@ -896,6 +899,86 @@ class Stories {
 	}
 
 	// ── Helpers ───────────────────────────────────────────────────────────────
+
+	/**
+	 * Fetches a single story row by story ID.
+	 */
+	public function get_story( int $story_id ): ?object {
+		global $wpdb;
+		$row = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			"SELECT * FROM {$wpdb->prefix}sn_stories WHERE id = %d",
+			$story_id
+		) );
+		return $row ?: null;
+	}
+
+	/**
+	 * Fetches the parent story row for a story item ID.
+	 */
+	public function get_story_by_item( int $story_item_id ): ?object {
+		global $wpdb;
+		$row = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			"SELECT s.* FROM {$wpdb->prefix}sn_stories s
+			 JOIN {$wpdb->prefix}sn_story_items si ON si.story_id = s.id
+			 WHERE si.id = %d",
+			$story_item_id
+		) );
+		return $row ?: null;
+	}
+
+	/**
+	 * Whether the given viewer may see the given story.
+	 *
+	 * Mirrors the privacy rules applied in get_tray(): owner and activity
+	 * moderators always may; blocked or suspended relationships never may;
+	 * otherwise the story's privacy setting (public / friends / followers /
+	 * close_friends) decides.
+	 */
+	public function can_view_story( object $story, int $viewer_id ): bool {
+		$owner_id = (int) $story->user_id;
+
+		if ( $viewer_id && $viewer_id === $owner_id ) {
+			return true;
+		}
+		if ( $viewer_id && current_user_can( 'arshid6social_manage_activity' ) ) {
+			return true;
+		}
+
+		// Blocked users (either direction) can never view.
+		if ( $viewer_id && function_exists( 'arshid6social_is_blocked' ) && arshid6social_is_blocked( $viewer_id, $owner_id ) ) {
+			return false;
+		}
+
+		// Stories of suspended users are hidden.
+		if ( '1' === get_user_meta( $owner_id, 'arshid6social_suspended', true ) ) {
+			return false;
+		}
+
+		if ( 'public' === $story->privacy ) {
+			return true;
+		}
+
+		if ( ! $viewer_id ) {
+			return false;
+		}
+
+		if ( 'close_friends' === $story->privacy ) {
+			return $this->is_close_friend( $owner_id, $viewer_id );
+		}
+
+		$friends = ARSHID6SOCIAL()->component( 'friends' );
+		if ( ! $friends ) {
+			return false;
+		}
+		if ( 'friends' === $story->privacy ) {
+			return 'friends' === $friends->get_friendship_status( $viewer_id, $owner_id );
+		}
+		if ( 'followers' === $story->privacy ) {
+			return $friends->is_following( $viewer_id, $owner_id );
+		}
+
+		return false;
+	}
 
 	private function get_item_owner( int $story_item_id ): ?int {
 		global $wpdb;

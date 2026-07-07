@@ -709,7 +709,10 @@ class Setup_Wizard {
 	 *   6 → mark complete
 	 */
 	public function ajax_save(): void {
-		if ( ! check_ajax_referer( 'arshid6social_wizard_save', 'nonce', false ) || ! current_user_can( 'arshid6social_manage_settings' ) ) {
+		if ( ! check_ajax_referer( 'arshid6social_wizard_save', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 

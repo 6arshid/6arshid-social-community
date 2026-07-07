@@ -122,70 +122,52 @@ class Marketplace_Settings {
 	// ── Settings API registration ─────────────────────────────────────────────
 
 	public function register_settings(): void {
-		$group   = 'arshid6social_marketplace';
-		$options = array(
-			'arshid6social_marketplace_enabled',
-			'arshid6social_marketplace_currency_symbol',
-			'arshid6social_marketplace_currency_position',
-			'arshid6social_marketplace_currency_decimals',
-			'arshid6social_marketplace_currency_thousands',
-			'arshid6social_marketplace_max_photos',
-			'arshid6social_marketplace_max_photo_size_mb',
-			'arshid6social_marketplace_expiry_days',
-			'arshid6social_marketplace_moderation',
-			'arshid6social_marketplace_require_verified',
-			'arshid6social_marketplace_auto_hide_threshold',
-			'arshid6social_marketplace_banned_words',
-			'arshid6social_marketplace_allow_guests',
-			'arshid6social_marketplace_max_active_listings',
-			'arshid6social_marketplace_daily_new_listings',
-			'arshid6social_marketplace_safety_tips',
-			'arshid6social_marketplace_prohibited_policy',
-			'arshid6social_marketplace_as_homepage',
-			'arshid6social_marketplace_social_share',
+		$group    = 'arshid6social_marketplace';
+		$bool     = array( 'type' => 'boolean', 'sanitize_callback' => 'rest_sanitize_boolean' );
+		$int      = array( 'type' => 'integer', 'sanitize_callback' => 'absint' );
+		$text     = array( 'type' => 'string',  'sanitize_callback' => 'sanitize_text_field' );
+		$textarea = array( 'type' => 'string',  'sanitize_callback' => 'sanitize_textarea_field' );
+
+		$schemas = array(
+			'arshid6social_marketplace_enabled'             => $bool,
+			'arshid6social_marketplace_currency_symbol'     => $text,
+			'arshid6social_marketplace_currency_position'   => $this->enum_schema( array( 'before', 'after' ), 'before' ),
+			'arshid6social_marketplace_currency_decimals'   => $int,
+			'arshid6social_marketplace_currency_thousands'  => $text,
+			'arshid6social_marketplace_max_photos'          => $int,
+			'arshid6social_marketplace_max_photo_size_mb'   => $int,
+			'arshid6social_marketplace_expiry_days'         => $int,
+			'arshid6social_marketplace_moderation'          => $this->enum_schema( array( 'auto', 'manual' ), 'auto' ),
+			'arshid6social_marketplace_require_verified'    => $bool,
+			'arshid6social_marketplace_auto_hide_threshold' => $int,
+			'arshid6social_marketplace_banned_words'        => $textarea,
+			'arshid6social_marketplace_allow_guests'        => $bool,
+			'arshid6social_marketplace_max_active_listings' => $int,
+			'arshid6social_marketplace_daily_new_listings'  => $int,
+			'arshid6social_marketplace_safety_tips'         => $textarea,
+			'arshid6social_marketplace_prohibited_policy'   => $textarea,
+			'arshid6social_marketplace_as_homepage'         => $bool,
+			'arshid6social_marketplace_social_share'        => $bool,
 		);
 
-		foreach ( $options as $option_name ) {
-			register_setting( $group, $option_name, array(
-				'type'              => 'string',
-				'sanitize_callback' => array( $this, 'sanitize_option' ),
-			) );
+		foreach ( $schemas as $option_name => $schema ) {
+			register_setting( $group, $option_name, $schema );
 		}
 	}
 
-	public function sanitize_option( $value ): mixed {
-		// Derive the actual option name being saved from the current filter name.
-		// WordPress calls the sanitize callback via a filter named "sanitize_option_{option_name}".
-		$option = str_replace( 'sanitize_option_', '', current_filter() );
-
-		$bool_opts = array(
-			'arshid6social_marketplace_enabled', 'arshid6social_marketplace_require_verified',
-			'arshid6social_marketplace_allow_guests', 'arshid6social_marketplace_as_homepage',
-			'arshid6social_marketplace_social_share',
+	/**
+	 * Schema for a string option restricted to a fixed set of values.
+	 *
+	 * @param string[] $allowed Allowed values.
+	 * @param string   $default Fallback when the submitted value is not allowed.
+	 */
+	private function enum_schema( array $allowed, string $default ): array {
+		return array(
+			'type'              => 'string',
+			'sanitize_callback' => static function ( $value ) use ( $allowed, $default ): string {
+				return in_array( $value, $allowed, true ) ? $value : $default;
+			},
 		);
-		$int_opts = array(
-			'arshid6social_marketplace_currency_decimals', 'arshid6social_marketplace_max_photos',
-			'arshid6social_marketplace_max_photo_size_mb', 'arshid6social_marketplace_expiry_days',
-			'arshid6social_marketplace_auto_hide_threshold', 'arshid6social_marketplace_max_active_listings',
-			'arshid6social_marketplace_daily_new_listings',
-		);
-		$textarea_opts = array(
-			'arshid6social_marketplace_banned_words', 'arshid6social_marketplace_safety_tips',
-			'arshid6social_marketplace_prohibited_policy',
-		);
-
-		if ( in_array( $option, $bool_opts, true ) )     { return (bool) $value; }
-		if ( in_array( $option, $int_opts, true ) )      { return absint( $value ); }
-		if ( in_array( $option, $textarea_opts, true ) ) { return sanitize_textarea_field( (string) $value ); }
-
-		if ( 'arshid6social_marketplace_currency_position' === $option ) {
-			return in_array( $value, array( 'before', 'after' ), true ) ? $value : 'before';
-		}
-		if ( 'arshid6social_marketplace_moderation' === $option ) {
-			return in_array( $value, array( 'auto', 'manual' ), true ) ? $value : 'auto';
-		}
-
-		return sanitize_text_field( (string) $value );
 	}
 
 	// ── Tab rendering ─────────────────────────────────────────────────────────
@@ -634,8 +616,10 @@ class Marketplace_Settings {
 	// ── Categories AJAX ──────────────────────────────────────────────────────
 
 	public function ajax_save_category(): void {
-		if ( ! check_ajax_referer( 'arshid6social_marketplace_categories', 'nonce', false )
-			|| ! current_user_can( 'arshid6social_manage_settings' ) ) {
+		if ( ! check_ajax_referer( 'arshid6social_marketplace_categories', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
@@ -687,8 +671,10 @@ class Marketplace_Settings {
 	}
 
 	public function ajax_delete_category(): void {
-		if ( ! check_ajax_referer( 'arshid6social_marketplace_categories', 'nonce', false )
-			|| ! current_user_can( 'arshid6social_manage_settings' ) ) {
+		if ( ! check_ajax_referer( 'arshid6social_marketplace_categories', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
@@ -708,8 +694,10 @@ class Marketplace_Settings {
 	}
 
 	public function ajax_reorder_categories(): void {
-		if ( ! check_ajax_referer( 'arshid6social_marketplace_categories', 'nonce', false )
-			|| ! current_user_can( 'arshid6social_manage_settings' ) ) {
+		if ( ! check_ajax_referer( 'arshid6social_marketplace_categories', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 

@@ -206,7 +206,10 @@ class Comments_GIFs {
 	}
 
 	public function ajax_recent(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( null, 403 );
 		}
 		$recent = (array) get_user_meta( get_current_user_id(), 'arshid6social_recent_gifs', true );
@@ -214,7 +217,10 @@ class Comments_GIFs {
 	}
 
 	public function ajax_record_use(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( null, 403 );
 		}
 

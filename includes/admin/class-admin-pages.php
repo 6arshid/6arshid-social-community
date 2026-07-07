@@ -299,7 +299,10 @@ ENDJS;
 	 * AJAX: Re-creates a single missing page.
 	 */
 	public function ajax_recreate_page(): void {
-		if ( ! check_ajax_referer( 'arshid6social_recreate_page', 'nonce', false ) || ! current_user_can( 'arshid6social_manage_settings' ) ) {
+		if ( ! check_ajax_referer( 'arshid6social_recreate_page', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
@@ -335,7 +338,10 @@ ENDJS;
 	 * AJAX: Assigns an existing WordPress page to a plugin page slot.
 	 */
 	public function ajax_assign_page(): void {
-		if ( ! check_ajax_referer( 'arshid6social_assign_page', 'nonce', false ) || ! current_user_can( 'arshid6social_manage_settings' ) ) {
+		if ( ! check_ajax_referer( 'arshid6social_assign_page', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 

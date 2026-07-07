@@ -313,7 +313,10 @@ class Polls {
 	// ── AJAX ──────────────────────────────────────────────────────────────────
 
 	public function ajax_create(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( null, 403 );
 		}
 
@@ -433,7 +436,10 @@ class Polls {
 	}
 
 	public function ajax_vote(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( null, 403 );
 		}
 
@@ -490,7 +496,10 @@ class Polls {
 	}
 
 	public function ajax_suggest_option(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( null, 403 );
 		}
 

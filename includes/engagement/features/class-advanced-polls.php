@@ -28,7 +28,10 @@ class Advanced_Polls {
 	// ── Image upload for options ───────────────────────────────────────────────
 
 	public function ajax_upload_option_image(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( null, 403 );
 		}
 
@@ -153,7 +156,10 @@ class Advanced_Polls {
 	}
 
 	public function ajax_load_template(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( null, 403 );
 		}
 		$id        = sanitize_key( $_POST['template_id'] ?? '' ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -164,7 +170,10 @@ class Advanced_Polls {
 	}
 
 	public function ajax_save_template(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! current_user_can( 'arshid6social_manage_settings' ) ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
 			wp_send_json_error( null, 403 );
 		}
 
@@ -186,7 +195,10 @@ class Advanced_Polls {
 	}
 
 	public function ajax_delete_template(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! current_user_can( 'arshid6social_manage_settings' ) ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! current_user_can( 'arshid6social_manage_settings' ) ) {
 			wp_send_json_error( null, 403 );
 		}
 		$id        = sanitize_key( $_POST['template_id'] ?? '' ); // phpcs:ignore WordPress.Security.NonceVerification

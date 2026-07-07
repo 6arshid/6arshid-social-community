@@ -351,7 +351,10 @@ class Hashtags {
 	// ── Follow ────────────────────────────────────────────────────────────────
 
 	public function ajax_follow(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( null, 403 );
 		}
 		$hashtag_id = absint( $_POST['hashtag_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
@@ -370,7 +373,10 @@ class Hashtags {
 	}
 
 	public function ajax_unfollow(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( null, 403 );
 		}
 		$hashtag_id = absint( $_POST['hashtag_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification

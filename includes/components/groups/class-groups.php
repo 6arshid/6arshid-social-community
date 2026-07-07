@@ -475,7 +475,10 @@ class Groups {
 	 * AJAX: Creates a new group.
 	 */
 	public function ajax_create_group(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
@@ -528,7 +531,10 @@ class Groups {
 	 * AJAX: Joins or requests to join a group.
 	 */
 	public function ajax_join_group(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
@@ -562,7 +568,10 @@ class Groups {
 	 * AJAX: Leaves a group.
 	 */
 	public function ajax_leave_group(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
@@ -586,7 +595,10 @@ class Groups {
 	 * AJAX: Invites a user to a group (group admin only).
 	 */
 	public function ajax_invite_to_group(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
@@ -594,8 +606,13 @@ class Groups {
 		$invitee_id = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$current    = get_current_user_id();
 
-		if ( ! $this->is_member( $current, $group_id ) && ! current_user_can( 'arshid6social_manage_groups' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Only group members can invite others.', '6arshid-social-community' ) ), 403 );
+		if ( ! $this->get_by_id( $group_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'Group not found.', '6arshid-social-community' ) ), 404 );
+		}
+
+		// Only group admins (or site group managers) may invite.
+		if ( ! $this->is_admin( $current, $group_id ) && ! current_user_can( 'arshid6social_manage_groups' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Only group admins can invite others.', '6arshid-social-community' ) ), 403 );
 		}
 
 		if ( ! get_userdata( $invitee_id ) ) {
@@ -613,7 +630,10 @@ class Groups {
 	 * AJAX: Deletes a group (group admin or site admin).
 	 */
 	public function ajax_delete_group(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
@@ -632,7 +652,10 @@ class Groups {
 	 * AJAX: Updates a group's name, description, and status (group admin only).
 	 */
 	public function ajax_update_group(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
@@ -698,7 +721,10 @@ class Groups {
 	 * AJAX: Uploads a group avatar image (group admin only).
 	 */
 	public function ajax_upload_group_avatar(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
@@ -732,7 +758,10 @@ class Groups {
 	 * AJAX: Uploads a group cover image (group admin only).
 	 */
 	public function ajax_upload_group_cover(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 

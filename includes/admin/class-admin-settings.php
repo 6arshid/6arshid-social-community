@@ -149,195 +149,212 @@ ENDJS;
 
 	/**
 	 * Registers all plugin options with the WP Settings API.
+	 *
+	 * Every option gets its own type and sanitize_callback matched to the
+	 * data it stores (bool, int, enum, slug, textarea, URL, array, â€¦).
 	 */
 	public function register(): void {
-		$option_groups = array(
-			'arshid6social_general'       => array(
-				'arshid6social_allow_registration',
-				'arshid6social_date_format',
-				'arshid6social_invitation_limit',
-			),
-			'arshid6social_components'    => array( 'arshid6social_enabled_components', 'arshid6social_stories_enabled', 'arshid6social_verification_enabled', 'arshid6social_blocking_enabled', 'arshid6social_activity_stats_bar' ),
-			'arshid6social_members'       => array(
-				'arshid6social_members_per_page',
-				'arshid6social_members_pagination_type',
-				'arshid6social_who_to_follow_per_page',
-				'arshid6social_members_show_friend_count',
-				'arshid6social_profile_photo_size',
-				'arshid6social_cover_photo_width',
-				'arshid6social_cover_photo_height',
-				'arshid6social_max_upload_size_mb',
-				'arshid6social_allowed_upload_types',
-				'arshid6social_verification_enabled',
-				'arshid6social_verification_types',
-				'arshid6social_verification_badge_image',
-				'arshid6social_verification_require_doc',
-				'arshid6social_verification_expiry_months',
-				'arshid6social_verification_doc_purge',
-				'arshid6social_verification_rate_limit',
-			),
-			'arshid6social_activity'      => array(
-				'arshid6social_activity_per_page',
-				'arshid6social_activity_allow_comments',
-				'arshid6social_activity_allow_media',
-				'arshid6social_activity_allowed_media_types',
-				'arshid6social_activity_pagination_type',
-				'arshid6social_stories_enabled',
-				'arshid6social_stories_expiry_hours',
-				'arshid6social_stories_max_video_secs',
-				'arshid6social_stories_allow_video',
-				'arshid6social_stories_highlights',
-				'arshid6social_stories_rate_limit',
-				'arshid6social_stories_bottom_bar',
-				'arshid6social_stories_bottom_bar_marketplace',
-				'arshid6social_stories_bottom_bar_messages',
-			),
-			'arshid6social_groups'        => array( 'arshid6social_groups_per_page' ),
-			'arshid6social_messages'      => array( 'arshid6social_messages_per_page', 'arshid6social_messages_story_enabled' ),
-			'arshid6social_notifications' => array(
-				'arshid6social_email_notifications',
-				'arshid6social_email_digest',
-			),
-			'arshid6social_security'      => array(
-				'arshid6social_enable_akismet',
-				'arshid6social_enable_recaptcha',
-				'arshid6social_recaptcha_site_key',
-				'arshid6social_recaptcha_secret_key',
-				'arshid6social_new_member_moderation',
-				'arshid6social_auto_suspend_threshold',
-				'arshid6social_banned_words',
-				'arshid6social_rate_limit_posts',
-				'arshid6social_rate_limit_messages',
-				'arshid6social_rate_limit_friends',
-				'arshid6social_blocking_enabled',
-				'arshid6social_blocking_show_reason',
-				'arshid6social_report_reasons',
-				'arshid6social_suspend_reasons',
-				'arshid6social_report_allow_attachments',
-				'arshid6social_reserved_usernames',
-				'arshid6social_username_min_length',
-			),
-			'arshid6social_emails'        => array(),
-			'arshid6social_appearance'    => array(
-				'arshid6social_primary_color',
-				'arshid6social_dark_mode',
-				'arshid6social_home_video_url',
-				'arshid6social_home_bg_type',
-				'arshid6social_logo_mobile',
-			),
-			'arshid6social_permalinks'    => array(
-				'arshid6social_permalink_tag_base',
-				'arshid6social_permalink_activity_base',
-				'arshid6social_activity_uid_enabled',
-				'arshid6social_marketplace_slug',
-			),
-			'arshid6social_search'        => array(
-				'arshid6social_search_pagination_type',
-				'arshid6social_search_results_per_section',
-				'arshid6social_search_per_page',
-			),
-		);
-
-		foreach ( $option_groups as $group => $options ) {
-			foreach ( $options as $option_name ) {
-				register_setting( $group, $option_name, array(
-					'type'              => 'string',
-					'sanitize_callback' => array( $this, 'sanitize_option' ),
-				) );
+		foreach ( $this->option_schemas() as $group => $options ) {
+			foreach ( $options as $option_name => $schema ) {
+				register_setting( $group, $option_name, $schema );
 			}
 		}
 	}
 
 	/**
-	 * Sanitizes any plugin option based on its name.
+	 * Returns option-specific registration schemas, grouped by settings group.
 	 *
-	 * @param mixed $value Raw value from the form.
-	 * @return mixed Sanitized value.
+	 * @return array<string, array<string, array{type: string, sanitize_callback: callable}>>
 	 */
-	public function sanitize_option( mixed $value ): mixed {
-		// Derive the option name from the current filter hook (sanitize_option_{name}).
-		$current_hook = current_filter();
-		$option       = str_starts_with( $current_hook, 'sanitize_option_' )
-			? substr( $current_hook, strlen( 'sanitize_option_' ) )
-			: '';
+	private function option_schemas(): array {
+		$bool     = array( 'type' => 'boolean', 'sanitize_callback' => 'rest_sanitize_boolean' );
+		$int      = array( 'type' => 'integer', 'sanitize_callback' => 'absint' );
+		$text     = array( 'type' => 'string',  'sanitize_callback' => 'sanitize_text_field' );
+		$textarea = array( 'type' => 'string',  'sanitize_callback' => 'sanitize_textarea_field' );
+		$url      = array( 'type' => 'string',  'sanitize_callback' => 'esc_url_raw' );
 
-		// Arrays (checkboxes, multi-selects).
-		if ( is_array( $value ) ) {
-			return array_map( 'sanitize_text_field', $value );
-		}
+		$pagination_default_scroll = $this->enum_schema( array( 'infinite_scroll', 'pagination' ), 'infinite_scroll' );
+		$pagination_default_pages  = $this->enum_schema( array( 'infinite_scroll', 'pagination' ), 'pagination' );
 
-		// Integers.
-		if ( in_array( $option, array( 'arshid6social_members_per_page', 'arshid6social_who_to_follow_per_page', 'arshid6social_activity_per_page', 'arshid6social_groups_per_page', 'arshid6social_messages_per_page', 'arshid6social_profile_photo_size', 'arshid6social_cover_photo_width', 'arshid6social_cover_photo_height', 'arshid6social_max_upload_size_mb', 'arshid6social_auto_suspend_threshold', 'arshid6social_rate_limit_posts', 'arshid6social_rate_limit_messages', 'arshid6social_rate_limit_friends', 'arshid6social_invitation_limit', 'arshid6social_search_results_per_section', 'arshid6social_search_per_page' ), true ) ) {
-			return absint( $value );
-		}
+		return array(
+			'arshid6social_general'       => array(
+				'arshid6social_allow_registration' => $bool,
+				'arshid6social_date_format'        => $this->enum_schema( array( 'relative', 'absolute', 'jalali' ), 'relative' ),
+				'arshid6social_invitation_limit'   => $int,
+			),
+			'arshid6social_components'    => array(
+				'arshid6social_enabled_components'   => $this->choices_schema( array( 'activity', 'groups', 'friends', 'messages', 'notifications', 'moderation' ) ),
+				'arshid6social_stories_enabled'      => $bool,
+				'arshid6social_verification_enabled' => $bool,
+				'arshid6social_blocking_enabled'     => $bool,
+				'arshid6social_activity_stats_bar'   => $bool,
+			),
+			'arshid6social_members'       => array(
+				'arshid6social_members_per_page'            => $int,
+				'arshid6social_members_pagination_type'     => $pagination_default_pages,
+				'arshid6social_who_to_follow_per_page'      => $int,
+				'arshid6social_members_show_friend_count'   => $bool,
+				'arshid6social_profile_photo_size'          => $int,
+				'arshid6social_cover_photo_width'           => $int,
+				'arshid6social_cover_photo_height'          => $int,
+				'arshid6social_max_upload_size_mb'          => $int,
+				'arshid6social_allowed_upload_types'        => $this->choices_schema( array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' ), false ),
+				'arshid6social_verification_enabled'        => $bool,
+				'arshid6social_verification_types'          => $this->verification_types_schema(),
+				'arshid6social_verification_badge_image'    => $int,
+				'arshid6social_verification_require_doc'    => $bool,
+				'arshid6social_verification_expiry_months'  => $int,
+				'arshid6social_verification_doc_purge'      => $bool,
+				'arshid6social_verification_rate_limit'     => $int,
+			),
+			'arshid6social_activity'      => array(
+				'arshid6social_activity_per_page'              => $int,
+				'arshid6social_activity_allow_comments'        => $bool,
+				'arshid6social_activity_allow_media'           => $bool,
+				'arshid6social_activity_allowed_media_types'   => $this->choices_schema( array( 'image', 'video', 'audio', 'document' ) ),
+				'arshid6social_activity_pagination_type'       => $pagination_default_scroll,
+				'arshid6social_stories_enabled'                => $bool,
+				'arshid6social_stories_expiry_hours'           => $int,
+				'arshid6social_stories_max_video_secs'         => $int,
+				'arshid6social_stories_allow_video'            => $bool,
+				'arshid6social_stories_highlights'             => $bool,
+				'arshid6social_stories_rate_limit'             => $int,
+				'arshid6social_stories_bottom_bar'             => $bool,
+				'arshid6social_stories_bottom_bar_marketplace' => $bool,
+				'arshid6social_stories_bottom_bar_messages'    => $bool,
+			),
+			'arshid6social_groups'        => array( 'arshid6social_groups_per_page' => $int ),
+			'arshid6social_messages'      => array(
+				'arshid6social_messages_per_page'      => $int,
+				'arshid6social_messages_story_enabled' => $bool,
+			),
+			'arshid6social_notifications' => array(
+				'arshid6social_email_notifications' => $bool,
+				'arshid6social_email_digest'        => $this->enum_schema( array( 'none', 'daily', 'weekly' ), 'daily' ),
+			),
+			'arshid6social_security'      => array(
+				'arshid6social_enable_akismet'            => $bool,
+				'arshid6social_enable_recaptcha'          => $bool,
+				'arshid6social_recaptcha_site_key'        => $text,
+				'arshid6social_recaptcha_secret_key'      => $text,
+				'arshid6social_new_member_moderation'     => $bool,
+				'arshid6social_auto_suspend_threshold'    => $int,
+				'arshid6social_banned_words'              => $textarea,
+				'arshid6social_rate_limit_posts'          => $int,
+				'arshid6social_rate_limit_messages'       => $int,
+				'arshid6social_rate_limit_friends'        => $int,
+				'arshid6social_blocking_enabled'          => $bool,
+				'arshid6social_blocking_show_reason'      => $bool,
+				'arshid6social_report_reasons'            => $textarea,
+				'arshid6social_suspend_reasons'           => $textarea,
+				'arshid6social_report_allow_attachments'  => $bool,
+				'arshid6social_reserved_usernames'        => $textarea,
+				'arshid6social_username_min_length'       => array(
+					'type'              => 'integer',
+					'sanitize_callback' => static function ( $value ): int {
+						return max( 1, min( 60, absint( $value ) ) );
+					},
+				),
+			),
+			'arshid6social_appearance'    => array(
+				'arshid6social_primary_color' => array(
+					'type'              => 'string',
+					'sanitize_callback' => static function ( $value ): string {
+						return sanitize_hex_color( (string) $value ) ?: '#2563eb';
+					},
+				),
+				'arshid6social_dark_mode'      => $this->enum_schema( array( 'off', 'auto', 'on' ), 'off' ),
+				'arshid6social_home_video_url' => $url,
+				'arshid6social_home_bg_type'   => $this->enum_schema( array( 'video', 'image' ), 'video' ),
+				'arshid6social_logo_mobile'    => $int,
+			),
+			'arshid6social_permalinks'    => array(
+				'arshid6social_permalink_tag_base'      => $this->slug_schema( 'hashtags' ),
+				'arshid6social_permalink_activity_base' => $this->slug_schema( 'activity' ),
+				'arshid6social_activity_uid_enabled'    => $bool,
+				'arshid6social_marketplace_slug'        => $this->slug_schema( 'marketplace' ),
+			),
+			'arshid6social_search'        => array(
+				'arshid6social_search_pagination_type'      => $pagination_default_pages,
+				'arshid6social_search_results_per_section'  => $int,
+				'arshid6social_search_per_page'             => $int,
+			),
+		);
+	}
 
-		// Hex colour.
-		if ( 'arshid6social_primary_color' === $option ) {
-			return sanitize_hex_color( $value ) ?? '#2563eb';
-		}
+	/**
+	 * Schema for a string option restricted to a fixed set of values.
+	 *
+	 * @param string[] $allowed Allowed values.
+	 * @param string   $default Fallback when the submitted value is not allowed.
+	 */
+	private function enum_schema( array $allowed, string $default ): array {
+		return array(
+			'type'              => 'string',
+			'sanitize_callback' => static function ( $value ) use ( $allowed, $default ): string {
+				return in_array( $value, $allowed, true ) ? $value : $default;
+			},
+		);
+	}
 
-		// Booleans stored as 1/0.
-		if ( in_array( $option, array( 'arshid6social_allow_registration', 'arshid6social_enable_akismet', 'arshid6social_enable_recaptcha', 'arshid6social_new_member_moderation', 'arshid6social_email_notifications', 'arshid6social_activity_allow_comments', 'arshid6social_activity_allow_media', 'arshid6social_activity_uid_enabled', 'arshid6social_members_show_friend_count' ), true ) ) {
-			return (bool) $value;
-		}
+	/**
+	 * Schema for an array option whose items must belong to a whitelist.
+	 *
+	 * @param string[] $allowed       Allowed item values.
+	 * @param bool     $sanitize_keys Whether to run items through sanitize_key() first.
+	 */
+	private function choices_schema( array $allowed, bool $sanitize_keys = true ): array {
+		return array(
+			'type'              => 'array',
+			'sanitize_callback' => static function ( $value ) use ( $allowed, $sanitize_keys ): array {
+				if ( ! is_array( $value ) ) {
+					return array();
+				}
+				$value = array_map( $sanitize_keys ? 'sanitize_key' : 'sanitize_text_field', array_map( 'strval', $value ) );
+				return array_values( array_intersect( $value, $allowed ) );
+			},
+		);
+	}
 
-		// URL fields.
-		if ( in_array( $option, array( 'arshid6social_home_video_url', 'arshid6social_logo_mobile', 'arshid6social_logo_mobile_dark' ), true ) ) {
-			return esc_url_raw( (string) $value );
-		}
+	/**
+	 * Schema for a URL/permalink slug option with a fallback default.
+	 *
+	 * @param string $default Default slug when the submitted value sanitizes to ''.
+	 */
+	private function slug_schema( string $default ): array {
+		return array(
+			'type'              => 'string',
+			'sanitize_callback' => static function ( $value ) use ( $default ): string {
+				return sanitize_title( (string) $value ) ?: $default;
+			},
+		);
+	}
 
-		// Dark mode: 'auto', 'light', or 'dark'.
-		if ( 'arshid6social_dark_mode' === $option ) {
-			return in_array( $value, array( 'auto', 'light', 'dark' ), true ) ? $value : 'auto';
-		}
-
-		// Date format whitelist.
-		if ( 'arshid6social_date_format' === $option ) {
-			$allowed_formats = array( 'relative', 'F j, Y', 'Y-m-d', 'd/m/Y', 'm/d/Y', 'j F Y' );
-			return in_array( $value, $allowed_formats, true ) ? $value : 'relative';
-		}
-
-		// Background media type: 'video' or 'image'.
-		if ( 'arshid6social_home_bg_type' === $option ) {
-			return in_array( $value, array( 'video', 'image' ), true ) ? $value : 'video';
-		}
-
-		// Permalink base slugs â€” lowercase letters, digits, hyphens only.
-		if ( in_array( $option, array( 'arshid6social_permalink_tag_base', 'arshid6social_permalink_activity_base' ), true ) ) {
-			$slug = sanitize_title( (string) $value );
-			if ( '' === $slug ) {
-				$slug = ( 'arshid6social_permalink_tag_base' === $option ) ? 'hashtags' : 'activity';
-			}
-			return $slug;
-		}
-
-		if ( 'arshid6social_marketplace_slug' === $option ) {
-			return sanitize_title( (string) $value ) ?: 'marketplace';
-		}
-
-		// Pagination type.
-		if ( 'arshid6social_activity_pagination_type' === $option ) {
-			return in_array( $value, array( 'infinite_scroll', 'pagination' ), true ) ? $value : 'infinite_scroll';
-		}
-		if ( 'arshid6social_members_pagination_type' === $option ) {
-			return in_array( $value, array( 'infinite_scroll', 'pagination' ), true ) ? $value : 'pagination';
-		}
-		if ( 'arshid6social_search_pagination_type' === $option ) {
-			return in_array( $value, array( 'infinite_scroll', 'pagination' ), true ) ? $value : 'pagination';
-		}
-
-		// Textarea fields.
-		if ( in_array( $option, array( 'arshid6social_banned_words', 'arshid6social_report_reasons', 'arshid6social_suspend_reasons', 'arshid6social_reserved_usernames' ), true ) ) {
-			return sanitize_textarea_field( $value );
-		}
-
-		// Username min length.
-		if ( 'arshid6social_username_min_length' === $option ) {
-			$val = absint( $value );
-			return max( 1, min( 60, $val ) );
-		}
-
-		return sanitize_text_field( (string) $value );
+	/**
+	 * Schema for the verification types array (list of key/label/badge/color rows).
+	 */
+	private function verification_types_schema(): array {
+		return array(
+			'type'              => 'array',
+			'sanitize_callback' => static function ( $value ): array {
+				if ( ! is_array( $value ) ) {
+					return array();
+				}
+				$clean = array();
+				foreach ( $value as $item ) {
+					if ( ! is_array( $item ) || empty( $item['key'] ) ) {
+						continue;
+					}
+					$clean[] = array(
+						'key'   => sanitize_key( $item['key'] ),
+						'label' => sanitize_text_field( (string) ( $item['label'] ?? '' ) ),
+						'badge' => sanitize_text_field( (string) ( $item['badge'] ?? '' ) ),
+						'color' => sanitize_hex_color( (string) ( $item['color'] ?? '' ) ) ?: '#2563eb',
+					);
+				}
+				return $clean;
+			},
+		);
 	}
 
 	/**

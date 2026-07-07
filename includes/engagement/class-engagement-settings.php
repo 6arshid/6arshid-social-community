@@ -48,150 +48,130 @@ class Engagement_Settings {
 	}
 
 	public function register_settings(): void {
-		$options = array(
-			// Social Embeds
-			'arshid6social_eng_social_embeds',
-			'arshid6social_eng_embed_locations',
-			'arshid6social_eng_embed_max_per_post',
-			'arshid6social_eng_embed_lazy_load',
-			'arshid6social_eng_embed_cache_hours',
-			'arshid6social_eng_embed_strip_tracking',
-			'arshid6social_eng_embed_og_fallback',
-			'arshid6social_eng_embed_og_generic',
-			'arshid6social_eng_embed_fb_token',
-			'arshid6social_eng_embed_ig_token',
-			'arshid6social_eng_embed_banned_domains',
+		$bool     = array( 'type' => 'boolean', 'sanitize_callback' => 'rest_sanitize_boolean' );
+		$int      = array( 'type' => 'integer', 'sanitize_callback' => 'absint' );
+		$text     = array( 'type' => 'string',  'sanitize_callback' => 'sanitize_text_field' );
+		$textarea = array( 'type' => 'string',  'sanitize_callback' => 'sanitize_textarea_field' );
+
+		$network_keys = array_keys( Features\Social_Share_External::networks() );
+
+		$schemas = array(
+			// Social Embeds.
+			'arshid6social_eng_social_embeds'        => $bool,
+			'arshid6social_eng_embed_locations'      => $this->choices_schema( array( 'activity', 'comments', 'messages' ) ),
+			'arshid6social_eng_embed_max_per_post'   => $int,
+			'arshid6social_eng_embed_lazy_load'      => $bool,
+			'arshid6social_eng_embed_cache_hours'    => $int,
+			'arshid6social_eng_embed_strip_tracking' => $bool,
+			'arshid6social_eng_embed_og_fallback'    => $bool,
+			'arshid6social_eng_embed_og_generic'     => $bool,
+			'arshid6social_eng_embed_fb_token'       => $text,
+			'arshid6social_eng_embed_ig_token'       => $text,
+			'arshid6social_eng_embed_banned_domains' => $textarea,
 
 			// Per-provider toggles (arshid6social_eng_embed_{id}).
-			'arshid6social_eng_embed_youtube',
-			'arshid6social_eng_embed_vimeo',
-			'arshid6social_eng_embed_twitter',
-			'arshid6social_eng_embed_instagram',
-			'arshid6social_eng_embed_facebook',
-			'arshid6social_eng_embed_tiktok',
-			'arshid6social_eng_embed_spotify',
-			'arshid6social_eng_embed_soundcloud',
-			'arshid6social_eng_embed_pinterest',
-			'arshid6social_eng_embed_reddit',
-			'arshid6social_eng_embed_twitch',
-			'arshid6social_eng_embed_dailymotion',
-			'arshid6social_eng_embed_apple_music',
-			'arshid6social_eng_embed_linkedin',
-			'arshid6social_eng_embed_telegram',
-			'arshid6social_eng_embed_threads',
-			'arshid6social_eng_embed_bluesky',
-			'arshid6social_eng_embed_aparat',
-			'arshid6social_eng_embed_og_generic_provider',
+			'arshid6social_eng_embed_youtube'             => $bool,
+			'arshid6social_eng_embed_vimeo'               => $bool,
+			'arshid6social_eng_embed_twitter'             => $bool,
+			'arshid6social_eng_embed_instagram'           => $bool,
+			'arshid6social_eng_embed_facebook'            => $bool,
+			'arshid6social_eng_embed_tiktok'              => $bool,
+			'arshid6social_eng_embed_spotify'             => $bool,
+			'arshid6social_eng_embed_soundcloud'          => $bool,
+			'arshid6social_eng_embed_pinterest'           => $bool,
+			'arshid6social_eng_embed_reddit'              => $bool,
+			'arshid6social_eng_embed_twitch'              => $bool,
+			'arshid6social_eng_embed_dailymotion'         => $bool,
+			'arshid6social_eng_embed_apple_music'         => $bool,
+			'arshid6social_eng_embed_linkedin'            => $bool,
+			'arshid6social_eng_embed_telegram'            => $bool,
+			'arshid6social_eng_embed_threads'             => $bool,
+			'arshid6social_eng_embed_bluesky'             => $bool,
+			'arshid6social_eng_embed_aparat'              => $bool,
+			'arshid6social_eng_embed_og_generic_provider' => $bool,
 
-			// Hashtags
-			'arshid6social_eng_hashtags',
-			'arshid6social_eng_tag_friends',
-			'arshid6social_eng_bookmarks',
-			'arshid6social_eng_sticky_posts',
-			'arshid6social_eng_share_posts',
-			'arshid6social_eng_polls',
-			'arshid6social_eng_advanced_polls',
-			'arshid6social_eng_comments_gifs',
-			'arshid6social_eng_comments_attachments',
-			'arshid6social_eng_messages_attachments',
+			// Feature toggles.
+			'arshid6social_eng_hashtags'             => $bool,
+			'arshid6social_eng_tag_friends'          => $bool,
+			'arshid6social_eng_bookmarks'            => $bool,
+			'arshid6social_eng_sticky_posts'         => $bool,
+			'arshid6social_eng_share_posts'          => $bool,
+			'arshid6social_eng_polls'                => $bool,
+			'arshid6social_eng_advanced_polls'       => $bool,
+			'arshid6social_eng_comments_gifs'        => $bool,
+			'arshid6social_eng_comments_attachments' => $bool,
+			'arshid6social_eng_messages_attachments' => $bool,
 
-			'arshid6social_eng_polls_max_options',
-			'arshid6social_eng_polls_allow_voter_suggest',
-			'arshid6social_eng_hashtag_banned',
-			'arshid6social_eng_tag_photo_tags',
-			'arshid6social_eng_tag_privacy',
-			'arshid6social_eng_tag_review',
-			'arshid6social_eng_bookmark_collections',
-			'arshid6social_eng_share_external',
-			'arshid6social_eng_sticky_multiple',
-			'arshid6social_eng_giphy_api_key',
-			'arshid6social_eng_gif_cache',
-			'arshid6social_eng_comment_att_max_mb',
-			'arshid6social_eng_comment_att_types',
-			'arshid6social_eng_msg_att_max_mb',
-			'arshid6social_eng_msg_att_types',
+			// Feature options.
+			'arshid6social_eng_polls_max_options'         => $int,
+			'arshid6social_eng_polls_allow_voter_suggest' => $bool,
+			'arshid6social_eng_hashtag_banned'            => $textarea,
+			'arshid6social_eng_tag_photo_tags'            => $bool,
+			'arshid6social_eng_tag_privacy'               => $this->enum_schema( array( 'everyone', 'friends', 'nobody' ), 'everyone' ),
+			'arshid6social_eng_tag_review'                => $bool,
+			'arshid6social_eng_bookmark_collections'      => $bool,
+			'arshid6social_eng_share_external'            => $bool,
+			'arshid6social_eng_sticky_multiple'           => $bool,
+			'arshid6social_eng_giphy_api_key'             => $text,
+			'arshid6social_eng_gif_cache'                 => $bool,
+			'arshid6social_eng_comment_att_max_mb'        => $int,
+			'arshid6social_eng_comment_att_types'         => $this->choices_schema( array( 'image', 'document' ) ),
+			'arshid6social_eng_msg_att_max_mb'            => $int,
+			'arshid6social_eng_msg_att_types'             => $this->choices_schema( array( 'image', 'audio', 'document' ) ),
 
-			// External Social Share
-			'arshid6social_eng_social_share_external',
-			'arshid6social_eng_social_share_networks',
-			'arshid6social_eng_social_share_network_order',
-			'arshid6social_eng_social_share_position',
-			'arshid6social_eng_social_share_pages',
-			'arshid6social_eng_social_share_style',
-			'arshid6social_eng_social_share_max_visible',
-			'arshid6social_eng_social_share_native',
+			// External Social Share.
+			'arshid6social_eng_social_share_external'      => $bool,
+			'arshid6social_eng_social_share_networks'      => $this->choices_schema( $network_keys ),
+			'arshid6social_eng_social_share_network_order' => array(
+				'type'              => 'string',
+				'sanitize_callback' => static function ( $value ) use ( $network_keys ): string {
+					$keys = array_filter( array_map( 'sanitize_key', explode( ',', (string) $value ) ) );
+					return implode( ',', array_values( array_intersect( $keys, $network_keys ) ) );
+				},
+			),
+			'arshid6social_eng_social_share_position'      => $this->enum_schema( array( 'bottom', 'top', 'floating' ), 'bottom' ),
+			'arshid6social_eng_social_share_pages'         => $this->choices_schema( array( 'feed', 'single', 'profile', 'group' ) ),
+			'arshid6social_eng_social_share_style'         => $this->enum_schema( array( 'icon_text', 'icon_only', 'text_only' ), 'icon_text' ),
+			'arshid6social_eng_social_share_max_visible'   => $int,
+			'arshid6social_eng_social_share_native'        => $bool,
 		);
 
-		foreach ( $options as $opt ) {
-			register_setting( 'arshid6social_engagement', $opt, array(
-				'type'              => 'string',
-				'sanitize_callback' => array( $this, 'sanitize' ),
-			) );
+		foreach ( $schemas as $opt => $schema ) {
+			register_setting( 'arshid6social_engagement', $opt, $schema );
 		}
-
-		// Special-case sanitizers for social-embed fields.
-		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_banned_domains', array(
-			'type'              => 'string',
-			'sanitize_callback' => 'sanitize_textarea_field',
-		) );
-		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_max_per_post', array(
-			'type'              => 'integer',
-			'sanitize_callback' => 'absint',
-		) );
-		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_cache_hours', array(
-			'type'              => 'integer',
-			'sanitize_callback' => 'absint',
-		) );
-		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_fb_token', array(
-			'type'              => 'string',
-			'sanitize_callback' => 'sanitize_text_field',
-		) );
-		register_setting( 'arshid6social_engagement', 'arshid6social_eng_embed_ig_token', array(
-			'type'              => 'string',
-			'sanitize_callback' => 'sanitize_text_field',
-		) );
 	}
 
-	public function sanitize( mixed $value ): mixed {
-		// Derive the actual option name being saved from the current filter name.
-		// WordPress calls the sanitize callback via a filter named "sanitize_option_{option_name}".
-		$option = str_replace( 'sanitize_option_', '', current_filter() );
-
-		if ( is_array( $value ) ) {
-			return array_map( 'sanitize_text_field', $value );
-		}
-
-		$int_options = array(
-			'arshid6social_eng_polls_max_options',
-			'arshid6social_eng_comment_att_max_mb',
-			'arshid6social_eng_msg_att_max_mb',
-			'arshid6social_eng_social_share_max_visible',
+	/**
+	 * Schema for a string option restricted to a fixed set of values.
+	 *
+	 * @param string[] $allowed Allowed values.
+	 * @param string   $default Fallback when the submitted value is not allowed.
+	 */
+	private function enum_schema( array $allowed, string $default ): array {
+		return array(
+			'type'              => 'string',
+			'sanitize_callback' => static function ( $value ) use ( $allowed, $default ): string {
+				return in_array( $value, $allowed, true ) ? $value : $default;
+			},
 		);
-		if ( in_array( $option, $int_options, true ) ) {
-			return absint( $value );
-		}
+	}
 
-		$enum_options = array(
-			'arshid6social_eng_tag_privacy'           => array( 'public', 'friends', 'private' ),
-			'arshid6social_eng_tag_review'            => array( 'auto', 'manual' ),
-			'arshid6social_eng_social_share_position' => array( 'top', 'bottom', 'both' ),
-			'arshid6social_eng_social_share_style'    => array( 'icon', 'icon_label', 'label' ),
-			'arshid6social_eng_social_share_pages'    => array( 'activity', 'single', 'profile', 'group' ),
-			'arshid6social_eng_gif_provider'          => array( 'giphy', 'tenor' ),
+	/**
+	 * Schema for an array option whose items must belong to a whitelist.
+	 *
+	 * @param string[] $allowed Allowed item values.
+	 */
+	private function choices_schema( array $allowed ): array {
+		return array(
+			'type'              => 'array',
+			'sanitize_callback' => static function ( $value ) use ( $allowed ): array {
+				if ( ! is_array( $value ) ) {
+					return array();
+				}
+				$value = array_map( 'sanitize_key', array_map( 'strval', $value ) );
+				return array_values( array_intersect( $value, $allowed ) );
+			},
 		);
-		if ( isset( $enum_options[ $option ] ) ) {
-			$allowed = $enum_options[ $option ];
-			if ( is_array( $value ) ) {
-				return array_values( array_intersect( array_map( 'sanitize_key', $value ), $allowed ) );
-			}
-			return in_array( $value, $allowed, true ) ? $value : $allowed[0];
-		}
-
-		if ( in_array( $value, array( '0', '1', 0, 1, true, false ), true ) ) {
-			return (bool) $value ? '1' : '0';
-		}
-
-		return sanitize_text_field( (string) $value );
 	}
 
 	public static function enabled( string $feature ): bool {

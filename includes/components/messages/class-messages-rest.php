@@ -38,12 +38,12 @@ class Messages_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_messages' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'is_thread_participant' ),
 			),
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'send_message' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'is_thread_participant' ),
 				'args'                => array( 'content' => array( 'required' => true, 'type' => 'string' ) ),
 			),
 		) );
@@ -51,13 +51,29 @@ class Messages_REST extends \WP_REST_Controller {
 		register_rest_route( $this->namespace, '/threads/(?P<id>[\d]+)/read', array(
 			'methods'             => \WP_REST_Server::CREATABLE,
 			'callback'            => array( $this, 'mark_read' ),
-			'permission_callback' => 'is_user_logged_in',
+			'permission_callback' => array( $this, 'is_thread_participant' ),
 		) );
 
 		register_rest_route( $this->namespace, '/unread-count', array(
 			'methods'             => \WP_REST_Server::READABLE,
 			'callback'            => array( $this, 'unread_count' ),
 			'permission_callback' => 'is_user_logged_in',
+		) );
+	}
+
+	/**
+	 * Object-level check: the current user must be a participant of the
+	 * thread to read, post to, or mark it read.
+	 */
+	public function is_thread_participant( \WP_REST_Request $request ): bool {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		global $wpdb;
+		return (bool) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			"SELECT id FROM {$wpdb->prefix}sn_messages_recipients WHERE thread_id = %d AND user_id = %d AND is_deleted = 0",
+			absint( $request['id'] ),
+			get_current_user_id()
 		) );
 	}
 

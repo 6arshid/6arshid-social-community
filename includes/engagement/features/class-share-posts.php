@@ -151,7 +151,10 @@ class Share_Posts {
 	// ── AJAX ──────────────────────────────────────────────────────────────────
 
 	public function ajax_share(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( null, 403 );
 		}
 
@@ -194,7 +197,10 @@ class Share_Posts {
 	}
 
 	public function ajax_share_to_message(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( null, 403 );
 		}
 

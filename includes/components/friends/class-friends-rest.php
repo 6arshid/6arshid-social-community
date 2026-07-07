@@ -26,21 +26,21 @@ class Friends_REST extends \WP_REST_Controller {
 		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/request', array(
 			'methods'             => \WP_REST_Server::CREATABLE,
 			'callback'            => array( $this, 'send_request' ),
-			'permission_callback' => 'is_user_logged_in',
+			'permission_callback' => array( $this, 'can_target_user' ),
 		) );
 
 		// POST /arshid6social/v1/friends/{user_id}/accept
 		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/accept', array(
 			'methods'             => \WP_REST_Server::CREATABLE,
 			'callback'            => array( $this, 'accept_request' ),
-			'permission_callback' => 'is_user_logged_in',
+			'permission_callback' => array( $this, 'can_target_user' ),
 		) );
 
 		// DELETE /arshid6social/v1/friends/{user_id}
 		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', array(
 			'methods'             => \WP_REST_Server::DELETABLE,
 			'callback'            => array( $this, 'remove' ),
-			'permission_callback' => 'is_user_logged_in',
+			'permission_callback' => array( $this, 'can_target_user' ),
 		) );
 
 		// POST/DELETE /arshid6social/v1/friends/{user_id}/follow
@@ -62,12 +62,12 @@ class Friends_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'block' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'can_target_user' ),
 			),
 			array(
 				'methods'             => \WP_REST_Server::DELETABLE,
 				'callback'            => array( $this, 'unblock' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'can_target_user' ),
 			),
 		) );
 
@@ -77,6 +77,24 @@ class Friends_REST extends \WP_REST_Controller {
 			'callback'            => array( $this, 'suggestions' ),
 			'permission_callback' => 'is_user_logged_in',
 		) );
+	}
+
+	/**
+	 * Object-level check for routes acting on another member: the user must be
+	 * logged in, the target must be a real user, and it cannot be themselves.
+	 */
+	public function can_target_user( \WP_REST_Request $request ): bool|\WP_Error {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		$target = absint( $request['id'] );
+		if ( $target === get_current_user_id() ) {
+			return new \WP_Error( 'arshid6social_self_target', __( 'You cannot perform this action on yourself.', '6arshid-social-community' ), array( 'status' => 400 ) );
+		}
+		if ( ! get_userdata( $target ) ) {
+			return new \WP_Error( 'arshid6social_not_found', __( 'User not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
+		}
+		return true;
 	}
 
 	public function can_follow_user( \WP_REST_Request $request ): bool|\WP_Error {

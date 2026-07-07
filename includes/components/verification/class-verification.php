@@ -421,11 +421,14 @@ class Verification {
 	// ── AJAX ─────────────────────────────────────────────────────────────────
 
 	private function nonce_check( bool $admin = false ): void {
-		$ok = check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) && is_user_logged_in();
-		if ( $admin ) {
-			$ok = $ok && current_user_can( 'arshid6social_manage_members' );
+		// Nonce must be present and valid — checked first and separately.
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
 		}
-		if ( ! $ok ) {
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 401 );
+		}
+		if ( $admin && ! current_user_can( 'arshid6social_manage_members' ) ) {
 			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
 		}
 	}

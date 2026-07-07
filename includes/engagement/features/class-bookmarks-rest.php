@@ -119,6 +119,11 @@ class Bookmarks_REST {
 			return new \WP_REST_Response( array( 'message' => __( 'object_id required.', '6arshid-social-community' ) ), 400 );
 		}
 
+		// Only allow bookmarking activities the current user is allowed to see.
+		if ( 'activity' === $object_type && ! arshid6social_current_user_can_view_activity( $object_id ) ) {
+			return new \WP_REST_Response( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
+		}
+
 		$ok = $f->add( get_current_user_id(), $object_id, $object_type, $coll_id );
 		if ( ! $ok ) {
 			global $wpdb;

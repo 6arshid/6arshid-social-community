@@ -89,7 +89,7 @@ class Stories_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'mark_viewed' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'can_access_story_item' ),
 				'args'                => array(
 					'id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
 				),
@@ -101,7 +101,7 @@ class Stories_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'react' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'can_access_story_item' ),
 				'args'                => array(
 					'id'       => array( 'required' => true,  'sanitize_callback' => 'absint' ),
 					'reaction' => array( 'default'  => '❤️', 'sanitize_callback' => 'sanitize_text_field' ),
@@ -114,7 +114,7 @@ class Stories_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'reply' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'can_access_story_item' ),
 				'args'                => array(
 					'id'      => array( 'required' => true, 'sanitize_callback' => 'absint' ),
 					'message' => array( 'required' => true, 'sanitize_callback' => 'sanitize_textarea_field' ),
@@ -127,7 +127,7 @@ class Stories_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'report' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'can_report_story' ),
 				'args'                => array(
 					'id'     => array( 'required' => true, 'sanitize_callback' => 'absint' ),
 					'reason' => array( 'default' => 'spam', 'sanitize_callback' => 'sanitize_text_field' ),
@@ -285,29 +285,30 @@ class Stories_REST extends \WP_REST_Controller {
 	}
 
 	public function react( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
-		$story_id = absint( $request->get_param( 'id' ) );
+		$item_id = absint( $request->get_param( 'id' ) );
+		$user_id = get_current_user_id();
 
-		// Verify the story is accessible to the current user before saving the reaction.
-		$story = $this->stories->get_story( $story_id );
-		if ( ! $story || ! $this->stories->can_view_story( $story, get_current_user_id() ) ) {
-			return new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', '6arshid-social-community' ), array( 'status' => 403 ) );
-		}
-
-		$this->stories->react( $story_id, get_current_user_id(), $request->get_param( 'reaction' ) );
-		return rest_ensure_response( array( 'reacted' => true ) );
-	}
-
-	public function reply( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
-		$story_id = absint( $request->get_param( 'id' ) );
-		$user_id  = get_current_user_id();
-
-		// Verify the story is accessible to the current user before sending a reply.
-		$story = $this->stories->get_story( $story_id );
+		// Defense in depth: also enforced in can_access_story_item.
+		$story = $this->stories->get_story_by_item( $item_id );
 		if ( ! $story || ! $this->stories->can_view_story( $story, $user_id ) ) {
 			return new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', '6arshid-social-community' ), array( 'status' => 403 ) );
 		}
 
-		$thread_id = $this->stories->reply( $story_id, $user_id, $request->get_param( 'message' ) );
+		$this->stories->react( $item_id, $user_id, $request->get_param( 'reaction' ) );
+		return rest_ensure_response( array( 'reacted' => true ) );
+	}
+
+	public function reply( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
+		$item_id = absint( $request->get_param( 'id' ) );
+		$user_id = get_current_user_id();
+
+		// Defense in depth: also enforced in can_access_story_item.
+		$story = $this->stories->get_story_by_item( $item_id );
+		if ( ! $story || ! $this->stories->can_view_story( $story, $user_id ) ) {
+			return new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', '6arshid-social-community' ), array( 'status' => 403 ) );
+		}
+
+		$thread_id = $this->stories->reply( $item_id, $user_id, $request->get_param( 'message' ) );
 		return $thread_id
 			? rest_ensure_response( array( 'thread_id' => $thread_id ) )
 			: new \WP_Error( 'reply_failed', __( 'Could not send reply.', '6arshid-social-community' ), array( 'status' => 400 ) );
@@ -404,6 +405,36 @@ class Stories_REST extends \WP_REST_Controller {
 	}
 
 	// ── Permission callbacks ──────────────────────────────────────────────────
+
+	/**
+	 * Object-level check for routes addressing a story item (/view, /react,
+	 * /reply): the user must be logged in and allowed to view the parent story.
+	 */
+	public function can_access_story_item( \WP_REST_Request $request ): bool {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		$story = $this->stories->get_story_by_item( absint( $request['id'] ) );
+		if ( ! $story ) {
+			return false;
+		}
+		return $this->stories->can_view_story( $story, get_current_user_id() );
+	}
+
+	/**
+	 * Report check: the story must exist and be visible to the reporter.
+	 */
+	public function can_report_story( \WP_REST_Request $request ): bool {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		$id    = absint( $request['id'] );
+		$story = $this->stories->get_story( $id ) ?? $this->stories->get_story_by_item( $id );
+		if ( ! $story ) {
+			return false;
+		}
+		return $this->stories->can_view_story( $story, get_current_user_id() );
+	}
 
 	public function can_delete_story( \WP_REST_Request $request ): bool {
 		if ( ! is_user_logged_in() ) {

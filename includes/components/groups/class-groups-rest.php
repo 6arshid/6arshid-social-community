@@ -47,7 +47,7 @@ class Groups_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_item' ),
-				'permission_callback' => '__return_true',
+				'permission_callback' => array( $this, 'can_view_item' ),
 			),
 			array(
 				'methods'             => \WP_REST_Server::DELETABLE,
@@ -59,7 +59,7 @@ class Groups_REST extends \WP_REST_Controller {
 		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/join', array(
 			'methods'             => \WP_REST_Server::CREATABLE,
 			'callback'            => array( $this, 'join' ),
-			'permission_callback' => 'is_user_logged_in',
+			'permission_callback' => array( $this, 'can_join' ),
 		) );
 
 		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/leave', array(
@@ -67,6 +67,45 @@ class Groups_REST extends \WP_REST_Controller {
 			'callback'            => array( $this, 'leave' ),
 			'permission_callback' => 'is_user_logged_in',
 		) );
+	}
+
+	/**
+	 * Object-level visibility check: private/hidden groups are only visible
+	 * to their members and group managers.
+	 */
+	public function can_view_item( \WP_REST_Request $request ): bool {
+		$component = ARSHID6SOCIAL()->component( 'groups' );
+		if ( ! $component ) {
+			return false;
+		}
+		$group = $component->get_by_id( absint( $request['id'] ) );
+		if ( ! $group ) {
+			return true; // Group not found; let the callback return a proper 404.
+		}
+		if ( 'public' === $group->status ) {
+			return true;
+		}
+		return is_user_logged_in()
+			&& ( $component->is_member( get_current_user_id(), (int) $group->id )
+				|| current_user_can( 'arshid6social_manage_groups' ) );
+	}
+
+	/**
+	 * Join check: user must be logged in, and hidden groups are invite-only.
+	 */
+	public function can_join( \WP_REST_Request $request ): bool {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		$component = ARSHID6SOCIAL()->component( 'groups' );
+		if ( ! $component ) {
+			return false;
+		}
+		$group = $component->get_by_id( absint( $request['id'] ) );
+		if ( ! $group ) {
+			return true; // Group not found; let the callback return a proper 404.
+		}
+		return 'hidden' !== $group->status || current_user_can( 'arshid6social_manage_groups' );
 	}
 
 	public function can_delete_item( \WP_REST_Request $request ): bool {
@@ -105,7 +144,10 @@ class Groups_REST extends \WP_REST_Controller {
 
 	public function get_item( $request ): \WP_REST_Response|\WP_Error {
 		$component = ARSHID6SOCIAL()->component( 'groups' );
-		$group     = $component->get_by_id( (int) $request['id'] );
+		if ( ! $component ) {
+			return new \WP_Error( 'arshid6social_disabled', __( 'Groups component not active.', '6arshid-social-community' ), array( 'status' => 503 ) );
+		}
+		$group = $component->get_by_id( (int) $request['id'] );
 		if ( ! $group ) {
 			return new \WP_Error( 'arshid6social_not_found', __( 'Group not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
 		}
@@ -146,6 +188,11 @@ class Groups_REST extends \WP_REST_Controller {
 		$group     = $component->get_by_id( $group_id );
 
 		if ( ! $group ) {
+			return new \WP_Error( 'arshid6social_not_found', __( 'Group not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
+		}
+
+		// Hidden groups are invite-only (defense in depth; also enforced in can_join).
+		if ( 'hidden' === $group->status && ! current_user_can( 'arshid6social_manage_groups' ) ) {
 			return new \WP_Error( 'arshid6social_not_found', __( 'Group not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
 		}
 

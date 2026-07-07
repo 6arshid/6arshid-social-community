@@ -142,7 +142,10 @@ class Avatar {
 	 * AJAX: Deletes the current user's avatar.
 	 */
 	public function ajax_delete_avatar(): void {
-		if ( ! check_ajax_referer( 'arshid6social_delete_avatar', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_delete_avatar', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
@@ -163,7 +166,10 @@ class Avatar {
 	 * AJAX: Deletes the current user's cover photo.
 	 */
 	public function ajax_delete_cover(): void {
-		if ( ! check_ajax_referer( 'arshid6social_delete_cover', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_delete_cover', 'nonce', false ) ) {
+			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 

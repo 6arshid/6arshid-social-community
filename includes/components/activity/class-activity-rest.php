@@ -74,7 +74,7 @@ class Activity_REST extends \WP_REST_Controller {
 				array(
 					'methods'             => \WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'react' ),
-					'permission_callback' => 'is_user_logged_in',
+					'permission_callback' => array( $this, 'can_access_item' ),
 					'args'                => array(
 						'reaction_type' => array( 'type' => 'string', 'default' => 'like', 'sanitize_callback' => 'sanitize_key' ),
 					),
@@ -89,10 +89,21 @@ class Activity_REST extends \WP_REST_Controller {
 				array(
 					'methods'             => \WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'record_view' ),
-					'permission_callback' => 'is_user_logged_in',
+					'permission_callback' => array( $this, 'can_access_item' ),
 				),
 			)
 		);
+	}
+
+	/**
+	 * Object-level check for /react and /view: the user must be logged in and
+	 * the target activity must exist and be visible to them.
+	 */
+	public function can_access_item( \WP_REST_Request $request ): bool {
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+		return arshid6social_current_user_can_view_activity( absint( $request['id'] ) );
 	}
 
 	public function get_items( $request ): \WP_REST_Response|\WP_Error {

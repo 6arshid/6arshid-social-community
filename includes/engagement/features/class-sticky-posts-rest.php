@@ -56,8 +56,27 @@ class Sticky_Posts_REST {
 		if ( ! $activity ) {
 			return true; // Activity not found; let the callback return a proper 404.
 		}
-		return (int) $activity->user_id === get_current_user_id()
-			|| current_user_can( 'arshid6social_manage_activity' );
+
+		$is_moderator = current_user_can( 'arshid6social_manage_activity' );
+		if ( (int) $activity->user_id !== get_current_user_id() && ! $is_moderator ) {
+			return false;
+		}
+
+		// Scope-level authorization: site-wide pins are a moderator action and
+		// group pins require being an admin of the target group.
+		$scope = sanitize_key( $req['scope'] ?? 'profile' );
+		if ( 'site' === $scope && ! $is_moderator ) {
+			return false;
+		}
+		if ( 'group' === $scope ) {
+			$groups = ARSHID6SOCIAL()->component( 'groups' );
+			$is_group_admin = $groups && $groups->is_admin( get_current_user_id(), absint( $req['scope_id'] ?? 0 ) );
+			if ( ! $is_group_admin && ! current_user_can( 'arshid6social_manage_groups' ) ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private function feature(): ?Sticky_Posts {

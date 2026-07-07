@@ -141,7 +141,10 @@ class Comments_Attachments {
 	}
 
 	public function ajax_upload(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( null, 403 );
 		}
 
@@ -286,7 +289,10 @@ class Comments_Attachments {
 	}
 
 	public function ajax_delete(): void {
-		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) || ! is_user_logged_in() ) {
+		if ( ! check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce', false ) ) {
+			wp_send_json_error( null, 403 );
+		}
+		if ( ! is_user_logged_in() ) {
 			wp_send_json_error( null, 403 );
 		}
 
@@ -315,12 +321,10 @@ class Comments_Attachments {
 			wp_send_json_error( null, 404 );
 		}
 
-		// Access control: private post → only owner + admin can access attachment.
-		if ( 'private' === $att->privacy ) {
-			$current = get_current_user_id();
-			if ( ! $current || ( (int) $att->post_owner !== $current && ! current_user_can( 'arshid6social_manage_activity' ) ) ) {
-				wp_send_json_error( null, 403 );
-			}
+		// Access control: the viewer must be allowed to see the parent activity
+		// (covers private, friends-only, and any other privacy level).
+		if ( ! arshid6social_current_user_can_view_activity( (int) $att->parent_id ) ) {
+			wp_send_json_error( null, 403 );
 		}
 
 		wp_redirect( esc_url_raw( $att->file_url ) );
