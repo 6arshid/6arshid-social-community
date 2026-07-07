@@ -1,0 +1,342 @@
+﻿/* ==========================================================================
+   Social Embeds – responsive, RTL-ready, dark-mode-friendly
+   Layout: padding-bottom percentage trick for reliable responsive iframes.
+   ========================================================================== */
+
+/* ── Outer wrapper ────────────────────────────────────────────────────────── */
+
+/*
+ * The wrapper has height:0 and receives padding-bottom from PHP (e.g. 56.25%
+ * for 16:9).  All content is positioned absolutely inside.
+ * OG-card wrappers get the `.arshid6social-embed-og` class and use natural height.
+ */
+.arshid6social-embed-wrap {
+	position: relative;
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	height: 0;                          /* height comes from padding-bottom */
+	margin: 8px 0;
+	border-radius: 10px;
+	overflow: hidden;
+	background: var(--sn-surface, #f3f4f6);
+	border: 1px solid var(--sn-border, #e5e7eb);
+	box-sizing: border-box;
+}
+
+/* OG link-preview cards have natural height — no padding-bottom trick */
+.arshid6social-embed-og {
+	height: auto;
+	min-height: 0;
+}
+
+/* Fallback: if PHP sends no padding-bottom (e.g. unknown audio provider),
+   give the wrapper a reasonable minimum height so it's not invisible. */
+.arshid6social-embed-wrap:not(.arshid6social-embed-og):not([style]) {
+	height: 0;
+	padding-bottom: 56.25%;             /* default 16:9 */
+}
+
+/* ── Absolute-fill helpers ───────────────────────────────────────────────── */
+
+/* Everything inside a video/audio wrapper is positioned absolutely */
+.arshid6social-embed-wrap:not(.arshid6social-embed-og) > *,
+.arshid6social-embed-wrap:not(.arshid6social-embed-og) > iframe {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: none;
+	display: block;
+}
+
+/* ── Lazy-load placeholder ────────────────────────────────────────────────── */
+
+.arshid6social-embed-placeholder {
+	/* Already absolutely positioned by the rule above */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: 16px;
+	box-sizing: border-box;
+	overflow: hidden;
+	background: var(--sn-surface, #f3f4f6);
+}
+
+/* Thumbnail: covers the placeholder without pushing its height */
+.arshid6social-embed-thumb {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	filter: brightness(0.5);
+	pointer-events: none;
+}
+
+/* ── Play / load button ───────────────────────────────────────────────────── */
+
+.arshid6social-embed-load-btn {
+	position: relative;                 /* above the thumbnail */
+	z-index: 1;
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 20px;
+	border: none;
+	border-radius: 8px;
+	background: rgba(0, 0, 0, .55);
+	color: #fff;
+	cursor: pointer;
+	font-size: 13px;
+	font-family: inherit;
+	line-height: 1.4;
+	transition: background 0.15s ease;
+	flex-shrink: 0;
+}
+
+.arshid6social-embed-load-btn:hover,
+.arshid6social-embed-load-btn:focus-visible {
+	background: rgba(0, 0, 0, .78);
+	outline: 2px solid rgba(255, 255, 255, .8);
+	outline-offset: 2px;
+}
+
+.arshid6social-embed-play-icon {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 10px 0 10px 18px;
+	border-color: transparent transparent transparent #fff;
+}
+
+.arshid6social-embed-load-label {
+	font-weight: 500;
+}
+
+/* ── Provider meta strip (above the play button, below the thumb) ─────────── */
+
+.arshid6social-embed-meta {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	margin-top: 10px;
+	font-size: 11px;
+	color: rgba(255, 255, 255, .85);
+	flex-shrink: 0;
+}
+
+.arshid6social-embed-meta .arshid6social-embed-provider-name {
+	font-weight: 600;
+}
+
+.arshid6social-embed-meta .arshid6social-embed-source-link {
+	color: rgba(255, 255, 255, .7);
+	text-decoration: underline;
+}
+
+.arshid6social-embed-meta .arshid6social-embed-source-link:hover {
+	color: #fff;
+}
+
+/* No thumbnail → meta text changes to match page text colour */
+.arshid6social-embed-placeholder:not(:has(.arshid6social-embed-thumb)) .arshid6social-embed-meta {
+	color: var(--sn-text-muted, #6b7280);
+}
+
+.arshid6social-embed-placeholder:not(:has(.arshid6social-embed-thumb)) .arshid6social-embed-source-link {
+	color: var(--sn-primary, #3b82f6);
+}
+
+/* ── OG link-preview card ─────────────────────────────────────────────────── */
+
+.arshid6social-og-card {
+	display: flex;
+	flex-direction: row;
+	text-decoration: none;
+	color: inherit;
+	overflow: hidden;
+	background: var(--sn-surface, #f9fafb);
+	transition: box-shadow 0.15s ease;
+}
+
+.arshid6social-og-card:hover {
+	box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+}
+
+.arshid6social-og-card-image {
+	width: 120px;
+	min-width: 120px;
+	max-width: 120px;
+	max-height: 140px;
+	object-fit: cover;
+	flex-shrink: 0;
+	display: block;
+}
+
+.arshid6social-og-card-body {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	padding: 12px 14px;
+	min-width: 0;
+}
+
+.arshid6social-og-card-site {
+	display: block;
+	font-size: 11px;
+	color: var(--sn-text-muted, #6b7280);
+	margin-bottom: 4px;
+	text-transform: uppercase;
+	letter-spacing: .03em;
+}
+
+.arshid6social-og-card-title {
+	display: block;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--sn-text, #111827);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	line-height: 1.4;
+}
+
+.arshid6social-og-card-desc {
+	margin: 4px 0 0;
+	font-size: 12px;
+	color: var(--sn-text-muted, #6b7280);
+	line-height: 1.5;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+/* ── Skeleton loader ──────────────────────────────────────────────────────── */
+
+@keyframes arshid6social-shimmer {
+	0%   { background-position: -400px 0; }
+	100% { background-position:  400px 0; }
+}
+
+.arshid6social-embed-skeleton {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		90deg,
+		var(--sn-surface, #f3f4f6) 25%,
+		var(--sn-border,  #e5e7eb) 50%,
+		var(--sn-surface, #f3f4f6) 75%
+	);
+	background-size: 800px 100%;
+	animation: arshid6social-shimmer 1.4s infinite linear;
+}
+
+/* ── Composer preview area ────────────────────────────────────────────────── */
+
+.arshid6social-embed-preview-area {
+	margin-top: 8px;
+	position: relative;
+}
+
+.arshid6social-embed-preview-area[hidden] {
+	display: none;
+}
+
+.arshid6social-embed-preview-dismiss {
+	position: absolute;
+	top: 6px;
+	inset-inline-end: 6px;
+	z-index: 10;
+	width: 24px;
+	height: 24px;
+	border: none;
+	border-radius: 50%;
+	background: rgba(0, 0, 0, .5);
+	color: #fff;
+	font-size: 16px;
+	line-height: 1;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+}
+
+.arshid6social-embed-preview-dismiss:hover {
+	background: rgba(0, 0, 0, .75);
+}
+
+.arshid6social-embed-preview-inner .arshid6social-embed-wrap {
+	margin: 0;
+}
+
+/* ── RTL ──────────────────────────────────────────────────────────────────── */
+
+[dir="rtl"] .arshid6social-og-card-image { order: 1; }
+[dir="rtl"] .arshid6social-og-card-body  { order: 0; }
+
+[dir="rtl"] .arshid6social-embed-play-icon {
+	border-width: 10px 18px 10px 0;
+	border-color: transparent #fff transparent transparent;
+}
+
+/* ── Dark mode ────────────────────────────────────────────────────────────── */
+
+.sn-dark .arshid6social-embed-wrap,
+[data-theme="dark"] .arshid6social-embed-wrap {
+	background: var(--sn-surface-dark, #1f2937);
+	border-color: var(--sn-border-dark, #374151);
+}
+
+.sn-dark .arshid6social-embed-placeholder,
+[data-theme="dark"] .arshid6social-embed-placeholder {
+	background: var(--sn-surface-dark, #1f2937);
+}
+
+.sn-dark .arshid6social-og-card,
+[data-theme="dark"] .arshid6social-og-card {
+	background: var(--sn-surface-dark, #1f2937);
+}
+
+.sn-dark .arshid6social-og-card-title,
+[data-theme="dark"] .arshid6social-og-card-title {
+	color: var(--sn-text-dark, #f9fafb);
+}
+
+.sn-dark .arshid6social-og-card-site,
+.sn-dark .arshid6social-og-card-desc,
+[data-theme="dark"] .arshid6social-og-card-site,
+[data-theme="dark"] .arshid6social-og-card-desc {
+	color: var(--sn-text-muted-dark, #9ca3af);
+}
+
+.sn-dark .arshid6social-embed-skeleton,
+[data-theme="dark"] .arshid6social-embed-skeleton {
+	background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+	background-size: 800px 100%;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+	.arshid6social-og-card { flex-direction: column; }
+
+	.arshid6social-og-card-image {
+		width: 100%;
+		max-width: 100%;
+		min-width: 0;
+		max-height: 180px;
+	}
+
+	[dir="rtl"] .arshid6social-og-card-image { order: 0; }
+	[dir="rtl"] .arshid6social-og-card-body  { order: 1; }
+}

@@ -1,0 +1,107 @@
+﻿/*
+ * 6Arshid Social Community — Admin Stylesheet
+ */
+
+/* ── Dashboard stat cards ─────────────────────────────────────────────── */
+.arshid6social-admin-dashboard .arshid6social-stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-block: 1.5rem;
+}
+
+.arshid6social-stat-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+}
+
+.arshid6social-stat-card .dashicons {
+  font-size: 2rem;
+  height: 2rem;
+  width: 2rem;
+  color: #2563eb;
+  margin-block-end: 0.5rem;
+}
+
+.arshid6social-stat-card strong {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.arshid6social-stat-card p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+/* ── Status badges ────────────────────────────────────────────────────── */
+.arshid6social-status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.arshid6social-status-active    { background: #dcfce7; color: #16a34a; }
+.arshid6social-status-suspended { background: #fee2e2; color: #dc2626; }
+
+/* Keep old class names for backwards compat */
+.arshid6social-badge--active    { background: #dcfce7; color: #16a34a; }
+.arshid6social-badge--suspended { background: #fee2e2; color: #dc2626; }
+
+/* ── Settings tabs ────────────────────────────────────────────────────── */
+.arshid6social-nav-tabs .nav-tab { cursor: pointer; }
+
+/* ── Colour preview swatch ────────────────────────────────────────────── */
+#arshid6social-color-preview {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  vertical-align: middle;
+  margin-inline-start: 8px;
+  transition: background 0.2s;
+}
+
+/* ── Admin pages table ────────────────────────────────────────────────── */
+.arshid6social-admin-pages .arshid6social-pages-table { margin-block-start: 1.5rem; }
+.arshid6social-shortcode-code {
+  font-family: monospace;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 2px 10px;
+  color: #1e40af;
+  font-size: 13px;
+}
+
+.arshid6social-copy-btn {
+  cursor: pointer;
+  background: #e0e7ff;
+  border: none;
+  border-radius: 4px;
+  padding: 3px 10px;
+  font-size: 12px;
+  color: #3730a3;
+}
+
+.arshid6social-copy-btn:hover { background: #c7d2fe; }
+.arshid6social-status-ok      { color: #16a34a; font-weight: 600; }
+.arshid6social-status-missing { color: #dc2626; font-weight: 600; }
+
+/* ── Toast ────────────────────────────────────────────────────────────── */
+.arshid6social-admin-toast {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  z-index: 9999;
+  max-width: 320px;
+}

@@ -1,0 +1,56 @@
+﻿/*
+ * 6Arshid Social Community — RTL Supplement (Persian / Arabic)
+ * Uses CSS logical properties; only overrides where needed.
+ */
+
+/* Activity composer — RTL textarea alignment */
+[dir="rtl"] .arshid6social-activity-composer__textarea,
+[dir="rtl"] .arshid6social-message-composer__input,
+[dir="rtl"] .arshid6social-input,
+[dir="rtl"] .arshid6social-textarea {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Notification dropdown opens to the left */
+[dir="rtl"] .arshid6social-notification-dropdown {
+  inset-inline-end: auto;
+  inset-inline-start: 0;
+}
+
+/* Thread list border flips */
+[dir="rtl"] .arshid6social-thread-list {
+  border-inline-end: none;
+  border-inline-start: 1px solid var(--arshid6social-border);
+}
+
+/* Profile stats in RTL */
+[dir="rtl"] .arshid6social-profile-stats {
+  direction: rtl;
+}
+
+/* Badges inline-start indicator */
+[dir="rtl"] .arshid6social-notice {
+  border-inline-start: none;
+  border-inline-end: 4px solid transparent;
+}
+
+[dir="rtl"] .arshid6social-notice--info    { border-inline-end-color: var(--arshid6social-primary); }
+[dir="rtl"] .arshid6social-notice--success { border-inline-end-color: var(--arshid6social-success); }
+[dir="rtl"] .arshid6social-notice--warning { border-inline-end-color: var(--arshid6social-warning); }
+[dir="rtl"] .arshid6social-notice--error   { border-inline-end-color: var(--arshid6social-danger); }
+
+/* Mobile side nav — RTL: flip side nav to the right */
+@media (max-width: 700px) {
+  [dir="rtl"] .a6sc-bnav {
+    left: auto !important;
+    right: 0 !important;
+    border-right: none !important;
+    border-left: 1px solid var(--a6sc-border) !important;
+  }
+
+  [dir="rtl"] .socialnetworksix-shell {
+    padding-left: 0 !important;
+    padding-right: 68px !important; /* side nav is on the right in RTL */
+  }
+}

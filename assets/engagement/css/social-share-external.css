@@ -1,0 +1,547 @@
+﻿/* ==========================================================================
+   6Arshid Social Community – External Social Share
+   Instagram-style modal: users on top, networks strip at bottom.
+   Mobile-first, RTL-ready, dark-mode aware.
+   ========================================================================== */
+
+/* ── Share button on each activity post ─────────────────────────────────── */
+
+.arshid6social-ext-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: var(--sn-eng-radius, 8px);
+  font-size: .8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--sn-eng-border, #e5e7eb);
+  background: transparent;
+  color: var(--sn-eng-text, #111827);
+  transition: background .15s, border-color .15s;
+  line-height: 1.3;
+  flex-shrink: 0;
+}
+
+.arshid6social-ext-share-btn:hover,
+.arshid6social-ext-share-btn:focus-visible {
+  background: var(--sn-eng-bg-alt, #f9fafb);
+  border-color: var(--sn-eng-primary, #2563eb);
+  outline: none;
+}
+
+.arshid6social-ext-share-btn svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+/* ── Dark mode for the share button ─────────────────────────────────────── */
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-btn,
+[data-a6sc-theme="dark"] .arshid6social-ext-share-btn,
+[data-a6sc-theme="dim"]  .arshid6social-ext-share-btn {
+  color: #f1f5f9;
+  border-color: #334155;
+}
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-btn:hover,
+[data-a6sc-theme="dark"] .arshid6social-ext-share-btn:hover,
+[data-a6sc-theme="dim"]  .arshid6social-ext-share-btn:hover {
+  background: #1e293b;
+  border-color: var(--sn-eng-primary, #2563eb);
+}
+
+/* ── Floating button ─────────────────────────────────────────────────────── */
+
+.arshid6social-ext-share-floating-btn {
+  position: fixed;
+  right: 20px;
+  bottom: 80px;
+  z-index: 9990;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--sn-eng-primary, #2563eb);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,.25);
+  transition: transform .15s, box-shadow .15s;
+}
+
+.arshid6social-ext-share-floating-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px rgba(0,0,0,.3);
+}
+
+[dir="rtl"] .arshid6social-ext-share-floating-btn {
+  right: auto;
+  left: 20px;
+}
+
+/* ── Modal overlay ───────────────────────────────────────────────────────── */
+
+.arshid6social-ext-share-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+
+.arshid6social-ext-share-modal[hidden] { display: none; }
+
+.arshid6social-ext-share-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: ARSHID6SOCIALFadeIn .18s ease;
+}
+
+@keyframes ARSHID6SOCIALFadeIn  { from { opacity:0 } to { opacity:1 } }
+@keyframes ARSHID6SOCIALSlideUp { from { transform:translateY(30px); opacity:0 } to { transform:none; opacity:1 } }
+
+body.arshid6social-ext-share-open { overflow: hidden; }
+
+/* ── Modal box ───────────────────────────────────────────────────────────── */
+
+.arshid6social-ext-share-modal__box {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  max-height: 92vh;
+  background: var(--sn-eng-bg, #fff);
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -4px 40px rgba(0,0,0,.22);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: ARSHID6SOCIALSlideUp .22s ease;
+}
+
+@media (min-width: 600px) {
+  .arshid6social-ext-share-modal {
+    align-items: center;
+    padding: 16px;
+  }
+  .arshid6social-ext-share-modal__box {
+    border-radius: 18px;
+    max-height: 88vh;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  }
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.arshid6social-ext-share-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  flex-shrink: 0;
+}
+
+.arshid6social-ext-share-modal__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sn-eng-text, #111827);
+  text-align: center;
+  flex: 1;
+}
+
+.arshid6social-ext-share-modal__close,
+.arshid6social-ext-share-modal__header-spacer {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.arshid6social-ext-share-modal__close {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--sn-eng-muted, #6b7280);
+  transition: background .12s, color .12s;
+}
+
+.arshid6social-ext-share-modal__close:hover {
+  background: var(--sn-eng-bg-alt, #f3f4f6);
+  color: var(--sn-eng-text, #111827);
+}
+
+/* ── Search ──────────────────────────────────────────────────────────────── */
+
+.arshid6social-ext-share-modal__search-wrap {
+  position: relative;
+  padding: 0 16px 10px;
+  flex-shrink: 0;
+}
+
+.arshid6social-ext-share-search-icon {
+  position: absolute;
+  left: 28px;
+  top: 50%;
+  transform: translateY(-60%);
+  color: var(--sn-eng-muted, #9ca3af);
+  pointer-events: none;
+}
+
+[dir="rtl"] .arshid6social-ext-share-search-icon {
+  left: auto;
+  right: 28px;
+}
+
+.arshid6social-ext-share-modal__search {
+  width: 100%;
+  padding: 9px 12px 9px 36px;
+  border: none;
+  border-radius: 10px;
+  font-size: .875rem;
+  background: var(--sn-eng-bg-alt, #f3f4f6);
+  color: var(--sn-eng-text, #111827);
+  outline: none;
+  box-sizing: border-box;
+}
+
+[dir="rtl"] .arshid6social-ext-share-modal__search {
+  padding: 9px 36px 9px 12px;
+}
+
+.arshid6social-ext-share-modal__search::placeholder {
+  color: var(--sn-eng-muted, #9ca3af);
+}
+
+/* ── Users grid (top half) ───────────────────────────────────────────────── */
+
+.arshid6social-ext-share-users-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px 16px 12px;
+  min-height: 120px;
+}
+
+.arshid6social-ext-share-users-grid {
+  display: grid;
+  grid-template-columns: repeat( auto-fill, minmax( 72px, 1fr ) );
+  gap: 8px 4px;
+}
+
+/* User card */
+.arshid6social-ext-share-user-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px 4px;
+  border-radius: 10px;
+  transition: background .12s;
+  text-align: center;
+}
+
+.arshid6social-ext-share-user-card:hover {
+  background: var(--sn-eng-bg-alt, #f3f4f6);
+}
+
+.arshid6social-ext-share-user-avatar-wrap {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+.arshid6social-ext-share-user-avatar-wrap img {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.arshid6social-ext-share-user-sent-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--sn-eng-primary, #2563eb);
+  color: #fff;
+  font-size: .65rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--sn-eng-bg, #fff);
+}
+
+.arshid6social-ext-share-user-name {
+  font-size: .75rem;
+  color: var(--sn-eng-text, #111827);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 68px;
+}
+
+/* Sent state */
+.arshid6social-ext-share-user-card.is-sent .arshid6social-ext-share-user-avatar-wrap img {
+  opacity: .7;
+}
+
+/* Loading pulse */
+.arshid6social-ext-share-users-loading {
+  grid-column: 1 / -1;
+  height: 4px;
+  background: linear-gradient(90deg, var(--sn-eng-bg-alt,#f3f4f6) 25%, var(--sn-eng-border,#e5e7eb) 50%, var(--sn-eng-bg-alt,#f3f4f6) 75%);
+  background-size: 200% 100%;
+  border-radius: 2px;
+  animation: ARSHID6SOCIALShimmer 1.2s infinite;
+}
+
+@keyframes ARSHID6SOCIALShimmer {
+  0%   { background-position: 200% 0 }
+  100% { background-position: -200% 0 }
+}
+
+.arshid6social-ext-share-users-empty-msg {
+  font-size: .875rem;
+  color: var(--sn-eng-muted, #6b7280);
+  text-align: center;
+  padding: 16px 0;
+  margin: 0;
+}
+
+.arshid6social-ext-share-users-empty {
+  font-size: .875rem;
+  color: var(--sn-eng-muted, #6b7280);
+  text-align: center;
+  padding: 16px 0;
+}
+
+/* ── Divider ─────────────────────────────────────────────────────────────── */
+
+.arshid6social-ext-share-divider {
+  height: 1px;
+  background: var(--sn-eng-border, #e5e7eb);
+  flex-shrink: 0;
+  margin: 0 16px;
+}
+
+/* ── Networks strip (bottom horizontal scroll) ───────────────────────────── */
+
+.arshid6social-ext-share-networks-strip {
+  display: flex;
+  overflow-x: auto;
+  gap: 4px;
+  padding: 12px 16px 16px;
+  flex-shrink: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.arshid6social-ext-share-networks-strip::-webkit-scrollbar { display: none; }
+
+/* Network button in strip */
+.arshid6social-ext-share-network-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  min-width: 58px;
+  transition: background .12s;
+}
+
+.arshid6social-ext-share-network-btn:hover {
+  background: var(--sn-eng-bg-alt, #f3f4f6);
+}
+
+.arshid6social-ext-share-strip-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  flex-shrink: 0;
+}
+
+.arshid6social-ext-share-strip-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.arshid6social-ext-share-strip-label {
+  font-size: .7rem;
+  color: var(--sn-eng-text, #111827);
+  white-space: nowrap;
+  max-width: 56px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+/* ── Notices ─────────────────────────────────────────────────────────────── */
+
+.arshid6social-ext-share-modal__copied,
+.arshid6social-ext-share-dm-notice {
+  text-align: center;
+  padding: 8px 20px;
+  font-size: .875rem;
+  font-weight: 600;
+  border-top: 1px solid var(--sn-eng-border, #e5e7eb);
+  flex-shrink: 0;
+  animation: ARSHID6SOCIALFadeIn .2s ease;
+}
+
+.arshid6social-ext-share-modal__copied { color: #16a34a; }
+.arshid6social-ext-share-dm-notice--success { color: #16a34a; }
+.arshid6social-ext-share-dm-notice--error   { color: #dc2626; }
+
+/* ── "Above content" position ────────────────────────────────────────────── */
+
+.arshid6social-activity-item .arshid6social-ext-share-above {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+/* ── RTL ─────────────────────────────────────────────────────────────────── */
+
+[dir="rtl"] .arshid6social-ext-share-modal__header { flex-direction: row-reverse; }
+
+/* ── Dark mode (modal) ───────────────────────────────────────────────────── */
+
+/* shared dark tokens */
+@media ( prefers-color-scheme: dark ) {
+  .arshid6social-ext-share-modal__box             { background: #1c1c1e; }
+  .arshid6social-ext-share-modal__title           { color: #f1f5f9; }
+  .arshid6social-ext-share-modal__close           { color: #9ca3af; }
+  .arshid6social-ext-share-modal__close:hover     { background: #2c2c2e; color: #f1f5f9; }
+  .arshid6social-ext-share-modal__search          { background: #2c2c2e; color: #f1f5f9; }
+  .arshid6social-ext-share-modal__search::placeholder { color: #6b7280; }
+  .arshid6social-ext-share-search-icon            { color: #6b7280; }
+  .arshid6social-ext-share-user-name              { color: #d1d5db; }
+  .arshid6social-ext-share-strip-label            { color: #d1d5db; }
+  .arshid6social-ext-share-divider                { background: #2c2c2e; }
+  .arshid6social-ext-share-users-empty,
+  .arshid6social-ext-share-users-empty-msg        { color: #6b7280; }
+  .arshid6social-ext-share-user-card:hover,
+  .arshid6social-ext-share-network-btn:hover      { background: #2c2c2e; }
+  .arshid6social-ext-share-user-sent-badge        { border-color: #1c1c1e; }
+  .arshid6social-ext-share-modal__copied,
+  .arshid6social-ext-share-dm-notice              { border-top-color: #2c2c2e; }
+  .arshid6social-ext-share-users-loading          {
+    background: linear-gradient(90deg,#2c2c2e 25%,#3a3a3c 50%,#2c2c2e 75%);
+    background-size: 200% 100%;
+  }
+}
+
+/* class-based dark triggers — explicit selectors for broad browser support */
+[data-arshid6social-dark="true"] .arshid6social-ext-share-modal__box,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-modal__box,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-modal__box       { background: #1c1c1e; }
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-modal__title,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-modal__title,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-modal__title     { color: #f1f5f9; }
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-modal__close,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-modal__close,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-modal__close     { color: #9ca3af; }
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-modal__close:hover,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-modal__close:hover,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-modal__close:hover { background: #2c2c2e; color: #f1f5f9; }
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-modal__search,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-modal__search,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-modal__search    { background: #2c2c2e; color: #f1f5f9; }
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-modal__search::placeholder,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-modal__search::placeholder,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-modal__search::placeholder { color: #6b7280; }
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-search-icon,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-search-icon,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-search-icon      { color: #6b7280; }
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-user-name,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-user-name,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-user-name        { color: #d1d5db; }
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-strip-label,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-strip-label,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-strip-label      { color: #d1d5db; }
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-divider,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-divider,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-divider          { background: #2c2c2e; }
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-users-empty,
+[data-arshid6social-dark="true"] .arshid6social-ext-share-users-empty-msg,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-users-empty,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-users-empty-msg,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-users-empty,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-users-empty-msg  { color: #6b7280; }
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-user-card:hover,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-user-card:hover,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-user-card:hover,
+[data-arshid6social-dark="true"] .arshid6social-ext-share-network-btn:hover,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-network-btn:hover,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-network-btn:hover { background: #2c2c2e; }
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-user-sent-badge,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-user-sent-badge,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-user-sent-badge  { border-color: #1c1c1e; }
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-modal__copied,
+[data-arshid6social-dark="true"] .arshid6social-ext-share-dm-notice,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-modal__copied,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-dm-notice,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-modal__copied,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-dm-notice        { border-top-color: #2c2c2e; }
+
+[data-arshid6social-dark="true"] .arshid6social-ext-share-users-loading,
+[data-a6sc-theme="dark"]    .arshid6social-ext-share-users-loading,
+[data-a6sc-theme="dim"]     .arshid6social-ext-share-users-loading    {
+  background: linear-gradient(90deg,#2c2c2e 25%,#3a3a3c 50%,#2c2c2e 75%);
+  background-size: 200% 100%;
+}
+
+/* ── Screen reader only ──────────────────────────────────────────────────── */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border-width: 0;
+}

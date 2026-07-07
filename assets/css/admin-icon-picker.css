@@ -1,0 +1,250 @@
+﻿/*
+ * 6Arshid Social Community — Bootstrap Icon Picker (admin)
+ *
+ * Bootstrap Icons © The Bootstrap Authors — MIT License
+ * https://icons.getbootstrap.com/
+ */
+
+/* ── Meta-box preview ─────────────────────────────────────────────────────── */
+
+#arshid6social-icp-wrap {
+  font-size: 13px;
+}
+
+#arshid6social-icp-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  min-height: 34px;
+}
+
+#arshid6social-icp-preview-svg svg {
+  display: block;
+  color: #1e40af;
+}
+
+#arshid6social-icp-preview-name {
+  color: #475569;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.arshid6social-icp-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+#arshid6social-icp-download-notice {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #fefce8;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+#arshid6social-icp-download-notice p {
+  margin: 0 0 8px;
+  color: #78350f;
+}
+
+#arshid6social-icp-dl-msg {
+  margin-left: 8px;
+  font-size: 12px;
+}
+
+/* Pages-list icon column */
+.column-arshid6social_icon {
+  width: 60px;
+}
+
+.column-arshid6social_icon svg {
+  display: block;
+  color: #334155;
+}
+
+/* ── Modal backdrop ───────────────────────────────────────────────────────── */
+
+#arshid6social-icp-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+}
+
+#arshid6social-icp-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, .55);
+}
+
+/* ── Dialog ───────────────────────────────────────────────────────────────── */
+
+#arshid6social-icp-dialog {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(860px, 95vw);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+  overflow: hidden;
+}
+
+#arshid6social-icp-dialog-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 15px;
+}
+
+#arshid6social-icp-icon-count {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+#arshid6social-icp-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  color: #64748b;
+  padding: 0 4px;
+  border-radius: 4px;
+  transition: background .1s;
+}
+
+#arshid6social-icp-close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+#arshid6social-icp-search-row {
+  padding: 10px 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+#arshid6social-icp-search {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 13px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color .15s;
+}
+
+#arshid6social-icp-search:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,.2);
+}
+
+/* ── Icon grid ────────────────────────────────────────────────────────────── */
+
+#arshid6social-icp-grid-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px 8px;
+}
+
+#arshid6social-icp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 4px;
+}
+
+.arshid6social-icp-icon-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px 6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  transition: background .1s, border-color .1s;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.arshid6social-icp-icon-btn:hover {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+.arshid6social-icp-icon-btn.is-selected {
+  background: #eff6ff;
+  border-color: #3b82f6;
+}
+
+.arshid6social-icp-icon-btn svg {
+  flex-shrink: 0;
+  color: #334155;
+}
+
+.arshid6social-icp-icon-btn.is-selected svg {
+  color: #2563eb;
+}
+
+.arshid6social-icp-icon-btn span {
+  font-size: 10px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1.3;
+}
+
+.arshid6social-icp-icon-btn.is-selected span {
+  color: #1d4ed8;
+}
+
+.arshid6social-icp-loading,
+.arshid6social-icp-empty,
+.arshid6social-icp-error {
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+  grid-column: 1 / -1;
+}
+
+.arshid6social-icp-error {
+  color: #dc2626;
+}
+
+/* Load-more button */
+#arshid6social-icp-load-more-wrap {
+  text-align: center;
+  padding: 12px 0 4px;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+
+#arshid6social-icp-dialog-foot {
+  padding: 8px 16px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 11px;
+  color: #94a3b8;
+  background: #f8fafc;
+  text-align: center;
+}
+
+#arshid6social-icp-dialog-foot a {
+  color: #64748b;
+}

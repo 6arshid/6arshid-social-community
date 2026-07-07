@@ -1,0 +1,784 @@
+﻿/* ============================================================
+   Stories — Tray, Viewer, Creator
+   ============================================================ */
+
+/* ── Variable bridge: stories uses --arshid6social-* from main plugin ──────────── */
+.sn-stories-tray,
+.sn-story-viewer,
+.sn-story-creator {
+	--sn-primary:    var(--arshid6social-primary,    #2563eb);
+	--sn-border:     var(--arshid6social-border,     #e2e8f0);
+	--sn-surface:    var(--arshid6social-surface,    #ffffff);
+	--sn-text:       var(--arshid6social-text,       #0f172a);
+	--sn-text-muted: var(--arshid6social-text-muted, #64748b);
+}
+
+/* ── Tray ────────────────────────────────────────────────── */
+.sn-stories-tray {
+	width: 100%;
+	overflow: hidden;
+	padding: 12px 0;
+	margin-bottom: 16px;
+	background: transparent;
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+/* When tray is inside the activity block, match the arshid6social-card style */
+.arshid6social-activity-block .sn-stories-tray {
+	margin-bottom: 1rem;
+}
+
+.sn-stories-tray__inner {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	overflow-x: auto;
+	padding: 4px 16px 8px;
+	scroll-snap-type: x mandatory;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
+}
+.sn-stories-tray__inner::-webkit-scrollbar { display: none; }
+
+/* ── Story bubble ─────────────────────────────────────────── */
+.sn-story-bubble {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
+	scroll-snap-align: start;
+	cursor: pointer;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.sn-story-bubble__avatar-btn {
+	position: relative;
+	width: 64px;
+	height: 64px;
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	border-radius: 50%;
+}
+.sn-story-bubble__avatar-btn:focus-visible {
+	outline: 2px solid var(--arshid6social-primary, #2563eb);
+	outline-offset: 4px;
+}
+
+.sn-story-bubble__ring {
+	position: absolute;
+	inset: -3px;
+	border-radius: 50%;
+	border: 3px solid transparent;
+}
+.sn-story-bubble__ring--unseen {
+	border-color: transparent;
+	background:
+		linear-gradient(#fff 0 0) padding-box,
+		linear-gradient(135deg, #f97316, #dc2626, #9333ea) border-box;
+}
+.sn-story-bubble__ring--seen {
+	border-color: var(--arshid6social-border, #e2e8f0);
+}
+.sn-story-bubble__ring--add {
+	border: 2px dashed var(--arshid6social-border, #e2e8f0);
+}
+
+.sn-story-bubble__avatar {
+	display: block;
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	object-fit: cover;
+	position: relative;
+	z-index: 1;
+	margin: 4px;
+}
+
+.sn-story-bubble__add-icon {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	z-index: 2;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: var(--arshid6social-primary, #2563eb);
+	color: #fff;
+	font-size: 16px;
+	line-height: 20px;
+	text-align: center;
+	font-weight: 700;
+	box-shadow: 0 0 0 2px #fff;
+}
+
+.sn-story-bubble__name {
+	font-size: 11px;
+	color: var(--arshid6social-text-muted, #64748b);
+	text-align: center;
+	max-width: 64px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	line-height: 1.3;
+}
+
+/* ── Bottom Bar ───────────────────────────────────────────── */
+.sn-stories-bottom-bar {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 8800;
+	background: var(--arshid6social-surface, #fff);
+	border-top: 1px solid var(--arshid6social-border, #e2e8f0);
+	box-shadow: 0 -2px 12px rgba(0,0,0,.08);
+	padding: 6px 0 env(safe-area-inset-bottom, 0px);
+}
+
+.sn-stories-bottom-bar__inner {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	overflow-x: auto;
+	padding: 4px 12px 6px;
+	scroll-snap-type: x mandatory;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
+}
+.sn-stories-bottom-bar__inner::-webkit-scrollbar { display: none; }
+
+/* Smaller bubble size for the bottom bar */
+.sn-stories-bottom-bar .sn-story-bubble__avatar-btn {
+	width: 52px;
+	height: 52px;
+}
+.sn-stories-bottom-bar .sn-story-bubble__avatar {
+	width: 44px;
+	height: 44px;
+}
+.sn-stories-bottom-bar .sn-story-bubble__name {
+	font-size: 10px;
+	max-width: 52px;
+}
+
+/* Add padding to page body so content isn't hidden behind the bar */
+body.arshid6social-has-bottom-bar {
+	padding-bottom: 80px;
+}
+
+[data-arshid6social-dark="true"] .sn-stories-bottom-bar,
+body[data-arshid6social-dark="true"] .sn-stories-bottom-bar {
+	background: #1e293b;
+	border-color: #374151;
+}
+
+/* ── Viewer ───────────────────────────────────────────────── */
+.sn-story-viewer {
+	position: fixed;
+	inset: 0;
+	z-index: 9900;
+	background: #000;
+	display: flex;
+	flex-direction: column;
+	color: #fff;
+}
+.sn-story-viewer[hidden] { display: none; }
+
+/* Progress bar row */
+.sn-story-viewer__progress {
+	display: flex;
+	gap: 4px;
+	padding: 10px 12px 0;
+	z-index: 10;
+}
+.sn-story-progress-segment {
+	flex: 1;
+	height: 3px;
+	background: rgba(255,255,255,.35);
+	border-radius: 2px;
+	overflow: hidden;
+}
+.sn-story-progress-fill {
+	height: 100%;
+	background: #fff;
+	width: 0%;
+	transition: width linear;
+	border-radius: 2px;
+}
+.sn-story-progress-fill--done  { width: 100%; transition: none; }
+.sn-story-progress-fill--active { }
+
+/* Header */
+.sn-story-viewer__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 12px;
+	z-index: 10;
+}
+.sn-story-viewer__user-link {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	text-decoration: none;
+	color: #fff;
+}
+.sn-story-viewer__avatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	object-fit: cover;
+	border: 2px solid rgba(255,255,255,.5);
+}
+.sn-story-viewer__name {
+	display: block;
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 1.2;
+}
+.sn-story-viewer__time {
+	display: block;
+	font-size: 11px;
+	opacity: .7;
+}
+.sn-story-viewer__header-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+.sn-story-viewer__btn {
+	background: rgba(0,0,0,.4);
+	border: none;
+	color: #fff;
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: background .15s;
+	padding: 0;
+}
+.sn-story-viewer__btn:hover { background: rgba(0,0,0,.65); }
+.sn-story-viewer__btn:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 2px;
+}
+.sn-story-viewer__btn[hidden] { display: none; }
+
+/* Content area */
+.sn-story-viewer__content {
+	flex: 1;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+}
+.sn-story-viewer__media-wrap {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.sn-story-viewer__media-img,
+.sn-story-viewer__media-video {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+.sn-story-viewer__media-img[hidden],
+.sn-story-viewer__media-video[hidden] { display: none; }
+
+.sn-story-viewer__text-card {
+	width: min(380px, 90vw);
+	min-height: min(560px, 72vh);
+	border-radius: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 32px 24px;
+	font-size: 24px;
+	font-weight: 600;
+	text-align: center;
+	color: #fff;
+	word-break: break-word;
+	overflow: hidden;
+}
+.sn-story-viewer__text-card[hidden] { display: none; }
+
+/* Navigation arrows */
+.sn-story-viewer__nav {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	background: rgba(0,0,0,.4);
+	border: none;
+	color: #fff;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	z-index: 10;
+	transition: background .15s;
+	padding: 0;
+}
+.sn-story-viewer__nav:hover { background: rgba(0,0,0,.65); }
+.sn-story-viewer__nav--prev { left: 12px; }
+.sn-story-viewer__nav--next { right: 12px; }
+
+/* Footer */
+.sn-story-viewer__footer {
+	padding: 12px 16px 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	z-index: 10;
+}
+.sn-story-viewer__viewers-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background: rgba(255,255,255,.15);
+	border: none;
+	color: #fff;
+	font-size: 13px;
+	padding: 4px 10px;
+	border-radius: 20px;
+	cursor: pointer;
+	align-self: flex-start;
+}
+.sn-story-viewer__viewers-btn[hidden] { display: none; }
+
+.sn-story-viewer__reactions {
+	display: flex;
+	gap: 8px;
+}
+.sn-story-viewer__reaction-btn {
+	background: rgba(255,255,255,.15);
+	border: none;
+	font-size: 20px;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform .1s, background .1s;
+}
+.sn-story-viewer__reaction-btn:hover {
+	background: rgba(255,255,255,.3);
+	transform: scale(1.2);
+}
+.sn-story-viewer__reaction-btn:active { transform: scale(.9); }
+.sn-story-viewer__reaction-btn.sn--reacted {
+	animation: sn-reaction-pop .35s cubic-bezier(.36,.07,.19,.97) forwards;
+}
+
+/* Floating emoji that rises on reaction click */
+.sn-reaction-float {
+	position: fixed;
+	pointer-events: none;
+	font-size: 36px;
+	z-index: 9999;
+	transform-origin: center bottom;
+	animation: sn-reaction-float .9s ease-out forwards;
+	user-select: none;
+}
+
+.sn-story-viewer__reply {
+	display: flex;
+	gap: 8px;
+}
+.sn-story-viewer__reply-input {
+	flex: 1;
+	background: rgba(255,255,255,.15);
+	border: 1px solid rgba(255,255,255,.3);
+	color: #fff;
+	border-radius: 24px;
+	padding: 8px 16px;
+	font-size: 14px;
+	outline: none;
+}
+.sn-story-viewer__reply-input::placeholder { color: rgba(255,255,255,.6); }
+.sn-story-viewer__reply-input:focus { border-color: rgba(255,255,255,.7); }
+.sn-story-viewer__reply-send {
+	background: var(--arshid6social-primary, #2563eb);
+	border: none;
+	color: #fff;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+/* Viewers panel */
+.sn-story-viewer__viewers-panel {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: rgba(0,0,0,.85);
+	border-radius: 16px 16px 0 0;
+	padding: 16px;
+	max-height: 50vh;
+	overflow-y: auto;
+	z-index: 20;
+	animation: sn-slide-up .2s ease;
+}
+.sn-story-viewer__viewers-panel[hidden] { display: none; }
+
+/* ── Creator ──────────────────────────────────────────────── */
+.sn-story-creator {
+	position: fixed;
+	inset: 0;
+	z-index: 9950;
+	background: rgba(0,0,0,.85);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.sn-story-creator[hidden] { display: none; }
+
+.sn-story-creator__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 16px;
+}
+.sn-story-creator__title {
+	font-size: 18px;
+	font-weight: 700;
+	margin: 0;
+}
+.sn-story-creator__close {
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: inherit;
+	padding: 4px;
+	display: flex;
+}
+
+/* Inner panel */
+.sn-story-creator__panel {
+	background: var(--arshid6social-surface, #ffffff);
+	color: var(--arshid6social-text, #0f172a);
+	border-radius: 16px;
+	padding: 24px;
+	width: min(480px, 95vw);
+	max-height: 90vh;
+	overflow-y: auto;
+	box-shadow: 0 20px 60px rgba(0,0,0,.5);
+}
+
+.sn-story-creator__type-tabs {
+	display: flex;
+	gap: 8px;
+	margin-bottom: 16px;
+	border-bottom: 1px solid var(--arshid6social-border, #e2e8f0);
+	padding-bottom: 12px;
+}
+.sn-story-tab {
+	padding: 6px 16px;
+	border: 1px solid var(--arshid6social-border, #e2e8f0);
+	border-radius: 20px;
+	background: none;
+	cursor: pointer;
+	font-size: 14px;
+	color: var(--arshid6social-text-muted, #64748b);
+	transition: all .15s;
+}
+.sn-story-tab--active,
+.sn-story-tab:hover {
+	background: var(--arshid6social-primary, #2563eb);
+	border-color: var(--arshid6social-primary, #2563eb);
+	color: #fff;
+}
+
+.sn-story-creator__preview {
+	border-radius: 12px;
+	overflow: hidden;
+	min-height: 200px;
+	background: #f1f5f9;
+	margin-bottom: 16px;
+}
+
+.sn-story-creator__text-panel { padding: 16px; }
+.sn-story-creator__text-card {
+	border-radius: 12px;
+	padding: 24px;
+	min-height: 140px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background .2s;
+}
+.sn-story-creator__text-input {
+	background: none;
+	border: none;
+	outline: none;
+	color: #fff;
+	font-size: 20px;
+	font-weight: 600;
+	text-align: center;
+	width: 100%;
+	resize: none;
+}
+.sn-story-creator__text-input::placeholder { color: rgba(255,255,255,.6); }
+
+.sn-story-creator__bg-colors {
+	display: flex;
+	gap: 8px;
+	margin-top: 12px;
+	flex-wrap: wrap;
+}
+.sn-story-creator__bg-swatch {
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	border: 2px solid transparent;
+	cursor: pointer;
+	transition: transform .15s;
+}
+.sn-story-creator__bg-swatch--active {
+	border-color: var(--arshid6social-primary, #2563eb);
+	transform: scale(1.2);
+}
+
+.sn-story-creator__upload-area {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	min-height: 200px;
+	border: 2px dashed var(--arshid6social-border, #e2e8f0);
+	border-radius: 12px;
+	cursor: pointer;
+	color: var(--arshid6social-text-muted, #64748b);
+	font-size: 14px;
+	transition: border-color .15s;
+}
+.sn-story-creator__upload-area:hover { border-color: var(--arshid6social-primary, #2563eb); }
+
+.sn-visually-hidden {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0,0,0,0);
+	white-space: nowrap;
+}
+
+.sn-story-creator__media-preview-wrap { position: relative; }
+.sn-story-creator__remove-media {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	background: rgba(0,0,0,.5);
+	border: none;
+	color: #fff;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	cursor: pointer;
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.sn-story-creator__privacy,
+.sn-story-creator__duration {
+	margin-bottom: 14px;
+}
+.sn-story-creator__label {
+	display: block;
+	font-size: 13px;
+	font-weight: 500;
+	margin-bottom: 6px;
+	color: var(--arshid6social-text-muted, #64748b);
+}
+.sn-story-creator__select {
+	width: 100%;
+	padding: 8px 12px;
+	border: 1px solid var(--arshid6social-border, #e2e8f0);
+	border-radius: 8px;
+	font-size: 14px;
+	background: var(--arshid6social-surface, #ffffff);
+}
+.sn-story-creator__range { width: 100%; }
+
+.sn-story-creator__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 20px;
+	padding-top: 16px;
+	border-top: 1px solid var(--arshid6social-border, #e2e8f0);
+}
+
+.sn-story-creator__actions .sn-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 9px 20px;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	cursor: pointer;
+	border: none;
+	outline: none;
+	transition: background 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+	white-space: nowrap;
+	user-select: none;
+}
+.sn-story-creator__actions .sn-btn:active {
+	transform: scale(0.97);
+}
+.sn-story-creator__actions .sn-btn--secondary {
+	background: transparent;
+	color: #374151;
+	border: 1.5px solid #d1d5db;
+}
+.sn-story-creator__actions .sn-btn--secondary:hover {
+	background: #f3f4f6;
+	border-color: #9ca3af;
+}
+.sn-story-creator__actions .sn-btn--primary {
+	background: #2563eb;
+	color: #fff;
+	box-shadow: 0 2px 8px rgba(37, 99, 235, 0.28);
+}
+.sn-story-creator__actions .sn-btn--primary:hover {
+	background: #1d4ed8;
+	box-shadow: 0 4px 14px rgba(37, 99, 235, 0.38);
+}
+.sn-story-creator__actions .sn-btn--primary:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+	box-shadow: none;
+	transform: none;
+}
+
+[data-arshid6social-dark="true"] .sn-story-creator__actions .sn-btn--secondary,
+body[data-arshid6social-dark="true"] .sn-story-creator__actions .sn-btn--secondary {
+	color: #cbd5e1;
+	border-color: #475569;
+}
+[data-arshid6social-dark="true"] .sn-story-creator__actions .sn-btn--secondary:hover,
+body[data-arshid6social-dark="true"] .sn-story-creator__actions .sn-btn--secondary:hover {
+	background: #334155;
+	border-color: #64748b;
+}
+
+.sn-story-creator__error {
+	color: #dc2626;
+	font-size: 13px;
+	margin-top: 8px;
+}
+
+/* ── WP Admin Bar: hide when story viewer/creator is open ─────
+   The story viewer is full-screen; showing the admin bar on top
+   of it hides the user name / header. Hide the bar instead and
+   restore html margin-top so the page does not jump.          */
+body.admin-bar:has(#sn-story-viewer:not([hidden])) #wpadminbar,
+body.admin-bar:has(.sn-story-creator:not([hidden])) #wpadminbar {
+	display: none !important;
+}
+html:has(#sn-story-viewer:not([hidden])),
+html:has(.sn-story-creator:not([hidden])) {
+	margin-top: 0 !important;
+}
+/* Viewer/creator stay full-screen (inset:0) — no top offset needed */
+body.admin-bar .sn-story-viewer,
+body.admin-bar .sn-story-creator {
+	top: 0;
+}
+
+/* ── Animations ───────────────────────────────────────────── */
+@keyframes sn-slide-up {
+	from { transform: translateY(100%); }
+	to   { transform: translateY(0); }
+}
+@keyframes sn-reaction-pop {
+	0%   { transform: scale(1); }
+	30%  { transform: scale(.7); }
+	60%  { transform: scale(1.4); }
+	80%  { transform: scale(.95); }
+	100% { transform: scale(1); }
+}
+@keyframes sn-reaction-float {
+	0%   { opacity: 1; transform: translateY(0) scale(1); }
+	20%  { opacity: 1; transform: translateY(-20px) scale(1.3); }
+	60%  { opacity: .8; transform: translateY(-90px) scale(1.1) rotate(8deg); }
+	100% { opacity: 0; transform: translateY(-160px) scale(.8) rotate(-6deg); }
+}
+
+/* ── Dark mode (follows plugin's data-arshid6social-dark="true" on body) ──────── */
+[data-arshid6social-dark="true"] .sn-stories-tray,
+body[data-arshid6social-dark="true"] .sn-stories-tray {
+	border-color: #374151;
+	background: #1e293b;
+}
+[data-arshid6social-dark="true"] .sn-story-bubble__name,
+body[data-arshid6social-dark="true"] .sn-story-bubble__name {
+	color: #94a3b8;
+}
+[data-arshid6social-dark="true"] .sn-story-creator__panel,
+body[data-arshid6social-dark="true"] .sn-story-creator__panel {
+	background: #1e293b;
+	color: #f1f5f9;
+}
+[data-arshid6social-dark="true"] .sn-story-creator__select,
+body[data-arshid6social-dark="true"] .sn-story-creator__select {
+	background: #334155;
+	border-color: #475569;
+	color: #f1f5f9;
+}
+[data-arshid6social-dark="true"] .sn-story-creator__preview,
+body[data-arshid6social-dark="true"] .sn-story-creator__preview { background: #0f172a; }
+[data-arshid6social-dark="true"] .sn-story-creator__upload-area,
+body[data-arshid6social-dark="true"] .sn-story-creator__upload-area {
+	border-color: #475569;
+	color: #94a3b8;
+}
+
+/* ── RTL support ──────────────────────────────────────────── */
+[dir="rtl"] .sn-story-viewer__nav--prev { left: auto; right: 12px; }
+[dir="rtl"] .sn-story-viewer__nav--next { right: auto; left: 12px; }
+[dir="rtl"] .sn-story-creator__actions { flex-direction: row-reverse; }
+
+/* ── Mobile / narrow ──────────────────────────────────────── */
+@media (max-width: 480px) {
+	.sn-story-viewer__text-card { font-size: 18px; padding: 20px 16px; }
+	.sn-story-creator__type-tabs { flex-wrap: wrap; }
+	.sn-story-creator__panel {
+		width: 100%;
+		max-height: 100dvh;
+		border-radius: 0;
+		padding: 16px;
+	}
+	.sn-story-creator {
+		align-items: flex-end;
+	}
+}
