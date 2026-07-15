@@ -26,9 +26,9 @@ class Marketplace_Settings {
 
 	public function __construct() {
 		// Settings tab.
-		add_filter( 'arshid6social_settings_tabs',         array( $this, 'add_tab' ) );
+		add_filter( 'arshid6social_settings_tabs', array( $this, 'add_tab' ) );
 		add_action( 'arshid6social_settings_tab_marketplace', array( $this, 'render_tab' ) );
-		add_action( 'admin_init',                    array( $this, 'register_settings' ) );
+		add_action( 'admin_init', array( $this, 'register_settings' ) );
 
 		// Pages admin screen.
 		add_filter( 'arshid6social_page_definitions', array( $this, 'add_page_definition' ) );
@@ -37,8 +37,8 @@ class Marketplace_Settings {
 		add_action( 'update_option_arshid6social_marketplace_enabled', array( $this, 'on_enabled_saved' ), 10, 2 );
 
 		// Categories manager AJAX.
-		add_action( 'wp_ajax_arshid6social_marketplace_save_category',    array( $this, 'ajax_save_category' ) );
-		add_action( 'wp_ajax_arshid6social_marketplace_delete_category',  array( $this, 'ajax_delete_category' ) );
+		add_action( 'wp_ajax_arshid6social_marketplace_save_category', array( $this, 'ajax_save_category' ) );
+		add_action( 'wp_ajax_arshid6social_marketplace_delete_category', array( $this, 'ajax_delete_category' ) );
 		add_action( 'wp_ajax_arshid6social_marketplace_reorder_categories', array( $this, 'ajax_reorder_categories' ) );
 	}
 
@@ -58,7 +58,7 @@ class Marketplace_Settings {
 			return $pages;
 		}
 
-		$slug           = (string) get_option( 'arshid6social_marketplace_slug', 'marketplace' );
+		$slug                 = (string) get_option( 'arshid6social_marketplace_slug', 'marketplace' );
 		$pages['marketplace'] = array(
 			'title'       => __( 'Marketplace', '6arshid-social-community' ),
 			'slug'        => $slug,
@@ -103,15 +103,17 @@ class Marketplace_Settings {
 			return;
 		}
 
-		$page_id = wp_insert_post( array(
-			'post_title'     => __( 'Marketplace', '6arshid-social-community' ),
-			'post_name'      => $slug,
-			'post_content'   => '[arshid6social_marketplace]',
-			'post_status'    => 'publish',
-			'post_type'      => 'page',
-			'comment_status' => 'closed',
-			'ping_status'    => 'closed',
-		) );
+		$page_id = wp_insert_post(
+			array(
+				'post_title'     => __( 'Marketplace', '6arshid-social-community' ),
+				'post_name'      => $slug,
+				'post_content'   => '[arshid6social_marketplace]',
+				'post_status'    => 'publish',
+				'post_type'      => 'page',
+				'comment_status' => 'closed',
+				'ping_status'    => 'closed',
+			)
+		);
 
 		if ( $page_id && ! is_wp_error( $page_id ) ) {
 			update_option( 'arshid6social_page_marketplace', $page_id );
@@ -123,31 +125,43 @@ class Marketplace_Settings {
 
 	public function register_settings(): void {
 		$group    = 'arshid6social_marketplace';
-		$bool     = array( 'type' => 'boolean', 'sanitize_callback' => 'rest_sanitize_boolean' );
-		$int      = array( 'type' => 'integer', 'sanitize_callback' => 'absint' );
-		$text     = array( 'type' => 'string',  'sanitize_callback' => 'sanitize_text_field' );
-		$textarea = array( 'type' => 'string',  'sanitize_callback' => 'sanitize_textarea_field' );
+		$bool     = array(
+			'type'              => 'boolean',
+			'sanitize_callback' => 'rest_sanitize_boolean',
+		);
+		$int      = array(
+			'type'              => 'integer',
+			'sanitize_callback' => 'absint',
+		);
+		$text     = array(
+			'type'              => 'string',
+			'sanitize_callback' => 'sanitize_text_field',
+		);
+		$textarea = array(
+			'type'              => 'string',
+			'sanitize_callback' => 'sanitize_textarea_field',
+		);
 
 		$schemas = array(
-			'arshid6social_marketplace_enabled'             => $bool,
-			'arshid6social_marketplace_currency_symbol'     => $text,
-			'arshid6social_marketplace_currency_position'   => $this->enum_schema( array( 'before', 'after' ), 'before' ),
-			'arshid6social_marketplace_currency_decimals'   => $int,
-			'arshid6social_marketplace_currency_thousands'  => $text,
-			'arshid6social_marketplace_max_photos'          => $int,
-			'arshid6social_marketplace_max_photo_size_mb'   => $int,
-			'arshid6social_marketplace_expiry_days'         => $int,
-			'arshid6social_marketplace_moderation'          => $this->enum_schema( array( 'auto', 'manual' ), 'auto' ),
-			'arshid6social_marketplace_require_verified'    => $bool,
+			'arshid6social_marketplace_enabled'            => $bool,
+			'arshid6social_marketplace_currency_symbol'    => $text,
+			'arshid6social_marketplace_currency_position'  => $this->enum_schema( array( 'before', 'after' ), 'before' ),
+			'arshid6social_marketplace_currency_decimals'  => $int,
+			'arshid6social_marketplace_currency_thousands' => $text,
+			'arshid6social_marketplace_max_photos'         => $int,
+			'arshid6social_marketplace_max_photo_size_mb'  => $int,
+			'arshid6social_marketplace_expiry_days'        => $int,
+			'arshid6social_marketplace_moderation'         => $this->enum_schema( array( 'auto', 'manual' ), 'auto' ),
+			'arshid6social_marketplace_require_verified'   => $bool,
 			'arshid6social_marketplace_auto_hide_threshold' => $int,
-			'arshid6social_marketplace_banned_words'        => $textarea,
-			'arshid6social_marketplace_allow_guests'        => $bool,
+			'arshid6social_marketplace_banned_words'       => $textarea,
+			'arshid6social_marketplace_allow_guests'       => $bool,
 			'arshid6social_marketplace_max_active_listings' => $int,
-			'arshid6social_marketplace_daily_new_listings'  => $int,
-			'arshid6social_marketplace_safety_tips'         => $textarea,
-			'arshid6social_marketplace_prohibited_policy'   => $textarea,
-			'arshid6social_marketplace_as_homepage'         => $bool,
-			'arshid6social_marketplace_social_share'        => $bool,
+			'arshid6social_marketplace_daily_new_listings' => $int,
+			'arshid6social_marketplace_safety_tips'        => $textarea,
+			'arshid6social_marketplace_prohibited_policy'  => $textarea,
+			'arshid6social_marketplace_as_homepage'        => $bool,
+			'arshid6social_marketplace_social_share'       => $bool,
 		);
 
 		foreach ( $schemas as $option_name => $schema ) {
@@ -353,9 +367,12 @@ class Marketplace_Settings {
 						<td style="padding:8px 0">
 							<select id="arshid6social-mkt-cat-parent">
 								<option value="0"><?php esc_html_e( '— Top Level —', '6arshid-social-community' ); ?></option>
-								<?php foreach ( $categories as $cat ) :
-									if ( $cat->parent_id ) continue; // Only top-level as parents.
-								?>
+								<?php
+								foreach ( $categories as $cat ) :
+									if ( $cat->parent_id ) {
+										continue; // Only top-level as parents.
+									}
+									?>
 									<option value="<?php echo esc_attr( $cat->id ); ?>">
 										<?php echo esc_html( $cat->icon . ' ' . $cat->name ); ?>
 									</option>
@@ -640,16 +657,24 @@ class Marketplace_Settings {
 		$slug = $slug_input ?: sanitize_title( $name );
 
 		// Ensure slug uniqueness (exclude current row on edit).
-		$slug_exists = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM `{$table}` WHERE slug = %s AND id != %d",
-			$slug,
-			$id
-		) );
+		$slug_exists = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM `{$table}` WHERE slug = %s AND id != %d",
+				$slug,
+				$id
+			)
+		);
 		if ( $slug_exists ) {
 			$slug .= '-' . time();
 		}
 
-		$data   = array( 'name' => $name, 'slug' => $slug, 'icon' => $icon, 'parent_id' => $parent_id, 'sort_order' => $sort_order );
+		$data   = array(
+			'name'       => $name,
+			'slug'       => $slug,
+			'icon'       => $icon,
+			'parent_id'  => $parent_id,
+			'sort_order' => $sort_order,
+		);
 		$format = array( '%s', '%s', '%s', '%d', '%d' );
 
 		if ( $id ) {
@@ -660,14 +685,16 @@ class Marketplace_Settings {
 			$saved_id = (int) $wpdb->insert_id;
 		}
 
-		wp_send_json_success( array(
-			'id'         => $saved_id,
-			'name'       => $name,
-			'slug'       => $slug,
-			'icon'       => $icon,
-			'parent_id'  => $parent_id,
-			'sort_order' => $sort_order,
-		) );
+		wp_send_json_success(
+			array(
+				'id'         => $saved_id,
+				'name'       => $name,
+				'slug'       => $slug,
+				'icon'       => $icon,
+				'parent_id'  => $parent_id,
+				'sort_order' => $sort_order,
+			)
+		);
 	}
 
 	public function ajax_delete_category(): void {

@@ -16,67 +16,95 @@ class Friends_REST extends \WP_REST_Controller {
 
 	public function register_routes(): void {
 		// GET /arshid6social/v1/friends/{user_id}/status?with={other_user_id}
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/status', array(
-			'methods'             => \WP_REST_Server::READABLE,
-			'callback'            => array( $this, 'get_status' ),
-			'permission_callback' => 'is_user_logged_in',
-		) );
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/status',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_status' ),
+				'permission_callback' => 'is_user_logged_in',
+			)
+		);
 
 		// POST /arshid6social/v1/friends/{user_id}/request
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/request', array(
-			'methods'             => \WP_REST_Server::CREATABLE,
-			'callback'            => array( $this, 'send_request' ),
-			'permission_callback' => array( $this, 'can_target_user' ),
-		) );
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/request',
+			array(
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'send_request' ),
+				'permission_callback' => array( $this, 'can_target_user' ),
+			)
+		);
 
 		// POST /arshid6social/v1/friends/{user_id}/accept
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/accept', array(
-			'methods'             => \WP_REST_Server::CREATABLE,
-			'callback'            => array( $this, 'accept_request' ),
-			'permission_callback' => array( $this, 'can_target_user' ),
-		) );
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/accept',
+			array(
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'accept_request' ),
+				'permission_callback' => array( $this, 'can_target_user' ),
+			)
+		);
 
 		// DELETE /arshid6social/v1/friends/{user_id}
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', array(
-			'methods'             => \WP_REST_Server::DELETABLE,
-			'callback'            => array( $this, 'remove' ),
-			'permission_callback' => array( $this, 'can_target_user' ),
-		) );
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)',
+			array(
+				'methods'             => \WP_REST_Server::DELETABLE,
+				'callback'            => array( $this, 'remove' ),
+				'permission_callback' => array( $this, 'can_target_user' ),
+			)
+		);
 
 		// POST/DELETE /arshid6social/v1/friends/{user_id}/follow
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/follow', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/follow',
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'follow' ),
-				'permission_callback' => array( $this, 'can_follow_user' ),
-			),
-			array(
-				'methods'             => \WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'unfollow' ),
-				'permission_callback' => array( $this, 'can_follow_user' ),
-			),
-		) );
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'follow' ),
+					'permission_callback' => array( $this, 'can_follow_user' ),
+				),
+				array(
+					'methods'             => \WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'unfollow' ),
+					'permission_callback' => array( $this, 'can_follow_user' ),
+				),
+			)
+		);
 
 		// POST/DELETE /arshid6social/v1/friends/{user_id}/block
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/block', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/block',
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'block' ),
-				'permission_callback' => array( $this, 'can_target_user' ),
-			),
-			array(
-				'methods'             => \WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'unblock' ),
-				'permission_callback' => array( $this, 'can_target_user' ),
-			),
-		) );
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'block' ),
+					'permission_callback' => array( $this, 'can_target_user' ),
+				),
+				array(
+					'methods'             => \WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'unblock' ),
+					'permission_callback' => array( $this, 'can_target_user' ),
+				),
+			)
+		);
 
 		// GET /arshid6social/v1/friends/suggestions
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/suggestions', array(
-			'methods'             => \WP_REST_Server::READABLE,
-			'callback'            => array( $this, 'suggestions' ),
-			'permission_callback' => 'is_user_logged_in',
-		) );
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/suggestions',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'suggestions' ),
+				'permission_callback' => 'is_user_logged_in',
+			)
+		);
 	}
 
 	/**

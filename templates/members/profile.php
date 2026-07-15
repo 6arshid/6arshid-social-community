@@ -56,10 +56,10 @@ if ( $_profile_suspended ) {
 	if ( $_viewer_is_admin ) {
 		$_unsuspend_url = add_query_arg(
 			array(
-				'page'          => 'arshid6social-members',
-				'arshid6social_action'   => 'unsuspend',
-				'user_id'       => $profile_user->ID,
-				'_wpnonce'      => wp_create_nonce( 'arshid6social_unsuspend_' . $profile_user->ID ),
+				'page'                 => 'arshid6social-members',
+				'arshid6social_action' => 'unsuspend',
+				'user_id'              => $profile_user->ID,
+				'_wpnonce'             => wp_create_nonce( 'arshid6social_unsuspend_' . $profile_user->ID ),
 			),
 			admin_url( 'admin.php' )
 		);
@@ -71,13 +71,13 @@ if ( $_profile_suspended ) {
 	return;
 }
 
-$tabs = apply_filters(
+$profile_tabs = apply_filters(
 	'arshid6social_profile_tabs',
 	array(
-		'activity'    => __( 'Activity', '6arshid-social-community' ),
-		'friends'     => __( 'Friends', '6arshid-social-community' ),
-		'groups'      => __( 'Groups', '6arshid-social-community' ),
-		'about'       => __( 'About', '6arshid-social-community' ),
+		'activity' => __( 'Activity', '6arshid-social-community' ),
+		'friends'  => __( 'Friends', '6arshid-social-community' ),
+		'groups'   => __( 'Groups', '6arshid-social-community' ),
+		'about'    => __( 'About', '6arshid-social-community' ),
 	),
 	$profile_user
 );
@@ -89,8 +89,8 @@ if ( $is_self ) {
 	if ( $unread_count ) {
 		$notif_label .= ' <span class="arshid6social-badge arshid6social-badge--primary arshid6social-badge--sm">' . esc_html( $unread_count ) . '</span>';
 	}
-	$tabs['notifications'] = $notif_label;
-	$tabs['settings']      = __( 'Settings', '6arshid-social-community' );
+	$profile_tabs['notifications'] = $notif_label;
+	$profile_tabs['settings']      = __( 'Settings', '6arshid-social-community' );
 }
 
 $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
@@ -107,13 +107,15 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 					style="background-image:url('<?php echo esc_url( $cover_url ); ?>');"
 				<?php endif; ?>
 				role="img"
-				aria-label="<?php
+				aria-label="
+				<?php
 					printf(
 						/* translators: %s: member name */
 						esc_attr__( '%s cover photo', '6arshid-social-community' ),
 						esc_attr( $profile_user->display_name )
 					);
-				?>"
+					?>
+				"
 			>
 				<?php if ( $is_self ) : ?>
 					<button class="arshid6social-cover-edit-btn"
@@ -158,7 +160,7 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 						if ( $_verif && $_verif->is_verified( $profile_user->ID ) ) :
 							echo wp_kses_post( $_verif->get_badge_html( $profile_user->ID ) );
 						elseif ( ! $_verif && get_user_meta( $profile_user->ID, 'arshid6social_verified', true ) ) :
-					?>
+							?>
 							<span class="arshid6social-verified-badge" title="<?php esc_attr_e( 'Verified Member', '6arshid-social-community' ); ?>" aria-label="<?php esc_attr_e( 'Verified', '6arshid-social-community' ); ?>">&#10003;</span>
 						<?php endif; ?>
 					</h1>
@@ -187,18 +189,19 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 							<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
 							<?php esc_html_e( 'Change Photo', '6arshid-social-community' ); ?>
 						</button>
-					<?php elseif ( is_user_logged_in() ) :
-						$friends_comp   = ARSHID6SOCIAL()->component( 'friends' );
-						$friend_status  = $friends_comp
+						<?php
+					elseif ( is_user_logged_in() ) :
+						$friends_comp  = ARSHID6SOCIAL()->component( 'friends' );
+						$friend_status = $friends_comp
 							? $friends_comp->get_friendship_status( get_current_user_id(), $profile_user->ID )
 							: 'not_friends';
-						$friend_labels  = array(
+						$friend_labels = array(
 							'not_friends'      => __( 'Add Friend', '6arshid-social-community' ),
 							'pending_sent'     => __( 'Cancel Request', '6arshid-social-community' ),
 							'pending_received' => __( 'Accept Request', '6arshid-social-community' ),
 							'friends'          => __( 'Friends ✓', '6arshid-social-community' ),
 						);
-					?>
+						?>
 						<button class="arshid6social-btn arshid6social-btn--primary arshid6social-friend-btn"
 							data-user-id="<?php echo esc_attr( $profile_user->ID ); ?>"
 							data-status="<?php echo esc_attr( $friend_status ); ?>">
@@ -210,14 +213,18 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 							<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
 							<?php esc_html_e( 'Send Message', '6arshid-social-community' ); ?>
 						</a>
-						<?php if ( arshid6social_blocking() ) :
+						<?php
+						if ( arshid6social_blocking() ) :
 							global $wpdb;
-							$current_blocked = (bool) $wpdb->get_var( $wpdb->prepare(
-								"SELECT id FROM {$wpdb->prefix}sn_blocks WHERE blocker_id = %d AND blocked_id = %d",
-								get_current_user_id(), $profile_user->ID
-							) );
-						?>
-						<?php if ( $current_blocked ) : ?>
+							$current_blocked = (bool) $wpdb->get_var(
+								$wpdb->prepare(
+									"SELECT id FROM {$wpdb->prefix}sn_blocks WHERE blocker_id = %d AND blocked_id = %d",
+									get_current_user_id(),
+									$profile_user->ID
+								)
+							);
+							?>
+							<?php if ( $current_blocked ) : ?>
 							<button class="arshid6social-btn arshid6social-btn--danger sn--blocked"
 								data-unblock-user-id="<?php echo esc_attr( $profile_user->ID ); ?>">
 								<?php esc_html_e( 'Blocked', '6arshid-social-community' ); ?>
@@ -247,7 +254,7 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 
 			<!-- Tabs -->
 			<nav class="arshid6social-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Profile sections', '6arshid-social-community' ); ?>">
-				<?php foreach ( $tabs as $tab_key => $tab_label ) : ?>
+				<?php foreach ( $profile_tabs as $tab_key => $tab_label ) : ?>
 					<a class="arshid6social-tab-link <?php echo ( $active_tab === $tab_key ) ? 'is-active' : ''; ?>"
 						href="<?php echo esc_url( $profile_url . $tab_key . '/' ); ?>"
 						role="tab"
@@ -306,35 +313,38 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 			</div>
 
 			<!-- Stories compact (activity tab only) -->
-			<?php if ( 'activity' === $active_tab && get_option( 'arshid6social_stories_enabled', false ) ) :
+			<?php
+			if ( 'activity' === $active_tab && get_option( 'arshid6social_stories_enabled', false ) ) :
 				$_stories_comp = ARSHID6SOCIAL()->component( 'stories' );
 				if ( $_stories_comp ) :
-					$_viewer_id = get_current_user_id();
-					$_profile_stories = array_values( array_filter(
-						$_stories_comp->get_tray( $_viewer_id ),
-						fn( $s ) => (int) $s->user_id === $profile_user->ID
-					) );
+					$_viewer_id       = get_current_user_id();
+					$_profile_stories = array_values(
+						array_filter(
+							$_stories_comp->get_tray( $_viewer_id ),
+							fn( $s ) => (int) $s->user_id === $profile_user->ID
+						)
+					);
 					if ( $is_self || ! empty( $_profile_stories ) ) :
-			?>
+						?>
 			<div class="arshid6social-card arshid6social-sidebar-stories">
 				<div class="arshid6social-sidebar-stories__header">
 					<span><?php esc_html_e( 'Stories', '6arshid-social-community' ); ?></span>
 				</div>
 				<div class="arshid6social-sidebar-stories__body">
-					<?php
-					\Arshid6Social\Template_Loader::instance()->get_template(
-						'stories/tray.php',
-						array(
-							'stories'     => $_profile_stories,
-							'viewer_id'   => $_viewer_id,
-							'stories_obj' => $_stories_comp,
-						)
-					);
-					defined( 'ARSHID6SOCIAL_STORIES_TRAY_INLINE' ) || define( 'ARSHID6SOCIAL_STORIES_TRAY_INLINE', true );
-					?>
+						<?php
+						\Arshid6Social\Template_Loader::instance()->get_template(
+							'stories/tray.php',
+							array(
+								'stories'     => $_profile_stories,
+								'viewer_id'   => $_viewer_id,
+								'stories_obj' => $_stories_comp,
+							)
+						);
+						defined( 'ARSHID6SOCIAL_STORIES_TRAY_INLINE' ) || define( 'ARSHID6SOCIAL_STORIES_TRAY_INLINE', true );
+						?>
 				</div>
 			</div>
-			<?php
+						<?php
 					endif;
 				endif;
 			endif;
@@ -379,15 +389,20 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 				case 'about':
 					$groups = $xprofile->get_groups();
 					foreach ( $groups as $group ) :
-						if ( empty( $group['fields'] ) ) continue;
+						if ( empty( $group['fields'] ) ) {
+							continue;
+						}
 						?>
 						<div class="arshid6social-card" style="margin-block-end:1rem;">
 							<div class="arshid6social-card__header"><?php echo esc_html( $group['name'] ); ?></div>
 							<div class="arshid6social-card__body">
 								<dl style="display:grid;gap:.75rem;">
-									<?php foreach ( $group['fields'] as $field ) :
+									<?php
+									foreach ( $group['fields'] as $field ) :
 										$value = $xprofile->get_field_value( $profile_user->ID, (int) $field['id'] );
-										if ( ! $value ) continue;
+										if ( ! $value ) {
+											continue;
+										}
 										?>
 										<div>
 											<dt style="font-weight:600;font-size:.875rem;"><?php echo esc_html( $field['name'] ); ?></dt>
@@ -397,7 +412,8 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 								</dl>
 							</div>
 						</div>
-					<?php endforeach;
+						<?php
+					endforeach;
 					break;
 
 				case 'notifications':
@@ -423,5 +439,5 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 </div>
 
 <?php if ( is_user_logged_in() && ! $is_self ) : ?>
-<?php arshid6social_report_modal(); ?>
+	<?php arshid6social_report_modal(); ?>
 <?php endif; ?>

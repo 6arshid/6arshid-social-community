@@ -144,9 +144,9 @@ final class Admin_Activity {
 		$col_class      = fn( string $col ) => in_array( $col, $hidden_columns, true ) ? ' hidden' : '';
 
 		// ── Request params ────────────────────────────────────────────────────
-		$search     = isset( $_GET['s'] )      ? sanitize_text_field( wp_unslash( $_GET['s'] ) )  : ''; // phpcs:ignore WordPress.Security.NonceVerification
-		$tab        = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) )    : ''; // phpcs:ignore WordPress.Security.NonceVerification
-		$paged      = isset( $_GET['paged'] )  ? max( 1, absint( $_GET['paged'] ) )               : 1;  // phpcs:ignore WordPress.Security.NonceVerification
+		$search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+		$tab    = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+		$paged  = isset( $_GET['paged'] ) ? max( 1, absint( $_GET['paged'] ) ) : 1;  // phpcs:ignore WordPress.Security.NonceVerification
 
 		// ── Build WHERE ───────────────────────────────────────────────────────
 		$where  = 'WHERE 1=1';
@@ -178,11 +178,13 @@ final class Admin_Activity {
 
 		// ── Total for pagination ──────────────────────────────────────────────
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$total = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			"SELECT COUNT(*) FROM {$wpdb->prefix}sn_activity a
+		$total       = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_activity a
 			 LEFT JOIN {$wpdb->users} u ON u.ID = a.user_id $where",
-			...$params
-		) );
+				...$params
+			)
+		);
 		$total_pages = (int) ceil( $total / $per_page );
 		$offset      = ( $paged - 1 ) * $per_page;
 
@@ -210,9 +212,9 @@ final class Admin_Activity {
 			<?php // ── Status tabs ──────────────────────────────────────────── ?>
 			<ul class="subsubsub">
 				<?php
-				$tabs = array(
-					''       => array( __( 'All', '6arshid-social-community' ),    $all_count ),
-					'spam'   => array( __( 'Spam', '6arshid-social-community' ),   $spam_count ),
+				$tabs     = array(
+					''       => array( __( 'All', '6arshid-social-community' ), $all_count ),
+					'spam'   => array( __( 'Spam', '6arshid-social-community' ), $spam_count ),
 					'hidden' => array( __( 'Hidden', '6arshid-social-community' ), $hidden_count ),
 				);
 				$tab_list = array();
@@ -276,23 +278,32 @@ final class Admin_Activity {
 						<?php else : ?>
 							<?php foreach ( $items as $item ) : ?>
 								<?php
-								$spam_url = wp_nonce_url(
+								$spam_url   = wp_nonce_url(
 									add_query_arg(
-										array( 'action' => $item->is_spam ? 'unspam' : 'spam', 'activity_id' => $item->id ),
+										array(
+											'action'      => $item->is_spam ? 'unspam' : 'spam',
+											'activity_id' => $item->id,
+										),
 										$current_url
 									),
 									'arshid6social_act_' . ( $item->is_spam ? 'unspam' : 'spam' ) . '_' . $item->id
 								);
-								$hide_url = wp_nonce_url(
+								$hide_url   = wp_nonce_url(
 									add_query_arg(
-										array( 'action' => $item->hide_sitewide ? 'show' : 'hide', 'activity_id' => $item->id ),
+										array(
+											'action'      => $item->hide_sitewide ? 'show' : 'hide',
+											'activity_id' => $item->id,
+										),
 										$current_url
 									),
 									'arshid6social_act_' . ( $item->hide_sitewide ? 'show' : 'hide' ) . '_' . $item->id
 								);
 								$delete_url = wp_nonce_url(
 									add_query_arg(
-										array( 'action' => 'delete', 'activity_id' => $item->id ),
+										array(
+											'action'      => 'delete',
+											'activity_id' => $item->id,
+										),
 										$current_url
 									),
 									'arshid6social_act_delete_' . $item->id
@@ -463,14 +474,16 @@ ENDJS;
 					$page_url = $tab
 						? add_query_arg( 'status', $tab, admin_url( 'admin.php?page=arshid6social-activity' ) )
 						: admin_url( 'admin.php?page=arshid6social-activity' );
-					echo paginate_links( // phpcs:ignore WordPress.Security.EscapeOutput
-						array(
-							'base'      => add_query_arg( 'paged', '%#%', $page_url ),
-							'format'    => '',
-							'current'   => $paged,
-							'total'     => $total_pages,
-							'prev_text' => '&laquo;',
-							'next_text' => '&raquo;',
+					echo wp_kses_post(
+						paginate_links(
+							array(
+								'base'      => add_query_arg( 'paged', '%#%', $page_url ),
+								'format'    => '',
+								'current'   => $paged,
+								'total'     => $total_pages,
+								'prev_text' => '&laquo;',
+								'next_text' => '&raquo;',
+							)
 						)
 					);
 					?>
@@ -496,21 +509,21 @@ ENDJS;
 
 		if ( 'delete' === $action ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->delete( "{$wpdb->prefix}sn_activity_meta",      array( 'activity_id' => $activity_id ), array( '%d' ) );
+			$wpdb->delete( "{$wpdb->prefix}sn_activity_meta", array( 'activity_id' => $activity_id ), array( '%d' ) );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->delete( "{$wpdb->prefix}sn_activity_reactions",  array( 'activity_id' => $activity_id ), array( '%d' ) );
+			$wpdb->delete( "{$wpdb->prefix}sn_activity_reactions", array( 'activity_id' => $activity_id ), array( '%d' ) );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->delete( "{$wpdb->prefix}sn_activity_media",      array( 'activity_id' => $activity_id ), array( '%d' ) );
+			$wpdb->delete( "{$wpdb->prefix}sn_activity_media", array( 'activity_id' => $activity_id ), array( '%d' ) );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->delete( "{$wpdb->prefix}sn_activity",            array( 'id'          => $activity_id ), array( '%d' ) );
+			$wpdb->delete( "{$wpdb->prefix}sn_activity", array( 'id' => $activity_id ), array( '%d' ) );
 			return;
 		}
 
 		$updates = match ( $action ) {
-			'spam'   => array( 'is_spam'        => 1 ),
-			'unspam' => array( 'is_spam'        => 0 ),
-			'hide'   => array( 'hide_sitewide'  => 1 ),
-			'show'   => array( 'hide_sitewide'  => 0 ),
+			'spam'   => array( 'is_spam' => 1 ),
+			'unspam' => array( 'is_spam' => 0 ),
+			'hide'   => array( 'hide_sitewide' => 1 ),
+			'show'   => array( 'hide_sitewide' => 0 ),
 			default  => null,
 		};
 

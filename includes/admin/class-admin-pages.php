@@ -18,9 +18,9 @@ defined( 'ABSPATH' ) || exit;
 class Admin_Pages {
 
 	public function __construct() {
-		add_action( 'admin_enqueue_scripts',               array( $this, 'enqueue_page_styles' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_page_styles' ) );
 		add_action( 'wp_ajax_arshid6social_recreate_page', array( $this, 'ajax_recreate_page' ) );
-		add_action( 'wp_ajax_arshid6social_assign_page',   array( $this, 'ajax_assign_page' ) );
+		add_action( 'wp_ajax_arshid6social_assign_page', array( $this, 'ajax_assign_page' ) );
 	}
 
 	public function enqueue_page_styles(): void {
@@ -50,13 +50,13 @@ class Admin_Pages {
 		<?php
 		$nonce_recreate = wp_create_nonce( 'arshid6social_recreate_page' );
 		$nonce_assign   = wp_create_nonce( 'arshid6social_assign_page' );
-		$js_pages  = '(function(){';
-		$js_pages .= 'var nonceRecreate=' . wp_json_encode( $nonce_recreate ) . ';';
-		$js_pages .= 'var nonceAssign=' . wp_json_encode( $nonce_assign ) . ';';
-		$js_pages .= 'var txtRecreate=' . wp_json_encode( __( 'Re-create this page?', '6arshid-social-community' ) ) . ';';
-		$js_pages .= 'var txtSaved=' . wp_json_encode( '✓ ' . __( 'Saved', '6arshid-social-community' ) ) . ';';
-		$js_pages .= 'var txtError=' . wp_json_encode( __( 'Error.', '6arshid-social-community' ) ) . ';';
-		$js_pages .= <<<'ENDJS'
+		$js_pages       = '(function(){';
+		$js_pages      .= 'var nonceRecreate=' . wp_json_encode( $nonce_recreate ) . ';';
+		$js_pages      .= 'var nonceAssign=' . wp_json_encode( $nonce_assign ) . ';';
+		$js_pages      .= 'var txtRecreate=' . wp_json_encode( __( 'Re-create this page?', '6arshid-social-community' ) ) . ';';
+		$js_pages      .= 'var txtSaved=' . wp_json_encode( '✓ ' . __( 'Saved', '6arshid-social-community' ) ) . ';';
+		$js_pages      .= 'var txtError=' . wp_json_encode( __( 'Error.', '6arshid-social-community' ) ) . ';';
+		$js_pages      .= <<<'ENDJS'
 document.querySelectorAll('.arshid6social-copy-btn').forEach(function(btn){
 	btn.addEventListener('click',function(){
 		var code=btn.previousElementSibling.textContent;
@@ -109,7 +109,13 @@ ENDJS;
 	 * Renders the main pages status table.
 	 */
 	private function render_pages_table( array $pages ): void {
-		$all_wp_pages = get_pages( array( 'post_status' => 'publish', 'sort_column' => 'post_title', 'sort_order' => 'ASC' ) );
+		$all_wp_pages = get_pages(
+			array(
+				'post_status' => 'publish',
+				'sort_column' => 'post_title',
+				'sort_order'  => 'ASC',
+			)
+		);
 		?>
 		<table class="arshid6social-pages-table widefat">
 			<thead>
@@ -370,49 +376,49 @@ ENDJS;
 	 */
 	private function get_page_definitions(): array {
 		$pages = array(
-			'members'  => array(
+			'members'         => array(
 				'title'       => __( 'Members', '6arshid-social-community' ),
 				'slug'        => 'members',
 				'shortcode'   => '[arshid6social_members]',
 				'option'      => 'arshid6social_page_members',
 				'description' => __( 'Member directory with search and filters', '6arshid-social-community' ),
 			),
-			'activity' => array(
+			'activity'        => array(
 				'title'       => __( 'Activity', '6arshid-social-community' ),
 				'slug'        => 'activity',
 				'shortcode'   => '[arshid6social_activity]',
 				'option'      => 'arshid6social_page_activity',
 				'description' => __( 'Site-wide activity feed', '6arshid-social-community' ),
 			),
-			'groups'   => array(
+			'groups'          => array(
 				'title'       => __( 'Groups', '6arshid-social-community' ),
 				'slug'        => 'groups',
 				'shortcode'   => '[arshid6social_groups]',
 				'option'      => 'arshid6social_page_groups',
 				'description' => __( 'Group directory with join buttons', '6arshid-social-community' ),
 			),
-			'messages' => array(
+			'messages'        => array(
 				'title'       => __( 'Messages', '6arshid-social-community' ),
 				'slug'        => 'messages',
 				'shortcode'   => '[arshid6social_messages]',
 				'option'      => 'arshid6social_page_messages',
 				'description' => __( 'Private messaging inbox', '6arshid-social-community' ),
 			),
-			'notifications' => array(
+			'notifications'   => array(
 				'title'       => __( 'Notifications', '6arshid-social-community' ),
 				'slug'        => 'notifications',
 				'shortcode'   => '[arshid6social_notifications]',
 				'option'      => 'arshid6social_page_notifications',
 				'description' => __( 'Personal notifications feed with customize options', '6arshid-social-community' ),
 			),
-			'register' => array(
+			'register'        => array(
 				'title'       => __( 'Register', '6arshid-social-community' ),
 				'slug'        => 'register',
 				'shortcode'   => '[arshid6social_register_form]',
 				'option'      => 'arshid6social_page_register',
 				'description' => __( 'Member registration form', '6arshid-social-community' ),
 			),
-			'login' => array(
+			'login'           => array(
 				'title'       => __( 'Login', '6arshid-social-community' ),
 				'slug'        => 'login',
 				'shortcode'   => '[arshid6social_login_form]',
@@ -426,7 +432,7 @@ ENDJS;
 				'option'      => 'arshid6social_page_forgot_password',
 				'description' => __( 'Password reset request form (no wp-login.php)', '6arshid-social-community' ),
 			),
-			'reset-password' => array(
+			'reset-password'  => array(
 				'title'       => __( 'Reset Password', '6arshid-social-community' ),
 				'slug'        => 'reset-password',
 				'shortcode'   => '[arshid6social_reset_password]',

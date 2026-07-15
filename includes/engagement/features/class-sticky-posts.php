@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 class Sticky_Posts {
 
 	public function __construct() {
-		add_action( 'wp_ajax_arshid6social_sticky_pin',   array( $this, 'ajax_pin' ) );
+		add_action( 'wp_ajax_arshid6social_sticky_pin', array( $this, 'ajax_pin' ) );
 		add_action( 'wp_ajax_arshid6social_sticky_unpin', array( $this, 'ajax_unpin' ) );
 
 		// Remove expired stickies daily.
@@ -30,10 +30,10 @@ class Sticky_Posts {
 	/**
 	 * Pins an activity post.
 	 *
-	 * @param int    $object_id  Activity ID.
-	 * @param string $scope      'profile' | 'group' | 'site'
-	 * @param int    $scope_id   Group ID (for group scope), 0 otherwise.
-	 * @param int    $created_by User performing the pin.
+	 * @param int         $object_id  Activity ID.
+	 * @param string      $scope      'profile' | 'group' | 'site'
+	 * @param int         $scope_id   Group ID (for group scope), 0 otherwise.
+	 * @param int         $created_by User performing the pin.
 	 * @param string|null $expires_at  MySQL datetime or null.
 	 * @return int|false  Sticky record ID or false.
 	 */
@@ -44,16 +44,23 @@ class Sticky_Posts {
 		if ( 'site' === $scope && ! get_option( 'arshid6social_eng_sticky_multiple', false ) ) {
 			$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prefix . 'sn_sticky',
-				array( 'scope' => 'site', 'object_type' => 'activity' ),
+				array(
+					'scope'       => 'site',
+					'object_type' => 'activity',
+				),
 				array( '%s', '%s' )
 			);
 		}
 
 		// Don't duplicate.
-		$exists = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_sticky WHERE object_id = %d AND scope = %s AND scope_id <=> %d",
-			$object_id, $scope, $scope_id
-		) );
+		$exists = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_sticky WHERE object_id = %d AND scope = %s AND scope_id <=> %d",
+				$object_id,
+				$scope,
+				$scope_id
+			)
+		);
 		if ( $exists ) {
 			return $exists;
 		}
@@ -79,7 +86,11 @@ class Sticky_Posts {
 		global $wpdb;
 		$deleted = $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_sticky',
-			array( 'object_id' => $object_id, 'scope' => $scope, 'scope_id' => $scope_id ?: null ),
+			array(
+				'object_id' => $object_id,
+				'scope'     => $scope,
+				'scope_id'  => $scope_id ?: null,
+			),
 			array( '%d', '%s', '%d' )
 		);
 		return (bool) $deleted;
@@ -87,12 +98,16 @@ class Sticky_Posts {
 
 	public function is_sticky( int $object_id, string $scope = 'site', int $scope_id = 0 ): bool {
 		global $wpdb;
-		return (bool) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_sticky
+		return (bool) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_sticky
 			WHERE object_id = %d AND scope = %s AND scope_id <=> %s
 			AND (expires_at IS NULL OR expires_at > NOW())",
-			$object_id, $scope, $scope_id ?: null
-		) );
+				$object_id,
+				$scope,
+				$scope_id ?: null
+			)
+		);
 	}
 
 	/**
@@ -102,13 +117,16 @@ class Sticky_Posts {
 	 */
 	public function get_sticky_ids( string $scope = 'site', int $scope_id = 0 ): array {
 		global $wpdb;
-		$rows = $wpdb->get_col( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT object_id FROM {$wpdb->prefix}sn_sticky
+		$rows = $wpdb->get_col(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT object_id FROM {$wpdb->prefix}sn_sticky
 			WHERE scope = %s AND scope_id <=> %s AND object_type = 'activity'
 			AND (expires_at IS NULL OR expires_at > NOW())
 			ORDER BY created_at DESC",
-			$scope, $scope_id ?: null
-		) );
+				$scope,
+				$scope_id ?: null
+			)
+		);
 		return array_map( 'intval', $rows ?: array() );
 	}
 
@@ -130,19 +148,24 @@ class Sticky_Posts {
 			return true;
 		}
 		global $wpdb;
-		$role = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT role FROM {$wpdb->prefix}sn_groups_members WHERE group_id = %d AND user_id = %d",
-			$group_id, get_current_user_id()
-		) );
+		$role = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT role FROM {$wpdb->prefix}sn_groups_members WHERE group_id = %d AND user_id = %d",
+				$group_id,
+				get_current_user_id()
+			)
+		);
 		return in_array( $role, array( 'admin', 'mod' ), true );
 	}
 
 	private function can_pin_profile( int $activity_id ): bool {
 		global $wpdb;
-		$owner = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
-			$activity_id
-		) );
+		$owner = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				$activity_id
+			)
+		);
 		return $owner && ( $owner === get_current_user_id() || $this->can_pin_site() );
 	}
 

@@ -246,7 +246,12 @@ class XProfile {
 		// Sync first-group Name field back to wp_users.display_name.
 		$name_value = $this->get_field_value( $user_id, 'Name' );
 		if ( $name_value ) {
-			wp_update_user( array( 'ID' => $user_id, 'display_name' => $name_value ) );
+			wp_update_user(
+				array(
+					'ID'           => $user_id,
+					'display_name' => $name_value,
+				)
+			);
 		}
 
 		return $errors;
@@ -293,7 +298,10 @@ class XProfile {
 	public function export_data( string $email, int $page = 1 ): array {
 		$user = get_user_by( 'email', $email );
 		if ( ! $user ) {
-			return array( 'data' => array(), 'done' => true );
+			return array(
+				'data' => array(),
+				'done' => true,
+			);
 		}
 
 		$fields_data = $this->get_all_field_values( $user->ID );
@@ -309,10 +317,10 @@ class XProfile {
 		return array(
 			'data' => array(
 				array(
-					'group_id'          => 'arshid6social-profile',
-					'group_label'       => __( 'Social Network Profile', '6arshid-social-community' ),
-					'item_id'           => 'arshid6social-profile-' . $user->ID,
-					'data'              => $data,
+					'group_id'    => 'arshid6social-profile',
+					'group_label' => __( 'Social Network Profile', '6arshid-social-community' ),
+					'item_id'     => 'arshid6social-profile-' . $user->ID,
+					'data'        => $data,
 				),
 			),
 			'done' => true,
@@ -329,7 +337,12 @@ class XProfile {
 	public function erase_data( string $email, int $page = 1 ): array {
 		$user = get_user_by( 'email', $email );
 		if ( ! $user ) {
-			return array( 'items_removed' => false, 'items_retained' => false, 'messages' => array(), 'done' => true );
+			return array(
+				'items_removed'  => false,
+				'items_retained' => false,
+				'messages'       => array(),
+				'done'           => true,
+			);
 		}
 
 		global $wpdb;

@@ -20,7 +20,7 @@ class Messages_Attachments {
 	public function __construct() {
 		add_action( 'wp_ajax_arshid6social_message_upload_attachment', array( $this, 'ajax_upload' ) );
 		add_action( 'wp_ajax_arshid6social_message_delete_attachment', array( $this, 'ajax_delete' ) );
-		add_action( 'wp_ajax_arshid6social_message_attachment_serve',  array( $this, 'ajax_serve' ) );
+		add_action( 'wp_ajax_arshid6social_message_attachment_serve', array( $this, 'ajax_serve' ) );
 
 		// Clean up when a thread is deleted.
 		add_action( 'arshid6social_thread_deleted', array( $this, 'delete_for_thread' ) );
@@ -59,12 +59,15 @@ class Messages_Attachments {
 
 		// Verify caller is a participant in the message's thread.
 		global $wpdb;
-		$is_participant = (bool) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM {$wpdb->prefix}sn_messages m
+		$is_participant = (bool) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_messages m
 			JOIN {$wpdb->prefix}sn_messages_recipients r ON r.thread_id = m.thread_id
 			WHERE m.id = %d AND r.user_id = %d AND r.is_deleted = 0",
-			$message_id, $user_id
-		) );
+				$message_id,
+				$user_id
+			)
+		);
 
 		if ( ! $is_participant ) {
 			wp_send_json_error( null, 403 );
@@ -112,7 +115,7 @@ class Messages_Attachments {
 		$ext           = pathinfo( (string) $file['name'], PATHINFO_EXTENSION );
 		$safe_filename = $uuid . '.' . $ext;
 
-		$subdir_filter = function( array $dir ) use ( $user_id ): array {
+		$subdir_filter = function ( array $dir ) use ( $user_id ): array {
 			$dir['subdir'] = '/social-network/messages/' . $user_id;
 			$dir['path']   = $dir['basedir'] . $dir['subdir'];
 			$dir['url']    = $dir['baseurl'] . $dir['subdir'];
@@ -137,7 +140,7 @@ class Messages_Attachments {
 			'error'    => (int) $file['error'],
 			'size'     => (int) $file['size'],
 		);
-		$moved = wp_handle_upload( $upload_file, array( 'test_form' => false ) );
+		$moved       = wp_handle_upload( $upload_file, array( 'test_form' => false ) );
 		remove_filter( 'upload_dir', $subdir_filter );
 
 		if ( ! isset( $moved['file'] ) || isset( $moved['error'] ) ) {
@@ -183,21 +186,26 @@ class Messages_Attachments {
 		}
 
 		// The serve URL goes through our AJAX handler for access control.
-		$serve_url = add_query_arg( array(
-			'action'  => 'arshid6social_message_attachment_serve',
-			'id'      => $att_id,
-			'token'   => $att_token,
-			'nonce'   => wp_create_nonce( 'arshid6social_att_' . $att_id ),
-		), admin_url( 'admin-ajax.php' ) );
+		$serve_url = add_query_arg(
+			array(
+				'action' => 'arshid6social_message_attachment_serve',
+				'id'     => $att_id,
+				'token'  => $att_token,
+				'nonce'  => wp_create_nonce( 'arshid6social_att_' . $att_id ),
+			),
+			admin_url( 'admin-ajax.php' )
+		);
 
-		wp_send_json_success( array(
-			'attachment_id' => $att_id,
-			'serve_url'     => esc_url( $serve_url ),
-			'file_name'     => sanitize_file_name( (string) $file['name'] ),
-			'media_type'    => $media_type,
-			'mime_type'     => $real_mime,
-			'file_size'     => (int) $file['size'],
-		) );
+		wp_send_json_success(
+			array(
+				'attachment_id' => $att_id,
+				'serve_url'     => esc_url( $serve_url ),
+				'file_name'     => sanitize_file_name( (string) $file['name'] ),
+				'media_type'    => $media_type,
+				'mime_type'     => $real_mime,
+				'file_size'     => (int) $file['size'],
+			)
+		);
 	}
 
 	public function ajax_serve(): void {
@@ -213,10 +221,12 @@ class Messages_Attachments {
 		}
 
 		global $wpdb;
-		$att = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}arshid6social_attachments WHERE id = %d AND parent_type = 'message'",
-			$att_id
-		) );
+		$att = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}arshid6social_attachments WHERE id = %d AND parent_type = 'message'",
+				$att_id
+			)
+		);
 
 		if ( ! $att || $att->file_url !== $token ) {
 			status_header( 404 );
@@ -230,12 +240,15 @@ class Messages_Attachments {
 			exit;
 		}
 
-		$is_participant = (bool) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM {$wpdb->prefix}sn_messages m
+		$is_participant = (bool) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_messages m
 			JOIN {$wpdb->prefix}sn_messages_recipients r ON r.thread_id = m.thread_id
 			WHERE m.id = %d AND r.user_id = %d",
-			(int) $att->parent_id, $user_id
-		) );
+				(int) $att->parent_id,
+				$user_id
+			)
+		);
 
 		if ( ! $is_participant && ! current_user_can( 'arshid6social_manage_activity' ) ) {
 			status_header( 403 );
@@ -270,10 +283,12 @@ class Messages_Attachments {
 		$user_id = get_current_user_id();
 
 		global $wpdb;
-		$att = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}arshid6social_attachments WHERE id = %d AND parent_type = 'message'",
-			$att_id
-		) );
+		$att = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}arshid6social_attachments WHERE id = %d AND parent_type = 'message'",
+				$att_id
+			)
+		);
 
 		if ( ! $att || ( (int) $att->uploader_id !== $user_id && ! current_user_can( 'arshid6social_manage_activity' ) ) ) {
 			wp_send_json_error( null, 403 );
@@ -294,16 +309,20 @@ class Messages_Attachments {
 	public function delete_for_thread( int $thread_id ): void {
 		global $wpdb;
 
-		$message_ids = $wpdb->get_col( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_messages WHERE thread_id = %d",
-			$thread_id
-		) );
+		$message_ids = $wpdb->get_col(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_messages WHERE thread_id = %d",
+				$thread_id
+			)
+		);
 
 		foreach ( $message_ids as $mid ) {
-			$atts = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT file_path, wp_attachment_id FROM {$wpdb->prefix}arshid6social_attachments WHERE parent_id = %d AND parent_type = 'message'",
-				(int) $mid
-			) );
+			$atts = $wpdb->get_results(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					"SELECT file_path, wp_attachment_id FROM {$wpdb->prefix}arshid6social_attachments WHERE parent_id = %d AND parent_type = 'message'",
+					(int) $mid
+				)
+			);
 			foreach ( $atts as $att ) {
 				if ( ! empty( $att->wp_attachment_id ) ) {
 					wp_delete_attachment( (int) $att->wp_attachment_id, true );
@@ -313,7 +332,10 @@ class Messages_Attachments {
 			}
 			$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prefix . 'arshid6social_attachments',
-				array( 'parent_id' => (int) $mid, 'parent_type' => 'message' ),
+				array(
+					'parent_id'   => (int) $mid,
+					'parent_type' => 'message',
+				),
 				array( '%d', '%s' )
 			);
 		}
@@ -346,37 +368,49 @@ class Messages_Attachments {
 		global $wpdb;
 
 		// IDOR: only participants can list attachments.
-		$is_participant = (bool) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM {$wpdb->prefix}sn_messages m
+		$is_participant = (bool) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_messages m
 			JOIN {$wpdb->prefix}sn_messages_recipients r ON r.thread_id = m.thread_id
 			WHERE m.id = %d AND r.user_id = %d",
-			$message_id, $viewer_id
-		) );
+				$message_id,
+				$viewer_id
+			)
+		);
 
 		if ( ! $is_participant ) {
 			return array();
 		}
 
-		$atts = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id, file_url AS token, file_name, file_size, mime_type, media_type
+		$atts = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id, file_url AS token, file_name, file_size, mime_type, media_type
 			FROM {$wpdb->prefix}arshid6social_attachments
 			WHERE parent_id = %d AND parent_type = 'message' ORDER BY created_at ASC",
-			$message_id
-		), ARRAY_A ) ?: array();
+				$message_id
+			),
+			ARRAY_A
+		) ?: array();
 
 		// Build serve URLs.
-		return array_map( function( array $att ): array {
-			$serve_url = add_query_arg( array(
-				'action' => 'arshid6social_message_attachment_serve',
-				'id'     => $att['id'],
-				'token'  => $att['token'],
-				'nonce'  => wp_create_nonce( 'arshid6social_att_' . $att['id'] ),
-			), admin_url( 'admin-ajax.php' ) );
+		return array_map(
+			function ( array $att ): array {
+				$serve_url = add_query_arg(
+					array(
+						'action' => 'arshid6social_message_attachment_serve',
+						'id'     => $att['id'],
+						'token'  => $att['token'],
+						'nonce'  => wp_create_nonce( 'arshid6social_att_' . $att['id'] ),
+					),
+					admin_url( 'admin-ajax.php' )
+				);
 
-			unset( $att['token'] );
-			$att['serve_url'] = esc_url( $serve_url );
-			return $att;
-		}, $atts );
+				unset( $att['token'] );
+				$att['serve_url'] = esc_url( $serve_url );
+				return $att;
+			},
+			$atts
+		);
 	}
 
 	// ── REST ──────────────────────────────────────────────────────────────────

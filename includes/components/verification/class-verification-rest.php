@@ -22,92 +22,158 @@ class Verification_REST extends \WP_REST_Controller {
 
 	public function register_routes(): void {
 		// GET /verification/status → current user's verification status.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/status', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/status',
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_status' ),
-				'permission_callback' => 'is_user_logged_in',
-				'args'                => array(
-					'user_id' => array( 'default' => 0, 'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_status' ),
+					'permission_callback' => 'is_user_logged_in',
+					'args'                => array(
+						'user_id' => array(
+							'default'           => 0,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// POST /verification/request → submit verification request.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/request', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/request',
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'submit_request' ),
-				'permission_callback' => 'is_user_logged_in',
-				'args'                => array(
-					'type'      => array( 'required' => true, 'sanitize_callback' => 'sanitize_key' ),
-					'full_name' => array( 'required' => true, 'sanitize_callback' => 'sanitize_text_field' ),
-					'category'  => array( 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ),
-					'links'     => array( 'default' => '', 'sanitize_callback' => 'sanitize_textarea_field' ),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'submit_request' ),
+					'permission_callback' => 'is_user_logged_in',
+					'args'                => array(
+						'type'      => array(
+							'required'          => true,
+							'sanitize_callback' => 'sanitize_key',
+						),
+						'full_name' => array(
+							'required'          => true,
+							'sanitize_callback' => 'sanitize_text_field',
+						),
+						'category'  => array(
+							'default'           => '',
+							'sanitize_callback' => 'sanitize_text_field',
+						),
+						'links'     => array(
+							'default'           => '',
+							'sanitize_callback' => 'sanitize_textarea_field',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// Admin: GET /verification/requests → list pending requests.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/requests', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/requests',
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_requests' ),
-				'permission_callback' => array( $this, 'is_admin' ),
-				'args'                => array(
-					'status' => array( 'default' => 'pending', 'sanitize_callback' => 'sanitize_key' ),
-					'page'   => array( 'default' => 1, 'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_requests' ),
+					'permission_callback' => array( $this, 'is_admin' ),
+					'args'                => array(
+						'status' => array(
+							'default'           => 'pending',
+							'sanitize_callback' => 'sanitize_key',
+						),
+						'page'   => array(
+							'default'           => 1,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// Admin: POST /verification/requests/{id}/approve
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/requests/(?P<id>[\d]+)/approve', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/requests/(?P<id>[\d]+)/approve',
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'approve_request' ),
-				'permission_callback' => array( $this, 'is_admin' ),
-				'args'                => array(
-					'id'   => array( 'required' => true, 'sanitize_callback' => 'absint' ),
-					'type' => array( 'default' => 'general', 'sanitize_callback' => 'sanitize_key' ),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'approve_request' ),
+					'permission_callback' => array( $this, 'is_admin' ),
+					'args'                => array(
+						'id'   => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+						'type' => array(
+							'default'           => 'general',
+							'sanitize_callback' => 'sanitize_key',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// Admin: POST /verification/requests/{id}/reject
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/requests/(?P<id>[\d]+)/reject', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/requests/(?P<id>[\d]+)/reject',
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'reject_request' ),
-				'permission_callback' => array( $this, 'is_admin' ),
-				'args'                => array(
-					'id'     => array( 'required' => true, 'sanitize_callback' => 'absint' ),
-					'reason' => array( 'default' => '', 'sanitize_callback' => 'sanitize_textarea_field' ),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'reject_request' ),
+					'permission_callback' => array( $this, 'is_admin' ),
+					'args'                => array(
+						'id'     => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+						'reason' => array(
+							'default'           => '',
+							'sanitize_callback' => 'sanitize_textarea_field',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// Admin: POST /verification/grant/{user_id}
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/grant/(?P<user_id>[\d]+)', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/grant/(?P<user_id>[\d]+)',
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'grant' ),
-				'permission_callback' => array( $this, 'is_admin' ),
-				'args'                => array(
-					'user_id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
-					'type'    => array( 'default' => 'general', 'sanitize_callback' => 'sanitize_key' ),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'grant' ),
+					'permission_callback' => array( $this, 'is_admin' ),
+					'args'                => array(
+						'user_id' => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+						'type'    => array(
+							'default'           => 'general',
+							'sanitize_callback' => 'sanitize_key',
+						),
+					),
 				),
-			),
-			// DELETE → revoke.
-			array(
-				'methods'             => \WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'revoke' ),
-				'permission_callback' => array( $this, 'is_admin' ),
-				'args'                => array(
-					'user_id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
+				// DELETE → revoke.
+				array(
+					'methods'             => \WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'revoke' ),
+					'permission_callback' => array( $this, 'is_admin' ),
+					'args'                => array(
+						'user_id' => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 	}
 
 	public function get_status( \WP_REST_Request $request ): \WP_REST_Response {
@@ -166,20 +232,26 @@ class Verification_REST extends \WP_REST_Controller {
 		$per_page = 20;
 		$offset   = ( $page - 1 ) * $per_page;
 
-		$rows = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT r.*, u.user_login, u.display_name, u.user_email
+		$rows = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT r.*, u.user_login, u.display_name, u.user_email
 			 FROM {$wpdb->prefix}sn_verification_requests r
 			 JOIN {$wpdb->users} u ON u.ID = r.user_id
 			 WHERE r.status = %s
 			 ORDER BY r.created_at DESC
 			 LIMIT %d OFFSET %d",
-			$status, $per_page, $offset
-		) ) ?: array();
+				$status,
+				$per_page,
+				$offset
+			)
+		) ?: array();
 
-		return rest_ensure_response( array(
-			'requests' => $rows,
-			'has_more' => count( $rows ) >= $per_page,
-		) );
+		return rest_ensure_response(
+			array(
+				'requests' => $rows,
+				'has_more' => count( $rows ) >= $per_page,
+			)
+		);
 	}
 
 	public function approve_request( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {

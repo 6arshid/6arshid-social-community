@@ -36,11 +36,11 @@ final class Admin_Page_Icons {
 	}
 
 	private function __construct() {
-		add_action( 'add_meta_boxes',             array( $this, 'add_meta_box'   ) );
-		add_action( 'save_post_page',             array( $this, 'save_meta'      ) );
-		add_action( 'admin_enqueue_scripts',      array( $this, 'enqueue_assets' ) );
-		add_filter( 'manage_pages_columns',       array( $this, 'add_column'     ) );
-		add_action( 'manage_pages_custom_column', array( $this, 'render_column'  ), 10, 2 );
+		add_action( 'add_meta_boxes', array( $this, 'add_meta_box' ) );
+		add_action( 'save_post_page', array( $this, 'save_meta' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+		add_filter( 'manage_pages_columns', array( $this, 'add_column' ) );
+		add_action( 'manage_pages_custom_column', array( $this, 'render_column' ), 10, 2 );
 	}
 
 	// ── Bundled asset paths ───────────────────────────────────────────────────
@@ -227,10 +227,14 @@ final class Admin_Page_Icons {
 			true
 		);
 
-		wp_localize_script( 'arshid6social-icon-picker', 'ARSHID6SOCIALICP', array(
-			'iconsUrl' => $this->icons_json_url(),
-			'version'  => self::BI_VERSION,
-		) );
+		wp_localize_script(
+			'arshid6social-icon-picker',
+			'ARSHID6SOCIALICP',
+			array(
+				'iconsUrl' => $this->icons_json_url(),
+				'version'  => self::BI_VERSION,
+			)
+		);
 	}
 
 	// ── Get SVG for a named icon ──────────────────────────────────────────────
@@ -268,14 +272,50 @@ final class Admin_Page_Icons {
 			'opacity'   => true,
 		);
 		return array(
-			'path'      => array_merge( $common, array( 'd' => true ) ),
-			'circle'    => array_merge( $common, array( 'cx' => true, 'cy' => true, 'r' => true ) ),
-			'ellipse'   => array_merge( $common, array( 'cx' => true, 'cy' => true, 'rx' => true, 'ry' => true ) ),
-			'rect'      => array_merge( $common, array( 'x' => true, 'y' => true, 'width' => true, 'height' => true, 'rx' => true, 'ry' => true ) ),
-			'polyline'  => array_merge( $common, array( 'points' => true ) ),
-			'polygon'   => array_merge( $common, array( 'points' => true ) ),
-			'line'      => array_merge( $common, array( 'x1' => true, 'y1' => true, 'x2' => true, 'y2' => true, 'stroke' => true, 'stroke-width' => true, 'stroke-linecap' => true ) ),
-			'g'         => $common,
+			'path'     => array_merge( $common, array( 'd' => true ) ),
+			'circle'   => array_merge(
+				$common,
+				array(
+					'cx' => true,
+					'cy' => true,
+					'r'  => true,
+				)
+			),
+			'ellipse'  => array_merge(
+				$common,
+				array(
+					'cx' => true,
+					'cy' => true,
+					'rx' => true,
+					'ry' => true,
+				)
+			),
+			'rect'     => array_merge(
+				$common,
+				array(
+					'x'      => true,
+					'y'      => true,
+					'width'  => true,
+					'height' => true,
+					'rx'     => true,
+					'ry'     => true,
+				)
+			),
+			'polyline' => array_merge( $common, array( 'points' => true ) ),
+			'polygon'  => array_merge( $common, array( 'points' => true ) ),
+			'line'     => array_merge(
+				$common,
+				array(
+					'x1'             => true,
+					'y1'             => true,
+					'x2'             => true,
+					'y2'             => true,
+					'stroke'         => true,
+					'stroke-width'   => true,
+					'stroke-linecap' => true,
+				)
+			),
+			'g'        => $common,
 		);
 	}
 }

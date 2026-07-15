@@ -54,7 +54,13 @@ class Marketplace_Sitemap_Provider extends \WP_Sitemaps_Provider {
 		$urls = array();
 		foreach ( $rows as $row ) {
 			$urls[] = array(
-				'loc'     => add_query_arg( array( 'action' => 'view', 'id' => ( $row->uid ?: $row->id ) ), $base_url ),
+				'loc'     => add_query_arg(
+					array(
+						'action' => 'view',
+						'id'     => ( $row->uid ?: $row->id ),
+					),
+					$base_url
+				),
 				'lastmod' => gmdate( 'Y-m-d', strtotime( $row->updated_at ) ),
 			);
 		}

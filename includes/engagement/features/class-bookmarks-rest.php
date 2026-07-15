@@ -14,43 +14,59 @@ class Bookmarks_REST {
 	const NS = 'arshid6social/v1';
 
 	public function register_routes(): void {
-		register_rest_route( self::NS, '/bookmarks', array(
+		register_rest_route(
+			self::NS,
+			'/bookmarks',
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_bookmarks' ),
-				'permission_callback' => array( $this, 'require_login' ),
-			),
-			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'create' ),
-				'permission_callback' => array( $this, 'require_login' ),
-			),
-		) );
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_bookmarks' ),
+					'permission_callback' => array( $this, 'require_login' ),
+				),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'create' ),
+					'permission_callback' => array( $this, 'require_login' ),
+				),
+			)
+		);
 
-		register_rest_route( self::NS, '/bookmarks/(?P<object_type>[a-z]+)/(?P<object_id>\d+)', array(
-			'methods'             => \WP_REST_Server::DELETABLE,
-			'callback'            => array( $this, 'delete' ),
-			'permission_callback' => array( $this, 'require_login' ),
-		) );
-
-		register_rest_route( self::NS, '/bookmark-collections', array(
+		register_rest_route(
+			self::NS,
+			'/bookmarks/(?P<object_type>[a-z]+)/(?P<object_id>\d+)',
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_collections' ),
+				'methods'             => \WP_REST_Server::DELETABLE,
+				'callback'            => array( $this, 'delete' ),
 				'permission_callback' => array( $this, 'require_login' ),
-			),
-			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'create_collection' ),
-				'permission_callback' => array( $this, 'require_login' ),
-			),
-		) );
+			)
+		);
 
-		register_rest_route( self::NS, '/bookmark-collections/(?P<id>\d+)', array(
-			'methods'             => \WP_REST_Server::DELETABLE,
-			'callback'            => array( $this, 'delete_collection' ),
-			'permission_callback' => array( $this, 'can_delete_collection' ),
-		) );
+		register_rest_route(
+			self::NS,
+			'/bookmark-collections',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_collections' ),
+					'permission_callback' => array( $this, 'require_login' ),
+				),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'create_collection' ),
+					'permission_callback' => array( $this, 'require_login' ),
+				),
+			)
+		);
+
+		register_rest_route(
+			self::NS,
+			'/bookmark-collections/(?P<id>\d+)',
+			array(
+				'methods'             => \WP_REST_Server::DELETABLE,
+				'callback'            => array( $this, 'delete_collection' ),
+				'permission_callback' => array( $this, 'can_delete_collection' ),
+			)
+		);
 	}
 
 	public function require_login( \WP_REST_Request $req ): bool {
@@ -85,22 +101,28 @@ class Bookmarks_REST {
 		}
 
 		$user_id = get_current_user_id();
-		$result  = $f->get_for_user( $user_id, array(
-			'page'          => max( 1, absint( $req['page'] ?? 1 ) ),
-			'per_page'      => min( 50, absint( $req['per_page'] ?? 20 ) ),
-			'search'        => sanitize_text_field( $req['search'] ?? '' ),
-			'collection_id' => absint( $req['collection_id'] ?? 0 ) ?: null,
-		) );
+		$result  = $f->get_for_user(
+			$user_id,
+			array(
+				'page'          => max( 1, absint( $req['page'] ?? 1 ) ),
+				'per_page'      => min( 50, absint( $req['per_page'] ?? 20 ) ),
+				'search'        => sanitize_text_field( $req['search'] ?? '' ),
+				'collection_id' => absint( $req['collection_id'] ?? 0 ) ?: null,
+			)
+		);
 
 		// Enrich with activity data.
-		$activity_comp = ARSHID6SOCIAL()->component( 'activity' );
-		$result['items'] = array_map( function( array $item ) use ( $activity_comp ): array {
-			if ( $activity_comp && 'activity' === $item['object_type'] ) {
-				$row = $activity_comp->get_by_id( (int) $item['object_id'] );
-				$item['activity'] = $row ? $activity_comp->format_activity( $row ) : null;
-			}
-			return $item;
-		}, $result['items'] );
+		$activity_comp   = ARSHID6SOCIAL()->component( 'activity' );
+		$result['items'] = array_map(
+			function ( array $item ) use ( $activity_comp ): array {
+				if ( $activity_comp && 'activity' === $item['object_type'] ) {
+						$row              = $activity_comp->get_by_id( (int) $item['object_id'] );
+						$item['activity'] = $row ? $activity_comp->format_activity( $row ) : null;
+				}
+				return $item;
+			},
+			$result['items']
+		);
 
 		return new \WP_REST_Response( $result );
 	}
@@ -159,7 +181,13 @@ class Bookmarks_REST {
 		}
 		$id = $f->add_collection( get_current_user_id(), $name );
 		return $id
-			? new \WP_REST_Response( array( 'id' => $id, 'name' => $name ), 201 )
+			? new \WP_REST_Response(
+				array(
+					'id'   => $id,
+					'name' => $name,
+				),
+				201
+			)
 			: new \WP_REST_Response( null, 500 );
 	}
 

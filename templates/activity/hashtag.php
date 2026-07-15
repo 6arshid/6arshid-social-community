@@ -3,6 +3,7 @@
  * Hashtag archive page.
  *
  * Variables available:
+ *
  *  @var string $hashtag  Raw tag string (no #)
  *
  * @package Arshid6Social
@@ -35,9 +36,12 @@ $display_tag = '#' . $hashtag;
 	<div class="arshid6social-activity-block"
 		data-hashtag="<?php echo esc_attr( $hashtag ); ?>"
 		data-per-page="10">
-		<div class="arshid6social-activity-feed" aria-label="<?php
+		<div class="arshid6social-activity-feed" aria-label="
+		<?php
 		/* translators: %s: hashtag */
-		echo esc_attr( sprintf( __( 'Activity tagged %s', '6arshid-social-community' ), $display_tag ) ); ?>"></div>
+		echo esc_attr( sprintf( __( 'Activity tagged %s', '6arshid-social-community' ), $display_tag ) );
+		?>
+		"></div>
 		<div class="arshid6social-load-more-sentinel" style="height:1px;"></div>
 	</div>
 

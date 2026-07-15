@@ -12,12 +12,12 @@ defined( 'ABSPATH' ) || exit;
 class Bookmarks {
 
 	public function __construct() {
-		add_action( 'wp_ajax_arshid6social_bookmark_toggle',         array( $this, 'ajax_toggle' ) );
-		add_action( 'wp_ajax_arshid6social_bookmark_status',         array( $this, 'ajax_status' ) );
-		add_action( 'wp_ajax_arshid6social_bookmark_collections',    array( $this, 'ajax_get_collections' ) );
+		add_action( 'wp_ajax_arshid6social_bookmark_toggle', array( $this, 'ajax_toggle' ) );
+		add_action( 'wp_ajax_arshid6social_bookmark_status', array( $this, 'ajax_status' ) );
+		add_action( 'wp_ajax_arshid6social_bookmark_collections', array( $this, 'ajax_get_collections' ) );
 		add_action( 'wp_ajax_arshid6social_bookmark_add_collection', array( $this, 'ajax_add_collection' ) );
 		add_action( 'wp_ajax_arshid6social_bookmark_del_collection', array( $this, 'ajax_del_collection' ) );
-		add_action( 'wp_ajax_arshid6social_bookmarks_feed',          array( $this, 'ajax_feed' ) );
+		add_action( 'wp_ajax_arshid6social_bookmarks_feed', array( $this, 'ajax_feed' ) );
 
 		// When an activity is deleted, remove bookmarks pointing to it.
 		add_action( 'arshid6social_activity_deleted', array( $this, 'on_activity_deleted' ) );
@@ -27,7 +27,7 @@ class Bookmarks {
 
 		// Shortcode (primary name + legacy alias).
 		add_shortcode( 'arshid6social_bookmarks', array( $this, 'shortcode' ) );
-		add_shortcode( 'sn_bookmarks',      array( $this, 'shortcode' ) );
+		add_shortcode( 'sn_bookmarks', array( $this, 'shortcode' ) );
 
 		// One-time migration: update existing Saved Posts page content + author via direct DB.
 		add_action( 'admin_init', array( $this, 'migrate_saved_posts_page' ) );
@@ -51,10 +51,12 @@ class Bookmarks {
 			return;
 		}
 
-		$row = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT post_author, post_content FROM {$wpdb->posts} WHERE ID = %d AND post_status = 'publish'",
-			$page_id
-		) );
+		$row = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT post_author, post_content FROM {$wpdb->posts} WHERE ID = %d AND post_status = 'publish'",
+				$page_id
+			)
+		);
 
 		if ( ! $row ) {
 			update_option( 'arshid6social_bookmarks_page_migrated_v1', 1 );
@@ -65,7 +67,7 @@ class Bookmarks {
 		$format = array();
 
 		if ( empty( $row->post_author ) || 0 === (int) $row->post_author ) {
-			$admin_id = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$admin_id            = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT u.ID FROM {$wpdb->users} u
 				 INNER JOIN {$wpdb->usermeta} m ON m.user_id = u.ID
 				 WHERE m.meta_key = '{$wpdb->prefix}capabilities'
@@ -120,7 +122,7 @@ class Bookmarks {
 			'object_type' => $object_type,
 			'created_at'  => current_time( 'mysql' ),
 		);
-		$fmt = array( '%d', '%d', '%s', '%s' );
+		$fmt  = array( '%d', '%d', '%s', '%s' );
 
 		if ( null !== $collection_id ) {
 			if ( ! $this->user_owns_collection( $user_id, $collection_id ) ) {
@@ -138,7 +140,11 @@ class Bookmarks {
 		global $wpdb;
 		$deleted = $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_bookmarks',
-			array( 'user_id' => $user_id, 'object_id' => $object_id, 'object_type' => $object_type ),
+			array(
+				'user_id'     => $user_id,
+				'object_id'   => $object_id,
+				'object_type' => $object_type,
+			),
 			array( '%d', '%d', '%s' )
 		);
 		return (bool) $deleted;
@@ -146,10 +152,14 @@ class Bookmarks {
 
 	public function is_bookmarked( int $user_id, int $object_id, string $object_type = 'activity' ): bool {
 		global $wpdb;
-		return (bool) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_bookmarks WHERE user_id = %d AND object_id = %d AND object_type = %s",
-			$user_id, $object_id, $object_type
-		) );
+		return (bool) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_bookmarks WHERE user_id = %d AND object_id = %d AND object_type = %s",
+				$user_id,
+				$object_id,
+				$object_type
+			)
+		);
 	}
 
 	/**
@@ -177,24 +187,29 @@ class Bookmarks {
 			$values[] = '%' . $wpdb->esc_like( sanitize_text_field( $search ) ) . '%';
 		}
 
-		$total = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM {$wpdb->prefix}sn_bookmarks b
+		$total = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_bookmarks b
 			LEFT JOIN {$wpdb->prefix}sn_activity a ON a.id = b.object_id
 			WHERE $where", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$values
-		) );
+				$values
+			)
+		);
 
 		$values[] = $per_page;
 		$values[] = $offset;
 
-		$rows = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT b.*, a.content, a.date_recorded, a.user_id AS author_id
+		$rows = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT b.*, a.content, a.date_recorded, a.user_id AS author_id
 			FROM {$wpdb->prefix}sn_bookmarks b
 			LEFT JOIN {$wpdb->prefix}sn_activity a ON a.id = b.object_id
 			WHERE $where
 			ORDER BY b.created_at DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$values
-		), ARRAY_A ) ?: array();
+				$values
+			),
+			ARRAY_A
+		) ?: array();
 
 		return array(
 			'items'       => $rows,
@@ -208,14 +223,17 @@ class Bookmarks {
 
 	public function get_collections( int $user_id ): array {
 		global $wpdb;
-		return $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT c.*, COUNT(b.id) AS bookmark_count
+		return $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT c.*, COUNT(b.id) AS bookmark_count
 			FROM {$wpdb->prefix}sn_bookmark_collections c
 			LEFT JOIN {$wpdb->prefix}sn_bookmarks b ON b.collection_id = c.id
 			WHERE c.user_id = %d
 			GROUP BY c.id ORDER BY c.created_at DESC",
-			$user_id
-		), ARRAY_A ) ?: array();
+				$user_id
+			),
+			ARRAY_A
+		) ?: array();
 	}
 
 	public function add_collection( int $user_id, string $name ): int|false {
@@ -226,7 +244,11 @@ class Bookmarks {
 		global $wpdb;
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_bookmark_collections',
-			array( 'user_id' => $user_id, 'name' => sanitize_text_field( $name ), 'created_at' => current_time( 'mysql' ) ),
+			array(
+				'user_id'    => $user_id,
+				'name'       => sanitize_text_field( $name ),
+				'created_at' => current_time( 'mysql' ),
+			),
 			array( '%d', '%s', '%s' )
 		);
 		return $wpdb->insert_id ? (int) $wpdb->insert_id : false;
@@ -242,14 +264,20 @@ class Bookmarks {
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_bookmarks',
 			array( 'collection_id' => null ),
-			array( 'user_id' => $user_id, 'collection_id' => $collection_id ),
+			array(
+				'user_id'       => $user_id,
+				'collection_id' => $collection_id,
+			),
 			array( '%s' ),
 			array( '%d', '%d' )
 		);
 
 		$deleted = $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_bookmark_collections',
-			array( 'id' => $collection_id, 'user_id' => $user_id ),
+			array(
+				'id'      => $collection_id,
+				'user_id' => $user_id,
+			),
 			array( '%d', '%d' )
 		);
 
@@ -258,10 +286,13 @@ class Bookmarks {
 
 	public function user_owns_collection( int $user_id, int $collection_id ): bool {
 		global $wpdb;
-		return (bool) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_bookmark_collections WHERE id = %d AND user_id = %d",
-			$collection_id, $user_id
-		) );
+		return (bool) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_bookmark_collections WHERE id = %d AND user_id = %d",
+				$collection_id,
+				$user_id
+			)
+		);
 	}
 
 	// ── AJAX ──────────────────────────────────────────────────────────────────
@@ -333,7 +364,12 @@ class Bookmarks {
 			wp_send_json_error( null, 400 );
 		}
 		$id = $this->add_collection( get_current_user_id(), $name );
-		$id ? wp_send_json_success( array( 'id' => $id, 'name' => $name ) ) : wp_send_json_error( null, 500 );
+		$id ? wp_send_json_success(
+			array(
+				'id'   => $id,
+				'name' => $name,
+			)
+		) : wp_send_json_error( null, 500 );
 	}
 
 	public function ajax_del_collection(): void {
@@ -355,7 +391,10 @@ class Bookmarks {
 		global $wpdb;
 		$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_bookmarks',
-			array( 'object_id' => $activity_id, 'object_type' => 'activity' ),
+			array(
+				'object_id'   => $activity_id,
+				'object_type' => 'activity',
+			),
 			array( '%d', '%s' )
 		);
 	}
@@ -376,12 +415,15 @@ class Bookmarks {
 		$search   = sanitize_text_field( wp_unslash( $_GET['search'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
 		$coll_id  = absint( $_GET['collection_id'] ?? 0 ) ?: null; // phpcs:ignore WordPress.Security.NonceVerification
 
-		$result   = $this->get_for_user( $user_id, array(
-			'page'          => $page,
-			'per_page'      => $per_page,
-			'search'        => $search,
-			'collection_id' => $coll_id,
-		) );
+		$result = $this->get_for_user(
+			$user_id,
+			array(
+				'page'          => $page,
+				'per_page'      => $per_page,
+				'search'        => $search,
+				'collection_id' => $coll_id,
+			)
+		);
 
 		$activity_comp = ARSHID6SOCIAL()->component( 'activity' );
 		$activities    = array();
@@ -405,8 +447,8 @@ class Bookmarks {
 			if ( ! empty( $saved_ids ) ) {
 				global $wpdb;
 
-				$placeholders  = implode( ',', array_fill( 0, count( $saved_ids ), '%d' ) );
-				$listing_rows  = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$placeholders = implode( ',', array_fill( 0, count( $saved_ids ), '%d' ) );
+				$listing_rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 					$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 						"SELECT * FROM {$wpdb->prefix}arshid6social_listings WHERE id IN ($placeholders)",
 						...$saved_ids
@@ -416,17 +458,19 @@ class Bookmarks {
 				$base_url = get_permalink( (int) get_option( 'arshid6social_page_marketplace', 0 ) )
 					?: home_url( '/' . get_option( 'arshid6social_marketplace_slug', 'marketplace' ) . '/' );
 
-				$currency_symbol   = (string) get_option( 'arshid6social_marketplace_currency_symbol',   '$' );
-				$currency_position = (string) get_option( 'arshid6social_marketplace_currency_position', 'before' );
-				$currency_decimals = (int)    get_option( 'arshid6social_marketplace_currency_decimals',  2 );
+				$currency_symbol    = (string) get_option( 'arshid6social_marketplace_currency_symbol', '$' );
+				$currency_position  = (string) get_option( 'arshid6social_marketplace_currency_position', 'before' );
+				$currency_decimals  = (int) get_option( 'arshid6social_marketplace_currency_decimals', 2 );
 				$currency_thousands = (string) get_option( 'arshid6social_marketplace_currency_thousands', ',' );
 
 				foreach ( $listing_rows as $listing ) {
 					$lid   = (int) $listing->id;
-					$media = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-						"SELECT file_url, attachment_id FROM {$wpdb->prefix}arshid6social_listing_media WHERE listing_id = %d ORDER BY sort_order ASC LIMIT 1",
-						$lid
-					) );
+					$media = $wpdb->get_row(
+						$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+							"SELECT file_url, attachment_id FROM {$wpdb->prefix}arshid6social_listing_media WHERE listing_id = %d ORDER BY sort_order ASC LIMIT 1",
+							$lid
+						)
+					);
 					$thumb = '';
 					if ( $media ) {
 						$thumb = $media->attachment_id
@@ -439,7 +483,7 @@ class Bookmarks {
 					if ( ! empty( $listing->is_free ) ) {
 						$price_formatted = __( 'Free', '6arshid-social-community' );
 					} else {
-						$num = number_format( (float) $listing->price, $currency_decimals, '.', $currency_thousands );
+						$num             = number_format( (float) $listing->price, $currency_decimals, '.', $currency_thousands );
 						$price_formatted = 'before' === $currency_position
 							? $currency_symbol . $num
 							: $num . $currency_symbol;
@@ -451,7 +495,13 @@ class Bookmarks {
 						'price_formatted' => $price_formatted,
 						'is_free'         => ! empty( $listing->is_free ),
 						'thumb'           => $thumb ?: '',
-						'url'             => add_query_arg( array( 'action' => 'view', 'id' => $uid ), $base_url ),
+						'url'             => add_query_arg(
+							array(
+								'action' => 'view',
+								'id'     => $uid,
+							),
+							$base_url
+						),
 						'date_relative'   => ! empty( $listing->created_at )
 							? human_time_diff( strtotime( $listing->created_at ), time() ) . ' ago'
 							: '',
@@ -460,12 +510,14 @@ class Bookmarks {
 			}
 		}
 
-		wp_send_json_success( array(
-			'activities'  => $activities,
-			'listings'    => $listings,
-			'total_pages' => $result['total_pages'],
-			'page'        => $page,
-		) );
+		wp_send_json_success(
+			array(
+				'activities'  => $activities,
+				'listings'    => $listings,
+				'total_pages' => $result['total_pages'],
+				'page'        => $page,
+			)
+		);
 	}
 
 	// ── Shortcode ─────────────────────────────────────────────────────────────
@@ -475,18 +527,31 @@ class Bookmarks {
 			return '<p>' . esc_html__( 'Please log in to view your bookmarks.', '6arshid-social-community' ) . '</p>';
 		}
 
-		$atts     = shortcode_atts( array( 'per_page' => 20 ), $atts );
-		$user_id  = get_current_user_id();
-		$page     = max( 1, absint( get_query_var( 'paged', 1 ) ) );
-		$search   = sanitize_text_field( wp_unslash( $_GET['bs'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
-		$coll_id  = absint( $_GET['collection'] ?? 0 ) ?: null; // phpcs:ignore WordPress.Security.NonceVerification
+		$atts    = shortcode_atts( array( 'per_page' => 20 ), $atts );
+		$user_id = get_current_user_id();
+		$page    = max( 1, absint( get_query_var( 'paged', 1 ) ) );
+		$search  = sanitize_text_field( wp_unslash( $_GET['bs'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
+		$coll_id = absint( $_GET['collection'] ?? 0 ) ?: null; // phpcs:ignore WordPress.Security.NonceVerification
 
-		$result  = $this->get_for_user( $user_id, array( 'per_page' => (int) $atts['per_page'], 'page' => $page, 'search' => $search, 'collection_id' => $coll_id ) );
-		$colls   = get_option( 'arshid6social_eng_bookmark_collections', true ) ? $this->get_collections( $user_id ) : array();
+		$result = $this->get_for_user(
+			$user_id,
+			array(
+				'per_page'      => (int) $atts['per_page'],
+				'page'          => $page,
+				'search'        => $search,
+				'collection_id' => $coll_id,
+			)
+		);
+		$colls  = get_option( 'arshid6social_eng_bookmark_collections', true ) ? $this->get_collections( $user_id ) : array();
 
 		return \Arshid6Social\Template_Loader::instance()->get_template(
 			'engagement/bookmarks.php',
-			array( 'result' => $result, 'collections' => $colls, 'search' => $search, 'active_collection' => $coll_id ),
+			array(
+				'result'            => $result,
+				'collections'       => $colls,
+				'search'            => $search,
+				'active_collection' => $coll_id,
+			),
 			true
 		);
 	}

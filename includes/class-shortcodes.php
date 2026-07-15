@@ -30,25 +30,25 @@ class Shortcodes {
 	}
 
 	public function register(): void {
-		add_shortcode( 'arshid6social_members',         array( $this, 'members' ) );
-		add_shortcode( 'arshid6social_who_to_follow',   array( $this, 'who_to_follow' ) );
-		add_shortcode( 'arshid6social_activity',        array( $this, 'activity' ) );
-		add_shortcode( 'arshid6social_groups',          array( $this, 'groups' ) );
-		add_shortcode( 'arshid6social_messages',        array( $this, 'messages' ) );
-		add_shortcode( 'arshid6social_notifications',   array( $this, 'notifications' ) );
-		add_shortcode( 'arshid6social_profile',         array( $this, 'profile' ) );
-		add_shortcode( 'arshid6social_login_form',         array( $this, 'login_form' ) );
-		add_shortcode( 'arshid6social_register_form',      array( $this, 'register_form' ) );
-		add_shortcode( 'arshid6social_forgot_password',    array( $this, 'forgot_password' ) );
-		add_shortcode( 'arshid6social_reset_password',     array( $this, 'reset_password' ) );
-		add_shortcode( 'arshid6social_dashboard',       array( $this, 'dashboard' ) );
-		add_shortcode( 'arshid6social_marketplace',     array( $this, 'marketplace' ) );
-		add_shortcode( 'arshid6social_listing_form',    array( $this, 'listing_form' ) );
-		add_shortcode( 'arshid6social_my_listings',     array( $this, 'my_listings' ) );
-		add_shortcode( 'arshid6social_saved_listings',  array( $this, 'saved_listings' ) );
+		add_shortcode( 'arshid6social_members', array( $this, 'members' ) );
+		add_shortcode( 'arshid6social_who_to_follow', array( $this, 'who_to_follow' ) );
+		add_shortcode( 'arshid6social_activity', array( $this, 'activity' ) );
+		add_shortcode( 'arshid6social_groups', array( $this, 'groups' ) );
+		add_shortcode( 'arshid6social_messages', array( $this, 'messages' ) );
+		add_shortcode( 'arshid6social_notifications', array( $this, 'notifications' ) );
+		add_shortcode( 'arshid6social_profile', array( $this, 'profile' ) );
+		add_shortcode( 'arshid6social_login_form', array( $this, 'login_form' ) );
+		add_shortcode( 'arshid6social_register_form', array( $this, 'register_form' ) );
+		add_shortcode( 'arshid6social_forgot_password', array( $this, 'forgot_password' ) );
+		add_shortcode( 'arshid6social_reset_password', array( $this, 'reset_password' ) );
+		add_shortcode( 'arshid6social_dashboard', array( $this, 'dashboard' ) );
+		add_shortcode( 'arshid6social_marketplace', array( $this, 'marketplace' ) );
+		add_shortcode( 'arshid6social_listing_form', array( $this, 'listing_form' ) );
+		add_shortcode( 'arshid6social_my_listings', array( $this, 'my_listings' ) );
+		add_shortcode( 'arshid6social_saved_listings', array( $this, 'saved_listings' ) );
 		add_shortcode( 'arshid6social_seller_listings', array( $this, 'seller_listings' ) );
-		add_shortcode( 'arshid6social_ads',             array( $this, 'ads' ) );
-		add_shortcode( 'arshid6social_home',            array( $this, 'home' ) );
+		add_shortcode( 'arshid6social_ads', array( $this, 'ads' ) );
+		add_shortcode( 'arshid6social_home', array( $this, 'home' ) );
 	}
 
 	// -------------------------------------------------------------------------
@@ -81,7 +81,12 @@ class Shortcodes {
 		$arshid6social_is_page = true;
 
 		$per_page = absint( $atts['per_page'] );
-		$result   = $comp->get_members( array( 'type' => sanitize_key( $atts['type'] ), 'per_page' => $per_page ) );
+		$result   = $comp->get_members(
+			array(
+				'type'     => sanitize_key( $atts['type'] ),
+				'per_page' => $per_page,
+			)
+		);
 
 		return ARSHID6SOCIAL()->template()->get_template(
 			'members/directory.php',
@@ -128,18 +133,28 @@ class Shortcodes {
 		$viewer_id = get_current_user_id();
 		$exclude   = $viewer_id ? array( $viewer_id ) : array();
 
-		$result = $comp->get_members( array(
-			'type'     => sanitize_key( $atts['type'] ),
-			'per_page' => absint( $atts['per_page'] ),
-			'exclude'  => $exclude,
-		) );
+		$result = $comp->get_members(
+			array(
+				'type'     => sanitize_key( $atts['type'] ),
+				'per_page' => absint( $atts['per_page'] ),
+				'exclude'  => $exclude,
+			)
+		);
 
 		if ( empty( $result['members'] ) ) {
 			return '';
 		}
 
 		$friends_comp    = ARSHID6SOCIAL()->component( 'friends' );
-		$fallback_avatar = esc_url( get_avatar_url( 0, array( 'default' => 'mm', 'size' => 48 ) ) );
+		$fallback_avatar = esc_url(
+			get_avatar_url(
+				0,
+				array(
+					'default' => 'mm',
+					'size'    => 48,
+				)
+			)
+		);
 
 		$primary_color = esc_attr( get_option( 'arshid6social_primary_color', '#1d9bf0' ) );
 
@@ -147,7 +162,7 @@ class Shortcodes {
 		$s_avtr = 'display:block;flex-shrink:0;width:44px;height:44px;border-radius:50%;overflow:hidden;line-height:0;';
 		$s_img  = 'width:44px;height:44px;max-width:44px;border-radius:50%;object-fit:cover;display:block;';
 		$s_name = 'flex:1;min-width:0;font-size:14px;font-weight:600;line-height:1.3;color:var(--a6sc-text);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;';
-		$icons = array(
+		$icons  = array(
 			'not_friends'      => '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>',
 			'pending_sent'     => '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
 			'pending_received' => '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>',
@@ -160,10 +175,10 @@ class Shortcodes {
 			if ( (int) $m['id'] === $viewer_id ) {
 				continue;
 			}
-			$status = ( $viewer_id && $friends_comp )
+			$status    = ( $viewer_id && $friends_comp )
 				? $friends_comp->get_friendship_status( $viewer_id, (int) $m['id'] )
 				: 'not_friends';
-			$labels = array(
+			$labels    = array(
 				'not_friends'      => __( 'Add Friend', '6arshid-social-community' ),
 				'pending_sent'     => __( 'Pending', '6arshid-social-community' ),
 				'pending_received' => __( 'Accept', '6arshid-social-community' ),
@@ -185,12 +200,12 @@ class Shortcodes {
 					<?php echo esc_html( $m['name'] ); ?>
 				</a>
 				<?php if ( $viewer_id ) : ?>
-				<?php
-				$is_active = in_array( $status, array( 'not_friends', 'pending_received' ), true );
-				$btn_style = $is_active
+					<?php
+					$is_active = in_array( $status, array( 'not_friends', 'pending_received' ), true );
+					$btn_style = $is_active
 					? 'background:' . $primary_color . ';border:1.5px solid ' . $primary_color . ';color:#fff;'
 					: 'background:transparent;border:1.5px solid var(--a6sc-border);color:var(--a6sc-text-muted);';
-				?>
+					?>
 				<button class="arshid6social-friend-btn arshid6social-wtf-btn arshid6social-wtf-btn--<?php echo esc_attr( $status ); ?>"
 					style="<?php echo esc_attr( $btn_style ); ?>"
 					data-user-id="<?php echo esc_attr( $m['id'] ); ?>"
@@ -276,17 +291,17 @@ class Shortcodes {
 				<textarea name="content" class="arshid6social-activity-composer"
 					placeholder="<?php esc_attr_e( "What's on your mind?", '6arshid-social-community' ); ?>"
 					rows="3" maxlength="5000" required></textarea>
-				<?php if ( get_option( 'sixarshidsc_enabled' ) ) : ?>
-				<div class="sixarshidsc-price-row" style="display:none;align-items:center;gap:6px;margin:0 0 8px;flex-wrap:wrap;">
-					<label class="sixarshidsc-price-label" for="sixarshidsc-ppv-price-input" style="font-size:.875rem;white-space:nowrap;">
+				<?php if ( get_option( 'arshid6social_monetization_enabled' ) ) : ?>
+				<div class="arshid6social-mon-price-row" style="display:none;align-items:center;gap:6px;margin:0 0 8px;flex-wrap:wrap;">
+					<label class="arshid6social-mon-price-label" for="arshid6social-mon-ppv-price-input" style="font-size:.875rem;white-space:nowrap;">
 						<?php esc_html_e( '💰 Price to unlock:', '6arshid-social-community' ); ?>
 					</label>
-					<input type="number" id="sixarshidsc-ppv-price-input" name="ppv_price"
+					<input type="number" id="arshid6social-mon-ppv-price-input" name="ppv_price"
 						min="0.50" step="0.01" placeholder="<?php esc_attr_e( 'e.g. 10.00', '6arshid-social-community' ); ?>"
-						class="arshid6social-input sixarshidsc-ppv-price-input"
+						class="arshid6social-input arshid6social-mon-ppv-price-input"
 						style="width:110px;" />
-					<span class="sixarshidsc-price-currency" style="font-size:.875rem;color:var(--sn-text-muted,#6b7280);">
-						<?php echo esc_html( strtoupper( (string) get_option( 'sixarshidsc_currency', 'USD' ) ) ); ?>
+					<span class="arshid6social-mon-price-currency" style="font-size:.875rem;color:var(--sn-text-muted,#6b7280);">
+						<?php echo esc_html( strtoupper( (string) get_option( 'arshid6social_monetization_currency', 'USD' ) ) ); ?>
 					</span>
 				</div>
 				<?php endif; ?>
@@ -295,7 +310,7 @@ class Shortcodes {
 						<option value="public"><?php esc_html_e( '🌐 Public', '6arshid-social-community' ); ?></option>
 						<option value="friends"><?php esc_html_e( '👥 Friends', '6arshid-social-community' ); ?></option>
 						<option value="private"><?php esc_html_e( '🔒 Only Me', '6arshid-social-community' ); ?></option>
-						<?php if ( get_option( 'sixarshidsc_enabled' ) ) : ?>
+						<?php if ( get_option( 'arshid6social_monetization_enabled' ) ) : ?>
 						<option value="paid"><?php esc_html_e( '💰 Paid', '6arshid-social-community' ); ?></option>
 						<?php endif; ?>
 					</select>
@@ -348,7 +363,12 @@ class Shortcodes {
 		$per_page = absint( $atts['per_page'] );
 		$status   = sanitize_key( $atts['status'] );
 		$statuses = ( 'all' === $status ) ? array( 'public', 'private' ) : array( 'public' );
-		$result   = $comp->get_groups( array( 'status' => $statuses, 'per_page' => $per_page ) );
+		$result   = $comp->get_groups(
+			array(
+				'status'   => $statuses,
+				'per_page' => $per_page,
+			)
+		);
 
 		return ARSHID6SOCIAL()->template()->get_template(
 			'groups/directory.php',
@@ -411,10 +431,14 @@ class Shortcodes {
 		}
 		// phpcs:enable
 
-		return ARSHID6SOCIAL()->template()->get_template( 'messages/inbox.php', array(
-			'thread_id'            => $thread_id,
-			'compose_recipient_id' => $compose_recipient_id,
-		), true );
+		return ARSHID6SOCIAL()->template()->get_template(
+			'messages/inbox.php',
+			array(
+				'thread_id'            => $thread_id,
+				'compose_recipient_id' => $compose_recipient_id,
+			),
+			true
+		);
 	}
 
 	// -------------------------------------------------------------------------
@@ -496,7 +520,7 @@ class Shortcodes {
 		return ARSHID6SOCIAL()->template()->get_template(
 			'members/profile.php',
 			array(
-				'member'      => $member,
+				'member'       => $member,
 				'profile_user' => get_userdata( $user_id ),
 			),
 			true
@@ -508,18 +532,17 @@ class Shortcodes {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Enqueues the Google Fonts stylesheet used by the cinematic splash pages.
+	 * Enqueues the (locally bundled) fonts stylesheet used by the cinematic splash pages.
 	 *
-	 * Called from within the splash markup; styles enqueued after wp_head are
-	 * printed in the footer by WordPress. Registered preconnect hints are added
-	 * via the wp_resource_hints filter.
+	 * Instrument Serif and Inter are self-hosted under assets/fonts/ so the plugin
+	 * never makes a request to fonts.googleapis.com.
 	 */
 	private function enqueue_splash_fonts(): void {
 		$handle = 'arshid6social-splash-fonts';
 		if ( ! wp_style_is( $handle, 'enqueued' ) ) {
 			wp_enqueue_style(
 				$handle,
-				'https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500&display=swap',
+				ARSHID6SOCIAL_ASSETS_URL . 'css/splash-fonts.css',
 				array(),
 				ARSHID6SOCIAL_VERSION
 			);
@@ -640,18 +663,20 @@ class Shortcodes {
 		$this->splash_wrap_start( __( 'Sign in', '6arshid-social-community' ) );
 		?>
 		<?php
-		wp_login_form( array(
-			'redirect'       => $redirect,
-			'label_username' => __( 'Username or Email', '6arshid-social-community' ),
-			'label_password' => __( 'Password', '6arshid-social-community' ),
-			'label_remember' => __( 'Remember Me', '6arshid-social-community' ),
-			'label_log_in'   => __( 'Log In', '6arshid-social-community' ),
-			'id_username'    => 'arshid6social-login-username',
-			'id_password'    => 'arshid6social-login-password',
-			'id_remember'    => 'arshid6social-login-remember',
-			'id_submit'      => 'arshid6social-login-submit',
-			'form_id'        => 'arshid6social-login-form',
-		) );
+		wp_login_form(
+			array(
+				'redirect'       => $redirect,
+				'label_username' => __( 'Username or Email', '6arshid-social-community' ),
+				'label_password' => __( 'Password', '6arshid-social-community' ),
+				'label_remember' => __( 'Remember Me', '6arshid-social-community' ),
+				'label_log_in'   => __( 'Log In', '6arshid-social-community' ),
+				'id_username'    => 'arshid6social-login-username',
+				'id_password'    => 'arshid6social-login-password',
+				'id_remember'    => 'arshid6social-login-remember',
+				'id_submit'      => 'arshid6social-login-submit',
+				'form_id'        => 'arshid6social-login-form',
+			)
+		);
 		?>
 		<p class="a6scsplash__forgot">
 			<a href="<?php echo esc_url( $forgot_url ); ?>"><?php esc_html_e( 'Forgot password?', '6arshid-social-community' ); ?></a>
@@ -700,7 +725,10 @@ class Shortcodes {
 		// Process form submission.
 		if ( isset( $_POST['arshid6social_register_nonce'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			if ( ! check_ajax_referer( 'arshid6social_register', 'arshid6social_register_nonce', false ) ) {
-				$messages[] = array( 'type' => 'error', 'text' => __( 'Security check failed.', '6arshid-social-community' ) );
+				$messages[] = array(
+					'type' => 'error',
+					'text' => __( 'Security check failed.', '6arshid-social-community' ),
+				);
 			} else {
 				$username = sanitize_user( wp_unslash( $_POST['username'] ?? '' ) );
 				$email    = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
@@ -731,7 +759,10 @@ class Shortcodes {
 				if ( ! $errors->has_errors() ) {
 					$user_id = wp_create_user( $username, $password, $email );
 					if ( is_wp_error( $user_id ) ) {
-						$messages[] = array( 'type' => 'error', 'text' => $user_id->get_error_message() );
+						$messages[] = array(
+							'type' => 'error',
+							'text' => $user_id->get_error_message(),
+						);
 					} else {
 						wp_set_current_user( $user_id );
 						wp_set_auth_cookie( $user_id );
@@ -741,7 +772,10 @@ class Shortcodes {
 					}
 				} else {
 					foreach ( $errors->get_error_messages() as $msg ) {
-						$messages[] = array( 'type' => 'error', 'text' => $msg );
+						$messages[] = array(
+							'type' => 'error',
+							'text' => $msg,
+						);
 					}
 				}
 			}
@@ -964,15 +998,19 @@ ENDJS;
 
 		// Look up by uid first; fall back to numeric id for old rows
 		if ( ctype_digit( $uid ) ) {
-			$listing = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}arshid6social_listings WHERE id = %d",
-				(int) $uid
-			) );
+			$listing = $wpdb->get_row(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					"SELECT * FROM {$wpdb->prefix}arshid6social_listings WHERE id = %d",
+					(int) $uid
+				)
+			);
 		} else {
-			$listing = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}arshid6social_listings WHERE uid = %s",
-				$uid
-			) );
+			$listing = $wpdb->get_row(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					"SELECT * FROM {$wpdb->prefix}arshid6social_listings WHERE uid = %s",
+					$uid
+				)
+			);
 		}
 
 		if ( ! $listing ) {
@@ -988,19 +1026,23 @@ ENDJS;
 
 		// Increment view counter (skip for owner)
 		if ( ! $is_owner ) {
-			$wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"UPDATE {$wpdb->prefix}arshid6social_listings SET views = views + 1 WHERE id = %d",
-				(int) $listing->id
-			) );
+			$wpdb->query(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					"UPDATE {$wpdb->prefix}arshid6social_listings SET views = views + 1 WHERE id = %d",
+					(int) $listing->id
+				)
+			);
 		}
 
-		$photos  = Components\Marketplace\Marketplace_Listings::get_photos( (int) $listing->id );
-		$seller  = get_userdata( (int) $listing->seller_id );
-		$cat     = $listing->category_id
-			? $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT name, icon FROM {$wpdb->prefix}arshid6social_categories WHERE id = %d",
-				$listing->category_id
-			) )
+		$photos = Components\Marketplace\Marketplace_Listings::get_photos( (int) $listing->id );
+		$seller = get_userdata( (int) $listing->seller_id );
+		$cat    = $listing->category_id
+			? $wpdb->get_row(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					"SELECT name, icon FROM {$wpdb->prefix}arshid6social_categories WHERE id = %d",
+					$listing->category_id
+				)
+			)
 			: null;
 
 		$base_url = get_permalink( (int) get_option( 'arshid6social_page_marketplace', 0 ) )
@@ -1215,10 +1257,10 @@ ENDJS;
 		$forgot_url = $forgot_id ? get_permalink( $forgot_id ) : '';
 
 		// Key and login come from GET (initial load) or POST hidden fields (form submit).
-		$key   = isset( $_POST['reset_key'] )   ? sanitize_text_field( wp_unslash( $_POST['reset_key'] ) )
-			   : ( isset( $_GET['key'] )         ? sanitize_text_field( wp_unslash( $_GET['key'] ) )   : '' );
+		$key   = isset( $_POST['reset_key'] ) ? sanitize_text_field( wp_unslash( $_POST['reset_key'] ) )
+				: ( isset( $_GET['key'] ) ? sanitize_text_field( wp_unslash( $_GET['key'] ) ) : '' );
 		$login = isset( $_POST['reset_login'] ) ? sanitize_text_field( wp_unslash( $_POST['reset_login'] ) )
-			   : ( isset( $_GET['login'] )       ? sanitize_text_field( wp_unslash( $_GET['login'] ) ) : '' );
+				: ( isset( $_GET['login'] ) ? sanitize_text_field( wp_unslash( $_GET['login'] ) ) : '' );
 
 		$error   = '';
 		$message = '';
@@ -1311,12 +1353,12 @@ ENDJS;
 			return '';
 		}
 
-		$register_id  = (int) get_option( 'arshid6social_page_register', 0 );
-		$register_url = $register_id ? get_permalink( $register_id ) : '';
-		$forgot_id    = (int) get_option( 'arshid6social_page_forgot_password', 0 );
-		$forgot_url   = $forgot_id ? get_permalink( $forgot_id ) : wp_lostpassword_url();
-		$redirect     = home_url( '/activity/' );
-		$site_name    = get_bloginfo( 'name' );
+		$register_id   = (int) get_option( 'arshid6social_page_register', 0 );
+		$register_url  = $register_id ? get_permalink( $register_id ) : '';
+		$forgot_id     = (int) get_option( 'arshid6social_page_forgot_password', 0 );
+		$forgot_url    = $forgot_id ? get_permalink( $forgot_id ) : wp_lostpassword_url();
+		$redirect      = home_url( '/activity/' );
+		$site_name     = get_bloginfo( 'name' );
 		$home_logo_id  = (int) get_option( 'arshid6social_logo_desktop', 0 );
 		$home_logo_url = $home_logo_id ? wp_get_attachment_image_url( $home_logo_id, 'full' ) : '';
 		if ( ! $home_logo_url && has_custom_logo() ) {
@@ -1373,18 +1415,20 @@ ENDJS;
 				<!-- Login card -->
 				<div class="a6scsplash__card a6scsplash-glass animate-fade-rise-delay-2">
 					<?php
-					wp_login_form( array(
-						'redirect'       => $redirect,
-						'label_username' => __( 'Username or Email', '6arshid-social-community' ),
-						'label_password' => __( 'Password', '6arshid-social-community' ),
-						'label_remember' => __( 'Remember Me', '6arshid-social-community' ),
-						'label_log_in'   => __( 'Log In', '6arshid-social-community' ),
-						'id_username'    => 'arshid6social-home-username',
-						'id_password'    => 'arshid6social-home-password',
-						'id_remember'    => 'arshid6social-home-remember',
-						'id_submit'      => 'arshid6social-home-submit',
-						'form_id'        => 'arshid6social-home-form',
-					) );
+					wp_login_form(
+						array(
+							'redirect'       => $redirect,
+							'label_username' => __( 'Username or Email', '6arshid-social-community' ),
+							'label_password' => __( 'Password', '6arshid-social-community' ),
+							'label_remember' => __( 'Remember Me', '6arshid-social-community' ),
+							'label_log_in'   => __( 'Log In', '6arshid-social-community' ),
+							'id_username'    => 'arshid6social-home-username',
+							'id_password'    => 'arshid6social-home-password',
+							'id_remember'    => 'arshid6social-home-remember',
+							'id_submit'      => 'arshid6social-home-submit',
+							'form_id'        => 'arshid6social-home-form',
+						)
+					);
 					?>
 					<p class="a6scsplash__forgot">
 						<a href="<?php echo esc_url( $forgot_url ); ?>"><?php esc_html_e( 'Forgot password?', '6arshid-social-community' ); ?></a>

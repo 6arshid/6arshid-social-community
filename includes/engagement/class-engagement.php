@@ -112,8 +112,8 @@ class Engagement {
 			return;
 		}
 
-		$url     = ARSHID6SOCIAL_ASSETS_URL . 'engagement/';
-		$dir     = ARSHID6SOCIAL_PLUGIN_DIR . 'assets/engagement/';
+		$url = ARSHID6SOCIAL_ASSETS_URL . 'engagement/';
+		$dir = ARSHID6SOCIAL_PLUGIN_DIR . 'assets/engagement/';
 
 		// Use file modification time as version so any upload immediately busts browser cache.
 		$css_ver = (string) ( @filemtime( $dir . 'css/engagement.css' ) ?: ARSHID6SOCIAL_VERSION );
@@ -122,10 +122,18 @@ class Engagement {
 		// Build enabled map from OPTIONS (not from loaded classes) so buttons
 		// appear even when a feature class fails to instantiate.
 		$all_keys   = array(
-			'hashtags', 'tag_friends', 'bookmarks', 'sticky_posts',
-			'share_posts', 'polls', 'advanced_polls', 'comments_gifs',
-			'comments_attachments', 'messages_attachments',
-			'social_share_external', 'social_embeds',
+			'hashtags',
+			'tag_friends',
+			'bookmarks',
+			'sticky_posts',
+			'share_posts',
+			'polls',
+			'advanced_polls',
+			'comments_gifs',
+			'comments_attachments',
+			'messages_attachments',
+			'social_share_external',
+			'social_embeds',
 		);
 		$enabled_js = array();
 		foreach ( $all_keys as $key ) {
@@ -227,19 +235,19 @@ class Engagement {
 				'maxVisible' => (int) get_option( 'arshid6social_eng_social_share_max_visible', 8 ),
 				'useNative'  => (bool) get_option( 'arshid6social_eng_social_share_native', true ),
 				'i18n'       => array(
-					'share'          => __( 'Share', '6arshid-social-community' ),
-					'shareTitle'     => __( 'Share this post', '6arshid-social-community' ),
-					'shareTo'        => __( 'Share to', '6arshid-social-community' ),
-					'search'         => __( 'Search networks…', '6arshid-social-community' ),
-					'close'          => __( 'Close', '6arshid-social-community' ),
-					'copied'         => __( 'Link copied!', '6arshid-social-community' ),
-					'more'           => __( 'Show more networks', '6arshid-social-community' ),
-					'sendAsMessage'  => __( 'Send as Message', '6arshid-social-community' ),
+					'share'               => __( 'Share', '6arshid-social-community' ),
+					'shareTitle'          => __( 'Share this post', '6arshid-social-community' ),
+					'shareTo'             => __( 'Share to', '6arshid-social-community' ),
+					'search'              => __( 'Search networks…', '6arshid-social-community' ),
+					'close'               => __( 'Close', '6arshid-social-community' ),
+					'copied'              => __( 'Link copied!', '6arshid-social-community' ),
+					'more'                => __( 'Show more networks', '6arshid-social-community' ),
+					'sendAsMessage'       => __( 'Send as Message', '6arshid-social-community' ),
 					'dmSearchPlaceholder' => __( 'Search users…', '6arshid-social-community' ),
-					'dmSent'         => __( 'Message sent!', '6arshid-social-community' ),
-					'dmError'        => __( 'Could not send message.', '6arshid-social-community' ),
-					'dmLoginRequired' => __( 'You must be logged in to send messages.', '6arshid-social-community' ),
-					'back'           => __( 'Back', '6arshid-social-community' ),
+					'dmSent'              => __( 'Message sent!', '6arshid-social-community' ),
+					'dmError'             => __( 'Could not send message.', '6arshid-social-community' ),
+					'dmLoginRequired'     => __( 'You must be logged in to send messages.', '6arshid-social-community' ),
+					'back'                => __( 'Back', '6arshid-social-community' ),
 				),
 			);
 		}
@@ -247,8 +255,8 @@ class Engagement {
 		// Attach social-embeds settings when the feature is on.
 		if ( Engagement_Settings::enabled( 'social_embeds' ) ) {
 			$localize_data['socialEmbeds'] = array(
-				'lazyLoad'   => (bool) get_option( 'arshid6social_eng_embed_lazy_load', '1' ),
-				'i18n'       => array(
+				'lazyLoad' => (bool) get_option( 'arshid6social_eng_embed_lazy_load', '1' ),
+				'i18n'     => array(
 					'dismissEmbed' => __( 'Remove embed preview', '6arshid-social-community' ),
 					'loadEmbed'    => __( 'Click to load', '6arshid-social-community' ),
 				),
@@ -286,5 +294,4 @@ class Engagement {
 	public function feature( string $key ): ?object {
 		return $this->features[ $key ] ?? null;
 	}
-
 }

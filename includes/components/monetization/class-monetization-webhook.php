@@ -9,7 +9,7 @@ namespace Arshid6Social\Components\Monetization;
  *  – Every event is written to sixarshidsc_webhook_events FIRST (idempotency guard).
  *  – Entitlements are ONLY granted here — never from client-side redirects.
  *
- * Endpoint: POST /wp-json/sixarshidsc/v1/webhook
+ * Endpoint: POST /wp-json/arshid6social/v1/webhook
  * Register this URL in Stripe Dashboard → Webhooks.
  * Events required: payment_intent.succeeded
  *
@@ -26,7 +26,7 @@ class Monetization_Webhook {
 
 	public function register_rest_routes(): void {
 		register_rest_route(
-			'sixarshidsc/v1',
+			'arshid6social/v1',
 			'/webhook',
 			array(
 				'methods'             => 'POST',
@@ -61,13 +61,20 @@ class Monetization_Webhook {
 		global $wpdb;
 
 		// Idempotency — record event before processing to prevent double-grants.
-		$already = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sixarshidsc_webhook_events WHERE gateway = 'stripe_connect' AND event_id = %s",
-			$event['id']
-		) );
+		$already = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sixarshidsc_webhook_events WHERE gateway = 'stripe_connect' AND event_id = %s",
+				$event['id']
+			)
+		);
 
 		if ( $already ) {
-			return rest_ensure_response( array( 'ok' => true, 'duplicate' => true ) );
+			return rest_ensure_response(
+				array(
+					'ok'        => true,
+					'duplicate' => true,
+				)
+			);
 		}
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -135,7 +142,7 @@ class Monetization_Webhook {
 	private function handle_ppv_payment( array $pi ): void {
 		$meta = $pi['metadata'] ?? array();
 
-		if ( empty( $meta['sixarshidsc_type'] ) || 'ppv' !== $meta['sixarshidsc_type'] ) {
+		if ( empty( $meta['arshid6social_monetization_type'] ) || 'ppv' !== $meta['arshid6social_monetization_type'] ) {
 			return;
 		}
 

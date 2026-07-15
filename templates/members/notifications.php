@@ -55,12 +55,12 @@ $notif_types = \Arshid6Social\Components\Notifications\Notifications::TYPES;
 					</p>
 
 					<div class="arshid6social-notif-prefs-grid">
-						<?php foreach ( $notif_types as $action => $info ) : ?>
+						<?php foreach ( $notif_types as $notif_action => $info ) : ?>
 							<label class="arshid6social-notif-pref-row">
 								<input type="checkbox"
-									name="arshid6social_notify_<?php echo esc_attr( $action ); ?>"
+									name="arshid6social_notify_<?php echo esc_attr( $notif_action ); ?>"
 									value="1"
-									<?php checked( ! empty( $notif_prefs[ $action ] ) ); ?>
+									<?php checked( ! empty( $notif_prefs[ $notif_action ] ) ); ?>
 								/>
 								<span class="arshid6social-notif-pref-icon" style="background:<?php echo esc_attr( $info['color'] ); ?>;">
 									<?php echo esc_html( $info['icon'] ); ?>

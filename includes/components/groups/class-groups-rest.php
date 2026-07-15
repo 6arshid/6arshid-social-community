@@ -20,53 +20,92 @@ class Groups_REST extends \WP_REST_Controller {
 	protected $rest_base = 'groups';
 
 	public function register_routes(): void {
-		register_rest_route( $this->namespace, '/' . $this->rest_base, array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_items' ),
-				'permission_callback' => '__return_true',
-				'args'                => array(
-					'page'   => array( 'type' => 'integer', 'default' => 1, 'sanitize_callback' => 'absint' ),
-					'search' => array( 'type' => 'string', 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ),
-					'type'   => array( 'type' => 'string', 'default' => 'newest', 'sanitize_callback' => 'sanitize_key' ),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_items' ),
+					'permission_callback' => '__return_true',
+					'args'                => array(
+						'page'   => array(
+							'type'              => 'integer',
+							'default'           => 1,
+							'sanitize_callback' => 'absint',
+						),
+						'search' => array(
+							'type'              => 'string',
+							'default'           => '',
+							'sanitize_callback' => 'sanitize_text_field',
+						),
+						'type'   => array(
+							'type'              => 'string',
+							'default'           => 'newest',
+							'sanitize_callback' => 'sanitize_key',
+						),
+					),
 				),
-			),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'create_item' ),
+					'permission_callback' => 'is_user_logged_in',
+					'args'                => array(
+						'name'        => array(
+							'required'          => true,
+							'type'              => 'string',
+							'sanitize_callback' => 'sanitize_text_field',
+						),
+						'description' => array(
+							'type'    => 'string',
+							'default' => '',
+						),
+						'status'      => array(
+							'type'    => 'string',
+							'default' => 'public',
+							'enum'    => array( 'public', 'private', 'hidden' ),
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)',
+			array(
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_item' ),
+					'permission_callback' => array( $this, 'can_view_item' ),
+				),
+				array(
+					'methods'             => \WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'delete_item' ),
+					'permission_callback' => array( $this, 'can_delete_item' ),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/join',
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'create_item' ),
+				'callback'            => array( $this, 'join' ),
+				'permission_callback' => array( $this, 'can_join' ),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/leave',
+			array(
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'leave' ),
 				'permission_callback' => 'is_user_logged_in',
-				'args'                => array(
-					'name'        => array( 'required' => true, 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ),
-					'description' => array( 'type' => 'string', 'default' => '' ),
-					'status'      => array( 'type' => 'string', 'default' => 'public', 'enum' => array( 'public', 'private', 'hidden' ) ),
-				),
-			),
-		) );
-
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', array(
-			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_item' ),
-				'permission_callback' => array( $this, 'can_view_item' ),
-			),
-			array(
-				'methods'             => \WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'delete_item' ),
-				'permission_callback' => array( $this, 'can_delete_item' ),
-			),
-		) );
-
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/join', array(
-			'methods'             => \WP_REST_Server::CREATABLE,
-			'callback'            => array( $this, 'join' ),
-			'permission_callback' => array( $this, 'can_join' ),
-		) );
-
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/leave', array(
-			'methods'             => \WP_REST_Server::CREATABLE,
-			'callback'            => array( $this, 'leave' ),
-			'permission_callback' => 'is_user_logged_in',
-		) );
+			)
+		);
 	}
 
 	/**
@@ -130,11 +169,13 @@ class Groups_REST extends \WP_REST_Controller {
 			return new \WP_Error( 'arshid6social_disabled', __( 'Groups component not active.', '6arshid-social-community' ), array( 'status' => 503 ) );
 		}
 
-		$data = $component->get_groups( array(
-			'page'   => $request['page'],
-			'search' => $request['search'],
-			'type'   => $request['type'],
-		) );
+		$data = $component->get_groups(
+			array(
+				'page'   => $request['page'],
+				'search' => $request['search'],
+				'type'   => $request['type'],
+			)
+		);
 
 		$response = rest_ensure_response( $data['groups'] );
 		$response->header( 'X-WP-Total', $data['total'] );
@@ -156,11 +197,13 @@ class Groups_REST extends \WP_REST_Controller {
 
 	public function create_item( $request ): \WP_REST_Response|\WP_Error {
 		$component = ARSHID6SOCIAL()->component( 'groups' );
-		$group_id  = $component->create( array(
-			'name'        => $request->get_param( 'name' ),
-			'description' => wp_kses_post( $request->get_param( 'description' ) ),
-			'status'      => $request->get_param( 'status' ),
-		) );
+		$group_id  = $component->create(
+			array(
+				'name'        => $request->get_param( 'name' ),
+				'description' => wp_kses_post( $request->get_param( 'description' ) ),
+				'status'      => $request->get_param( 'status' ),
+			)
+		);
 
 		if ( ! $group_id ) {
 			return new \WP_Error( 'arshid6social_create_failed', __( 'Failed to create group.', '6arshid-social-community' ), array( 'status' => 500 ) );
@@ -200,7 +243,12 @@ class Groups_REST extends \WP_REST_Controller {
 		$is_confirmed = ( 'public' === $group->status ) ? 1 : 0;
 		$component->add_member( $group_id, $user_id, array( 'is_confirmed' => $is_confirmed ) );
 
-		return rest_ensure_response( array( 'joined' => (bool) $is_confirmed, 'pending' => ! $is_confirmed ) );
+		return rest_ensure_response(
+			array(
+				'joined'  => (bool) $is_confirmed,
+				'pending' => ! $is_confirmed,
+			)
+		);
 	}
 
 	public function leave( $request ): \WP_REST_Response|\WP_Error {

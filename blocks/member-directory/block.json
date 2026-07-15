@@ -8,7 +8,7 @@
 	"icon": "groups",
 	"description": "Display the 6Arshid Social Community member directory with search and filters.",
 	"keywords": ["members", "directory", "social", "network", "community"],
-	"textdomain": "sixarshidsocialcomunity",
+	"textdomain": "6arshid-social-community",
 	"attributes": {
 		"perPage": {
 			"type": "number",

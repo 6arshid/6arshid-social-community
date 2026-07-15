@@ -4,7 +4,7 @@ namespace Arshid6Social\Components\Monetization;
 /**
  * Paid Content & Creator Subscriptions — component bootstrap.
  *
- * Instantiated by Plugin::load_components() when 'sixarshidsc_enabled' is true.
+ * Instantiated by Plugin::load_components() when 'arshid6social_monetization_enabled' is true.
  * The Monetization_Settings class is always loaded in the admin (regardless of
  * this toggle) so the settings tab is always reachable.
  *
@@ -13,7 +13,7 @@ namespace Arshid6Social\Components\Monetization;
  *   Step 2  — abstract gateway layer + Stripe Connect implementation
  *   Step 3  — signature-verified webhook handler + transaction reconciliation
  *   Step 4  — creator onboarding, subscription plans, creator dashboard
- *   Step 5  — 'paid' activity privacy level + sixarshidsc_user_can_view_paid()
+ *   Step 5  — 'paid' activity privacy level + arshid6social_monetization_user_can_view_paid()
  *   Step 6  — subscribe + pay-per-view flows + subscriber management
  *   Step 7  — admin transactions / payouts / subscriptions dashboards + refunds
  *   Step 8  — notifications + verification gating + block awareness

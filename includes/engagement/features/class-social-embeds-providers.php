@@ -113,9 +113,9 @@ class Social_Embeds_Providers {
 		);
 
 		$p['instagram'] = array(
-			'id'           => 'instagram',
-			'name'         => 'Instagram',
-			'patterns'     => array(
+			'id'              => 'instagram',
+			'name'            => 'Instagram',
+			'patterns'        => array(
 				'#https?://(?:www\.)?instagram\.com/(?:p|reel|tv)/([A-Za-z0-9_-]+)/?#u',
 			),
 			'method'          => 'oembed',
@@ -124,9 +124,9 @@ class Social_Embeds_Providers {
 		);
 
 		$p['facebook'] = array(
-			'id'           => 'facebook',
-			'name'         => 'Facebook',
-			'patterns'     => array(
+			'id'              => 'facebook',
+			'name'            => 'Facebook',
+			'patterns'        => array(
 				'#https?://(?:www\.)?facebook\.com/(?:video\.php\?v=\d+|[^/\s]+/(?:videos|posts|photos)/[^\s<>"\']+)#u',
 				'#https?://fb\.watch/[A-Za-z0-9_-]+#u',
 			),
@@ -188,14 +188,14 @@ class Social_Embeds_Providers {
 		);
 
 		$p['twitch'] = array(
-			'id'      => 'twitch',
-			'name'    => 'Twitch',
+			'id'       => 'twitch',
+			'name'     => 'Twitch',
 			'patterns' => array(
 				'#https?://clips\.twitch\.tv/[A-Za-z0-9_-]+#u',
 				'#https?://(?:www\.)?twitch\.tv/[A-Za-z0-9_]+/clip/[A-Za-z0-9_-]+#u',
 				'#https?://(?:www\.)?twitch\.tv/[A-Za-z0-9_]+/?(?:\?[^\s<>"\']*)?$#u',
 			),
-			'method'  => 'iframe',
+			'method'   => 'iframe',
 		);
 
 		$p['dailymotion'] = array(
@@ -210,31 +210,31 @@ class Social_Embeds_Providers {
 		);
 
 		$p['apple_music'] = array(
-			'id'      => 'apple_music',
-			'name'    => 'Apple Music / Podcasts',
+			'id'       => 'apple_music',
+			'name'     => 'Apple Music / Podcasts',
 			'patterns' => array(
 				'#https?://music\.apple\.com/[a-z]{2}/(?:album|playlist|artist|song)/[^\s<>"\']+#u',
 				'#https?://podcasts\.apple\.com/[a-z]{2}/podcast/[^\s<>"\']+#u',
 			),
-			'method'  => 'iframe',
+			'method'   => 'iframe',
 		);
 
 		$p['linkedin'] = array(
-			'id'      => 'linkedin',
-			'name'    => 'LinkedIn',
+			'id'       => 'linkedin',
+			'name'     => 'LinkedIn',
 			'patterns' => array(
 				'#https?://(?:www\.)?linkedin\.com/(?:posts|pulse)/[^\s<>"\']+#u',
 			),
-			'method'  => 'og',
+			'method'   => 'og',
 		);
 
 		$p['telegram'] = array(
-			'id'      => 'telegram',
-			'name'    => 'Telegram',
+			'id'       => 'telegram',
+			'name'     => 'Telegram',
 			'patterns' => array(
 				'#https?://t\.me/([A-Za-z0-9_]{5,})/(\d+)#u',
 			),
-			'method'  => 'iframe',
+			'method'   => 'iframe',
 		);
 
 		$p['threads'] = array(
@@ -248,12 +248,12 @@ class Social_Embeds_Providers {
 		);
 
 		$p['bluesky'] = array(
-			'id'      => 'bluesky',
-			'name'    => 'Bluesky',
+			'id'       => 'bluesky',
+			'name'     => 'Bluesky',
 			'patterns' => array(
 				'#https?://bsky\.app/profile/[^/\s]+/post/[A-Za-z0-9]+#u',
 			),
-			'method'  => 'og',
+			'method'   => 'og',
 		);
 
 		$p['aparat'] = array(
@@ -268,12 +268,12 @@ class Social_Embeds_Providers {
 
 		// Generic OG fallback — matches any URL; must stay last.
 		$p['og_generic'] = array(
-			'id'      => 'og_generic',
-			'name'    => __( 'Generic Link Preview (Open Graph)', '6arshid-social-community' ),
+			'id'       => 'og_generic',
+			'name'     => __( 'Generic Link Preview (Open Graph)', '6arshid-social-community' ),
 			'patterns' => array(
 				'#https?://[^\s<>"\']+#u',
 			),
-			'method'  => 'og',
+			'method'   => 'og',
 		);
 
 		return $p;

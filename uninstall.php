@@ -192,10 +192,12 @@ $wpdb->query( // phpcs:ignore WordPress.DB
 // ── Delete user meta ───────────────────────────────────────────────────────
 $meta_prefixes = array( 'ARSHID6SOCIAL_', 'sn_' );
 foreach ( $meta_prefixes as $prefix ) {
-	$wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB
-		"DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE %s",
-		$wpdb->esc_like( $prefix ) . '%'
-	) );
+	$wpdb->query(
+		$wpdb->prepare( // phpcs:ignore WordPress.DB
+			"DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE %s",
+			$wpdb->esc_like( $prefix ) . '%'
+		)
+	);
 }
 
 // ── Remove custom capabilities ─────────────────────────────────────────────
@@ -209,10 +211,10 @@ $caps = array(
 	'arshid6social_view_audit_log',
 );
 
-foreach ( array( get_role( 'administrator' ), get_role( 'editor' ) ) as $role ) {
-	if ( $role ) {
+foreach ( array( get_role( 'administrator' ), get_role( 'editor' ) ) as $wp_role ) {
+	if ( $wp_role ) {
 		foreach ( $caps as $cap ) {
-			$role->remove_cap( $cap );
+			$wp_role->remove_cap( $cap );
 		}
 	}
 }

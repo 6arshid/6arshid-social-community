@@ -75,7 +75,7 @@ final class Template_Loader {
 
 		$locations = array(
 			get_stylesheet_directory() . '/social-network/' . $template,
-			get_template_directory()   . '/social-network/' . $template,
+			get_template_directory() . '/social-network/' . $template,
 			ARSHID6SOCIAL_TEMPLATES_DIR . $template,
 		);
 

@@ -15,28 +15,52 @@ class Notifications_REST extends \WP_REST_Controller {
 	protected $rest_base = 'notifications';
 
 	public function register_routes(): void {
-		register_rest_route( $this->namespace, '/' . $this->rest_base, array(
-			'methods'             => \WP_REST_Server::READABLE,
-			'callback'            => array( $this, 'get_items' ),
-			'permission_callback' => 'is_user_logged_in',
-			'args'                => array(
-				'unread_only' => array( 'type' => 'boolean', 'default' => false ),
-				'limit'       => array( 'type' => 'integer', 'default' => 25, 'sanitize_callback' => 'absint' ),
-			),
-		) );
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_items' ),
+				'permission_callback' => 'is_user_logged_in',
+				'args'                => array(
+					'unread_only' => array(
+						'type'    => 'boolean',
+						'default' => false,
+					),
+					'limit'       => array(
+						'type'              => 'integer',
+						'default'           => 25,
+						'sanitize_callback' => 'absint',
+					),
+				),
+			)
+		);
 
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/read', array(
-			'methods'             => \WP_REST_Server::CREATABLE,
-			'callback'            => array( $this, 'mark_read' ),
-			'permission_callback' => 'is_user_logged_in',
-			'args'                => array( 'ids' => array( 'type' => 'array', 'default' => array() ) ),
-		) );
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/read',
+			array(
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'mark_read' ),
+				'permission_callback' => 'is_user_logged_in',
+				'args'                => array(
+					'ids' => array(
+						'type'    => 'array',
+						'default' => array(),
+					),
+				),
+			)
+		);
 
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/unread-count', array(
-			'methods'             => \WP_REST_Server::READABLE,
-			'callback'            => array( $this, 'unread_count' ),
-			'permission_callback' => 'is_user_logged_in',
-		) );
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/unread-count',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'unread_count' ),
+				'permission_callback' => 'is_user_logged_in',
+			)
+		);
 	}
 
 	public function get_items( $request ): \WP_REST_Response {

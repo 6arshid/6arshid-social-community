@@ -19,10 +19,10 @@ class Advanced_Polls {
 		add_filter( 'arshid6social_poll_results', array( $this, 'reveal_quiz_answer' ), 10, 3 );
 
 		// Templates: allow admin-defined templates.
-		add_action( 'wp_ajax_arshid6social_poll_load_template',        array( $this, 'ajax_load_template' ) );
-		add_action( 'wp_ajax_arshid6social_poll_save_template',        array( $this, 'ajax_save_template' ) );
-		add_action( 'wp_ajax_arshid6social_poll_delete_template',      array( $this, 'ajax_delete_template' ) );
-		add_action( 'wp_ajax_arshid6social_poll_list_templates',       array( $this, 'ajax_list_templates' ) );
+		add_action( 'wp_ajax_arshid6social_poll_load_template', array( $this, 'ajax_load_template' ) );
+		add_action( 'wp_ajax_arshid6social_poll_save_template', array( $this, 'ajax_save_template' ) );
+		add_action( 'wp_ajax_arshid6social_poll_delete_template', array( $this, 'ajax_delete_template' ) );
+		add_action( 'wp_ajax_arshid6social_poll_list_templates', array( $this, 'ajax_list_templates' ) );
 	}
 
 	// ── Image upload for options ───────────────────────────────────────────────
@@ -61,7 +61,7 @@ class Advanced_Polls {
 		}
 
 		// Save to randomized path.
-		$subdir_filter = function( array $dir ): array {
+		$subdir_filter = function ( array $dir ): array {
 			$dir['subdir'] = '/social-network/polls';
 			$dir['path']   = $dir['basedir'] . $dir['subdir'];
 			$dir['url']    = $dir['baseurl'] . $dir['subdir'];
@@ -89,7 +89,12 @@ class Advanced_Polls {
 			get_current_user_id()
 		);
 
-		wp_send_json_success( array( 'url' => esc_url( $url ), 'path' => $dest ) );
+		wp_send_json_success(
+			array(
+				'url'  => esc_url( $url ),
+				'path' => $dest,
+			)
+		);
 	}
 
 	/**
@@ -134,10 +139,13 @@ class Advanced_Polls {
 		}
 
 		// Mark correct answer(s) so the frontend can highlight them.
-		$results['options'] = array_map( function( array $opt ): array {
-			// is_correct is already in the results array from get_results().
-			return $opt;
-		}, $results['options'] );
+		$results['options'] = array_map(
+			function ( array $opt ): array {
+				// is_correct is already in the results array from get_results().
+				return $opt;
+			},
+			$results['options']
+		);
 
 		return $results;
 	}
@@ -186,9 +194,12 @@ class Advanced_Polls {
 			wp_send_json_error( null, 400 );
 		}
 
-		$id                 = sanitize_key( str_replace( ' ', '_', strtolower( $name ) ) . '_' . time() );
-		$templates          = $this->get_templates();
-		$templates[ $id ]   = array( 'name' => $name, 'options' => $options );
+		$id               = sanitize_key( str_replace( ' ', '_', strtolower( $name ) ) . '_' . time() );
+		$templates        = $this->get_templates();
+		$templates[ $id ] = array(
+			'name'    => $name,
+			'options' => $options,
+		);
 		update_option( 'arshid6social_poll_templates', $templates );
 
 		wp_send_json_success( array( 'id' => $id ) );

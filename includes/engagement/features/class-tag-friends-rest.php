@@ -14,24 +14,32 @@ class Tag_Friends_REST {
 	const NS = 'arshid6social/v1';
 
 	public function register_routes(): void {
-		register_rest_route( self::NS, '/activity/(?P<id>\d+)/tags', array(
+		register_rest_route(
+			self::NS,
+			'/activity/(?P<id>\d+)/tags',
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_tags' ),
-				'permission_callback' => '__return_true',
-			),
-			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'add_tag' ),
-				'permission_callback' => array( $this, 'can_tag' ),
-			),
-		) );
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_tags' ),
+					'permission_callback' => '__return_true',
+				),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'add_tag' ),
+					'permission_callback' => array( $this, 'can_tag' ),
+				),
+			)
+		);
 
-		register_rest_route( self::NS, '/tags/(?P<id>\d+)', array(
-			'methods'             => \WP_REST_Server::DELETABLE,
-			'callback'            => array( $this, 'remove_tag' ),
-			'permission_callback' => 'is_user_logged_in',
-		) );
+		register_rest_route(
+			self::NS,
+			'/tags/(?P<id>\d+)',
+			array(
+				'methods'             => \WP_REST_Server::DELETABLE,
+				'callback'            => array( $this, 'remove_tag' ),
+				'permission_callback' => 'is_user_logged_in',
+			)
+		);
 	}
 
 	public function can_tag(): bool {
@@ -53,13 +61,16 @@ class Tag_Friends_REST {
 		$tags = $feature->get_tags_for_object( $activity_id, 'activity' );
 
 		// Append user info.
-		$tags = array_map( function( array $t ): array {
-			$user = get_userdata( (int) $t['tagged_user_id'] );
-			$t['displayName'] = $user ? esc_html( $user->display_name ) : '';
-			$t['profileUrl']  = $user ? esc_url( home_url( '/members/' . $user->user_nicename . '/' ) ) : '';
-			$t['avatar']      = $user ? esc_url( get_avatar_url( $user->ID, array( 'size' => 32 ) ) ) : '';
-			return $t;
-		}, $tags );
+		$tags = array_map(
+			function ( array $t ): array {
+				$user             = get_userdata( (int) $t['tagged_user_id'] );
+				$t['displayName'] = $user ? esc_html( $user->display_name ) : '';
+				$t['profileUrl']  = $user ? esc_url( home_url( '/members/' . $user->user_nicename . '/' ) ) : '';
+				$t['avatar']      = $user ? esc_url( get_avatar_url( $user->ID, array( 'size' => 32 ) ) ) : '';
+				return $t;
+			},
+			$tags
+		);
 
 		return new \WP_REST_Response( $tags );
 	}
@@ -75,10 +86,12 @@ class Tag_Friends_REST {
 		}
 
 		global $wpdb;
-		$activity = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
-			$activity_id
-		) );
+		$activity = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				$activity_id
+			)
+		);
 
 		if ( ! $activity || (int) $activity->user_id !== get_current_user_id() ) {
 			return new \WP_REST_Response( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
@@ -112,12 +125,22 @@ class Tag_Friends_REST {
 		if ( $tag_id && ( $x || $y ) ) {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prefix . 'sn_post_tag_coords',
-				array( 'tag_id' => $tag_id, 'x_percent' => max( 0.0, min( 100.0, $x ) ), 'y_percent' => max( 0.0, min( 100.0, $y ) ) ),
+				array(
+					'tag_id'    => $tag_id,
+					'x_percent' => max( 0.0, min( 100.0, $x ) ),
+					'y_percent' => max( 0.0, min( 100.0, $y ) ),
+				),
 				array( '%d', '%f', '%f' )
 			);
 		}
 
-		return new \WP_REST_Response( array( 'tag_id' => $tag_id, 'status' => $status ), 201 );
+		return new \WP_REST_Response(
+			array(
+				'tag_id' => $tag_id,
+				'status' => $status,
+			),
+			201
+		);
 	}
 
 	public function remove_tag( \WP_REST_Request $req ): \WP_REST_Response {
@@ -125,10 +148,12 @@ class Tag_Friends_REST {
 		$tag_id  = absint( $req['id'] );
 		$user_id = get_current_user_id();
 
-		$tag = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_post_tags WHERE id = %d",
-			$tag_id
-		) );
+		$tag = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_post_tags WHERE id = %d",
+				$tag_id
+			)
+		);
 
 		if ( ! $tag ) {
 			return new \WP_REST_Response( null, 404 );

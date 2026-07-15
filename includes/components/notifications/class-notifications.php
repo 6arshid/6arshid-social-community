@@ -18,19 +18,71 @@ class Notifications {
 
 	/** Notification types and their labels/icons for the frontend. */
 	const TYPES = array(
-		'friend_request'        => array( 'label' => 'Friend Request',      'icon' => '👥', 'color' => '#2563eb' ),
-		'friendship_accepted'   => array( 'label' => 'Friend Accepted',     'icon' => '🤝', 'color' => '#16a34a' ),
-		'activity_reaction'     => array( 'label' => 'Reaction',            'icon' => '❤️', 'color' => '#dc2626' ),
-		'activity_comment'      => array( 'label' => 'Comment',             'icon' => '💬', 'color' => '#0891b2' ),
-		'comment_reply'         => array( 'label' => 'Comment Reply',       'icon' => '↩️', 'color' => '#7c3aed' ),
-		'activity_mention'      => array( 'label' => 'Mention',             'icon' => '✍️', 'color' => '#7c3aed' ),
-		'new_message'           => array( 'label' => 'Message',             'icon' => '✉️', 'color' => '#0284c7' ),
-		'group_invitation'      => array( 'label' => 'Group Invite',        'icon' => '🏘️', 'color' => '#d97706' ),
-		'new_follower'          => array( 'label' => 'New Follower',        'icon' => '👤', 'color' => '#059669' ),
-		'story_reaction'        => array( 'label' => 'Story Reaction',      'icon' => '😍', 'color' => '#f59e0b' ),
-		'story_reply'           => array( 'label' => 'Story Reply',         'icon' => '↩️', 'color' => '#0284c7' ),
-		'verification_approved' => array( 'label' => 'Verification Approved', 'icon' => '✓', 'color' => '#16a34a' ),
-		'verification_rejected' => array( 'label' => 'Verification Rejected', 'icon' => '✗', 'color' => '#dc2626' ),
+		'friend_request'        => array(
+			'label' => 'Friend Request',
+			'icon'  => '👥',
+			'color' => '#2563eb',
+		),
+		'friendship_accepted'   => array(
+			'label' => 'Friend Accepted',
+			'icon'  => '🤝',
+			'color' => '#16a34a',
+		),
+		'activity_reaction'     => array(
+			'label' => 'Reaction',
+			'icon'  => '❤️',
+			'color' => '#dc2626',
+		),
+		'activity_comment'      => array(
+			'label' => 'Comment',
+			'icon'  => '💬',
+			'color' => '#0891b2',
+		),
+		'comment_reply'         => array(
+			'label' => 'Comment Reply',
+			'icon'  => '↩️',
+			'color' => '#7c3aed',
+		),
+		'activity_mention'      => array(
+			'label' => 'Mention',
+			'icon'  => '✍️',
+			'color' => '#7c3aed',
+		),
+		'new_message'           => array(
+			'label' => 'Message',
+			'icon'  => '✉️',
+			'color' => '#0284c7',
+		),
+		'group_invitation'      => array(
+			'label' => 'Group Invite',
+			'icon'  => '🏘️',
+			'color' => '#d97706',
+		),
+		'new_follower'          => array(
+			'label' => 'New Follower',
+			'icon'  => '👤',
+			'color' => '#059669',
+		),
+		'story_reaction'        => array(
+			'label' => 'Story Reaction',
+			'icon'  => '😍',
+			'color' => '#f59e0b',
+		),
+		'story_reply'           => array(
+			'label' => 'Story Reply',
+			'icon'  => '↩️',
+			'color' => '#0284c7',
+		),
+		'verification_approved' => array(
+			'label' => 'Verification Approved',
+			'icon'  => '✓',
+			'color' => '#16a34a',
+		),
+		'verification_rejected' => array(
+			'label' => 'Verification Rejected',
+			'icon'  => '✗',
+			'color' => '#dc2626',
+		),
 	);
 
 	public function __construct() {
@@ -39,24 +91,24 @@ class Notifications {
 
 	private function hooks(): void {
 		// Social events that trigger notifications.
-		add_action( 'arshid6social_friend_request_sent',     array( $this, 'notify_friend_request' ),  10, 2 );
-		add_action( 'arshid6social_friend_request_accepted', array( $this, 'notify_friend_accepted' ),  10, 2 );
-		add_action( 'arshid6social_activity_mention',        array( $this, 'notify_mention' ),          10, 1 );
-		add_action( 'arshid6social_group_invitation_sent',   array( $this, 'notify_group_invitation' ), 10, 3 );
-		add_action( 'arshid6social_message_sent',            array( $this, 'notify_new_message' ),      10, 3 );
-		add_action( 'arshid6social_activity_reacted',        array( $this, 'notify_reaction' ),         10, 4 );
-		add_action( 'arshid6social_activity_commented',      array( $this, 'notify_comment' ),          10, 4 );
-		add_action( 'arshid6social_user_followed',           array( $this, 'notify_follow' ),           10, 2 );
+		add_action( 'arshid6social_friend_request_sent', array( $this, 'notify_friend_request' ), 10, 2 );
+		add_action( 'arshid6social_friend_request_accepted', array( $this, 'notify_friend_accepted' ), 10, 2 );
+		add_action( 'arshid6social_activity_mention', array( $this, 'notify_mention' ), 10, 1 );
+		add_action( 'arshid6social_group_invitation_sent', array( $this, 'notify_group_invitation' ), 10, 3 );
+		add_action( 'arshid6social_message_sent', array( $this, 'notify_new_message' ), 10, 3 );
+		add_action( 'arshid6social_activity_reacted', array( $this, 'notify_reaction' ), 10, 4 );
+		add_action( 'arshid6social_activity_commented', array( $this, 'notify_comment' ), 10, 4 );
+		add_action( 'arshid6social_user_followed', array( $this, 'notify_follow' ), 10, 2 );
 
 		// AJAX.
-		add_action( 'wp_ajax_arshid6social_get_notifications',      array( $this, 'ajax_get_notifications' ) );
+		add_action( 'wp_ajax_arshid6social_get_notifications', array( $this, 'ajax_get_notifications' ) );
 		add_action( 'wp_ajax_arshid6social_mark_notifications_read', array( $this, 'ajax_mark_read' ) );
 		add_action( 'wp_ajax_arshid6social_unread_notification_count', array( $this, 'ajax_unread_count' ) );
-		add_action( 'wp_ajax_arshid6social_delete_notification',    array( $this, 'ajax_delete_notification' ) );
+		add_action( 'wp_ajax_arshid6social_delete_notification', array( $this, 'ajax_delete_notification' ) );
 		add_action( 'wp_ajax_arshid6social_save_notification_prefs', array( $this, 'ajax_save_prefs' ) );
 
 		// Email digest cron.
-		add_action( 'arshid6social_daily_digest',  array( $this, 'send_daily_digest' ) );
+		add_action( 'arshid6social_daily_digest', array( $this, 'send_daily_digest' ) );
 		add_action( 'arshid6social_weekly_digest', array( $this, 'send_weekly_digest' ) );
 	}
 
@@ -80,7 +132,7 @@ class Notifications {
 			'date_notified'     => current_time( 'mysql', true ),
 			'is_new'            => 1,
 		);
-		$args = wp_parse_args( $args, $defaults );
+		$args     = wp_parse_args( $args, $defaults );
 
 		if ( ! $args['user_id'] || ! $args['component_name'] || ! $args['component_action'] ) {
 			return false;
@@ -104,18 +156,27 @@ class Notifications {
 		$component_action  = sanitize_key( $args['component_action'] );
 
 		// Dedup: one notification per (recipient, sender, object, action).
-		$existing_id = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_notifications
+		$existing_id = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_notifications
 			 WHERE user_id = %d AND item_id = %d AND secondary_item_id = %d
 			   AND component_name = %s AND component_action = %s
 			 LIMIT 1",
-			$user_id, $item_id, $secondary_item_id, $component_name, $component_action
-		) );
+				$user_id,
+				$item_id,
+				$secondary_item_id,
+				$component_name,
+				$component_action
+			)
+		);
 
 		if ( $existing_id ) {
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prefix . 'sn_notifications',
-				array( 'date_notified' => $args['date_notified'], 'is_new' => 1 ),
+				array(
+					'date_notified' => $args['date_notified'],
+					'is_new'        => 1,
+				),
 				array( 'id' => (int) $existing_id ),
 				array( '%s', '%d' ),
 				array( '%d' )
@@ -252,7 +313,10 @@ class Notifications {
 		global $wpdb;
 		$deleted = $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_notifications',
-			array( 'id' => $notification_id, 'user_id' => $user_id ),
+			array(
+				'id'      => $notification_id,
+				'user_id' => $user_id,
+			),
 			array( '%d', '%d' )
 		);
 		return (bool) $deleted;
@@ -285,10 +349,12 @@ class Notifications {
 
 		// Build a minimal email from the notification row.
 		global $wpdb;
-		$notif = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_notifications WHERE id = %d",
-			$notification_id
-		) );
+		$notif = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_notifications WHERE id = %d",
+				$notification_id
+			)
+		);
 		if ( ! $notif ) {
 			return;
 		}
@@ -304,8 +370,8 @@ class Notifications {
 			<p style='font-size:1rem;'>{$plain_desc}</p>
 			<p><a href='{$notif_url}' style='color:#2563eb;'>"
 			. esc_html__( 'View all notifications', '6arshid-social-community' )
-			. "</a></p>
-		</body></html>";
+			. '</a></p>
+		</body></html>';
 
 		wp_mail( $user->user_email, $subject, $body, array( 'Content-Type: text/html; charset=UTF-8' ) );
 	}
@@ -313,7 +379,7 @@ class Notifications {
 	public function get_user_prefs( int $user_id ): array {
 		$prefs = array();
 		foreach ( array_keys( self::TYPES ) as $action ) {
-			$val            = get_user_meta( $user_id, 'arshid6social_notify_' . $action, true );
+			$val              = get_user_meta( $user_id, 'arshid6social_notify_' . $action, true );
 			$prefs[ $action ] = $val === '0' ? false : true; // default = enabled
 		}
 		$prefs['email_notifications'] = ! (bool) get_user_meta( $user_id, 'arshid6social_email_opt_out', true );
@@ -341,11 +407,19 @@ class Notifications {
 		$notification                   = clone $notification;
 		$notification->component_action = $action;
 
-		$sender       = get_userdata( (int) $notification->item_id );
-		$sender_name  = $sender ? esc_html( $sender->display_name ) : __( 'Someone', '6arshid-social-community' );
-		$sender_url   = $sender ? esc_url( home_url( '/members/' . $sender->user_nicename . '/' ) ) : '#';
+		$sender        = get_userdata( (int) $notification->item_id );
+		$sender_name   = $sender ? esc_html( $sender->display_name ) : __( 'Someone', '6arshid-social-community' );
+		$sender_url    = $sender ? esc_url( home_url( '/members/' . $sender->user_nicename . '/' ) ) : '#';
 		$sender_avatar = $sender
-			? esc_url( get_avatar_url( $sender->ID, array( 'size' => 48, 'default' => 'mp' ) ) )
+			? esc_url(
+				get_avatar_url(
+					$sender->ID,
+					array(
+						'size'    => 48,
+						'default' => 'mp',
+					)
+				)
+			)
 			: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&s=48';
 
 		$type_info = self::TYPES[ $notification->component_action ] ?? array(
@@ -409,11 +483,13 @@ class Notifications {
 			case 'comment_reply':
 				// secondary_item_id = comment activity ID; resolve parent post and anchor to the comment.
 				if ( $secondary ) {
-					$parent_activity_id = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-						"SELECT item_id FROM {$wpdb->prefix}sn_activity WHERE id = %d AND type = 'activity_comment'",
-						$secondary
-					) );
-					$base_url = $parent_activity_id
+					$parent_activity_id = (int) $wpdb->get_var(
+						$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+							"SELECT item_id FROM {$wpdb->prefix}sn_activity WHERE id = %d AND type = 'activity_comment'",
+							$secondary
+						)
+					);
+					$base_url           = $parent_activity_id
 						? \Arshid6Social\Components\Activity\Activity::get_permalink( $parent_activity_id )
 						: \Arshid6Social\Components\Activity\Activity::get_permalink( $secondary );
 					return $base_url . '#arshid6social-activity-' . $secondary;
@@ -427,10 +503,12 @@ class Notifications {
 
 			case 'group_invitation':
 				if ( $secondary ) {
-					$slug = (string) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-						"SELECT slug FROM {$wpdb->prefix}sn_groups WHERE id = %d",
-						$secondary
-					) );
+					$slug = (string) $wpdb->get_var(
+						$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+							"SELECT slug FROM {$wpdb->prefix}sn_groups WHERE id = %d",
+							$secondary
+						)
+					);
 					if ( $slug ) {
 						return $groups_base . $slug . '/';
 					}
@@ -508,45 +586,53 @@ class Notifications {
 	// ── Event listeners ───────────────────────────────────────────────────────
 
 	public function notify_friend_request( int $initiator_id, int $friend_id ): void {
-		$this->add( array(
-			'user_id'          => $friend_id,
-			'item_id'          => $initiator_id,
-			'component_name'   => 'friends',
-			'component_action' => 'friend_request',
-			'sender_id'        => $initiator_id,
-		) );
+		$this->add(
+			array(
+				'user_id'          => $friend_id,
+				'item_id'          => $initiator_id,
+				'component_name'   => 'friends',
+				'component_action' => 'friend_request',
+				'sender_id'        => $initiator_id,
+			)
+		);
 	}
 
 	public function notify_friend_accepted( int $accepter_id, int $requester_id ): void {
-		$this->add( array(
-			'user_id'          => $requester_id,
-			'item_id'          => $accepter_id,
-			'component_name'   => 'friends',
-			'component_action' => 'friendship_accepted',
-			'sender_id'        => $accepter_id,
-		) );
+		$this->add(
+			array(
+				'user_id'          => $requester_id,
+				'item_id'          => $accepter_id,
+				'component_name'   => 'friends',
+				'component_action' => 'friendship_accepted',
+				'sender_id'        => $accepter_id,
+			)
+		);
 	}
 
 	public function notify_mention( array $data ): void {
-		$this->add( array(
-			'user_id'           => $data['user_id'],
-			'item_id'           => $data['poster_id'],
-			'secondary_item_id' => $data['activity_id'],
-			'component_name'    => 'activity',
-			'component_action'  => 'activity_mention',
-			'sender_id'         => $data['poster_id'],
-		) );
+		$this->add(
+			array(
+				'user_id'           => $data['user_id'],
+				'item_id'           => $data['poster_id'],
+				'secondary_item_id' => $data['activity_id'],
+				'component_name'    => 'activity',
+				'component_action'  => 'activity_mention',
+				'sender_id'         => $data['poster_id'],
+			)
+		);
 	}
 
 	public function notify_group_invitation( int $group_id, int $invitee_id, int $inviter_id ): void {
-		$this->add( array(
-			'user_id'           => $invitee_id,
-			'item_id'           => $inviter_id,
-			'secondary_item_id' => $group_id,
-			'component_name'    => 'groups',
-			'component_action'  => 'group_invitation',
-			'sender_id'         => $inviter_id,
-		) );
+		$this->add(
+			array(
+				'user_id'           => $invitee_id,
+				'item_id'           => $inviter_id,
+				'secondary_item_id' => $group_id,
+				'component_name'    => 'groups',
+				'component_action'  => 'group_invitation',
+				'sender_id'         => $inviter_id,
+			)
+		);
 	}
 
 	public function notify_new_message( int $message_id, int $thread_id, int $sender_id ): void {
@@ -561,14 +647,16 @@ class Notifications {
 		);
 
 		foreach ( $recipients as $recipient_id ) {
-			$this->add( array(
-				'user_id'           => (int) $recipient_id,
-				'item_id'           => $sender_id,
-				'secondary_item_id' => $thread_id,
-				'component_name'    => 'messages',
-				'component_action'  => 'new_message',
-				'sender_id'         => $sender_id,
-			) );
+			$this->add(
+				array(
+					'user_id'           => (int) $recipient_id,
+					'item_id'           => $sender_id,
+					'secondary_item_id' => $thread_id,
+					'component_name'    => 'messages',
+					'component_action'  => 'new_message',
+					'sender_id'         => $sender_id,
+				)
+			);
 		}
 	}
 
@@ -578,20 +666,24 @@ class Notifications {
 		}
 
 		global $wpdb;
-		$owner = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
-			$activity_id
-		) );
+		$owner = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				$activity_id
+			)
+		);
 
 		if ( $owner ) {
-			$this->add( array(
-				'user_id'           => $owner,
-				'item_id'           => $reactor_id,
-				'secondary_item_id' => $activity_id,
-				'component_name'    => 'activity',
-				'component_action'  => 'activity_reaction',
-				'sender_id'         => $reactor_id,
-			) );
+			$this->add(
+				array(
+					'user_id'           => $owner,
+					'item_id'           => $reactor_id,
+					'secondary_item_id' => $activity_id,
+					'component_name'    => 'activity',
+					'component_action'  => 'activity_reaction',
+					'sender_id'         => $reactor_id,
+				)
+			);
 		}
 	}
 
@@ -599,50 +691,60 @@ class Notifications {
 		global $wpdb;
 
 		// Notify the post owner.
-		$owner = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
-			$activity_id
-		) );
+		$owner = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				$activity_id
+			)
+		);
 
 		if ( $owner ) {
-			$this->add( array(
-				'user_id'           => $owner,
-				'item_id'           => $commenter_id,
-				'secondary_item_id' => $comment_id,
-				'component_name'    => 'activity',
-				'component_action'  => 'activity_comment',
-				'sender_id'         => $commenter_id,
-			) );
+			$this->add(
+				array(
+					'user_id'           => $owner,
+					'item_id'           => $commenter_id,
+					'secondary_item_id' => $comment_id,
+					'component_name'    => 'activity',
+					'component_action'  => 'activity_comment',
+					'sender_id'         => $commenter_id,
+				)
+			);
 		}
 
 		// If this is a reply to a comment, also notify the comment author (unless they own the post — already notified above).
 		if ( $parent_comment_id ) {
-			$comment_author = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d AND type = 'activity_comment'",
-				$parent_comment_id
-			) );
+			$comment_author = (int) $wpdb->get_var(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d AND type = 'activity_comment'",
+					$parent_comment_id
+				)
+			);
 
 			if ( $comment_author && $comment_author !== $owner ) {
-				$this->add( array(
-					'user_id'           => $comment_author,
-					'item_id'           => $commenter_id,
-					'secondary_item_id' => $comment_id,
-					'component_name'    => 'activity',
-					'component_action'  => 'comment_reply',
-					'sender_id'         => $commenter_id,
-				) );
+				$this->add(
+					array(
+						'user_id'           => $comment_author,
+						'item_id'           => $commenter_id,
+						'secondary_item_id' => $comment_id,
+						'component_name'    => 'activity',
+						'component_action'  => 'comment_reply',
+						'sender_id'         => $commenter_id,
+					)
+				);
 			}
 		}
 	}
 
 	public function notify_follow( int $follower_id, int $followee_id ): void {
-		$this->add( array(
-			'user_id'          => $followee_id,
-			'item_id'          => $follower_id,
-			'component_name'   => 'friends',
-			'component_action' => 'new_follower',
-			'sender_id'        => $follower_id,
-		) );
+		$this->add(
+			array(
+				'user_id'          => $followee_id,
+				'item_id'          => $follower_id,
+				'component_name'   => 'friends',
+				'component_action' => 'new_follower',
+				'sender_id'        => $follower_id,
+			)
+		);
 	}
 
 	// ── AJAX ──────────────────────────────────────────────────────────────────
@@ -663,13 +765,15 @@ class Notifications {
 		$notifications = $this->get_for_user( $user_id, $unread_only, $limit, $page );
 		$total         = $this->get_total_count( $user_id, $unread_only );
 
-		wp_send_json_success( array(
-			'notifications' => $notifications,
-			'total'         => $total,
-			'page'          => $page,
-			'perPage'       => $limit,
-			'hasMore'       => ( $page * $limit ) < $total,
-		) );
+		wp_send_json_success(
+			array(
+				'notifications' => $notifications,
+				'total'         => $total,
+				'page'          => $page,
+				'perPage'       => $limit,
+				'hasMore'       => ( $page * $limit ) < $total,
+			)
+		);
 	}
 
 	public function ajax_mark_read(): void {
@@ -772,9 +876,12 @@ class Notifications {
 	private function send_digest( string $period ): void {
 		global $wpdb;
 
-		$user_ids = array_map( 'intval', (array) $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT DISTINCT user_id FROM {$wpdb->prefix}sn_notifications WHERE is_new = 1"
-		) );
+		$user_ids = array_map(
+			'intval',
+			(array) $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT DISTINCT user_id FROM {$wpdb->prefix}sn_notifications WHERE is_new = 1"
+			)
+		);
 
 		if ( empty( $user_ids ) ) {
 			return;
@@ -820,8 +927,8 @@ class Notifications {
 
 		$items = '';
 		foreach ( $notifications as $n ) {
-			$icon    = self::TYPES[ $n['componentAction'] ]['icon'] ?? '🔔';
-			$items  .= '<tr><td style="padding:12px 0;border-bottom:1px solid #e5e7eb;">'
+			$icon   = self::TYPES[ $n['componentAction'] ]['icon'] ?? '🔔';
+			$items .= '<tr><td style="padding:12px 0;border-bottom:1px solid #e5e7eb;">'
 				. '<span style="font-size:1.2em;margin-right:8px;">' . esc_html( $icon ) . '</span>'
 				. $n['description']
 				. '<br><small style="color:#6b7280;">' . esc_html( $n['dateNotified'] ) . '</small>'
@@ -835,16 +942,16 @@ class Notifications {
 			<div style='padding:24px;background:#fff;border:1px solid #e5e7eb;border-top:none;'>
 				<p>" .
 				/* translators: %s: user display name */
-				sprintf( esc_html__( 'Hello %s,', '6arshid-social-community' ), esc_html( $user->display_name ) ) . "</p>
-				<p>" . esc_html__( 'Here are your recent notifications:', '6arshid-social-community' ) . "</p>
+				sprintf( esc_html__( 'Hello %s,', '6arshid-social-community' ), esc_html( $user->display_name ) ) . '</p>
+				<p>' . esc_html__( 'Here are your recent notifications:', '6arshid-social-community' ) . "</p>
 				<table width='100%' cellpadding='0' cellspacing='0'>{$items}</table>
 				<p style='margin-top:24px;'>
 					<a href='{$notif_url}' style='background:#2563eb;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;display:inline-block;'>
-					" . esc_html__( 'View All Notifications', '6arshid-social-community' ) . "
+					" . esc_html__( 'View All Notifications', '6arshid-social-community' ) . '
 					</a>
 				</p>
 			</div>
-		</body></html>";
+		</body></html>';
 	}
 
 	public function register_rest_routes(): void {

@@ -26,7 +26,7 @@ class Activity {
 		add_action( 'wp_ajax_arshid6social_get_activity', array( $this, 'ajax_get_activity' ) );
 		add_action( 'wp_ajax_nopriv_arshid6social_get_activity', array( $this, 'ajax_get_activity' ) );
 		add_action( 'wp_ajax_arshid6social_delete_activity', array( $this, 'ajax_delete_activity' ) );
-		add_action( 'wp_ajax_arshid6social_edit_activity',   array( $this, 'ajax_edit_activity' ) );
+		add_action( 'wp_ajax_arshid6social_edit_activity', array( $this, 'ajax_edit_activity' ) );
 		add_action( 'wp_ajax_arshid6social_delete_activity_media', array( $this, 'ajax_delete_activity_media' ) );
 		add_action( 'wp_ajax_arshid6social_react_activity', array( $this, 'ajax_react_activity' ) );
 		add_action( 'wp_ajax_nopriv_arshid6social_react_activity', array( $this, 'ajax_react_activity_nopriv' ) );
@@ -86,16 +86,18 @@ class Activity {
 			return self::$uid_cache[ $activity_id ];
 		}
 		global $wpdb;
-		$uid = (string) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT uid FROM {$wpdb->prefix}sn_activity WHERE id = %d",
-			$activity_id
-		) );
+		$uid = (string) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT uid FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				$activity_id
+			)
+		);
 		if ( '' === $uid ) {
 			$uid = uniqid();
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prefix . 'sn_activity',
 				array( 'uid' => $uid ),
-				array( 'id'  => $activity_id ),
+				array( 'id' => $activity_id ),
 				array( '%s' ),
 				array( '%d' )
 			);
@@ -109,10 +111,12 @@ class Activity {
 	 */
 	public function get_by_uid( string $uid ): ?object {
 		global $wpdb;
-		return $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_activity WHERE uid = %s",
-			$uid
-		) );
+		return $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_activity WHERE uid = %s",
+				$uid
+			)
+		);
 	}
 
 	public function handle_single_activity_page(): void {
@@ -130,7 +134,7 @@ class Activity {
 		$activity_base = sanitize_title( get_option( 'arshid6social_permalink_activity_base', 'activity' ) );
 
 		if ( ! $activity || $activity->is_spam ) {
-			wp_redirect( home_url( '/' . $activity_base . '/' ) );
+			wp_safe_redirect( home_url( '/' . $activity_base . '/' ) );
 			exit;
 		}
 
@@ -168,7 +172,7 @@ class Activity {
 		// Replace page content with the single activity view.
 		add_filter(
 			'the_content',
-			function() use ( $formatted ) {
+			function () use ( $formatted ) {
 				return \Arshid6Social\Template_Loader::instance()->get_template(
 					'activity/single.php',
 					array( 'activity' => $formatted ),
@@ -181,9 +185,9 @@ class Activity {
 		// Override the page <title> to reflect the post author.
 		add_filter(
 			'document_title_parts',
-			function( $parts ) use ( $formatted ) {
-				$author  = $formatted['userName'] ?? '';
-				$excerpt = wp_trim_words( wp_strip_all_tags( $formatted['content'] ?? '' ), 10 );
+			function ( $parts ) use ( $formatted ) {
+				$author         = $formatted['userName'] ?? '';
+				$excerpt        = wp_trim_words( wp_strip_all_tags( $formatted['content'] ?? '' ), 10 );
 				$parts['title'] = $author
 					? sprintf( '%s — %s', $author, $excerpt ?: __( 'Activity', '6arshid-social-community' ) )
 					: $excerpt;
@@ -193,15 +197,19 @@ class Activity {
 
 		// Suppress the theme's H1 page title on single activity pages.
 		// in_the_loop() limits this to the main template, not nav menus / breadcrumbs.
-		add_filter( 'the_title', function( $title ) {
-			return in_the_loop() ? '' : $title;
-		}, 1 );
+		add_filter(
+			'the_title',
+			function ( $title ) {
+				return in_the_loop() ? '' : $title;
+			},
+			1
+		);
 		add_filter( 'single_post_title', '__return_empty_string', 1 );
 
 		// Canonical + OG tags.
 		add_action(
 			'wp_head',
-			function() use ( $formatted ) {
+			function () use ( $formatted ) {
 				$url    = $formatted['permalink'];
 				$desc   = wp_trim_words( wp_strip_all_tags( $formatted['content'] ?? '' ), 30 );
 				$author = $formatted['userName'] ?? '';
@@ -209,7 +217,9 @@ class Activity {
 
 				$image = '';
 				foreach ( $formatted['media'] ?? array() as $m ) {
-					if ( ! empty( $m['fileUrl'] ) ) { $image = $m['fileUrl']; break; }
+					if ( ! empty( $m['fileUrl'] ) ) {
+						$image = $m['fileUrl'];
+						break; }
 				}
 				if ( ! $image && ! empty( $formatted['userAvatarUrl'] ) ) {
 					$image = $formatted['userAvatarUrl'];
@@ -220,8 +230,12 @@ class Activity {
 				echo '<meta property="og:url" content="' . esc_url( $url ) . '" />' . "\n";
 				echo '<meta property="og:title" content="' . esc_attr( $author ) . '" />' . "\n";
 				echo '<meta property="og:description" content="' . esc_attr( $desc ) . '" />' . "\n";
-				if ( $image ) echo '<meta property="og:image" content="' . esc_url( $image ) . '" />' . "\n";
-				if ( $date )  echo '<meta property="article:published_time" content="' . esc_attr( gmdate( 'c', strtotime( $date ) ) ) . '" />' . "\n";
+				if ( $image ) {
+					echo '<meta property="og:image" content="' . esc_url( $image ) . '" />' . "\n";
+				}
+				if ( $date ) {
+					echo '<meta property="article:published_time" content="' . esc_attr( gmdate( 'c', strtotime( $date ) ) ) . '" />' . "\n";
+				}
 			}
 		);
 
@@ -272,10 +286,10 @@ class Activity {
 			wp_send_json_error( array( 'message' => __( 'Your account has been suspended.', '6arshid-social-community' ) ), 403 );
 		}
 
-		$content   = isset( $_POST['content'] ) ? wp_kses_post( wp_unslash( $_POST['content'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
-		$privacy   = isset( $_POST['privacy'] ) ? sanitize_key( wp_unslash( $_POST['privacy'] ) ) : 'public'; // phpcs:ignore WordPress.Security.NonceVerification
-		$type      = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : 'activity_update'; // phpcs:ignore WordPress.Security.NonceVerification
-		$group_id  = isset( $_POST['group_id'] ) ? absint( $_POST['group_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification
+		$content  = isset( $_POST['content'] ) ? wp_kses_post( wp_unslash( $_POST['content'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+		$privacy  = isset( $_POST['privacy'] ) ? sanitize_key( wp_unslash( $_POST['privacy'] ) ) : 'public'; // phpcs:ignore WordPress.Security.NonceVerification
+		$type     = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : 'activity_update'; // phpcs:ignore WordPress.Security.NonceVerification
+		$group_id = isset( $_POST['group_id'] ) ? absint( $_POST['group_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification
 		// PPV price: submitted as dollars (e.g. "10.00"), stored as integer cents.
 		$ppv_price_cents = 0;
 		if ( 'paid' === $privacy && isset( $_POST['ppv_price'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
@@ -307,13 +321,13 @@ class Activity {
 
 		$activity_id = $this->add(
 			array(
-				'user_id'       => $user_id,
-				'type'          => $type,
-				'component'     => 'activity',
-				'content'       => $content,
-				'privacy'       => $privacy,
-				'item_id'       => $group_id,
-				'ppv_price'     => $ppv_price_cents,
+				'user_id'   => $user_id,
+				'type'      => $type,
+				'component' => 'activity',
+				'content'   => $content,
+				'privacy'   => $privacy,
+				'item_id'   => $group_id,
+				'ppv_price' => $ppv_price_cents,
 			)
 		);
 
@@ -368,8 +382,8 @@ class Activity {
 
 		// Build action string if not provided.
 		if ( empty( $args['action'] ) ) {
-			$user            = get_userdata( $args['user_id'] );
-			$args['action']  = sprintf(
+			$user           = get_userdata( $args['user_id'] );
+			$args['action'] = sprintf(
 				/* translators: %s: member display name with profile link */
 				__( '%s posted an update', '6arshid-social-community' ),
 				'<a href="' . esc_url( home_url( '/members/' . $user->user_nicename . '/' ) ) . '">' . esc_html( $user->display_name ) . '</a>'
@@ -420,7 +434,7 @@ class Activity {
 				$wpdb->prefix . 'sn_activity_meta',
 				array(
 					'activity_id' => $activity_id,
-					'meta_key'    => '_sixarshidsc_ppv_price',
+					'meta_key'    => '_arshid6social_monetization_ppv_price',
 					'meta_value'  => $ppv_price,
 				),
 				array( '%d', '%s', '%d' )
@@ -500,19 +514,19 @@ class Activity {
 
 		// Batch: reactions grouped by (activity_id, reaction_type).
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
-		$raw_reactions = $wpdb->get_results(
+		$raw_reactions   = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT activity_id, reaction_type, COUNT(*) AS count FROM {$wpdb->prefix}sn_activity_reactions WHERE activity_id IN ($ids_ph) GROUP BY activity_id, reaction_type", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				...$ids
 			),
 			ARRAY_A
 		);
-		$reactions_map    = array();
-		$reaction_totals  = array();
+		$reactions_map   = array();
+		$reaction_totals = array();
 		foreach ( (array) $raw_reactions as $r ) {
-			$aid                      = (int) $r['activity_id'];
-			$reactions_map[ $aid ][]  = $r;
-			$reaction_totals[ $aid ]  = ( $reaction_totals[ $aid ] ?? 0 ) + (int) $r['count'];
+			$aid                     = (int) $r['activity_id'];
+			$reactions_map[ $aid ][] = $r;
+			$reaction_totals[ $aid ] = ( $reaction_totals[ $aid ] ?? 0 ) + (int) $r['count'];
 		}
 
 		// Batch: current viewer's own reactions.
@@ -554,7 +568,7 @@ class Activity {
 
 		// Batch: top-level comment counts.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
-		$raw_counts = $wpdb->get_results(
+		$raw_counts     = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT item_id, COUNT(*) AS cnt FROM {$wpdb->prefix}sn_activity WHERE item_id IN ($ids_ph) AND type = 'activity_comment' AND secondary_item_id = 0 AND is_spam = 0 GROUP BY item_id", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				...$ids
@@ -568,7 +582,7 @@ class Activity {
 
 		// Batch: view counts from activity_meta.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
-		$raw_views = $wpdb->get_results(
+		$raw_views   = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT activity_id, meta_value FROM {$wpdb->prefix}sn_activity_meta WHERE activity_id IN ($ids_ph) AND meta_key = '_view_count'", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				...$ids
@@ -662,7 +676,7 @@ class Activity {
 			'scope'        => 'all', // all | personal | friends | group
 			'hashtag_slug' => '',
 		);
-		$args = wp_parse_args( $args, $defaults );
+		$args     = wp_parse_args( $args, $defaults );
 
 		// Let engagement features (Sticky Posts) inject sticky IDs.
 		$args       = (array) apply_filters( 'arshid6social_get_activity_args', $args );
@@ -696,16 +710,23 @@ class Activity {
 
 		if ( ! empty( $args['hashtag_slug'] ) ) {
 			$slug        = mb_strtolower( $args['hashtag_slug'], 'UTF-8' );
-			$hashtag_row = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_hashtags WHERE slug = %s",
-				$slug
-			) );
+			$hashtag_row = $wpdb->get_row(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					"SELECT id FROM {$wpdb->prefix}sn_hashtags WHERE slug = %s",
+					$slug
+				)
+			);
 
 			if ( $hashtag_row ) {
-				$hashtag_activity_ids = array_map( 'intval', (array) $wpdb->get_col( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					"SELECT object_id FROM {$wpdb->prefix}sn_hashtag_relations WHERE hashtag_id = %d AND object_type = 'activity'",
-					$hashtag_row->id
-				) ) );
+				$hashtag_activity_ids = array_map(
+					'intval',
+					(array) $wpdb->get_col(
+						$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+							"SELECT object_id FROM {$wpdb->prefix}sn_hashtag_relations WHERE hashtag_id = %d AND object_type = 'activity'",
+							$hashtag_row->id
+						)
+					)
+				);
 
 				if ( empty( $hashtag_activity_ids ) ) {
 					$where[] = '1=0';
@@ -762,19 +783,25 @@ class Activity {
 			} else {
 				$viewer_id = get_current_user_id();
 
-				$followed_user_ids = array_map( 'intval', (array) $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					$wpdb->prepare( "SELECT followee_id FROM {$wpdb->prefix}sn_follow WHERE follower_id = %d", $viewer_id )
-				) );
+				$followed_user_ids = array_map(
+					'intval',
+					(array) $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+						$wpdb->prepare( "SELECT followee_id FROM {$wpdb->prefix}sn_follow WHERE follower_id = %d", $viewer_id )
+					)
+				);
 
-				$hashtag_activity_ids = array_map( 'intval', (array) $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					$wpdb->prepare(
-						"SELECT DISTINCT hr.object_id
+				$hashtag_activity_ids = array_map(
+					'intval',
+					(array) $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+						$wpdb->prepare(
+							"SELECT DISTINCT hr.object_id
 						 FROM {$wpdb->prefix}sn_hashtag_follows hf
 						 INNER JOIN {$wpdb->prefix}sn_hashtag_relations hr ON hr.hashtag_id = hf.hashtag_id AND hr.object_type = 'activity'
 						 WHERE hf.user_id = %d",
-						$viewer_id
+							$viewer_id
+						)
 					)
-				) );
+				);
 
 				if ( empty( $followed_user_ids ) && empty( $hashtag_activity_ids ) ) {
 					$where[] = '1=0';
@@ -1085,7 +1112,7 @@ class Activity {
 		global $wpdb;
 
 		$content = isset( $_POST['content'] ) ? wp_kses_post( wp_unslash( $_POST['content'] ) ) : $activity->content; // phpcs:ignore WordPress.Security.NonceVerification
-		$privacy  = isset( $_POST['privacy'] ) ? sanitize_key( wp_unslash( $_POST['privacy'] ) ) : $activity->privacy; // phpcs:ignore WordPress.Security.NonceVerification
+		$privacy = isset( $_POST['privacy'] ) ? sanitize_key( wp_unslash( $_POST['privacy'] ) ) : $activity->privacy; // phpcs:ignore WordPress.Security.NonceVerification
 
 		$allowed_privacy = array( 'public', 'friends', 'private', 'paid' );
 		if ( ! in_array( $privacy, $allowed_privacy, true ) ) {
@@ -1118,7 +1145,10 @@ class Activity {
 
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_activity',
-			array( 'content' => $content, 'privacy' => $privacy ),
+			array(
+				'content' => $content,
+				'privacy' => $privacy,
+			),
 			array( 'id' => $activity_id ),
 			array( '%s', '%s' ),
 			array( '%d' )
@@ -1126,10 +1156,12 @@ class Activity {
 
 		$this->invalidate_cache( $activity_id );
 
-		wp_send_json_success( array(
-			'activity' => $this->format_activity( $this->get_by_id( $activity_id ) ),
-			'message'  => __( 'Activity updated.', '6arshid-social-community' ),
-		) );
+		wp_send_json_success(
+			array(
+				'activity' => $this->format_activity( $this->get_by_id( $activity_id ) ),
+				'message'  => __( 'Activity updated.', '6arshid-social-community' ),
+			)
+		);
 	}
 
 	/**
@@ -1203,7 +1235,7 @@ class Activity {
 		}
 
 		// Delete media files from disk and table.
-		$media_items = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$media_items   = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare( "SELECT file_path FROM {$wpdb->prefix}sn_activity_media WHERE activity_id = %d", $activity_id )
 		);
 		$dir_to_remove = null;
@@ -1285,7 +1317,12 @@ class Activity {
 
 		do_action( 'arshid6social_activity_reacted', $activity_id, $user_id, $reaction_type, $reacted );
 
-		wp_send_json_success( array( 'reacted' => $reacted, 'count' => $count ) );
+		wp_send_json_success(
+			array(
+				'reacted' => $reacted,
+				'count'   => $count,
+			)
+		);
 	}
 
 	/**
@@ -1398,10 +1435,12 @@ class Activity {
 
 		do_action( 'arshid6social_activity_commented', $comment_id, $parent_id, $user_id, $parent_comment_id );
 
-		wp_send_json_success( array(
-			'comment' => $this->format_activity( $this->get_by_id( $comment_id ) ),
-			'message' => __( 'Comment posted.', '6arshid-social-community' ),
-		) );
+		wp_send_json_success(
+			array(
+				'comment' => $this->format_activity( $this->get_by_id( $comment_id ) ),
+				'message' => __( 'Comment posted.', '6arshid-social-community' ),
+			)
+		);
 	}
 
 	/**
@@ -1506,11 +1545,11 @@ class Activity {
 		}
 
 		// Support both single file and multi-file upload structures.
-		$names     = is_array( $files['name'] )     ? $files['name']     : array( $files['name'] );
-		$types     = is_array( $files['type'] )     ? $files['type']     : array( $files['type'] );
+		$names     = is_array( $files['name'] ) ? $files['name'] : array( $files['name'] );
+		$types     = is_array( $files['type'] ) ? $files['type'] : array( $files['type'] );
 		$tmp_names = is_array( $files['tmp_name'] ) ? $files['tmp_name'] : array( $files['tmp_name'] );
-		$errors    = is_array( $files['error'] )    ? $files['error']    : array( $files['error'] );
-		$sizes     = is_array( $files['size'] )     ? $files['size']     : array( $files['size'] );
+		$errors    = is_array( $files['error'] ) ? $files['error'] : array( $files['error'] );
+		$sizes     = is_array( $files['size'] ) ? $files['size'] : array( $files['size'] );
 
 		$subdir_filter = function ( array $dir ) use ( $activity_id ): array {
 			$dir['subdir'] = '/social-network/activity/' . $activity_id;
@@ -1607,8 +1646,8 @@ class Activity {
 			do_action(
 				'arshid6social_activity_mention',
 				array(
-					'user_id'    => $mentioned_user->ID,
-					'poster_id'  => $poster_id,
+					'user_id'     => $mentioned_user->ID,
+					'poster_id'   => $poster_id,
 					'activity_id' => $activity_id,
 				)
 			);
@@ -1694,9 +1733,9 @@ class Activity {
 			'comment_content'      => $content,
 			'comment_author'       => $user ? $user->display_name : '',
 			'comment_author_email' => $user ? $user->user_email : '',
-			'user_ip'              => sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '' ),
-			'user_agent'           => sanitize_text_field( $_SERVER['HTTP_USER_AGENT'] ?? '' ),
-			'referrer'             => sanitize_text_field( $_SERVER['HTTP_REFERER'] ?? '' ),
+			'user_ip'              => sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) ),
+			'user_agent'           => sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ?? '' ) ),
+			'referrer'             => sanitize_text_field( wp_unslash( $_SERVER['HTTP_REFERER'] ?? '' ) ),
 			'blog'                 => home_url(),
 		);
 

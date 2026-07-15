@@ -14,38 +14,66 @@ class Hashtags_REST {
 	const NS = 'arshid6social/v1';
 
 	public function register_routes(): void {
-		register_rest_route( self::NS, '/hashtags/trending', array(
-			'methods'             => 'GET',
-			'callback'            => array( $this, 'trending' ),
-			'permission_callback' => '__return_true',
-			'args'                => array(
-				'period' => array( 'default' => '24h', 'sanitize_callback' => 'sanitize_key' ),
-				'limit'  => array( 'default' => 10, 'sanitize_callback' => 'absint' ),
-			),
-		) );
+		register_rest_route(
+			self::NS,
+			'/hashtags/trending',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'trending' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'period' => array(
+						'default'           => '24h',
+						'sanitize_callback' => 'sanitize_key',
+					),
+					'limit'  => array(
+						'default'           => 10,
+						'sanitize_callback' => 'absint',
+					),
+				),
+			)
+		);
 
-		register_rest_route( self::NS, '/hashtags/(?P<slug>[^/]+)/feed', array(
-			'methods'             => 'GET',
-			'callback'            => array( $this, 'feed' ),
-			'permission_callback' => '__return_true',
-			'args'                => array(
-				'slug'     => array( 'sanitize_callback' => 'sanitize_title' ),
-				'page'     => array( 'default' => 1, 'sanitize_callback' => 'absint' ),
-				'per_page' => array( 'default' => 20, 'sanitize_callback' => 'absint' ),
-			),
-		) );
+		register_rest_route(
+			self::NS,
+			'/hashtags/(?P<slug>[^/]+)/feed',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'feed' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'slug'     => array( 'sanitize_callback' => 'sanitize_title' ),
+					'page'     => array(
+						'default'           => 1,
+						'sanitize_callback' => 'absint',
+					),
+					'per_page' => array(
+						'default'           => 20,
+						'sanitize_callback' => 'absint',
+					),
+				),
+			)
+		);
 
-		register_rest_route( self::NS, '/hashtags/(?P<id>\d+)/follow', array(
-			'methods'             => \WP_REST_Server::CREATABLE,
-			'callback'            => array( $this, 'follow' ),
-			'permission_callback' => array( $this, 'logged_in' ),
-		) );
+		register_rest_route(
+			self::NS,
+			'/hashtags/(?P<id>\d+)/follow',
+			array(
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'follow' ),
+				'permission_callback' => array( $this, 'logged_in' ),
+			)
+		);
 
-		register_rest_route( self::NS, '/hashtags/(?P<id>\d+)/follow', array(
-			'methods'             => \WP_REST_Server::DELETABLE,
-			'callback'            => array( $this, 'unfollow' ),
-			'permission_callback' => array( $this, 'logged_in' ),
-		) );
+		register_rest_route(
+			self::NS,
+			'/hashtags/(?P<id>\d+)/follow',
+			array(
+				'methods'             => \WP_REST_Server::DELETABLE,
+				'callback'            => array( $this, 'unfollow' ),
+				'permission_callback' => array( $this, 'logged_in' ),
+			)
+		);
 	}
 
 	public function logged_in(): bool {
@@ -103,7 +131,12 @@ class Hashtags_REST {
 			}
 		}
 
-		return new \WP_REST_Response( array( 'activities' => $activities, 'total' => $result['total'] ) );
+		return new \WP_REST_Response(
+			array(
+				'activities' => $activities,
+				'total'      => $result['total'],
+			)
+		);
 	}
 
 	public function follow( \WP_REST_Request $req ): \WP_REST_Response {
@@ -111,7 +144,11 @@ class Hashtags_REST {
 		$hashtag_id = absint( $req['id'] );
 		$wpdb->replace( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_hashtag_follows',
-			array( 'hashtag_id' => $hashtag_id, 'user_id' => get_current_user_id(), 'created_at' => current_time( 'mysql' ) ),
+			array(
+				'hashtag_id' => $hashtag_id,
+				'user_id'    => get_current_user_id(),
+				'created_at' => current_time( 'mysql' ),
+			),
 			array( '%d', '%d', '%s' )
 		);
 		return new \WP_REST_Response( array( 'following' => true ) );
@@ -121,7 +158,10 @@ class Hashtags_REST {
 		global $wpdb;
 		$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_hashtag_follows',
-			array( 'hashtag_id' => absint( $req['id'] ), 'user_id' => get_current_user_id() ),
+			array(
+				'hashtag_id' => absint( $req['id'] ),
+				'user_id'    => get_current_user_id(),
+			),
 			array( '%d', '%d' )
 		);
 		return new \WP_REST_Response( array( 'following' => false ) );

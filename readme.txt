@@ -1,9 +1,9 @@
-===6Arshid Social Community===
-Contributors: 6arshid, hassantafreshi , aminkhadivar
+=== 6Arshid Social Community ===
+Contributors: 6arshid, hassantafreshi, aminkhadivar
 Tags: social network, community, members, activity, groups, buddypress, messaging, profiles
 Requires at least: 6.5
 Tested up to: 7.0
-Stable tag: 1.5.7
+Stable tag: 1.7.0
 Requires PHP: 8.1
 License: MIT
 License URI: https://opensource.org/licenses/MIT
@@ -62,7 +62,7 @@ A complete, secure, responsive, multilingual social network plugin for WordPress
 * Trending hashtags feed with scheduled cache refresh
 * Follow and unfollow hashtags
 * Hashtag autocomplete in the composer
-* `[sn_trending_hashtags]` shortcode
+* `[arshid6social_trending_hashtags]` shortcode
 
 = Tag Friends =
 
@@ -77,7 +77,7 @@ A complete, secure, responsive, multilingual social network plugin for WordPress
 * User-created bookmark collections
 * Bookmark search and filtering
 * Dedicated bookmarks page with infinite scroll
-* `[sn_bookmarks]` shortcode
+* `[arshid6social_bookmarks]` shortcode
 
 = Share Posts =
 
@@ -191,7 +191,7 @@ A complete, secure, responsive, multilingual social network plugin for WordPress
 * Supports live and test mode with separate key pairs
 * Webhook handler for Stripe events (`customer.subscription.*`, `invoice.*`, `payment_intent.*`, `account.updated`)
 * 13 supported currencies: USD, EUR, GBP, CAD, AUD, JPY, CHF, SEK, NOK, DKK, TRY, AED, SAR
-* Extensible gateway layer — additional gateways can be registered via the `sixarshidsc_payment_gateways` filter
+* Extensible gateway layer — additional gateways can be registered via the `arshid6social_monetization_payment_gateways` filter
 
 = XML Sitemaps =
 
@@ -208,7 +208,7 @@ A complete, secure, responsive, multilingual social network plugin for WordPress
 * Component-based architecture — enable or disable each feature independently
 * Template override support — copy any template to `{theme}/social-network/`
 * Gutenberg blocks — Activity Feed, Member Directory, Group List
-* Shortcodes — `[arshid6social_activity]`, `[arshid6social_members]`, `[arshid6social_groups]`, `[arshid6social_messages]`, `[arshid6social_notifications]`, `[arshid6social_profile]`, `[arshid6social_login_form]`, `[arshid6social_register_form]`, `[sn_bookmarks]`, `[sn_trending_hashtags]`
+* Shortcodes — `[arshid6social_activity]`, `[arshid6social_members]`, `[arshid6social_groups]`, `[arshid6social_messages]`, `[arshid6social_notifications]`, `[arshid6social_profile]`, `[arshid6social_login_form]`, `[arshid6social_register_form]`, `[arshid6social_bookmarks]`, `[arshid6social_trending_hashtags]`, `[arshid6social_stories_tray]`, `[arshid6social_verification_request]`, `[arshid6social_block_list]`
 
 = Multilingual =
 
@@ -283,7 +283,7 @@ Developers can use the `arshid6social_xprofile_groups` and `arshid6social_xprofi
 Yes. Hook into `arshid6social_loaded` to register custom components, and use `arshid6social_settings_tabs` to add your own settings tab.
 
 = What shortcodes are available? =
-`[arshid6social_activity]`, `[arshid6social_members]`, `[arshid6social_groups]`, `[arshid6social_messages]`, `[arshid6social_notifications]`, `[arshid6social_profile]`, `[arshid6social_login_form]`, `[arshid6social_register_form]`, `[sn_bookmarks]`, `[sn_trending_hashtags]`
+`[arshid6social_activity]`, `[arshid6social_members]`, `[arshid6social_groups]`, `[arshid6social_messages]`, `[arshid6social_notifications]`, `[arshid6social_profile]`, `[arshid6social_login_form]`, `[arshid6social_register_form]`, `[arshid6social_bookmarks]`, `[arshid6social_trending_hashtags]`, `[arshid6social_stories_tray]`, `[arshid6social_verification_request]`, `[arshid6social_block_list]`
 
 = Is the REST API available to external apps? =
 Yes. The REST API at `/wp-json/arshid6social/v1/` covers activity, members, friends, groups, messages, notifications, bookmarks, hashtags, polls, tags, sharing, sticky posts, and attachments.
@@ -375,12 +375,25 @@ When the Monetization module is enabled, creator onboarding and payment processi
 * Privacy Policy: https://stripe.com/privacy
 * Terms of Service: https://stripe.com/legal
 
+= Akismet =
+When Akismet spam checking is enabled (on by default) and the separate Akismet plugin is installed and active on the site, activity posts and private messages are sent to Akismet's spam-checking API before being published. Data sent includes the post/message content, the author's IP address, and user agent. This feature is a no-op if the Akismet plugin is not installed.
+* Service: https://akismet.com
+* Privacy Policy: https://automattic.com/privacy/
+* Terms of Service: https://akismet.com/tos/
+
 == Changelog ==
+
+= 1.7.0 =
+* Renamed plugin to 6Arshid Social Community with a consistent `6arshid-social-community` slug/text domain and `arshid6social` code prefix throughout.
+* Fixed remaining WordPress.org plugin review items: removed the last raw inline `<script>` output, removed the remaining remote Google Fonts dependency, corrected short/inconsistent prefixes in the Monetization module and a handful of shortcodes, and documented Akismet under External Services.
 
 = 1.0.0 =
 * Initial release
 
 == Upgrade Notice ==
+
+= 1.7.0 =
+Internal prefix and slug consistency fixes; no action required for existing installs.
 
 = 1.0.0 =
 Initial release. No upgrade path required.

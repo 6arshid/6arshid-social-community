@@ -12,12 +12,12 @@ defined( 'ABSPATH' ) || exit;
 class Comments_GIFs {
 
 	public function __construct() {
-		add_action( 'wp_ajax_arshid6social_gif_trending',        array( $this, 'ajax_trending' ) );
-		add_action( 'wp_ajax_arshid6social_gif_search',          array( $this, 'ajax_search' ) );
-		add_action( 'wp_ajax_arshid6social_gif_recent',          array( $this, 'ajax_recent' ) );
-		add_action( 'wp_ajax_arshid6social_gif_record_use',      array( $this, 'ajax_record_use' ) );
+		add_action( 'wp_ajax_arshid6social_gif_trending', array( $this, 'ajax_trending' ) );
+		add_action( 'wp_ajax_arshid6social_gif_search', array( $this, 'ajax_search' ) );
+		add_action( 'wp_ajax_arshid6social_gif_recent', array( $this, 'ajax_recent' ) );
+		add_action( 'wp_ajax_arshid6social_gif_record_use', array( $this, 'ajax_record_use' ) );
 		add_action( 'wp_ajax_nopriv_arshid6social_gif_trending', array( $this, 'ajax_trending' ) );
-		add_action( 'wp_ajax_nopriv_arshid6social_gif_search',   array( $this, 'ajax_search' ) );
+		add_action( 'wp_ajax_nopriv_arshid6social_gif_search', array( $this, 'ajax_search' ) );
 	}
 
 	// ── Provider ──────────────────────────────────────────────────────────────
@@ -42,18 +42,23 @@ class Comments_GIFs {
 	 * Fetches trending GIFs from GIPHY.
 	 */
 	private function fetch_giphy_trending( int $limit = 25 ): array {
-		$key      = $this->api_key();
+		$key       = $this->api_key();
 		$cache_key = 'arshid6social_gif_trending_giphy_' . $limit;
-		$cached   = get_transient( $cache_key );
+		$cached    = get_transient( $cache_key );
 		if ( false !== $cached ) {
 			return $cached;
 		}
 
-		$response = wp_remote_get( add_query_arg( array(
-			'api_key' => $key,
-			'limit'   => $limit,
-			'rating'  => 'g',
-		), 'https://api.giphy.com/v1/gifs/trending' ) );
+		$response = wp_remote_get(
+			add_query_arg(
+				array(
+					'api_key' => $key,
+					'limit'   => $limit,
+					'rating'  => 'g',
+				),
+				'https://api.giphy.com/v1/gifs/trending'
+			)
+		);
 
 		if ( is_wp_error( $response ) ) {
 			return array();
@@ -66,13 +71,18 @@ class Comments_GIFs {
 	}
 
 	private function fetch_giphy_search( string $q, int $limit = 25 ): array {
-		$key = $this->api_key();
-		$response = wp_remote_get( add_query_arg( array(
-			'api_key' => $key,
-			'q'       => sanitize_text_field( $q ),
-			'limit'   => $limit,
-			'rating'  => 'g',
-		), 'https://api.giphy.com/v1/gifs/search' ) );
+		$key      = $this->api_key();
+		$response = wp_remote_get(
+			add_query_arg(
+				array(
+					'api_key' => $key,
+					'q'       => sanitize_text_field( $q ),
+					'limit'   => $limit,
+					'rating'  => 'g',
+				),
+				'https://api.giphy.com/v1/gifs/search'
+			)
+		);
 
 		if ( is_wp_error( $response ) ) {
 			return array();
@@ -83,17 +93,20 @@ class Comments_GIFs {
 	}
 
 	private function normalize_giphy( array $data ): array {
-		return array_map( function( array $gif ): array {
-			return array(
-				'id'       => esc_attr( $gif['id'] ?? '' ),
-				'title'    => esc_html( $gif['title'] ?? '' ),
-				'url'      => esc_url( $gif['images']['fixed_height']['url'] ?? $gif['url'] ?? '' ),
-				'thumb'    => esc_url( $gif['images']['fixed_height_small']['url'] ?? '' ),
-				'width'    => (int) ( $gif['images']['fixed_height']['width'] ?? 0 ),
-				'height'   => (int) ( $gif['images']['fixed_height']['height'] ?? 200 ),
-				'provider' => 'giphy',
-			);
-		}, $data );
+		return array_map(
+			function ( array $gif ): array {
+				return array(
+					'id'       => esc_attr( $gif['id'] ?? '' ),
+					'title'    => esc_html( $gif['title'] ?? '' ),
+					'url'      => esc_url( $gif['images']['fixed_height']['url'] ?? $gif['url'] ?? '' ),
+					'thumb'    => esc_url( $gif['images']['fixed_height_small']['url'] ?? '' ),
+					'width'    => (int) ( $gif['images']['fixed_height']['width'] ?? 0 ),
+					'height'   => (int) ( $gif['images']['fixed_height']['height'] ?? 200 ),
+					'provider' => 'giphy',
+				);
+			},
+			$data
+		);
 	}
 
 	private function fetch_tenor_trending( int $limit = 25 ): array {
@@ -104,12 +117,17 @@ class Comments_GIFs {
 			return $cached;
 		}
 
-		$response = wp_remote_get( add_query_arg( array(
-			'key'        => $key,
-			'limit'      => $limit,
-			'contentfilter' => 'high',
-			'media_filter' => 'gif',
-		), 'https://tenor.googleapis.com/v2/featured' ) );
+		$response = wp_remote_get(
+			add_query_arg(
+				array(
+					'key'           => $key,
+					'limit'         => $limit,
+					'contentfilter' => 'high',
+					'media_filter'  => 'gif',
+				),
+				'https://tenor.googleapis.com/v2/featured'
+			)
+		);
 
 		if ( is_wp_error( $response ) ) {
 			return array();
@@ -123,13 +141,18 @@ class Comments_GIFs {
 
 	private function fetch_tenor_search( string $q, int $limit = 25 ): array {
 		$key      = $this->api_key();
-		$response = wp_remote_get( add_query_arg( array(
-			'key'           => $key,
-			'q'             => sanitize_text_field( $q ),
-			'limit'         => $limit,
-			'contentfilter' => 'high',
-			'media_filter'  => 'gif',
-		), 'https://tenor.googleapis.com/v2/search' ) );
+		$response = wp_remote_get(
+			add_query_arg(
+				array(
+					'key'           => $key,
+					'q'             => sanitize_text_field( $q ),
+					'limit'         => $limit,
+					'contentfilter' => 'high',
+					'media_filter'  => 'gif',
+				),
+				'https://tenor.googleapis.com/v2/search'
+			)
+		);
 
 		if ( is_wp_error( $response ) ) {
 			return array();
@@ -140,19 +163,22 @@ class Comments_GIFs {
 	}
 
 	private function normalize_tenor( array $data ): array {
-		return array_map( function( array $gif ): array {
-			$media = $gif['media_formats']['gif'] ?? $gif['media_formats']['tinygif'] ?? array();
-			$thumb = $gif['media_formats']['tinygif'] ?? $media;
-			return array(
-				'id'       => esc_attr( $gif['id'] ?? '' ),
-				'title'    => esc_html( $gif['title'] ?? '' ),
-				'url'      => esc_url( $media['url'] ?? '' ),
-				'thumb'    => esc_url( $thumb['url'] ?? '' ),
-				'width'    => (int) ( $media['dims'][0] ?? 0 ),
-				'height'   => (int) ( $media['dims'][1] ?? 200 ),
-				'provider' => 'tenor',
-			);
-		}, $data );
+		return array_map(
+			function ( array $gif ): array {
+				$media = $gif['media_formats']['gif'] ?? $gif['media_formats']['tinygif'] ?? array();
+				$thumb = $gif['media_formats']['tinygif'] ?? $media;
+				return array(
+					'id'       => esc_attr( $gif['id'] ?? '' ),
+					'title'    => esc_html( $gif['title'] ?? '' ),
+					'url'      => esc_url( $media['url'] ?? '' ),
+					'thumb'    => esc_url( $thumb['url'] ?? '' ),
+					'width'    => (int) ( $media['dims'][0] ?? 0 ),
+					'height'   => (int) ( $media['dims'][1] ?? 200 ),
+					'provider' => 'tenor',
+				);
+			},
+			$data
+		);
 	}
 
 	// ── Recent GIFs (per-user user-meta) ──────────────────────────────────────

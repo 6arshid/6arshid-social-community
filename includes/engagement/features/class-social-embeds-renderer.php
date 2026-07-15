@@ -70,7 +70,13 @@ class Social_Embeds_Renderer {
 
 		if ( $lazy ) {
 			return self::lazy_wrap(
-				$clean_html, $outer_attrs, $style, $thumb, $title, $prov_name, $url
+				$clean_html,
+				$outer_attrs,
+				$style,
+				$thumb,
+				$title,
+				$prov_name,
+				$url
 			);
 		}
 
@@ -202,9 +208,9 @@ class Social_Embeds_Renderer {
 		$h = (int) ( $data['height'] ?? 0 );
 
 		// Reject suspicious values:
-		//  – width ≤ 100 likely means a CSS percentage, not pixels.
-		//  – portrait ratio (h > w) would produce a very tall container.
-		//  – unrealistically large values guard against malformed data.
+		// – width ≤ 100 likely means a CSS percentage, not pixels.
+		// – portrait ratio (h > w) would produce a very tall container.
+		// – unrealistically large values guard against malformed data.
 		if ( $w > 100 && $h > 0 && $w >= $h && $w <= 7680 && $h <= 4320 ) {
 			return round( $h / $w * 100, 4 ) . '%';
 		}

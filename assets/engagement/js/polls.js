@@ -7,8 +7,10 @@ window.ARSHID6SOCIALVote = function ( btn ) {
 	if ( ! poll ) return;
 
 	var pollId   = poll.dataset.pollId;
-	var ajaxUrl  = poll.dataset.ajax  || ( window.ARSHID6SOCIALEng && window.ARSHID6SOCIALEng.ajaxUrl ) || '/wp-admin/admin-ajax.php';
+	var ajaxUrl  = poll.dataset.ajax  || ( window.ARSHID6SOCIALEng && window.ARSHID6SOCIALEng.ajaxUrl ) || '';
 	var nonce    = poll.dataset.nonce || ( window.ARSHID6SOCIALEng && window.ARSHID6SOCIALEng.nonce )   || '';
+
+	if ( ! ajaxUrl ) return;
 
 	var checked = poll.querySelectorAll( 'input[name="poll_option"]:checked' );
 	if ( ! checked.length ) return;

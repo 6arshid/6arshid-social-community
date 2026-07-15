@@ -18,7 +18,7 @@ defined( 'ABSPATH' ) || exit;
  * - Admin queue: approve (assign type), reject (reason), request more info
  * - Badge rendering filter on profiles, activity, comments, stories
  * - Re-verification expiry cron
- * - [sn_verification_request] shortcode
+ * - [arshid6social_verification_request] shortcode
  */
 class Verification {
 
@@ -30,27 +30,28 @@ class Verification {
 	}
 
 	private function hooks(): void {
-		// Shortcode.
+		// Shortcode (primary name + legacy alias for existing post content).
+		add_shortcode( 'arshid6social_verification_request', array( $this, 'shortcode_request_form' ) );
 		add_shortcode( 'sn_verification_request', array( $this, 'shortcode_request_form' ) );
 
 		// Inject badge into display names throughout the site.
-		add_filter( 'arshid6social_format_member',    array( $this, 'inject_badge_into_member' ), 10, 2 );
+		add_filter( 'arshid6social_format_member', array( $this, 'inject_badge_into_member' ), 10, 2 );
 		add_filter( 'arshid6social_activity_content', array( $this, 'maybe_linkify_badge' ), 20, 1 );
 
 		// Cron: expire badges.
 		add_action( 'arshid6social_expire_verifications', array( $this, 'expire_badges' ) );
 
 		// AJAX (user side).
-		add_action( 'wp_ajax_arshid6social_submit_verification_request',   array( $this, 'ajax_submit_request' ) );
+		add_action( 'wp_ajax_arshid6social_submit_verification_request', array( $this, 'ajax_submit_request' ) );
 		add_action( 'wp_ajax_arshid6social_resubmit_verification_request', array( $this, 'ajax_resubmit_request' ) );
-		add_action( 'wp_ajax_arshid6social_get_verification_status',       array( $this, 'ajax_get_status' ) );
+		add_action( 'wp_ajax_arshid6social_get_verification_status', array( $this, 'ajax_get_status' ) );
 
 		// AJAX (admin side).
-		add_action( 'wp_ajax_arshid6social_admin_verify_user',    array( $this, 'ajax_admin_grant' ) );
-		add_action( 'wp_ajax_arshid6social_admin_unverify_user',  array( $this, 'ajax_admin_revoke' ) );
+		add_action( 'wp_ajax_arshid6social_admin_verify_user', array( $this, 'ajax_admin_grant' ) );
+		add_action( 'wp_ajax_arshid6social_admin_unverify_user', array( $this, 'ajax_admin_revoke' ) );
 		add_action( 'wp_ajax_arshid6social_admin_approve_request', array( $this, 'ajax_admin_approve' ) );
-		add_action( 'wp_ajax_arshid6social_admin_reject_request',  array( $this, 'ajax_admin_reject' ) );
-		add_action( 'wp_ajax_arshid6social_admin_more_info',       array( $this, 'ajax_admin_more_info' ) );
+		add_action( 'wp_ajax_arshid6social_admin_reject_request', array( $this, 'ajax_admin_reject' ) );
+		add_action( 'wp_ajax_arshid6social_admin_more_info', array( $this, 'ajax_admin_more_info' ) );
 
 		// Serve protected document.
 		add_action( 'wp_ajax_arshid6social_serve_verification_doc', array( $this, 'serve_doc' ) );
@@ -63,12 +64,14 @@ class Verification {
 	 */
 	public function get( int $user_id ): ?object {
 		global $wpdb;
-		return $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT v.* FROM {$wpdb->prefix}sn_verifications v
+		return $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT v.* FROM {$wpdb->prefix}sn_verifications v
 			 WHERE v.user_id = %d
 			   AND (v.expires_at IS NULL OR v.expires_at > NOW())",
-			$user_id
-		) );
+				$user_id
+			)
+		);
 	}
 
 	/**
@@ -89,12 +92,16 @@ class Verification {
 
 		$types = $this->get_types();
 		$type  = $record->type ?? 'general';
-		$cfg   = $types[ $type ] ?? $types['general'] ?? array( 'badge' => '✓', 'label' => 'Verified', 'color' => '#2563eb' );
+		$cfg   = $types[ $type ] ?? $types['general'] ?? array(
+			'badge' => '✓',
+			'label' => 'Verified',
+			'color' => '#2563eb',
+		);
 
-		$label     = esc_attr( $cfg['label'] ?? 'Verified' );
-		$color     = esc_attr( $cfg['color'] ?? '#2563eb' );
-		$img_id    = (int) get_option( 'arshid6social_verification_badge_image', 0 );
-		$img_url   = $img_id ? wp_get_attachment_image_url( $img_id, array( 32, 32 ) ) : '';
+		$label   = esc_attr( $cfg['label'] ?? 'Verified' );
+		$color   = esc_attr( $cfg['color'] ?? '#2563eb' );
+		$img_id  = (int) get_option( 'arshid6social_verification_badge_image', 0 );
+		$img_url = $img_id ? wp_get_attachment_image_url( $img_id, array( 32, 32 ) ) : '';
 
 		if ( $img_url ) {
 			return sprintf(
@@ -129,7 +136,12 @@ class Verification {
 			}
 		}
 		return $out ?: array(
-			'general' => array( 'key' => 'general', 'label' => 'Verified', 'badge' => '✓', 'color' => '#2563eb' ),
+			'general' => array(
+				'key'   => 'general',
+				'label' => 'Verified',
+				'badge' => '✓',
+				'color' => '#2563eb',
+			),
 		);
 	}
 
@@ -153,10 +165,12 @@ class Verification {
 			: null;
 
 		// Upsert.
-		$existing = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_verifications WHERE user_id = %d",
-			$user_id
-		) );
+		$existing = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_verifications WHERE user_id = %d",
+				$user_id
+			)
+		);
 
 		if ( $existing ) {
 			$result = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -190,7 +204,11 @@ class Verification {
 		if ( $result ) {
 			update_user_meta( $user_id, 'arshid6social_verified', '1' );
 			\Arshid6Social\Components\Moderation\Moderation::log_action(
-				get_current_user_id(), 'verification_granted', 'user', $user_id, array( 'type' => $type )
+				get_current_user_id(),
+				'verification_granted',
+				'user',
+				$user_id,
+				array( 'type' => $type )
 			);
 			do_action( 'arshid6social_verification_granted', $user_id, $type );
 		}
@@ -211,7 +229,11 @@ class Verification {
 		if ( $deleted ) {
 			delete_user_meta( $user_id, 'arshid6social_verified' );
 			\Arshid6Social\Components\Moderation\Moderation::log_action(
-				get_current_user_id(), 'verification_revoked', 'user', $user_id, array()
+				get_current_user_id(),
+				'verification_revoked',
+				'user',
+				$user_id,
+				array()
 			);
 			do_action( 'arshid6social_verification_revoked', $user_id );
 		}
@@ -225,12 +247,14 @@ class Verification {
 	 */
 	public function get_pending_request( int $user_id ): ?object {
 		global $wpdb;
-		return $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_verification_requests
+		return $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_verification_requests
 			 WHERE user_id = %d AND status IN ('pending','more_info')
 			 ORDER BY created_at DESC LIMIT 1",
-			$user_id
-		) );
+				$user_id
+			)
+		);
 	}
 
 	/**
@@ -253,12 +277,12 @@ class Verification {
 		$result = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_verification_requests',
 			array(
-				'user_id'       => $user_id,
-				'type'          => sanitize_key( $type ),
-				'fields_json'   => wp_json_encode( $fields ),
+				'user_id'        => $user_id,
+				'type'           => sanitize_key( $type ),
+				'fields_json'    => wp_json_encode( $fields ),
 				'document_paths' => wp_json_encode( $doc_paths ),
-				'status'        => 'pending',
-				'created_at'    => current_time( 'mysql' ),
+				'status'         => 'pending',
+				'created_at'     => current_time( 'mysql' ),
 			),
 			array( '%d', '%s', '%s', '%s', '%s', '%s' )
 		);
@@ -272,10 +296,12 @@ class Verification {
 	public function approve_request( int $request_id, string $type ): bool {
 		global $wpdb;
 
-		$request = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
-			$request_id
-		) );
+		$request = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
+				$request_id
+			)
+		);
 		if ( ! $request ) {
 			return false;
 		}
@@ -305,10 +331,12 @@ class Verification {
 	public function reject_request( int $request_id, string $reason = '' ): bool {
 		global $wpdb;
 
-		$request = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
-			$request_id
-		) );
+		$request = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
+				$request_id
+			)
+		);
 		if ( ! $request ) {
 			return false;
 		}
@@ -338,10 +366,12 @@ class Verification {
 	public function request_more_info( int $request_id, string $message ): bool {
 		global $wpdb;
 
-		$request = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
-			$request_id
-		) );
+		$request = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
+				$request_id
+			)
+		);
 		if ( ! $request ) {
 			return false;
 		}
@@ -442,12 +472,12 @@ class Verification {
 			wp_send_json_error( array( 'message' => __( 'Too many verification requests. Please try later.', '6arshid-social-community' ) ), 429 );
 		}
 
+		// Nonce already verified above via $this->nonce_check().
 		// phpcs:disable WordPress.Security.NonceVerification
-		$type    = sanitize_key( wp_unslash( $_POST['type'] ?? 'general' ) );
-		$name    = sanitize_text_field( wp_unslash( $_POST['full_name'] ?? '' ) );
-		$cat     = sanitize_text_field( wp_unslash( $_POST['category'] ?? '' ) );
-		$links   = sanitize_textarea_field( wp_unslash( $_POST['links'] ?? '' ) );
-		// phpcs:enable
+		$type  = sanitize_key( wp_unslash( $_POST['type'] ?? 'general' ) );
+		$name  = sanitize_text_field( wp_unslash( $_POST['full_name'] ?? '' ) );
+		$cat   = sanitize_text_field( wp_unslash( $_POST['category'] ?? '' ) );
+		$links = sanitize_textarea_field( wp_unslash( $_POST['links'] ?? '' ) );
 
 		$fields = array(
 			'full_name' => $name,
@@ -469,12 +499,13 @@ class Verification {
 				$result['path'],
 				$result['url'],
 				$result['mime'],
-				sanitize_file_name( (string) ( $_FILES['document']['name'] ?? '' ) ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+				sanitize_file_name( (string) ( $_FILES['document']['name'] ?? '' ) ),
 				$user_id
 			);
 		} elseif ( $require ) {
 			wp_send_json_error( array( 'message' => __( 'A document upload is required for verification.', '6arshid-social-community' ) ) );
 		}
+		// phpcs:enable
 
 		$id = $this->submit_request( $user_id, $type, $fields, $doc_paths );
 		if ( ! $id ) {
@@ -490,29 +521,31 @@ class Verification {
 		check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce' );
 		$user_id = get_current_user_id();
 		$pending = $this->get_pending_request( $user_id );
-		wp_send_json_success( array(
-			'verified' => $this->is_verified( $user_id ),
-			'badge'    => $this->get_badge_html( $user_id ),
-			'pending'  => $pending ? array(
-				'id'     => (int) $pending->id,
-				'status' => $pending->status,
-				'reason' => $pending->reason ?? '',
-			) : null,
-		) );
+		wp_send_json_success(
+			array(
+				'verified' => $this->is_verified( $user_id ),
+				'badge'    => $this->get_badge_html( $user_id ),
+				'pending'  => $pending ? array(
+					'id'     => (int) $pending->id,
+					'status' => $pending->status,
+					'reason' => $pending->reason ?? '',
+				) : null,
+			)
+		);
 	}
 
 	public function ajax_admin_grant(): void {
 		$this->nonce_check( true );
 		$user_id = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$type    = sanitize_key( wp_unslash( $_POST['type'] ?? 'general' ) ); // phpcs:ignore WordPress.Security.NonceVerification
-		$ok = $this->grant( $user_id, $type );
+		$ok      = $this->grant( $user_id, $type );
 		$ok ? wp_send_json_success() : wp_send_json_error();
 	}
 
 	public function ajax_admin_revoke(): void {
 		$this->nonce_check( true );
 		$user_id = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
-		$ok = $this->revoke( $user_id );
+		$ok      = $this->revoke( $user_id );
 		$ok ? wp_send_json_success() : wp_send_json_error();
 	}
 
@@ -520,7 +553,7 @@ class Verification {
 		$this->nonce_check( true );
 		$req_id = absint( $_POST['request_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$type   = sanitize_key( wp_unslash( $_POST['type'] ?? 'general' ) ); // phpcs:ignore WordPress.Security.NonceVerification
-		$ok = $this->approve_request( $req_id, $type );
+		$ok     = $this->approve_request( $req_id, $type );
 		$ok ? wp_send_json_success() : wp_send_json_error();
 	}
 
@@ -528,7 +561,7 @@ class Verification {
 		$this->nonce_check( true );
 		$req_id = absint( $_POST['request_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$reason = sanitize_textarea_field( wp_unslash( $_POST['reason'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
-		$ok = $this->reject_request( $req_id, $reason );
+		$ok     = $this->reject_request( $req_id, $reason );
 		$ok ? wp_send_json_success() : wp_send_json_error();
 	}
 
@@ -536,7 +569,7 @@ class Verification {
 		$this->nonce_check( true );
 		$req_id  = absint( $_POST['request_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$message = sanitize_textarea_field( wp_unslash( $_POST['message'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
-		$ok = $this->request_more_info( $req_id, $message );
+		$ok      = $this->request_more_info( $req_id, $message );
 		$ok ? wp_send_json_success() : wp_send_json_error();
 	}
 
@@ -550,11 +583,11 @@ class Verification {
 			wp_send_json_error( array( 'message' => __( 'No request awaiting additional information.', '6arshid-social-community' ) ) );
 		}
 
+		// Nonce already verified above via $this->nonce_check().
 		// phpcs:disable WordPress.Security.NonceVerification
 		$name  = sanitize_text_field( wp_unslash( $_POST['full_name'] ?? '' ) );
 		$cat   = sanitize_text_field( wp_unslash( $_POST['category'] ?? '' ) );
 		$links = sanitize_textarea_field( wp_unslash( $_POST['links'] ?? '' ) );
-		// phpcs:enable
 
 		$fields = array(
 			'full_name' => $name,
@@ -571,6 +604,7 @@ class Verification {
 			}
 			$doc_paths[] = $result['path'];
 		}
+		// phpcs:enable
 
 		global $wpdb;
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -603,10 +637,12 @@ class Verification {
 		$idx    = absint( $_GET['idx'] ?? 0 );
 
 		global $wpdb;
-		$request = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT document_paths FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
-			$req_id
-		) );
+		$request = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT document_paths FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
+				$req_id
+			)
+		);
 
 		if ( ! $request ) {
 			status_header( 404 );
@@ -627,13 +663,15 @@ class Verification {
 		if ( ! $notifications ) {
 			return;
 		}
-		$notifications->add( array(
-			'user_id'           => $user_id,
-			'item_id'           => get_current_user_id() ?: $user_id,
-			'secondary_item_id' => $secondary_id,
-			'component_name'    => 'verification',
-			'component_action'  => $action,
-		) );
+		$notifications->add(
+			array(
+				'user_id'           => $user_id,
+				'item_id'           => get_current_user_id() ?: $user_id,
+				'secondary_item_id' => $secondary_id,
+				'component_name'    => 'verification',
+				'component_action'  => $action,
+			)
+		);
 	}
 
 	// ── Helpers ───────────────────────────────────────────────────────────────

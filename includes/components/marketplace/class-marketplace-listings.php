@@ -19,20 +19,20 @@ class Marketplace_Listings {
 
 	public function __construct() {
 		// Browse listings grid — both logged-in and guests.
-		add_action( 'wp_ajax_arshid6social_mkt_get_listings',        array( $this, 'ajax_get_listings' ) );
+		add_action( 'wp_ajax_arshid6social_mkt_get_listings', array( $this, 'ajax_get_listings' ) );
 		add_action( 'wp_ajax_nopriv_arshid6social_mkt_get_listings', array( $this, 'ajax_get_listings' ) );
 
 		// Photo upload/remove (logged-in only)
-		add_action( 'wp_ajax_arshid6social_mkt_upload_photo',   array( $this, 'ajax_upload_photo' ) );
-		add_action( 'wp_ajax_arshid6social_mkt_remove_photo',   array( $this, 'ajax_remove_photo' ) );
+		add_action( 'wp_ajax_arshid6social_mkt_upload_photo', array( $this, 'ajax_upload_photo' ) );
+		add_action( 'wp_ajax_arshid6social_mkt_remove_photo', array( $this, 'ajax_remove_photo' ) );
 
 		// Save / delete listing
-		add_action( 'wp_ajax_arshid6social_mkt_save_listing',   array( $this, 'ajax_save_listing' ) );
+		add_action( 'wp_ajax_arshid6social_mkt_save_listing', array( $this, 'ajax_save_listing' ) );
 		add_action( 'wp_ajax_arshid6social_mkt_delete_listing', array( $this, 'ajax_delete_listing' ) );
-		add_action( 'wp_ajax_arshid6social_mkt_change_status',  array( $this, 'ajax_change_status' ) );
+		add_action( 'wp_ajax_arshid6social_mkt_change_status', array( $this, 'ajax_change_status' ) );
 
 		// Save (favourite) toggle & report
-		add_action( 'wp_ajax_arshid6social_mkt_toggle_save',    array( $this, 'ajax_toggle_save' ) );
+		add_action( 'wp_ajax_arshid6social_mkt_toggle_save', array( $this, 'ajax_toggle_save' ) );
 		add_action( 'wp_ajax_arshid6social_mkt_report_listing', array( $this, 'ajax_report_listing' ) );
 
 		// Cron: expire listings
@@ -53,9 +53,9 @@ class Marketplace_Listings {
 		$offset   = ( $page - 1 ) * $per_page;
 
 		// Filters (no nonce needed — read-only public query).
-		$q       = sanitize_text_field( wp_unslash( $_GET['q']    ?? $_POST['q']    ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
-		$cat_id  = absint( $_GET['cat']  ?? $_POST['cat']  ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
-		$sort    = sanitize_key( wp_unslash( $_GET['sort'] ?? $_POST['sort'] ?? 'newest' ) ); // phpcs:ignore WordPress.Security.NonceVerification
+		$q      = sanitize_text_field( wp_unslash( $_GET['q'] ?? $_POST['q'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
+		$cat_id = absint( $_GET['cat'] ?? $_POST['cat'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
+		$sort   = sanitize_key( wp_unslash( $_GET['sort'] ?? $_POST['sort'] ?? 'newest' ) ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		// ── Build WHERE ──────────────────────────────────────────────────────
 		$user_id  = get_current_user_id();
@@ -90,35 +90,39 @@ class Marketplace_Listings {
 
 		// ── ORDER BY ─────────────────────────────────────────────────────────
 		$order_map = array(
-			'newest'     => 'l.created_at DESC',
-			'price_asc'  => 'l.is_free ASC, l.price ASC',
-			'price_desc' => 'l.is_free ASC, l.price DESC',
-			'most_viewed'=> 'l.views DESC',
+			'newest'      => 'l.created_at DESC',
+			'price_asc'   => 'l.is_free ASC, l.price ASC',
+			'price_desc'  => 'l.is_free ASC, l.price DESC',
+			'most_viewed' => 'l.views DESC',
 		);
-		$order = $order_map[ $sort ] ?? 'l.created_at DESC';
+		$order     = $order_map[ $sort ] ?? 'l.created_at DESC';
 
 		// ── Count (for has_more) ──────────────────────────────────────────────
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$total = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_listings l {$where}",
-			...$params
-		) );
+		$total = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_listings l {$where}",
+				...$params
+			)
+		);
 
 		// ── Fetch rows ────────────────────────────────────────────────────────
 		$params[] = $per_page;
 		$params[] = $offset;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$rows = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			"SELECT l.id, l.uid, l.title, l.price, l.is_free, l.is_negotiable,
+		$rows = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"SELECT l.id, l.uid, l.title, l.price, l.is_free, l.is_negotiable,
 			 l.item_condition, l.location_city, l.status,
 			 l.created_at, l.seller_id, l.category_id
 			 FROM {$wpdb->prefix}arshid6social_listings l
 			 {$where}
 			 ORDER BY {$order}
 			 LIMIT %d OFFSET %d",
-			...$params
-		) ) ?: array();
+				...$params
+			)
+		) ?: array();
 
 		// ── Fetch primary photo per listing in one query ───────────────────────
 		$listing_ids = array_map( static fn( $r ) => (int) $r->id, $rows );
@@ -137,7 +141,7 @@ class Marketplace_Listings {
 
 			foreach ( $media_rows as $m ) {
 				// Prefer WP attachment URL (handles CDN/regeneration); fall back to stored file_url.
-				$att_url = $m->attachment_id ? wp_get_attachment_image_url( (int) $m->attachment_id, 'medium' ) : false;
+				$att_url                        = $m->attachment_id ? wp_get_attachment_image_url( (int) $m->attachment_id, 'medium' ) : false;
 				$thumbs[ (int) $m->listing_id ] = $att_url ?: $m->file_url;
 			}
 		}
@@ -158,16 +162,24 @@ class Marketplace_Listings {
 				'location_city'   => $row->location_city,
 				'date_relative'   => self::time_ago( $row->created_at ),
 				'thumb'           => $thumbs[ (int) $row->id ] ?? '',
-				'url'             => add_query_arg( array( 'action' => 'view', 'id' => ( $row->uid ?: $row->id ) ), $base_url ),
+				'url'             => add_query_arg(
+					array(
+						'action' => 'view',
+						'id'     => ( $row->uid ?: $row->id ),
+					),
+					$base_url
+				),
 			);
 		}
 
-		wp_send_json_success( array(
-			'listings' => $listings,
-			'total'    => $total,
-			'page'     => $page,
-			'has_more' => ( $offset + count( $rows ) ) < $total,
-		) );
+		wp_send_json_success(
+			array(
+				'listings' => $listings,
+				'total'    => $total,
+				'page'     => $page,
+				'has_more' => ( $offset + count( $rows ) ) < $total,
+			)
+		);
 	}
 
 	/**
@@ -178,13 +190,21 @@ class Marketplace_Listings {
 	 */
 	private static function time_ago( string $datetime ): string {
 		$diff = time() - strtotime( $datetime );
-		if ( $diff < 60 )       return __( 'just now', '6arshid-social-community' );
-		/* translators: %d: number of minutes */
-		if ( $diff < 3600 )     return sprintf( _n( '%d minute ago', '%d minutes ago', (int) ( $diff / 60 ),   '6arshid-social-community' ), (int) ( $diff / 60 ) );
-		/* translators: %d: number of hours */
-		if ( $diff < 86400 )    return sprintf( _n( '%d hour ago',   '%d hours ago',   (int) ( $diff / 3600 ), '6arshid-social-community' ), (int) ( $diff / 3600 ) );
-		/* translators: %d: number of days */
-		if ( $diff < 604800 )   return sprintf( _n( '%d day ago',    '%d days ago',    (int) ( $diff / 86400 ),'6arshid-social-community' ), (int) ( $diff / 86400 ) );
+		if ( $diff < 60 ) {
+			return __( 'just now', '6arshid-social-community' );
+		}
+		if ( $diff < 3600 ) {
+			/* translators: %d: number of minutes */
+			return sprintf( _n( '%d minute ago', '%d minutes ago', (int) ( $diff / 60 ), '6arshid-social-community' ), (int) ( $diff / 60 ) );
+		}
+		if ( $diff < 86400 ) {
+			/* translators: %d: number of hours */
+			return sprintf( _n( '%d hour ago', '%d hours ago', (int) ( $diff / 3600 ), '6arshid-social-community' ), (int) ( $diff / 3600 ) );
+		}
+		if ( $diff < 604800 ) {
+			/* translators: %d: number of days */
+			return sprintf( _n( '%d day ago', '%d days ago', (int) ( $diff / 86400 ), '6arshid-social-community' ), (int) ( $diff / 86400 ) );
+		}
 		return date_i18n( get_option( 'date_format' ), strtotime( $datetime ) );
 	}
 
@@ -216,7 +236,7 @@ class Marketplace_Listings {
 			wp_send_json_error( array( 'message' => sprintf( __( 'Maximum %d photos allowed.', '6arshid-social-community' ), $max ) ), 400 );
 		}
 
-		if ( empty( $_FILES['photo'] ) || UPLOAD_ERR_OK !== $_FILES['photo']['error'] ) {
+		if ( empty( $_FILES['photo'] ) || UPLOAD_ERR_OK !== ( $_FILES['photo']['error'] ?? UPLOAD_ERR_NO_FILE ) ) {
 			wp_send_json_error( array( 'message' => __( 'No valid file received.', '6arshid-social-community' ) ), 400 );
 		}
 
@@ -248,7 +268,7 @@ class Marketplace_Listings {
 		}
 
 		// Tag the attachment so we can clean up orphans later
-		update_post_meta( $attachment_id, '_arshid6social_mkt_uploader',    $user_id );
+		update_post_meta( $attachment_id, '_arshid6social_mkt_uploader', $user_id );
 		update_post_meta( $attachment_id, '_arshid6social_mkt_draft_token', $token );
 
 		$thumb = wp_get_attachment_image_url( $attachment_id, 'medium' )
@@ -262,11 +282,13 @@ class Marketplace_Listings {
 		);
 		set_transient( "arshid6social_mkt_draft_{$user_id}_{$token}", $draft, DAY_IN_SECONDS );
 
-		wp_send_json_success( array(
-			'id'    => $attachment_id,
-			'url'   => $full,
-			'thumb' => $thumb,
-		) );
+		wp_send_json_success(
+			array(
+				'id'    => $attachment_id,
+				'url'   => $full,
+				'thumb' => $thumb,
+			)
+		);
 	}
 
 	/**
@@ -295,9 +317,14 @@ class Marketplace_Listings {
 
 		// Remove from transient
 		$draft = get_transient( "arshid6social_mkt_draft_{$user_id}_{$token}" ) ?: array();
-		$draft = array_values( array_filter( $draft, static function ( $p ) use ( $attachment_id ) {
-			return (int) $p['attachment_id'] !== $attachment_id;
-		} ) );
+		$draft = array_values(
+			array_filter(
+				$draft,
+				static function ( $p ) use ( $attachment_id ) {
+					return (int) $p['attachment_id'] !== $attachment_id;
+				}
+			)
+		);
 		set_transient( "arshid6social_mkt_draft_{$user_id}_{$token}", $draft, DAY_IN_SECONDS );
 
 		wp_delete_attachment( $attachment_id, true );
@@ -343,15 +370,20 @@ class Marketplace_Listings {
 			$max_active = (int) get_option( 'arshid6social_marketplace_max_active_listings', 50 );
 			if ( $max_active > 0 ) {
 				global $wpdb;
-				$active_count = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_listings WHERE seller_id = %d AND status = 'active'",
-					$user_id
-				) );
+				$active_count = (int) $wpdb->get_var(
+					$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+						"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_listings WHERE seller_id = %d AND status = 'active'",
+						$user_id
+					)
+				);
 				if ( $active_count >= $max_active ) {
-					wp_send_json_error( array(
-						/* translators: %d: maximum active listings */
-						'message' => sprintf( __( 'You can have a maximum of %d active listings at once.', '6arshid-social-community' ), $max_active ),
-					), 400 );
+					wp_send_json_error(
+						array(
+							/* translators: %d: maximum active listings */
+							'message' => sprintf( __( 'You can have a maximum of %d active listings at once.', '6arshid-social-community' ), $max_active ),
+						),
+						400
+					);
 				}
 			}
 		}
@@ -362,13 +394,13 @@ class Marketplace_Listings {
 		$description = wp_kses_post( wp_unslash( $_POST['description'] ?? '' ) );
 		$category_id = absint( $_POST['category_id'] ?? 0 );
 		$is_free     = ! empty( $_POST['is_free'] ) ? 1 : 0;
-		$price       = $is_free ? 0.0 : max( 0.0, (float) ( $_POST['price'] ?? 0 ) );
+		$price       = $is_free ? 0.0 : max( 0.0, (float) wp_unslash( $_POST['price'] ?? 0 ) );
 		$is_neg      = ( ! $is_free && ! empty( $_POST['is_negotiable'] ) ) ? 1 : 0;
 		$condition   = sanitize_key( wp_unslash( $_POST['item_condition'] ?? 'used' ) );
 		$city        = sanitize_text_field( wp_unslash( $_POST['location_city'] ?? '' ) );
 		$country     = sanitize_key( wp_unslash( $_POST['location_country'] ?? '' ) );
-		$lat_raw     = wp_unslash( $_POST['lat'] ?? '' );
-		$lng_raw     = wp_unslash( $_POST['lng'] ?? '' );
+		$lat_raw     = sanitize_text_field( wp_unslash( $_POST['lat'] ?? '' ) );
+		$lng_raw     = sanitize_text_field( wp_unslash( $_POST['lng'] ?? '' ) );
 		$lat         = is_numeric( $lat_raw ) ? round( (float) $lat_raw, 7 ) : null;
 		$lng         = is_numeric( $lng_raw ) ? round( (float) $lng_raw, 7 ) : null;
 
@@ -477,24 +509,40 @@ class Marketplace_Listings {
 			?: home_url( '/' . get_option( 'arshid6social_marketplace_slug', 'marketplace' ) . '/' );
 
 		if ( 'pending' === $status ) {
-			wp_send_json_success( array(
-				'url'     => $base_url,
-				'uid'     => $uid,
-				'message' => __( 'Your listing is under review and will be published shortly.', '6arshid-social-community' ),
-			) );
+			wp_send_json_success(
+				array(
+					'url'     => $base_url,
+					'uid'     => $uid,
+					'message' => __( 'Your listing is under review and will be published shortly.', '6arshid-social-community' ),
+				)
+			);
 		}
 
 		$redirect_url = 'draft' === $status
-			? add_query_arg( array( 'action' => 'edit', 'id' => $uid ), $base_url )
-			: add_query_arg( array( 'action' => 'view', 'id' => $uid ), $base_url );
+			? add_query_arg(
+				array(
+					'action' => 'edit',
+					'id'     => $uid,
+				),
+				$base_url
+			)
+			: add_query_arg(
+				array(
+					'action' => 'view',
+					'id'     => $uid,
+				),
+				$base_url
+			);
 
-		wp_send_json_success( array(
-			'url'     => $redirect_url,
-			'uid'     => $uid,
-			'message' => 'draft' === $status
-				? __( 'Draft saved.', '6arshid-social-community' )
-				: __( 'Your listing is now live!', '6arshid-social-community' ),
-		) );
+		wp_send_json_success(
+			array(
+				'url'     => $redirect_url,
+				'uid'     => $uid,
+				'message' => 'draft' === $status
+					? __( 'Draft saved.', '6arshid-social-community' )
+					: __( 'Your listing is now live!', '6arshid-social-community' ),
+			)
+		);
 	}
 
 	/**
@@ -515,10 +563,12 @@ class Marketplace_Listings {
 		}
 
 		global $wpdb;
-		$listing = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT seller_id FROM {$wpdb->prefix}arshid6social_listings WHERE id = %d",
-			$listing_id
-		) );
+		$listing = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT seller_id FROM {$wpdb->prefix}arshid6social_listings WHERE id = %d",
+				$listing_id
+			)
+		);
 
 		if ( ! $listing ) {
 			wp_send_json_error( array( 'message' => __( 'Listing not found.', '6arshid-social-community' ) ), 404 );
@@ -528,10 +578,12 @@ class Marketplace_Listings {
 		}
 
 		// Delete media rows + attachments
-		$photos = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT attachment_id FROM {$wpdb->prefix}arshid6social_listing_media WHERE listing_id = %d",
-			$listing_id
-		) );
+		$photos = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT attachment_id FROM {$wpdb->prefix}arshid6social_listing_media WHERE listing_id = %d",
+				$listing_id
+			)
+		);
 		foreach ( $photos as $photo ) {
 			wp_delete_attachment( (int) $photo->attachment_id, true );
 		}
@@ -563,10 +615,12 @@ class Marketplace_Listings {
 		}
 
 		global $wpdb;
-		$listing = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT seller_id, status FROM {$wpdb->prefix}arshid6social_listings WHERE id = %d",
-			$listing_id
-		) );
+		$listing = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT seller_id, status FROM {$wpdb->prefix}arshid6social_listings WHERE id = %d",
+				$listing_id
+			)
+		);
 
 		if ( ! $listing ) {
 			wp_send_json_error( array( 'message' => __( 'Listing not found.', '6arshid-social-community' ) ), 404 );
@@ -577,7 +631,10 @@ class Marketplace_Listings {
 
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			"{$wpdb->prefix}arshid6social_listings",
-			array( 'status' => $new_status, 'updated_at' => current_time( 'mysql', true ) ),
+			array(
+				'status'     => $new_status,
+				'updated_at' => current_time( 'mysql', true ),
+			),
 			array( 'id' => $listing_id ),
 			array( '%s', '%s' ),
 			array( '%d' )
@@ -664,7 +721,10 @@ class Marketplace_Listings {
 		if ( $wpdb->last_error ) {
 			update_option(
 				"arshid6social_mkt_report_{$listing_id}_{$user_id}",
-				array( 'reason' => $reason, 'time' => time() ),
+				array(
+					'reason' => $reason,
+					'time'   => time(),
+				),
 				false
 			);
 		}
@@ -703,10 +763,12 @@ class Marketplace_Listings {
 	 */
 	public static function get_category_tree( int $parent_id = 0, int $depth = 0 ): array {
 		global $wpdb;
-		$rows = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}arshid6social_categories WHERE parent_id = %d ORDER BY sort_order ASC, id ASC",
-			$parent_id
-		) );
+		$rows = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}arshid6social_categories WHERE parent_id = %d ORDER BY sort_order ASC, id ASC",
+				$parent_id
+			)
+		);
 
 		$tree = array();
 		foreach ( $rows as $cat ) {
@@ -755,10 +817,12 @@ class Marketplace_Listings {
 	public static function get_listing( int $id, bool $public = true ): ?object {
 		global $wpdb;
 		$where = $public ? "AND status = 'active'" : '';
-		return $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}arshid6social_listings WHERE id = %d {$where}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$id
-		) ) ?: null;
+		return $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}arshid6social_listings WHERE id = %d {$where}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$id
+			)
+		) ?: null;
 	}
 
 	/**
@@ -769,9 +833,11 @@ class Marketplace_Listings {
 	 */
 	public static function get_photos( int $listing_id ): array {
 		global $wpdb;
-		return $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}arshid6social_listing_media WHERE listing_id = %d ORDER BY sort_order ASC",
-			$listing_id
-		) ) ?: array();
+		return $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}arshid6social_listing_media WHERE listing_id = %d ORDER BY sort_order ASC",
+				$listing_id
+			)
+		) ?: array();
 	}
 }

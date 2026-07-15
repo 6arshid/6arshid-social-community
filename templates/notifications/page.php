@@ -40,7 +40,7 @@ if ( $is_dark || $is_auto ) {
 	$_notif_css    = $is_dark ? $dark_css : '@media (prefers-color-scheme: dark) { ' . $dark_css . ' }';
 	$_notif_handle = 'arshid6social-notif-dark';
 	if ( ! wp_style_is( $_notif_handle, 'registered' ) ) {
-		wp_register_style( $_notif_handle, false, array( 'arshid6social-main' ), null );
+		wp_register_style( $_notif_handle, false, array( 'arshid6social-main' ), ARSHID6SOCIAL_VERSION );
 		wp_enqueue_style( $_notif_handle );
 		wp_style_add_data( $_notif_handle, 'group', 1 );
 	}
@@ -95,12 +95,12 @@ if ( $is_dark || $is_auto ) {
 					</p>
 
 					<div class="arshid6social-notif-prefs-grid">
-						<?php foreach ( $notif_types as $action => $info ) : ?>
+						<?php foreach ( $notif_types as $notif_action => $info ) : ?>
 							<label class="arshid6social-notif-pref-row">
 								<input type="checkbox"
-									name="arshid6social_notify_<?php echo esc_attr( $action ); ?>"
+									name="arshid6social_notify_<?php echo esc_attr( $notif_action ); ?>"
 									value="1"
-									<?php checked( ! empty( $notif_prefs[ $action ] ) ); ?>
+									<?php checked( ! empty( $notif_prefs[ $notif_action ] ) ); ?>
 								/>
 								<span class="arshid6social-notif-pref-icon" style="background:<?php echo esc_attr( $info['color'] ); ?>;">
 									<?php echo esc_html( $info['icon'] ); ?>

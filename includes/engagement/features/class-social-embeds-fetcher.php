@@ -33,10 +33,23 @@ class Social_Embeds_Fetcher {
 
 	/** Query parameters stripped when "strip tracking params" is enabled. */
 	private const TRACKING_PARAMS = array(
-		'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
-		'fbclid', 'gclid', 'msclkid', 'dclid', 'zanpid',
-		'igshid', 'twclid', 'ref',
-		'_hsenc', '_hsmi', 'mc_eid', 'mc_cid',
+		'utm_source',
+		'utm_medium',
+		'utm_campaign',
+		'utm_term',
+		'utm_content',
+		'fbclid',
+		'gclid',
+		'msclkid',
+		'dclid',
+		'zanpid',
+		'igshid',
+		'twclid',
+		'ref',
+		'_hsenc',
+		'_hsmi',
+		'mc_eid',
+		'mc_cid',
 	);
 
 	/**
@@ -173,7 +186,10 @@ class Social_Embeds_Fetcher {
 			return null;
 		}
 
-		$args = array( 'url' => $url, 'format' => 'json' );
+		$args = array(
+			'url'    => $url,
+			'format' => 'json',
+		);
 
 		// Token-gated providers (Instagram, Facebook).
 		if ( ! empty( $provider['token_option'] ) ) {
@@ -223,7 +239,10 @@ class Social_Embeds_Fetcher {
 			return null;
 		}
 
-		return array( 'html' => $html, 'data' => $data );
+		return array(
+			'html' => $html,
+			'data' => $data,
+		);
 	}
 
 	// ── iframe builders ───────────────────────────────────────────────────────
@@ -247,23 +266,36 @@ class Social_Embeds_Fetcher {
 
 	/** @return array{html:string,data:array<string,mixed>}|null */
 	private static function build_twitch( string $url ): ?array {
-		$parent   = (string) wp_parse_url( home_url(), PHP_URL_HOST );
-		$sandbox  = 'allow-scripts allow-same-origin allow-popups allow-presentation';
-		$common   = 'allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" sandbox="' . esc_attr( $sandbox ) . '"';
+		$parent  = (string) wp_parse_url( home_url(), PHP_URL_HOST );
+		$sandbox = 'allow-scripts allow-same-origin allow-popups allow-presentation';
+		$common  = 'allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" sandbox="' . esc_attr( $sandbox ) . '"';
 
 		// Clip.
 		if ( preg_match( '#twitch\.tv/[^/]+/clip/([A-Za-z0-9_-]+)#', $url, $m )
 			|| preg_match( '#clips\.twitch\.tv/([A-Za-z0-9_-]+)#', $url, $m ) ) {
 			$src  = 'https://clips.twitch.tv/embed?clip=' . urlencode( $m[1] ) . '&parent=' . urlencode( $parent );
 			$html = '<iframe src="' . esc_url( $src ) . '" ' . $common . '></iframe>';
-			return array( 'html' => $html, 'data' => array( 'type' => 'video', 'provider_name' => 'Twitch' ) );
+			return array(
+				'html' => $html,
+				'data' => array(
+					'type'          => 'video',
+					'provider_name' => 'Twitch',
+				),
+			);
 		}
 
 		// Live channel.
 		if ( preg_match( '#twitch\.tv/([A-Za-z0-9_]+)#', $url, $m ) ) {
 			$src  = 'https://player.twitch.tv/?channel=' . urlencode( $m[1] ) . '&parent=' . urlencode( $parent );
 			$html = '<iframe src="' . esc_url( $src ) . '" ' . $common . '></iframe>';
-			return array( 'html' => $html, 'data' => array( 'type' => 'video', 'provider_name' => 'Twitch', 'title' => $m[1] ) );
+			return array(
+				'html' => $html,
+				'data' => array(
+					'type'          => 'video',
+					'provider_name' => 'Twitch',
+					'title'         => $m[1],
+				),
+			);
 		}
 
 		return null;
@@ -271,14 +303,20 @@ class Social_Embeds_Fetcher {
 
 	/** @return array{html:string,data:array<string,mixed>}|null */
 	private static function build_apple_music( string $url ): ?array {
-		$embed = str_replace(
+		$embed   = str_replace(
 			array( 'music.apple.com', 'podcasts.apple.com' ),
 			array( 'embed.music.apple.com', 'embed.podcasts.apple.com' ),
 			$url
 		);
 		$sandbox = 'allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation';
 		$html    = '<iframe allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write" src="' . esc_url( $embed ) . '" loading="lazy" sandbox="' . esc_attr( $sandbox ) . '"></iframe>';
-		return array( 'html' => $html, 'data' => array( 'type' => 'rich', 'provider_name' => 'Apple Music' ) );
+		return array(
+			'html' => $html,
+			'data' => array(
+				'type'          => 'rich',
+				'provider_name' => 'Apple Music',
+			),
+		);
 	}
 
 	/** @return array{html:string,data:array<string,mixed>}|null */
@@ -289,7 +327,13 @@ class Social_Embeds_Fetcher {
 		$src     = 'https://t.me/' . $m[1] . '/' . $m[2] . '?embed=1&mode=tme';
 		$sandbox = 'allow-scripts allow-same-origin allow-popups';
 		$html    = '<iframe src="' . esc_url( $src ) . '" loading="lazy" referrerpolicy="no-referrer" sandbox="' . esc_attr( $sandbox ) . '"></iframe>';
-		return array( 'html' => $html, 'data' => array( 'type' => 'rich', 'provider_name' => 'Telegram' ) );
+		return array(
+			'html' => $html,
+			'data' => array(
+				'type'          => 'rich',
+				'provider_name' => 'Telegram',
+			),
+		);
 	}
 
 	// ── Open Graph ────────────────────────────────────────────────────────────
@@ -333,7 +377,10 @@ class Social_Embeds_Fetcher {
 
 		$html = Social_Embeds_Renderer::build_og_card( $data, $url );
 
-		return array( 'html' => $html, 'data' => $data );
+		return array(
+			'html' => $html,
+			'data' => $data,
+		);
 	}
 
 	/**

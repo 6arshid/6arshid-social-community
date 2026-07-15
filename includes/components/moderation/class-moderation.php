@@ -116,14 +116,20 @@ class Moderation {
 
 		// ── 1. Collect IDs needed for cascade file + DB deletion ─────────────
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$activity_ids = array_map( 'intval', $wpdb->get_col(
-			$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_activity WHERE user_id = %d", $user_id )
-		) ?: array() );
+		$activity_ids = array_map(
+			'intval',
+			$wpdb->get_col(
+				$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_activity WHERE user_id = %d", $user_id )
+			) ?: array()
+		);
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$story_ids = array_map( 'intval', $wpdb->get_col(
-			$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_stories WHERE user_id = %d", $user_id )
-		) ?: array() );
+		$story_ids = array_map(
+			'intval',
+			$wpdb->get_col(
+				$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_stories WHERE user_id = %d", $user_id )
+			) ?: array()
+		);
 
 		// ── 2. Delete activity media files from disk ──────────────────────────
 		if ( $activity_ids ) {
@@ -159,9 +165,12 @@ class Moderation {
 
 		// ── 4b. Delete group avatar/cover files for groups this user created ──
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$created_group_ids = array_map( 'intval', $wpdb->get_col(
-			$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_groups WHERE creator_id = %d", $user_id )
-		) ?: array() );
+		$created_group_ids = array_map(
+			'intval',
+			$wpdb->get_col(
+				$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_groups WHERE creator_id = %d", $user_id )
+			) ?: array()
+		);
 		foreach ( $created_group_ids as $gid ) {
 			self::rmdir_recursive( $upload_base . "social-network/groups/{$gid}" );
 			delete_option( "arshid6social_group_avatar_{$gid}" );
@@ -171,13 +180,15 @@ class Moderation {
 		}
 
 		// ── 4c. Delete WordPress media library attachments uploaded by this user ─
-		$attachment_ids = get_posts( array(
-			'post_type'      => 'attachment',
-			'author'         => $user_id,
-			'posts_per_page' => -1,
-			'fields'         => 'ids',
-			'post_status'    => 'any',
-		) );
+		$attachment_ids = get_posts(
+			array(
+				'post_type'      => 'attachment',
+				'author'         => $user_id,
+				'posts_per_page' => -1,
+				'fields'         => 'ids',
+				'post_status'    => 'any',
+			)
+		);
 		foreach ( $attachment_ids as $attach_id ) {
 			wp_delete_attachment( (int) $attach_id, true );
 		}
@@ -203,10 +214,13 @@ class Moderation {
 			$ph = implode( ',', array_fill( 0, count( $story_ids ), '%d' ) );
 			// Get story item IDs to delete views + reactions.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$item_ids = array_map( 'intval', $wpdb->get_col(
+			$item_ids = array_map(
+				'intval',
+				$wpdb->get_col(
 				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_story_items WHERE story_id IN ($ph)", ...$story_ids )
-			) ?: array() );
+					$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_story_items WHERE story_id IN ($ph)", ...$story_ids )
+				) ?: array()
+			);
 			if ( $item_ids ) {
 				$iph = implode( ',', array_fill( 0, count( $item_ids ), '%d' ) );
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -243,15 +257,15 @@ class Moderation {
 
 		// Other single-column tables.
 		$simple = array(
-			$wpdb->prefix . 'sn_xprofile_data'          => 'user_id',
-			$wpdb->prefix . 'sn_groups_members'          => 'user_id',
-			$wpdb->prefix . 'sn_messages_recipients'     => 'user_id',
-			$wpdb->prefix . 'sn_messages'                => 'sender_id',
-			$wpdb->prefix . 'sn_notifications'           => 'user_id',
-			$wpdb->prefix . 'sn_reports'                 => 'reporter_id',
-			$wpdb->prefix . 'sn_invitations'             => 'inviter_id',
-			$wpdb->prefix . 'sn_verification_requests'   => 'user_id',
-			$wpdb->prefix . 'sn_verifications'           => 'user_id',
+			$wpdb->prefix . 'sn_xprofile_data'         => 'user_id',
+			$wpdb->prefix . 'sn_groups_members'        => 'user_id',
+			$wpdb->prefix . 'sn_messages_recipients'   => 'user_id',
+			$wpdb->prefix . 'sn_messages'              => 'sender_id',
+			$wpdb->prefix . 'sn_notifications'         => 'user_id',
+			$wpdb->prefix . 'sn_reports'               => 'reporter_id',
+			$wpdb->prefix . 'sn_invitations'           => 'inviter_id',
+			$wpdb->prefix . 'sn_verification_requests' => 'user_id',
+			$wpdb->prefix . 'sn_verifications'         => 'user_id',
 		);
 		foreach ( $simple as $table => $col ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -270,10 +284,15 @@ class Moderation {
 
 		// Plugin-specific user meta.
 		$meta_keys = array(
-			'arshid6social_suspended', 'arshid6social_suspended_reason',
-			'arshid6social_avatar_url', 'arshid6social_avatar_path',
-			'arshid6social_cover_url', 'arshid6social_cover_path',
-			'arshid6social_reaction_style', 'arshid6social_story_privacy', 'arshid6social_last_active',
+			'arshid6social_suspended',
+			'arshid6social_suspended_reason',
+			'arshid6social_avatar_url',
+			'arshid6social_avatar_path',
+			'arshid6social_cover_url',
+			'arshid6social_cover_path',
+			'arshid6social_reaction_style',
+			'arshid6social_story_privacy',
+			'arshid6social_last_active',
 		);
 		foreach ( $meta_keys as $key ) {
 			delete_user_meta( $user_id, $key );
@@ -412,13 +431,16 @@ class Moderation {
 			}
 
 			$max_size = (int) get_option( 'arshid6social_max_upload_size_mb', 5 ) * 1024 * 1024;
-			if ( (int) ( $_FILES['attachment']['size'] ?? 0 ) > $max_size ) {
+			if ( (int) ( wp_unslash( $_FILES['attachment']['size'] ?? 0 ) ) > $max_size ) {
 				wp_send_json_error( array( 'message' => __( 'Attachment file is too large.', '6arshid-social-community' ) ), 400 );
 			}
 
 			$uploaded = wp_handle_upload(
 				$_FILES['attachment'], // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-				array( 'test_form' => false, 'mimes' => array_fill_keys( array( 'jpg|jpeg', 'png', 'gif', 'webp' ), true ) )
+				array(
+					'test_form' => false,
+					'mimes'     => array_fill_keys( array( 'jpg|jpeg', 'png', 'gif', 'webp' ), true ),
+				)
 			);
 
 			if ( isset( $uploaded['url'] ) ) {
@@ -495,13 +517,13 @@ class Moderation {
 	public function exclude_suspended_from_feed( array $args ): array {
 		$suspended_users = self::get_suspended_user_ids();
 		if ( $suspended_users ) {
-			$existing = array_map( 'intval', (array) ( $args['exclude_user_ids'] ?? array() ) );
+			$existing                 = array_map( 'intval', (array) ( $args['exclude_user_ids'] ?? array() ) );
 			$args['exclude_user_ids'] = array_unique( array_merge( $existing, $suspended_users ) );
 		}
 
 		$suspended_groups = self::get_suspended_group_ids();
 		if ( $suspended_groups ) {
-			$existing = array_map( 'intval', (array) ( $args['exclude_group_ids'] ?? array() ) );
+			$existing                  = array_map( 'intval', (array) ( $args['exclude_group_ids'] ?? array() ) );
 			$args['exclude_group_ids'] = array_unique( array_merge( $existing, $suspended_groups ) );
 		}
 
@@ -611,9 +633,9 @@ class Moderation {
 	 * - Embedded requests (image src, XHR) receive a 403 so the asset shows as broken/blocked.
 	 */
 	private function exit_suspended(): never {
-		$accept = isset( $_SERVER['HTTP_ACCEPT'] ) ? $_SERVER['HTTP_ACCEPT'] : ''; // phpcs:ignore WordPress.Security
+		$accept = isset( $_SERVER['HTTP_ACCEPT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT'] ) ) : '';
 		if ( false !== strpos( $accept, 'text/html' ) ) {
-			wp_redirect( add_query_arg( 'arshid6social_blocked', '1', home_url( '/' ) ) );
+			wp_safe_redirect( add_query_arg( 'arshid6social_blocked', '1', home_url( '/' ) ) );
 		} else {
 			status_header( 403 );
 		}
@@ -776,11 +798,14 @@ class Moderation {
 		}
 
 		// Show suspended notice but don't completely lock out.
-		add_action( 'wp_footer', function () {
-			echo '<div class="arshid6social-suspension-notice" style="position:fixed;bottom:0;left:0;right:0;background:#dc2626;color:#fff;padding:12px;text-align:center;z-index:9999;">'
+		add_action(
+			'wp_footer',
+			function () {
+				echo '<div class="arshid6social-suspension-notice" style="position:fixed;bottom:0;left:0;right:0;background:#dc2626;color:#fff;padding:12px;text-align:center;z-index:9999;">'
 				. esc_html__( 'Your account has been suspended. Please contact an administrator.', '6arshid-social-community' )
 				. '</div>';
-		} );
+			}
+		);
 	}
 
 	/**
@@ -812,12 +837,12 @@ class Moderation {
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_audit_log',
 			array(
-				'user_id'     => $user_id,
-				'action'      => sanitize_key( $action ),
-				'object_type' => sanitize_key( $object_type ),
-				'object_id'   => $object_id,
-				'details'     => $details ? wp_json_encode( $details ) : '',
-				'ip_address'  => sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '' ),
+				'user_id'      => $user_id,
+				'action'       => sanitize_key( $action ),
+				'object_type'  => sanitize_key( $object_type ),
+				'object_id'    => $object_id,
+				'details'      => $details ? wp_json_encode( $details ) : '',
+				'ip_address'   => sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) ),
 				'date_created' => current_time( 'mysql' ),
 			),
 			array( '%d', '%s', '%s', '%d', '%s', '%s', '%s' )

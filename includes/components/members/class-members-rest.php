@@ -141,7 +141,14 @@ class Members_REST extends \WP_REST_Controller {
 		$errors    = $component->xprofile->save_profile_data( $user_id, $fields );
 
 		if ( ! empty( $errors ) ) {
-			return new \WP_Error( 'arshid6social_validation_error', __( 'Validation failed.', '6arshid-social-community' ), array( 'status' => 422, 'errors' => $errors ) );
+			return new \WP_Error(
+				'arshid6social_validation_error',
+				__( 'Validation failed.', '6arshid-social-community' ),
+				array(
+					'status' => 422,
+					'errors' => $errors,
+				)
+			);
 		}
 
 		return rest_ensure_response( $component->format_member( get_userdata( $user_id ) ) );
@@ -175,9 +182,24 @@ class Members_REST extends \WP_REST_Controller {
 	 */
 	public function get_collection_params(): array {
 		return array(
-			'page'     => array( 'type' => 'integer', 'default' => 1, 'minimum' => 1, 'sanitize_callback' => 'absint' ),
-			'per_page' => array( 'type' => 'integer', 'default' => 20, 'minimum' => 1, 'maximum' => 100, 'sanitize_callback' => 'absint' ),
-			'search'   => array( 'type' => 'string', 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ),
+			'page'     => array(
+				'type'              => 'integer',
+				'default'           => 1,
+				'minimum'           => 1,
+				'sanitize_callback' => 'absint',
+			),
+			'per_page' => array(
+				'type'              => 'integer',
+				'default'           => 20,
+				'minimum'           => 1,
+				'maximum'           => 100,
+				'sanitize_callback' => 'absint',
+			),
+			'search'   => array(
+				'type'              => 'string',
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
+			),
 			'type'     => array(
 				'type'              => 'string',
 				'default'           => 'newest',

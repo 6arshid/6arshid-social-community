@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
 class Ads {
 
 	public function __construct() {
-		add_action( 'wp_ajax_arshid6social_ad_click',        array( $this, 'ajax_track_click' ) );
+		add_action( 'wp_ajax_arshid6social_ad_click', array( $this, 'ajax_track_click' ) );
 		add_action( 'wp_ajax_nopriv_arshid6social_ad_click', array( $this, 'ajax_track_click' ) );
 		add_action( 'wp_ajax_arshid6social_upload_ad_media', array( $this, 'ajax_upload_media' ) );
 	}
@@ -30,10 +30,12 @@ class Ads {
 		}
 
 		global $wpdb;
-		$wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"UPDATE {$wpdb->prefix}sn_ads SET clicks = clicks + 1 WHERE id = %d",
-			$ad_id
-		) );
+		$wpdb->query(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"UPDATE {$wpdb->prefix}sn_ads SET clicks = clicks + 1 WHERE id = %d",
+				$ad_id
+			)
+		);
 
 		wp_send_json_success();
 	}
@@ -59,10 +61,12 @@ class Ads {
 			wp_send_json_error( $attachment_id->get_error_message() );
 		}
 
-		wp_send_json_success( array(
-			'url' => wp_get_attachment_url( $attachment_id ),
-			'id'  => $attachment_id,
-		) );
+		wp_send_json_success(
+			array(
+				'url' => wp_get_attachment_url( $attachment_id ),
+				'id'  => $attachment_id,
+			)
+		);
 	}
 
 	// ── Static helpers ────────────────────────────────────────────────────────
@@ -88,15 +92,18 @@ class Ads {
 
 		$args = array_merge( $slots, array( $today, $today ) );
 
-		$results = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$table}
+		$results = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$table}
 			 WHERE status = 'active'
 			   AND placement IN ($placeholders)
 			   AND (start_date IS NULL OR start_date <= %s)
 			   AND (end_date   IS NULL OR end_date   >= %s)
 			 ORDER BY id DESC",
-			...$args
-		), ARRAY_A );
+				...$args
+			),
+			ARRAY_A
+		);
 
 		return $results ?: array();
 	}
@@ -109,24 +116,33 @@ class Ads {
 	public static function get_feed_ads_for_js(): array {
 		$raw = self::get_ads( 'feed' );
 		if ( ! $raw ) {
-			return array( 'ads' => array(), 'every_n_posts' => 5 );
+			return array(
+				'ads'           => array(),
+				'every_n_posts' => 5,
+			);
 		}
 
 		$every_n = (int) ( $raw[0]['every_n_posts'] ?? 5 );
 
-		$ads = array_map( static function ( array $ad ) {
-			return array(
-				'id'           => (int) $ad['id'],
-				'title'        => $ad['title'],
-				'ad_type'      => $ad['ad_type'],
-				'file_url'     => $ad['file_url'],
-				'click_url'    => $ad['click_url'],
-				'js_code'      => $ad['js_code'],
-				'every_n_posts' => (int) $ad['every_n_posts'],
-			);
-		}, $raw );
+		$ads = array_map(
+			static function ( array $ad ) {
+				return array(
+					'id'            => (int) $ad['id'],
+					'title'         => $ad['title'],
+					'ad_type'       => $ad['ad_type'],
+					'file_url'      => $ad['file_url'],
+					'click_url'     => $ad['click_url'],
+					'js_code'       => $ad['js_code'],
+					'every_n_posts' => (int) $ad['every_n_posts'],
+				);
+			},
+			$raw
+		);
 
-		return array( 'ads' => $ads, 'every_n_posts' => $every_n );
+		return array(
+			'ads'           => $ads,
+			'every_n_posts' => $every_n,
+		);
 	}
 
 	/**
@@ -143,7 +159,7 @@ class Ads {
 
 		switch ( $ad['ad_type'] ) {
 			case 'image':
-				$img = '<img src="' . esc_url( $ad['file_url'] ) . '" alt="' . $title . '" loading="lazy" class="arshid6social-ad-card__img">';
+				$img   = '<img src="' . esc_url( $ad['file_url'] ) . '" alt="' . $title . '" loading="lazy" class="arshid6social-ad-card__img">';
 				$inner = $click_url
 					? '<a href="' . $click_url . '" target="_blank" rel="noopener sponsored" class="arshid6social-ad-card__link" data-ad-id="' . $ad_id . '">' . $img . '</a>'
 					: $img;
@@ -153,7 +169,7 @@ class Ads {
 				$onclick = $click_url
 					? ' data-ad-click-url="' . $click_url . '" data-ad-id="' . $ad_id . '"'
 					: '';
-				$inner = '<video controls playsinline preload="metadata" class="arshid6social-ad-card__video"' . $onclick . '>'
+				$inner   = '<video controls playsinline preload="metadata" class="arshid6social-ad-card__video"' . $onclick . '>'
 					. '<source src="' . esc_url( $ad['file_url'] ) . '">'
 					. '</video>';
 				break;
@@ -169,7 +185,12 @@ class Ads {
 					$inner = wp_kses(
 						$ad['js_code'],
 						array(
-							'script' => array( 'type' => true, 'src' => true, 'async' => true, 'defer' => true ),
+							'script'   => array(
+								'type'  => true,
+								'src'   => true,
+								'async' => true,
+								'defer' => true,
+							),
 							'noscript' => array(),
 						)
 					);

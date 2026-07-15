@@ -141,12 +141,12 @@ $activity_feed_tab = get_user_meta( $profile_user->ID, 'arshid6social_activity_f
 				<p class="arshid6social-settings-desc"><?php esc_html_e( 'Choose which events send you a notification.', '6arshid-social-community' ); ?></p>
 
 				<div class="arshid6social-notif-prefs-list">
-					<?php foreach ( $notif_types as $action => $info ) : ?>
+					<?php foreach ( $notif_types as $notif_action => $info ) : ?>
 						<label class="arshid6social-notif-pref-row">
 							<input type="checkbox"
-								name="arshid6social_notify_<?php echo esc_attr( $action ); ?>"
+								name="arshid6social_notify_<?php echo esc_attr( $notif_action ); ?>"
 								value="1"
-								<?php checked( ! empty( $notif_prefs[ $action ] ) ); ?>
+								<?php checked( ! empty( $notif_prefs[ $notif_action ] ) ); ?>
 							/>
 							<span class="arshid6social-notif-pref-icon" style="background:<?php echo esc_attr( $info['color'] ); ?>;">
 								<?php echo esc_html( $info['icon'] ); ?>
@@ -171,8 +171,8 @@ $activity_feed_tab = get_user_meta( $profile_user->ID, 'arshid6social_activity_f
 						<?php esc_html_e( 'Email frequency', '6arshid-social-community' ); ?>
 					</label>
 					<select name="arshid6social_email_digest" class="arshid6social-select">
-						<option value="none"   <?php selected( $notif_prefs['email_digest'], 'none' ); ?>><?php esc_html_e( 'Never',         '6arshid-social-community' ); ?></option>
-						<option value="daily"  <?php selected( $notif_prefs['email_digest'], 'daily' ); ?>><?php esc_html_e( 'Daily digest',  '6arshid-social-community' ); ?></option>
+						<option value="none"   <?php selected( $notif_prefs['email_digest'], 'none' ); ?>><?php esc_html_e( 'Never', '6arshid-social-community' ); ?></option>
+						<option value="daily"  <?php selected( $notif_prefs['email_digest'], 'daily' ); ?>><?php esc_html_e( 'Daily digest', '6arshid-social-community' ); ?></option>
 						<option value="weekly" <?php selected( $notif_prefs['email_digest'], 'weekly' ); ?>><?php esc_html_e( 'Weekly digest', '6arshid-social-community' ); ?></option>
 					</select>
 				</div>
@@ -235,9 +235,9 @@ $activity_feed_tab = get_user_meta( $profile_user->ID, 'arshid6social_activity_f
 	</div>
 </div>
 
-<?php
-$friends_privacy = get_user_meta( $profile_user->ID, 'arshid6social_friends_list_privacy', true ) ?: 'private';
-?>
+	<?php
+	$friends_privacy = get_user_meta( $profile_user->ID, 'arshid6social_friends_list_privacy', true ) ?: 'private';
+	?>
 <div class="arshid6social-card arshid6social-user-settings-card" id="arshid6social-friends-privacy-card">
 	<div class="arshid6social-card__header"><?php esc_html_e( 'Friends List Privacy', '6arshid-social-community' ); ?></div>
 	<div class="arshid6social-card__body">

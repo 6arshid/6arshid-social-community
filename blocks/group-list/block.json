@@ -8,7 +8,7 @@
 	"icon": "networking",
 	"description": "Display a grid of social network groups with search and join buttons.",
 	"keywords": ["groups", "community", "social", "network"],
-	"textdomain": "sixarshidsocialcomunity",
+	"textdomain": "6arshid-social-community",
 	"attributes": {
 		"perPage": {
 			"type": "number",

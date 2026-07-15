@@ -31,10 +31,10 @@ class Groups {
 		add_action( 'wp_ajax_arshid6social_join_group', array( $this, 'ajax_join_group' ) );
 		add_action( 'wp_ajax_arshid6social_leave_group', array( $this, 'ajax_leave_group' ) );
 		add_action( 'wp_ajax_arshid6social_invite_to_group', array( $this, 'ajax_invite_to_group' ) );
-		add_action( 'wp_ajax_arshid6social_delete_group',         array( $this, 'ajax_delete_group' ) );
-		add_action( 'wp_ajax_arshid6social_update_group',         array( $this, 'ajax_update_group' ) );
-		add_action( 'wp_ajax_arshid6social_upload_group_avatar',  array( $this, 'ajax_upload_group_avatar' ) );
-		add_action( 'wp_ajax_arshid6social_upload_group_cover',   array( $this, 'ajax_upload_group_cover' ) );
+		add_action( 'wp_ajax_arshid6social_delete_group', array( $this, 'ajax_delete_group' ) );
+		add_action( 'wp_ajax_arshid6social_update_group', array( $this, 'ajax_update_group' ) );
+		add_action( 'wp_ajax_arshid6social_upload_group_avatar', array( $this, 'ajax_upload_group_avatar' ) );
+		add_action( 'wp_ajax_arshid6social_upload_group_cover', array( $this, 'ajax_upload_group_cover' ) );
 
 		// Sitemap.
 		add_action( 'init', array( $this, 'register_sitemap_provider' ) );
@@ -79,7 +79,7 @@ class Groups {
 		if ( $groups_page_id ) {
 			$groups_post = get_post( $groups_page_id );
 			if ( $groups_post instanceof \WP_Post ) {
-				$post = $groups_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride
+				$post                        = $groups_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride
 				$wp_query->queried_object    = $post;
 				$wp_query->queried_object_id = $post->ID;
 				$wp_query->is_page           = true;
@@ -168,14 +168,14 @@ class Groups {
 		global $wpdb;
 
 		$defaults = array(
-			'creator_id'  => get_current_user_id(),
-			'name'        => '',
-			'description' => '',
-			'status'      => 'public',
-			'parent_id'   => 0,
+			'creator_id'   => get_current_user_id(),
+			'name'         => '',
+			'description'  => '',
+			'status'       => 'public',
+			'parent_id'    => 0,
 			'enable_forum' => 0,
 		);
-		$args = wp_parse_args( $args, $defaults );
+		$args     = wp_parse_args( $args, $defaults );
 
 		if ( empty( $args['name'] ) ) {
 			return false;
@@ -206,7 +206,14 @@ class Groups {
 		$group_id = (int) $wpdb->insert_id;
 
 		// Add creator as group admin.
-		$this->add_member( $group_id, $args['creator_id'], array( 'is_admin' => 1, 'is_confirmed' => 1 ) );
+		$this->add_member(
+			$group_id,
+			$args['creator_id'],
+			array(
+				'is_admin'     => 1,
+				'is_confirmed' => 1,
+			)
+		);
 
 		do_action( 'arshid6social_group_created', $group_id, $args );
 
@@ -249,14 +256,14 @@ class Groups {
 		global $wpdb;
 
 		$defaults = array(
-			'page'    => 1,
-			'number'  => (int) get_option( 'arshid6social_groups_per_page', 20 ),
-			'search'  => '',
-			'status'  => is_user_logged_in() ? array( 'public', 'private' ) : array( 'public' ),
-			'type'    => 'newest',
+			'page'   => 1,
+			'number' => (int) get_option( 'arshid6social_groups_per_page', 20 ),
+			'search' => '',
+			'status' => is_user_logged_in() ? array( 'public', 'private' ) : array( 'public' ),
+			'type'   => 'newest',
 		);
-		$args   = wp_parse_args( $args, $defaults );
-		$offset = ( $args['page'] - 1 ) * $args['number'];
+		$args     = wp_parse_args( $args, $defaults );
+		$offset   = ( $args['page'] - 1 ) * $args['number'];
 
 		$where  = array( '1=1' );
 		$values = array();
@@ -318,7 +325,7 @@ class Groups {
 		$avatar = get_option( "arshid6social_group_avatar_{$group->id}", '' );
 		$cover  = get_option( "arshid6social_group_cover_{$group->id}", '' );
 
-		$creator_id       = (int) ( $group->creator_id ?? 0 );
+		$creator_id        = (int) ( $group->creator_id ?? 0 );
 		$creator_suspended = $creator_id > 0 && (bool) get_user_meta( $creator_id, 'arshid6social_suspended', true );
 
 		return array(
@@ -358,14 +365,14 @@ class Groups {
 		$data = wp_parse_args(
 			$args,
 			array(
-				'group_id'     => $group_id,
-				'user_id'      => $user_id,
-				'inviter_id'   => 0,
-				'is_admin'     => 0,
-				'is_mod'       => 0,
-				'is_confirmed' => 1,
-				'is_banned'    => 0,
-				'invite_sent'  => 0,
+				'group_id'      => $group_id,
+				'user_id'       => $user_id,
+				'inviter_id'    => 0,
+				'is_admin'      => 0,
+				'is_mod'        => 0,
+				'is_confirmed'  => 1,
+				'is_banned'     => 0,
+				'invite_sent'   => 0,
 				'date_modified' => current_time( 'mysql' ),
 			)
 		);
@@ -388,7 +395,14 @@ class Groups {
 	 */
 	public function remove_member( int $group_id, int $user_id ): void {
 		global $wpdb;
-		$wpdb->delete( $wpdb->prefix . 'sn_groups_members', array( 'group_id' => $group_id, 'user_id' => $user_id ), array( '%d', '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete(
+			$wpdb->prefix . 'sn_groups_members',
+			array(
+				'group_id' => $group_id,
+				'user_id'  => $user_id,
+			),
+			array( '%d', '%d' )
+		); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		\Arshid6Social\Cache::delete( "group_member_count_{$group_id}" );
 		do_action( 'arshid6social_group_member_removed', $group_id, $user_id );
 	}
@@ -494,7 +508,13 @@ class Groups {
 			wp_send_json_error( array( 'message' => __( 'Group name is required.', '6arshid-social-community' ) ), 400 );
 		}
 
-		$group_id = $this->create( array( 'name' => $name, 'description' => $description, 'status' => $status ) );
+		$group_id = $this->create(
+			array(
+				'name'        => $name,
+				'description' => $description,
+				'status'      => $status,
+			)
+		);
 
 		if ( ! $group_id ) {
 			wp_send_json_error( array( 'message' => __( 'Failed to create group.', '6arshid-social-community' ) ), 500 );
@@ -517,11 +537,13 @@ class Groups {
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification
-		$data = $this->get_groups( array(
-			'page'   => max( 1, absint( $_GET['page'] ?? 1 ) ),
-			'search' => sanitize_text_field( wp_unslash( $_GET['search'] ?? '' ) ),
-			'type'   => sanitize_key( $_GET['type'] ?? 'newest' ),
-		) );
+		$data = $this->get_groups(
+			array(
+				'page'   => max( 1, absint( $_GET['page'] ?? 1 ) ),
+				'search' => sanitize_text_field( wp_unslash( $_GET['search'] ?? '' ) ),
+				'type'   => sanitize_key( $_GET['type'] ?? 'newest' ),
+			)
+		);
 		// phpcs:enable
 
 		wp_send_json_success( $data );
@@ -602,7 +624,7 @@ class Groups {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
-		$group_id  = absint( $_POST['group_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
+		$group_id   = absint( $_POST['group_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$invitee_id = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$current    = get_current_user_id();
 
@@ -619,7 +641,15 @@ class Groups {
 			wp_send_json_error( array( 'message' => __( 'User not found.', '6arshid-social-community' ) ), 404 );
 		}
 
-		$this->add_member( $group_id, $invitee_id, array( 'inviter_id' => $current, 'is_confirmed' => 0, 'invite_sent' => 1 ) );
+		$this->add_member(
+			$group_id,
+			$invitee_id,
+			array(
+				'inviter_id'   => $current,
+				'is_confirmed' => 0,
+				'invite_sent'  => 1,
+			)
+		);
 
 		do_action( 'arshid6social_group_invitation_sent', $group_id, $invitee_id, $current );
 
@@ -821,7 +851,12 @@ class Groups {
 			return new \WP_Error( 'mkdir_failed', __( 'Could not create upload directory.', '6arshid-social-community' ) );
 		}
 
-		$ext      = array( 'image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif', 'image/webp' => 'webp' )[ $real_mime ] ?? 'jpg';
+		$ext      = array(
+			'image/jpeg' => 'jpg',
+			'image/png'  => 'png',
+			'image/gif'  => 'gif',
+			'image/webp' => 'webp',
+		)[ $real_mime ] ?? 'jpg';
 		$filename = wp_generate_uuid4() . '.' . $ext;
 		$dest     = $dest_dir . '/' . $filename;
 
@@ -839,7 +874,10 @@ class Groups {
 
 		$url = trailingslashit( $upload_dir['baseurl'] ) . "social-network/groups/{$group_id}/{$slot}/{$filename}";
 
-		return array( 'url' => $url, 'path' => $dest );
+		return array(
+			'url'  => $url,
+			'path' => $dest,
+		);
 	}
 
 	/**

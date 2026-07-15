@@ -16,50 +16,77 @@ class Blocking_REST extends \WP_REST_Controller {
 
 	public function register_routes(): void {
 		// GET  /blocks          → current user's block list
-		register_rest_route( $this->namespace, '/' . $this->rest_base, array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_block_list' ),
-				'permission_callback' => array( $this, 'is_logged_in' ),
-				'args'                => array(
-					'page' => array( 'default' => 1, 'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_block_list' ),
+					'permission_callback' => array( $this, 'is_logged_in' ),
+					'args'                => array(
+						'page' => array(
+							'default'           => 1,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// POST /blocks/{id}     → block user
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)',
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'block_user' ),
-				'permission_callback' => array( $this, 'is_logged_in' ),
-				'args'                => array(
-					'id'     => array( 'required' => true, 'sanitize_callback' => 'absint' ),
-					'reason' => array( 'default' => '', 'sanitize_callback' => 'sanitize_textarea_field' ),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'block_user' ),
+					'permission_callback' => array( $this, 'is_logged_in' ),
+					'args'                => array(
+						'id'     => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+						'reason' => array(
+							'default'           => '',
+							'sanitize_callback' => 'sanitize_textarea_field',
+						),
+					),
 				),
-			),
-			// DELETE /blocks/{id} → unblock user
-			array(
-				'methods'             => \WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'unblock_user' ),
-				'permission_callback' => array( $this, 'is_logged_in' ),
-				'args'                => array(
-					'id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
+				// DELETE /blocks/{id} → unblock user
+				array(
+					'methods'             => \WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'unblock_user' ),
+					'permission_callback' => array( $this, 'is_logged_in' ),
+					'args'                => array(
+						'id' => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// GET /blocks/{id}/status → check if blocked
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/status', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/status',
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_status' ),
-				'permission_callback' => array( $this, 'is_logged_in' ),
-				'args'                => array(
-					'id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_status' ),
+					'permission_callback' => array( $this, 'is_logged_in' ),
+					'args'                => array(
+						'id' => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 	}
 
 	public function get_block_list( \WP_REST_Request $request ): \WP_REST_Response {
@@ -68,7 +95,12 @@ class Blocking_REST extends \WP_REST_Controller {
 		$page    = $request->get_param( 'page' );
 
 		if ( ! $friends ) {
-			return rest_ensure_response( array( 'blocks' => array(), 'has_more' => false ) );
+			return rest_ensure_response(
+				array(
+					'blocks'   => array(),
+					'has_more' => false,
+				)
+			);
 		}
 
 		$blocks  = $friends->get_block_list( $current, $page );
@@ -80,13 +112,18 @@ class Blocking_REST extends \WP_REST_Controller {
 			if ( ! $user ) {
 				continue;
 			}
-			$item = $members ? $members->format_member( $user ) : array( 'id' => (int) $block->blocked_id );
+			$item                 = $members ? $members->format_member( $user ) : array( 'id' => (int) $block->blocked_id );
 			$item['block_date']   = $block->date_created;
 			$item['block_reason'] = $block->reason ?? '';
-			$data[] = $item;
+			$data[]               = $item;
 		}
 
-		return rest_ensure_response( array( 'blocks' => $data, 'has_more' => count( $blocks ) >= 20 ) );
+		return rest_ensure_response(
+			array(
+				'blocks'   => $data,
+				'has_more' => count( $blocks ) >= 20,
+			)
+		);
 	}
 
 	public function block_user( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
@@ -126,10 +163,12 @@ class Blocking_REST extends \WP_REST_Controller {
 		$current   = get_current_user_id();
 		$target_id = $request->get_param( 'id' );
 
-		return rest_ensure_response( array(
-			'blocked'      => arshid6social_is_blocked( $current, $target_id ),
-			'site_blocked' => arshid6social_is_site_blocked( $target_id ),
-		) );
+		return rest_ensure_response(
+			array(
+				'blocked'      => arshid6social_is_blocked( $current, $target_id ),
+				'site_blocked' => arshid6social_is_site_blocked( $target_id ),
+			)
+		);
 	}
 
 	public function is_logged_in(): bool {

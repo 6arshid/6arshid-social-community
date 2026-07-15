@@ -3,7 +3,7 @@
  * Plugin Name:       6Arshid Social Community
  * Plugin URI:        https://6arshid.com/apps/wordpress/6arshid-social-community
  * Description:       A complete, secure, responsive, multilingual social network plugin for WordPress with profiles, activity streams, groups, messaging, notifications, and more.
- * Version:           1.5.7
+ * Version:           1.7.0
  * Requires at least: 6.5
  * Requires PHP:      8.1
  * Author:            6arshid
@@ -62,15 +62,23 @@ require_once ARSHID6SOCIAL_INCLUDES_DIR . 'class-autoloader.php';
 // Register the bundled 6Arshid Social Community FSE theme directory with WordPress.
 // Priority 1 = before themes load their functions.php so the directory is
 // already known when get_template_directory() is first called.
-add_action( 'after_setup_theme', static function () {
-	register_theme_directory( ARSHID6SOCIAL_PLUGIN_DIR . 'themes' );
-}, 1 );
+add_action(
+	'after_setup_theme',
+	static function () {
+		register_theme_directory( ARSHID6SOCIAL_PLUGIN_DIR . 'themes' );
+	},
+	1
+);
 
 // Also register on plugins_loaded so AJAX requests (which may skip
 // after_setup_theme) can still find the bundled theme.
-add_action( 'plugins_loaded', static function () {
-	register_theme_directory( ARSHID6SOCIAL_PLUGIN_DIR . 'themes' );
-}, 1 );
+add_action(
+	'plugins_loaded',
+	static function () {
+		register_theme_directory( ARSHID6SOCIAL_PLUGIN_DIR . 'themes' );
+	},
+	1
+);
 
 // Activation / deactivation hooks must be registered before any class is instantiated.
 register_activation_hook( __FILE__, array( '\Arshid6Social\Activator', 'activate' ) );
@@ -100,48 +108,56 @@ if ( ! function_exists( 'arshid6social_eng' ) ) {
 
 // Auto-set the activity page as the WordPress front page if no static front page
 // has been chosen yet.  Runs once; respects any later manual change by the admin.
-add_action( 'admin_init', static function () {
-	// Already done once — skip.
-	if ( get_option( 'arshid6social_frontpage_set' ) ) {
-		return;
-	}
+add_action(
+	'admin_init',
+	static function () {
+		// Already done once — skip.
+		if ( get_option( 'arshid6social_frontpage_set' ) ) {
+			return;
+		}
 
-	// Only act when WordPress is still in "latest posts" mode (no static front page).
-	if ( 'posts' !== get_option( 'show_on_front', 'posts' ) ) {
-		// Admin already chose a static front page — record that and never touch it again.
+		// Only act when WordPress is still in "latest posts" mode (no static front page).
+		if ( 'posts' !== get_option( 'show_on_front', 'posts' ) ) {
+			// Admin already chose a static front page — record that and never touch it again.
+			update_option( 'arshid6social_frontpage_set', true );
+			return;
+		}
+
+		$activity_page_id = (int) get_option( 'arshid6social_page_activity', 0 );
+		if ( $activity_page_id && 'publish' === get_post_status( $activity_page_id ) ) {
+			update_option( 'show_on_front', 'page' );
+			update_option( 'page_on_front', $activity_page_id );
+		}
+
 		update_option( 'arshid6social_frontpage_set', true );
-		return;
-	}
-
-	$activity_page_id = (int) get_option( 'arshid6social_page_activity', 0 );
-	if ( $activity_page_id && 'publish' === get_post_status( $activity_page_id ) ) {
-		update_option( 'show_on_front', 'page' );
-		update_option( 'page_on_front', $activity_page_id );
-	}
-
-	update_option( 'arshid6social_frontpage_set', true );
-}, 5 );
+	},
+	5
+);
 
 // Flush stale DB-cached FSE templates for the sixarshidsocialcomunity theme so the
 // file-based templates are always used after a theme update.
-add_action( 'admin_init', static function () {
-	$ver = 'socialnetworksix-tpl-v4';
-	if ( get_option( 'arshid6social_tpl_flush' ) === $ver ) {
-		return;
-	}
-	global $wpdb;
-	$like = $wpdb->esc_like( 'sixarshidsocialcomunity//' ) . '%';
+add_action(
+	'admin_init',
+	static function () {
+		$ver = 'socialnetworksix-tpl-v4';
+		if ( get_option( 'arshid6social_tpl_flush' ) === $ver ) {
+			return;
+		}
+		global $wpdb;
+		$like = $wpdb->esc_like( 'sixarshidsocialcomunity//' ) . '%';
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-	$wpdb->query(
-		$wpdb->prepare(
-			"DELETE FROM {$wpdb->posts}
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM {$wpdb->posts}
 			 WHERE post_type IN ('wp_template','wp_template_part')
 			   AND post_name LIKE %s",
-			$like
-		)
-	);
-	update_option( 'arshid6social_tpl_flush', $ver );
-}, 1 );
+				$like
+			)
+		);
+		update_option( 'arshid6social_tpl_flush', $ver );
+	},
+	1
+);
 
 // Boot on init so translated strings are not evaluated before WordPress loads
 // textdomains in WP 6.7+, while still registering routes, shortcodes, and assets

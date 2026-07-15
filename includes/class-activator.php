@@ -69,12 +69,14 @@ class Activator {
 		global $wpdb;
 		$table = $wpdb->prefix . 'sn_reports';
 
-		$has_col = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+		$has_col = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
 			 WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = 'attachment_url'",
-			DB_NAME,
-			$table
-		) );
+				DB_NAME,
+				$table
+			)
+		);
 
 		if ( ! $has_col ) {
 			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `attachment_url` varchar(500) NOT NULL DEFAULT '' AFTER `notes`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -88,12 +90,14 @@ class Activator {
 		global $wpdb;
 		$table = $wpdb->prefix . 'sn_groups';
 
-		$has_suspended = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+		$has_suspended = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
 			 WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = 'is_suspended'",
-			DB_NAME,
-			$table
-		) );
+				DB_NAME,
+				$table
+			)
+		);
 
 		if ( ! $has_suspended ) {
 			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `is_suspended` tinyint(1) NOT NULL DEFAULT 0, ADD COLUMN `suspend_reason` varchar(300) NOT NULL DEFAULT '', ADD KEY `is_suspended` (`is_suspended`)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -107,18 +111,20 @@ class Activator {
 		global $wpdb;
 		$table = $wpdb->prefix . 'sn_messages';
 
-		$has_edited = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+		$has_edited = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
 			 WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = 'is_edited'",
-			DB_NAME,
-			$table
-		) );
+				DB_NAME,
+				$table
+			)
+		);
 
 		if ( ! $has_edited ) {
 			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `is_edited` tinyint(1) NOT NULL DEFAULT 0 AFTER `is_deleted`, ADD COLUMN `edited_at` datetime DEFAULT NULL AFTER `is_edited`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		}
 
-		$hidden_table   = $wpdb->prefix . 'sn_messages_hidden';
+		$hidden_table    = $wpdb->prefix . 'sn_messages_hidden';
 		$charset_collate = $wpdb->get_charset_collate();
 		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			"CREATE TABLE IF NOT EXISTS `{$hidden_table}` (
@@ -139,12 +145,14 @@ class Activator {
 		global $wpdb;
 		$table = $wpdb->prefix . 'sn_activity';
 
-		$has_col = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+		$has_col = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
 			 WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = 'uid'",
-			DB_NAME,
-			$table
-		) );
+				DB_NAME,
+				$table
+			)
+		);
 
 		if ( ! $has_col ) {
 			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `uid` varchar(23) NOT NULL DEFAULT '' AFTER `privacy`, ADD KEY `uid` (`uid`)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -160,12 +168,14 @@ class Activator {
 		$table = $wpdb->prefix . 'sn_blocks';
 
 		// Check whether old column name still exists.
-		$has_old = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+		$has_old = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
 			 WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = 'user_id'",
-			DB_NAME,
-			$table
-		) );
+				DB_NAME,
+				$table
+			)
+		);
 
 		if ( ! $has_old ) {
 			return;
@@ -175,41 +185,49 @@ class Activator {
 		$wpdb->query( "ALTER TABLE `{$table}` CHANGE COLUMN `user_id` `blocker_id` bigint(20) unsigned NOT NULL, CHANGE COLUMN `blocked_user_id` `blocked_id` bigint(20) unsigned NOT NULL" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		// Add reason column if absent.
-		$has_reason = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+		$has_reason = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
 			 WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = 'reason'",
-			DB_NAME,
-			$table
-		) );
+				DB_NAME,
+				$table
+			)
+		);
 		if ( ! $has_reason ) {
 			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `reason` text NULL AFTER `blocked_id`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		}
 
 		// Rebuild indexes.
-		$has_old_idx = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
+		$has_old_idx = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
 			 WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND INDEX_NAME = 'user_blocked'",
-			DB_NAME,
-			$table
-		) );
+				DB_NAME,
+				$table
+			)
+		);
 		if ( $has_old_idx ) {
 			$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `user_blocked`, ADD UNIQUE KEY `blocker_blocked` (`blocker_id`, `blocked_id`)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		}
-		$has_uid_idx = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
+		$has_uid_idx = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
 			 WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND INDEX_NAME = 'user_id'",
-			DB_NAME,
-			$table
-		) );
+				DB_NAME,
+				$table
+			)
+		);
 		if ( $has_uid_idx ) {
 			$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `user_id`, ADD KEY `blocker_id` (`blocker_id`)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		}
-		$has_buid_idx = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
+		$has_buid_idx = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS
 			 WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND INDEX_NAME = 'blocked_user_id'",
-			DB_NAME,
-			$table
-		) );
+				DB_NAME,
+				$table
+			)
+		);
 		if ( $has_buid_idx ) {
 			$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `blocked_user_id`, ADD KEY `blocked_id` (`blocked_id`)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		}
@@ -248,44 +266,44 @@ class Activator {
 	 */
 	public static function create_pages(): void {
 		$pages = array(
-			'members'  => array(
+			'members'         => array(
 				'title'     => __( 'Members', '6arshid-social-community' ),
 				'slug'      => 'members',
 				'shortcode' => '[arshid6social_members]',
 				'option'    => 'arshid6social_page_members',
 			),
-			'activity' => array(
+			'activity'        => array(
 				'title'     => __( 'Activity', '6arshid-social-community' ),
 				'slug'      => 'activity',
 				'shortcode' => '[arshid6social_activity]',
 				'option'    => 'arshid6social_page_activity',
 			),
-			'groups'   => array(
+			'groups'          => array(
 				'title'     => __( 'Groups', '6arshid-social-community' ),
 				'slug'      => 'groups',
 				'shortcode' => '[arshid6social_groups]',
 				'option'    => 'arshid6social_page_groups',
 			),
-			'messages' => array(
+			'messages'        => array(
 				'title'     => __( 'Messages', '6arshid-social-community' ),
 				'slug'      => 'messages',
 				'shortcode' => '[arshid6social_messages]',
 				'option'    => 'arshid6social_page_messages',
 			),
-			'notifications' => array(
+			'notifications'   => array(
 				'title'     => __( 'Notifications', '6arshid-social-community' ),
 				'slug'      => 'notifications',
 				'shortcode' => '[arshid6social_notifications]',
 				'option'    => 'arshid6social_page_notifications',
 			),
-			'register' => array(
+			'register'        => array(
 				'title'     => __( 'Register', '6arshid-social-community' ),
 				'slug'      => 'register',
 				'shortcode' => '[arshid6social_register_form]',
 				'option'    => 'arshid6social_page_register',
 				'template'  => 'no-sidebars',
 			),
-			'login' => array(
+			'login'           => array(
 				'title'     => __( 'Login', '6arshid-social-community' ),
 				'slug'      => 'login',
 				'shortcode' => '[arshid6social_login_form]',
@@ -299,20 +317,20 @@ class Activator {
 				'option'    => 'arshid6social_page_forgot_password',
 				'template'  => 'no-sidebars',
 			),
-			'reset-password' => array(
+			'reset-password'  => array(
 				'title'     => __( 'Reset Password', '6arshid-social-community' ),
 				'slug'      => 'reset-password',
 				'shortcode' => '[arshid6social_reset_password]',
 				'option'    => 'arshid6social_page_reset_password',
 				'template'  => 'no-sidebars',
 			),
-			'dashboard' => array(
+			'dashboard'       => array(
 				'title'     => __( 'Dashboard', '6arshid-social-community' ),
 				'slug'      => 'dashboard',
 				'shortcode' => '[arshid6social_dashboard]',
 				'option'    => 'arshid6social_page_dashboard',
 			),
-			'home' => array(
+			'home'            => array(
 				'title'     => __( 'Home', '6arshid-social-community' ),
 				'slug'      => 'home',
 				'shortcode' => '[arshid6social_home]',
@@ -376,8 +394,8 @@ class Activator {
 	 * @param int $page_id
 	 */
 	private static function set_front_page( int $page_id ): void {
-		$current_front    = (int) get_option( 'page_on_front', 0 );
-		$current_show     = (string) get_option( 'show_on_front', 'posts' );
+		$current_front = (int) get_option( 'page_on_front', 0 );
+		$current_show  = (string) get_option( 'show_on_front', 'posts' );
 
 		// Already pointing at a valid published page that isn't ours — respect it.
 		if ( 'page' === $current_show && $current_front && $current_front !== $page_id
@@ -981,65 +999,85 @@ class Activator {
 	 */
 	private static function seed_default_options(): void {
 		$defaults = array(
-			'arshid6social_enabled_components'     => array( 'members', 'activity', 'groups', 'friends', 'messages', 'notifications', 'moderation' ),
-			'arshid6social_members_per_page'       => 20,
-			'arshid6social_members_pagination_type'          => 'pagination',
-			'arshid6social_members_show_friend_count'        => false,
-			'arshid6social_activity_per_page'      => 20,
-			'arshid6social_groups_per_page'        => 20,
-			'arshid6social_messages_per_page'      => 20,
-			'arshid6social_allow_registration'     => true,
-			'arshid6social_profile_photo_size'     => 150,
-			'arshid6social_cover_photo_width'      => 1200,
-			'arshid6social_cover_photo_height'     => 350,
-			'arshid6social_enable_akismet'         => true,
-			'arshid6social_enable_recaptcha'       => false,
-			'arshid6social_recaptcha_site_key'     => '',
-			'arshid6social_recaptcha_secret_key'   => '',
-			'arshid6social_new_member_moderation'  => false,
-			'arshid6social_auto_suspend_threshold' => 5,
-			'arshid6social_banned_words'           => '',
-			'arshid6social_email_notifications'    => true,
-			'arshid6social_email_digest'           => 'daily',
-			'arshid6social_rate_limit_posts'       => 10,
-			'arshid6social_rate_limit_messages'    => 20,
-			'arshid6social_rate_limit_friends'     => 50,
-			'arshid6social_max_upload_size_mb'               => 5,
-			'arshid6social_allowed_upload_types'             => array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' ),
-			'arshid6social_invitation_limit'                 => 20,
-			'arshid6social_activity_allow_comments'          => true,
-			'arshid6social_activity_allow_media'             => false,
-			'arshid6social_activity_allowed_media_types'     => array( 'image' ),
-			'arshid6social_activity_pagination_type'         => 'infinite_scroll',
-			'arshid6social_dark_mode'              => 'off',
-			'arshid6social_primary_color'          => '#2563eb',
-			'arshid6social_date_format'            => 'relative',
-			'arshid6social_setup_complete'         => false,
+			'arshid6social_enabled_components'             => array( 'members', 'activity', 'groups', 'friends', 'messages', 'notifications', 'moderation' ),
+			'arshid6social_members_per_page'               => 20,
+			'arshid6social_members_pagination_type'        => 'pagination',
+			'arshid6social_members_show_friend_count'      => false,
+			'arshid6social_activity_per_page'              => 20,
+			'arshid6social_groups_per_page'                => 20,
+			'arshid6social_messages_per_page'              => 20,
+			'arshid6social_allow_registration'             => true,
+			'arshid6social_profile_photo_size'             => 150,
+			'arshid6social_cover_photo_width'              => 1200,
+			'arshid6social_cover_photo_height'             => 350,
+			'arshid6social_enable_akismet'                 => true,
+			'arshid6social_enable_recaptcha'               => false,
+			'arshid6social_recaptcha_site_key'             => '',
+			'arshid6social_recaptcha_secret_key'           => '',
+			'arshid6social_new_member_moderation'          => false,
+			'arshid6social_auto_suspend_threshold'         => 5,
+			'arshid6social_banned_words'                   => '',
+			'arshid6social_email_notifications'            => true,
+			'arshid6social_email_digest'                   => 'daily',
+			'arshid6social_rate_limit_posts'               => 10,
+			'arshid6social_rate_limit_messages'            => 20,
+			'arshid6social_rate_limit_friends'             => 50,
+			'arshid6social_max_upload_size_mb'             => 5,
+			'arshid6social_allowed_upload_types'           => array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' ),
+			'arshid6social_invitation_limit'               => 20,
+			'arshid6social_activity_allow_comments'        => true,
+			'arshid6social_activity_allow_media'           => false,
+			'arshid6social_activity_allowed_media_types'   => array( 'image' ),
+			'arshid6social_activity_pagination_type'       => 'infinite_scroll',
+			'arshid6social_dark_mode'                      => 'off',
+			'arshid6social_primary_color'                  => '#2563eb',
+			'arshid6social_date_format'                    => 'relative',
+			'arshid6social_setup_complete'                 => false,
 			// Stories defaults — all off until explicitly enabled.
-			'arshid6social_stories_enabled'             => false,
-			'arshid6social_stories_bottom_bar'          => false,
+			'arshid6social_stories_enabled'                => false,
+			'arshid6social_stories_bottom_bar'             => false,
 			'arshid6social_stories_bottom_bar_marketplace' => false,
-			'arshid6social_stories_bottom_bar_messages' => false,
-			'arshid6social_stories_expiry_hours'        => 24,
-			'arshid6social_stories_max_video_secs'      => 30,
-			'arshid6social_stories_allow_video'         => true,
-			'arshid6social_stories_highlights'          => true,
-			'arshid6social_stories_rate_limit'          => 20,
+			'arshid6social_stories_bottom_bar_messages'    => false,
+			'arshid6social_stories_expiry_hours'           => 24,
+			'arshid6social_stories_max_video_secs'         => 30,
+			'arshid6social_stories_allow_video'            => true,
+			'arshid6social_stories_highlights'             => true,
+			'arshid6social_stories_rate_limit'             => 20,
 			// Block system defaults.
-			'arshid6social_blocking_enabled'       => true,
-			'arshid6social_blocking_show_reason'   => true,
+			'arshid6social_blocking_enabled'               => true,
+			'arshid6social_blocking_show_reason'           => true,
 			// Verification defaults.
-			'arshid6social_verification_enabled'   => false,
-			'arshid6social_verification_types'     => array(
-				array( 'key' => 'general',  'label' => 'Verified',  'badge' => '✓', 'color' => '#2563eb' ),
-				array( 'key' => 'business', 'label' => 'Business',  'badge' => '🏢', 'color' => '#d97706' ),
-				array( 'key' => 'notable',  'label' => 'Notable',   'badge' => '⭐', 'color' => '#7c3aed' ),
-				array( 'key' => 'staff',    'label' => 'Staff',     'badge' => '🛡️', 'color' => '#dc2626' ),
+			'arshid6social_verification_enabled'           => false,
+			'arshid6social_verification_types'             => array(
+				array(
+					'key'   => 'general',
+					'label' => 'Verified',
+					'badge' => '✓',
+					'color' => '#2563eb',
+				),
+				array(
+					'key'   => 'business',
+					'label' => 'Business',
+					'badge' => '🏢',
+					'color' => '#d97706',
+				),
+				array(
+					'key'   => 'notable',
+					'label' => 'Notable',
+					'badge' => '⭐',
+					'color' => '#7c3aed',
+				),
+				array(
+					'key'   => 'staff',
+					'label' => 'Staff',
+					'badge' => '🛡️',
+					'color' => '#dc2626',
+				),
 			),
-			'arshid6social_verification_require_doc'     => false,
-			'arshid6social_verification_expiry_months'   => 0,
-			'arshid6social_verification_doc_purge'       => true,
-			'arshid6social_verification_rate_limit'      => 3,
+			'arshid6social_verification_require_doc'       => false,
+			'arshid6social_verification_expiry_months'     => 0,
+			'arshid6social_verification_doc_purge'         => true,
+			'arshid6social_verification_rate_limit'        => 3,
 		);
 
 		foreach ( $defaults as $key => $value ) {
@@ -1162,11 +1200,13 @@ class Activator {
 
 		// Delete generated thumbnail files stored in _wp_attachment_metadata.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$meta_raw = $wpdb->get_var( $wpdb->prepare(
-			"SELECT meta_value FROM {$wpdb->postmeta}
+		$meta_raw = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT meta_value FROM {$wpdb->postmeta}
 			 WHERE post_id = %d AND meta_key = '_wp_attachment_metadata' LIMIT 1",
-			$att_id
-		) );
+				$att_id
+			)
+		);
 
 		if ( $meta_raw ) {
 			$meta = maybe_unserialize( $meta_raw );

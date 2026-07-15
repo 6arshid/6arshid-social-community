@@ -34,7 +34,7 @@ final class Admin_Moderation {
 	private function __construct() {}
 
 	private function hooks(): void {
-		add_action( 'wp_ajax_arshid6social_resolve_report',          array( $this, 'ajax_resolve_report' ) );
+		add_action( 'wp_ajax_arshid6social_resolve_report', array( $this, 'ajax_resolve_report' ) );
 		add_action( 'wp_ajax_arshid6social_admin_suspend_from_report', array( $this, 'ajax_suspend_from_report' ) );
 
 		// Register columns for Screen Options column-visibility checkboxes.
@@ -212,8 +212,8 @@ final class Admin_Moderation {
 
 		// ── Request params ────────────────────────────────────────────────────
 		$view   = isset( $_GET['moderation_view'] ) ? sanitize_key( wp_unslash( $_GET['moderation_view'] ) ) : 'reports'; // phpcs:ignore WordPress.Security.NonceVerification
-		$status = isset( $_GET['report_status'] )   ? sanitize_key( wp_unslash( $_GET['report_status'] ) )  : 'pending'; // phpcs:ignore WordPress.Security.NonceVerification
-		$paged  = isset( $_GET['paged'] )           ? max( 1, absint( $_GET['paged'] ) )                    : 1;         // phpcs:ignore WordPress.Security.NonceVerification
+		$status = isset( $_GET['report_status'] ) ? sanitize_key( wp_unslash( $_GET['report_status'] ) ) : 'pending'; // phpcs:ignore WordPress.Security.NonceVerification
+		$paged  = isset( $_GET['paged'] ) ? max( 1, absint( $_GET['paged'] ) ) : 1;         // phpcs:ignore WordPress.Security.NonceVerification
 
 		$allowed_statuses = array( 'pending', 'resolved', 'dismissed' );
 		if ( ! in_array( $status, $allowed_statuses, true ) ) {
@@ -267,8 +267,8 @@ final class Admin_Moderation {
 				<?php
 				$tab_list = array();
 				foreach ( $allowed_statuses as $s ) {
-					$url      = add_query_arg( 'report_status', $s );
-					$is_active = ( $status === $s );
+					$url        = add_query_arg( 'report_status', $s );
+					$is_active  = ( $status === $s );
 					$tab_list[] = sprintf(
 						'<li><a href="%s"%s>%s <span class="count">(%s)</span></a>',
 						esc_url( $url ),
@@ -297,14 +297,16 @@ final class Admin_Moderation {
 					</span>
 					<?php if ( $total_pages > 1 ) : ?>
 						<?php
-						echo paginate_links( // phpcs:ignore WordPress.Security.EscapeOutput
-							array(
-								'base'      => add_query_arg( 'paged', '%#%' ),
-								'format'    => '',
-								'current'   => $paged,
-								'total'     => $total_pages,
-								'prev_text' => '&laquo;',
-								'next_text' => '&raquo;',
+						echo wp_kses_post(
+							paginate_links(
+								array(
+									'base'      => add_query_arg( 'paged', '%#%' ),
+									'format'    => '',
+									'current'   => $paged,
+									'total'     => $total_pages,
+									'prev_text' => '&laquo;',
+									'next_text' => '&raquo;',
+								)
 							)
 						);
 						?>
@@ -436,14 +438,16 @@ final class Admin_Moderation {
 				<div class="tablenav bottom">
 					<div class="tablenav-pages">
 						<?php
-						echo paginate_links( // phpcs:ignore WordPress.Security.EscapeOutput
-							array(
-								'base'      => add_query_arg( 'paged', '%#%' ),
-								'format'    => '',
-								'current'   => $paged,
-								'total'     => $total_pages,
-								'prev_text' => '&laquo;',
-								'next_text' => '&raquo;',
+						echo wp_kses_post(
+							paginate_links(
+								array(
+									'base'      => add_query_arg( 'paged', '%#%' ),
+									'format'    => '',
+									'current'   => $paged,
+									'total'     => $total_pages,
+									'prev_text' => '&laquo;',
+									'next_text' => '&raquo;',
+								)
 							)
 						);
 						?>
@@ -619,7 +623,10 @@ final class Admin_Moderation {
 			$new_state ? 'user_suspended' : 'user_unsuspended',
 			'user',
 			$user_id,
-			array( 'reason' => $reason, 'report_id' => $report_id )
+			array(
+				'reason'    => $reason,
+				'report_id' => $report_id,
+			)
 		);
 
 		wp_send_json_success(

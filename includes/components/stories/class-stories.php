@@ -35,30 +35,31 @@ class Stories {
 	}
 
 	private function hooks(): void {
-		// Shortcode for manual placement outside the activity block.
+		// Shortcode for manual placement outside the activity block (primary name + legacy alias).
+		add_shortcode( 'arshid6social_stories_tray', array( $this, 'shortcode_tray' ) );
 		add_shortcode( 'sn_stories_tray', array( $this, 'shortcode_tray' ) );
 
 		// Cron: expire stories.
 		add_action( 'arshid6social_expire_stories', array( $this, 'expire_stories' ) );
 
 		// AJAX — public story operations.
-		add_action( 'wp_ajax_arshid6social_create_story',         array( $this, 'ajax_create_story' ) );
-		add_action( 'wp_ajax_arshid6social_delete_story',         array( $this, 'ajax_delete_story' ) );
-		add_action( 'wp_ajax_arshid6social_get_story_tray',       array( $this, 'ajax_get_tray' ) );
+		add_action( 'wp_ajax_arshid6social_create_story', array( $this, 'ajax_create_story' ) );
+		add_action( 'wp_ajax_arshid6social_delete_story', array( $this, 'ajax_delete_story' ) );
+		add_action( 'wp_ajax_arshid6social_get_story_tray', array( $this, 'ajax_get_tray' ) );
 		add_action( 'wp_ajax_arshid6social_nopriv_get_story_tray', array( $this, 'ajax_get_tray' ) );
-		add_action( 'wp_ajax_arshid6social_get_story_items',      array( $this, 'ajax_get_items' ) );
-		add_action( 'wp_ajax_arshid6social_mark_story_viewed',    array( $this, 'ajax_mark_viewed' ) );
-		add_action( 'wp_ajax_arshid6social_react_story',          array( $this, 'ajax_react' ) );
-		add_action( 'wp_ajax_arshid6social_reply_story',          array( $this, 'ajax_reply' ) );
-		add_action( 'wp_ajax_arshid6social_report_story',         array( $this, 'ajax_report' ) );
-		add_action( 'wp_ajax_arshid6social_get_story_viewers',    array( $this, 'ajax_get_viewers' ) );
+		add_action( 'wp_ajax_arshid6social_get_story_items', array( $this, 'ajax_get_items' ) );
+		add_action( 'wp_ajax_arshid6social_mark_story_viewed', array( $this, 'ajax_mark_viewed' ) );
+		add_action( 'wp_ajax_arshid6social_react_story', array( $this, 'ajax_react' ) );
+		add_action( 'wp_ajax_arshid6social_reply_story', array( $this, 'ajax_reply' ) );
+		add_action( 'wp_ajax_arshid6social_report_story', array( $this, 'ajax_report' ) );
+		add_action( 'wp_ajax_arshid6social_get_story_viewers', array( $this, 'ajax_get_viewers' ) );
 
 		// Close friends management.
-		add_action( 'wp_ajax_arshid6social_toggle_close_friend',  array( $this, 'ajax_toggle_close_friend' ) );
-		add_action( 'wp_ajax_arshid6social_get_close_friends',    array( $this, 'ajax_get_close_friends' ) );
+		add_action( 'wp_ajax_arshid6social_toggle_close_friend', array( $this, 'ajax_toggle_close_friend' ) );
+		add_action( 'wp_ajax_arshid6social_get_close_friends', array( $this, 'ajax_get_close_friends' ) );
 
 		// Mute management.
-		add_action( 'wp_ajax_arshid6social_mute_stories',   array( $this, 'ajax_mute_stories' ) );
+		add_action( 'wp_ajax_arshid6social_mute_stories', array( $this, 'ajax_mute_stories' ) );
 		add_action( 'wp_ajax_arshid6social_unmute_stories', array( $this, 'ajax_unmute_stories' ) );
 
 		// Fixed bottom stories bar on all plugin pages.
@@ -66,10 +67,10 @@ class Stories {
 
 		// Highlights.
 		if ( get_option( 'arshid6social_stories_highlights', true ) ) {
-			add_action( 'wp_ajax_arshid6social_create_highlight',      array( $this, 'ajax_create_highlight' ) );
-			add_action( 'wp_ajax_arshid6social_delete_highlight',      array( $this, 'ajax_delete_highlight' ) );
-			add_action( 'wp_ajax_arshid6social_add_to_highlight',      array( $this, 'ajax_add_to_highlight' ) );
-			add_action( 'wp_ajax_arshid6social_get_highlights',        array( $this, 'ajax_get_highlights' ) );
+			add_action( 'wp_ajax_arshid6social_create_highlight', array( $this, 'ajax_create_highlight' ) );
+			add_action( 'wp_ajax_arshid6social_delete_highlight', array( $this, 'ajax_delete_highlight' ) );
+			add_action( 'wp_ajax_arshid6social_add_to_highlight', array( $this, 'ajax_add_to_highlight' ) );
+			add_action( 'wp_ajax_arshid6social_get_highlights', array( $this, 'ajax_get_highlights' ) );
 			add_action( 'wp_ajax_arshid6social_nopriv_get_highlights', array( $this, 'ajax_get_highlights' ) );
 		}
 	}
@@ -95,8 +96,9 @@ class Stories {
 		// Basic privacy: guests see only public stories. One bubble per user.
 		if ( ! $viewer_id ) {
 			// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$rows = $wpdb->get_results( $wpdb->prepare(
-				"SELECT MIN(s.id) AS id, s.user_id, u.display_name, u.user_login,
+			$rows = $wpdb->get_results(
+				$wpdb->prepare(
+					"SELECT MIN(s.id) AS id, s.user_id, u.display_name, u.user_login,
 				        MAX(s.expires_at) AS expires_at, MAX(s.created_at) AS created_at,
 				        COUNT(DISTINCT si.id) AS total_items,
 				        COUNT(DISTINCT si.id) AS unseen_count
@@ -109,16 +111,18 @@ class Stories {
 				   $suspend_sql
 				 GROUP BY s.user_id
 				 ORDER BY MAX(s.created_at) DESC",
-				$now
-			) ) ?: array();
+					$now
+				)
+			) ?: array();
 			// phpcs:enable
 			return $rows;
 		}
 
 		// For logged-in viewers: exclude muted, blocked, suspended, apply privacy rules.
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$rows = $wpdb->get_results( $wpdb->prepare(
-			"SELECT MIN(s.id) AS id, s.user_id, u.display_name, u.user_login,
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT MIN(s.id) AS id, s.user_id, u.display_name, u.user_login,
 			        MAX(s.expires_at) AS expires_at, MAX(s.created_at) AS created_at,
 			        COUNT(DISTINCT si.id) AS total_items,
 			        SUM(CASE WHEN sv.viewer_id IS NULL THEN 1 ELSE 0 END) AS unseen_count
@@ -163,26 +167,34 @@ class Stories {
 			   )
 			 GROUP BY s.user_id
 			 ORDER BY unseen_count DESC, MAX(s.created_at) DESC",
-			$viewer_id, $now,
-			$viewer_id, $viewer_id,
-			$viewer_id,
-			$viewer_id,
-			$viewer_id,
-			$viewer_id, $viewer_id, $viewer_id,
-			$viewer_id
-		) ) ?: array();
+				$viewer_id,
+				$now,
+				$viewer_id,
+				$viewer_id,
+				$viewer_id,
+				$viewer_id,
+				$viewer_id,
+				$viewer_id,
+				$viewer_id,
+				$viewer_id,
+				$viewer_id
+			)
+		) ?: array();
 		// phpcs:enable
 
 		// Pin "Your Story" first.
-		usort( $rows, static function ( $a, $b ) use ( $viewer_id ) {
-			if ( (int) $a->user_id === $viewer_id ) {
-				return -1;
+		usort(
+			$rows,
+			static function ( $a, $b ) use ( $viewer_id ) {
+				if ( (int) $a->user_id === $viewer_id ) {
+					return -1;
+				}
+				if ( (int) $b->user_id === $viewer_id ) {
+					return 1;
+				}
+				return (int) $b->unseen_count - (int) $a->unseen_count;
 			}
-			if ( (int) $b->user_id === $viewer_id ) {
-				return 1;
-			}
-			return (int) $b->unseen_count - (int) $a->unseen_count;
-		} );
+		);
 
 		return $rows;
 	}
@@ -192,10 +204,12 @@ class Stories {
 	 */
 	public function get_items( int $story_id ): array {
 		global $wpdb;
-		return $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_story_items WHERE story_id = %d ORDER BY sort_order ASC",
-			$story_id
-		) ) ?: array();
+		return $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_story_items WHERE story_id = %d ORDER BY sort_order ASC",
+				$story_id
+			)
+		) ?: array();
 	}
 
 	/**
@@ -205,8 +219,9 @@ class Stories {
 	public function get_items_for_user( int $story_id ): array {
 		global $wpdb;
 		$now = current_time( 'mysql' );
-		return $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT si.* FROM {$wpdb->prefix}sn_story_items si
+		return $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT si.* FROM {$wpdb->prefix}sn_story_items si
 			 JOIN {$wpdb->prefix}sn_stories s ON s.id = si.story_id
 			 WHERE s.user_id = (
 			     SELECT user_id FROM {$wpdb->prefix}sn_stories WHERE id = %d LIMIT 1
@@ -214,8 +229,10 @@ class Stories {
 			 AND s.expires_at > %s
 			 AND s.highlight_id IS NULL
 			 ORDER BY s.created_at ASC, si.sort_order ASC",
-			$story_id, $now
-		) ) ?: array();
+				$story_id,
+				$now
+			)
+		) ?: array();
 	}
 
 	/**
@@ -226,14 +243,16 @@ class Stories {
 			return array();
 		}
 		global $wpdb;
-		return $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT sv.viewer_id, sv.viewed_at, u.display_name, u.user_login
+		return $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT sv.viewer_id, sv.viewed_at, u.display_name, u.user_login
 			 FROM {$wpdb->prefix}sn_story_views sv
 			 JOIN {$wpdb->users} u ON u.ID = sv.viewer_id
 			 WHERE sv.story_item_id = %d
 			 ORDER BY sv.viewed_at DESC",
-			$story_item_id
-		) ) ?: array();
+				$story_item_id
+			)
+		) ?: array();
 	}
 
 	// ── Create / Delete ───────────────────────────────────────────────────────
@@ -260,11 +279,11 @@ class Stories {
 		$result = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_stories',
 			array(
-				'user_id'      => $user_id,
-				'privacy'      => in_array( $privacy, array( 'public', 'friends', 'followers', 'close_friends' ), true ) ? $privacy : 'public',
+				'user_id'       => $user_id,
+				'privacy'       => in_array( $privacy, array( 'public', 'friends', 'followers', 'close_friends' ), true ) ? $privacy : 'public',
 				'close_friends' => $close,
-				'created_at'   => current_time( 'mysql' ),
-				'expires_at'   => $expires_at,
+				'created_at'    => current_time( 'mysql' ),
+				'expires_at'    => $expires_at,
 			),
 			array( '%d', '%s', '%d', '%s', '%s' )
 		);
@@ -279,16 +298,16 @@ class Stories {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prefix . 'sn_story_items',
 				array(
-					'story_id'     => $story_id,
-					'media_type'   => sanitize_key( $item['media_type'] ?? 'text' ),
+					'story_id'      => $story_id,
+					'media_type'    => sanitize_key( $item['media_type'] ?? 'text' ),
 					'attachment_id' => absint( $item['attachment_id'] ?? 0 ) ?: null,
-					'file_url'     => esc_url_raw( $item['file_url'] ?? '' ),
-					'file_path'    => $item['file_path'] ?? '',
-					'text_content' => sanitize_textarea_field( $item['text_content'] ?? '' ),
-					'bg_color'     => sanitize_hex_color( $item['bg_color'] ?? '' ) ?? '#2563eb',
+					'file_url'      => esc_url_raw( $item['file_url'] ?? '' ),
+					'file_path'     => $item['file_path'] ?? '',
+					'text_content'  => sanitize_textarea_field( $item['text_content'] ?? '' ),
+					'bg_color'      => sanitize_hex_color( $item['bg_color'] ?? '' ) ?? '#2563eb',
 					'overlays_json' => wp_json_encode( (array) ( $item['overlays'] ?? array() ) ),
-					'sort_order'   => (int) $order,
-					'duration'     => max( 1, min( 30, (int) ( $item['duration'] ?? 5 ) ) ),
+					'sort_order'    => (int) $order,
+					'duration'      => max( 1, min( 30, (int) ( $item['duration'] ?? 5 ) ) ),
 				),
 				array( '%d', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%d' )
 			);
@@ -304,10 +323,12 @@ class Stories {
 	public function delete( int $story_id, int $user_id ): bool {
 		global $wpdb;
 
-		$story = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_stories WHERE id = %d",
-			$story_id
-		) );
+		$story = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_stories WHERE id = %d",
+				$story_id
+			)
+		);
 
 		if ( ! $story ) {
 			return false;
@@ -326,10 +347,10 @@ class Stories {
 			}
 		}
 
-		$wpdb->delete( $wpdb->prefix . 'sn_story_views',     array( 'story_item_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'sn_story_views', array( 'story_item_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->delete( $wpdb->prefix . 'sn_story_reactions', array( 'story_item_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_story_items',     array( 'story_id' => $story_id ),      array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_stories',         array( 'id' => $story_id ),            array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'sn_story_items', array( 'story_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'sn_stories', array( 'id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		do_action( 'arshid6social_story_deleted', $story_id, $user_id );
 		return true;
@@ -339,11 +360,15 @@ class Stories {
 
 	public function mark_viewed( int $story_item_id, int $viewer_id ): void {
 		global $wpdb;
-		$wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"INSERT IGNORE INTO {$wpdb->prefix}sn_story_views (story_item_id, viewer_id, viewed_at)
+		$wpdb->query(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"INSERT IGNORE INTO {$wpdb->prefix}sn_story_views (story_item_id, viewer_id, viewed_at)
 			 VALUES (%d, %d, %s)",
-			$story_item_id, $viewer_id, current_time( 'mysql' )
-		) );
+				$story_item_id,
+				$viewer_id,
+				current_time( 'mysql' )
+			)
+		);
 	}
 
 	public function react( int $story_item_id, int $user_id, string $reaction ): bool {
@@ -354,10 +379,13 @@ class Stories {
 			$reaction = '❤️';
 		}
 
-		$existing = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_story_reactions WHERE story_item_id = %d AND user_id = %d",
-			$story_item_id, $user_id
-		) );
+		$existing = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_story_reactions WHERE story_item_id = %d AND user_id = %d",
+				$story_item_id,
+				$user_id
+			)
+		);
 
 		if ( $existing ) {
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -427,10 +455,13 @@ class Stories {
 
 	public function is_close_friend( int $user_id, int $friend_id ): bool {
 		global $wpdb;
-		return (bool) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_close_friends WHERE user_id = %d AND friend_id = %d",
-			$user_id, $friend_id
-		) );
+		return (bool) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_close_friends WHERE user_id = %d AND friend_id = %d",
+				$user_id,
+				$friend_id
+			)
+		);
 	}
 
 	public function add_close_friend( int $user_id, int $friend_id ): bool {
@@ -440,7 +471,11 @@ class Stories {
 		}
 		return (bool) $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_close_friends',
-			array( 'user_id' => $user_id, 'friend_id' => $friend_id, 'created_at' => current_time( 'mysql' ) ),
+			array(
+				'user_id'    => $user_id,
+				'friend_id'  => $friend_id,
+				'created_at' => current_time( 'mysql' ),
+			),
 			array( '%d', '%d', '%s' )
 		);
 	}
@@ -449,35 +484,47 @@ class Stories {
 		global $wpdb;
 		return (bool) $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_close_friends',
-			array( 'user_id' => $user_id, 'friend_id' => $friend_id ),
+			array(
+				'user_id'   => $user_id,
+				'friend_id' => $friend_id,
+			),
 			array( '%d', '%d' )
 		);
 	}
 
 	public function get_close_friends( int $user_id ): array {
 		global $wpdb;
-		return $wpdb->get_col( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT friend_id FROM {$wpdb->prefix}sn_close_friends WHERE user_id = %d ORDER BY created_at DESC",
-			$user_id
-		) ) ?: array();
+		return $wpdb->get_col(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT friend_id FROM {$wpdb->prefix}sn_close_friends WHERE user_id = %d ORDER BY created_at DESC",
+				$user_id
+			)
+		) ?: array();
 	}
 
 	// ── Mute ─────────────────────────────────────────────────────────────────
 
 	public function mute( int $user_id, int $muted_user_id ): bool {
 		global $wpdb;
-		return (bool) $wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"INSERT IGNORE INTO {$wpdb->prefix}sn_muted_stories (user_id, muted_user_id, created_at)
+		return (bool) $wpdb->query(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"INSERT IGNORE INTO {$wpdb->prefix}sn_muted_stories (user_id, muted_user_id, created_at)
 			 VALUES (%d, %d, %s)",
-			$user_id, $muted_user_id, current_time( 'mysql' )
-		) );
+				$user_id,
+				$muted_user_id,
+				current_time( 'mysql' )
+			)
+		);
 	}
 
 	public function unmute( int $user_id, int $muted_user_id ): bool {
 		global $wpdb;
 		return (bool) $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_muted_stories',
-			array( 'user_id' => $user_id, 'muted_user_id' => $muted_user_id ),
+			array(
+				'user_id'       => $user_id,
+				'muted_user_id' => $muted_user_id,
+			),
 			array( '%d', '%d' )
 		);
 	}
@@ -502,12 +549,18 @@ class Stories {
 	public function add_story_to_highlight( int $story_id, int $highlight_id, int $user_id ): bool {
 		global $wpdb;
 		// Verify ownership of both.
-		$story_owner     = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_stories WHERE id = %d", $story_id
-		) );
-		$highlight_owner = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_story_highlights WHERE id = %d", $highlight_id
-		) );
+		$story_owner     = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}sn_stories WHERE id = %d",
+				$story_id
+			)
+		);
+		$highlight_owner = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}sn_story_highlights WHERE id = %d",
+				$highlight_id
+			)
+		);
 		if ( (int) $story_owner !== $user_id || (int) $highlight_owner !== $user_id ) {
 			return false;
 		}
@@ -522,23 +575,28 @@ class Stories {
 
 	public function get_highlights( int $user_id ): array {
 		global $wpdb;
-		return $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT h.*, COUNT(si.id) AS story_count
+		return $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT h.*, COUNT(si.id) AS story_count
 			 FROM {$wpdb->prefix}sn_story_highlights h
 			 LEFT JOIN {$wpdb->prefix}sn_stories s ON s.highlight_id = h.id
 			 LEFT JOIN {$wpdb->prefix}sn_story_items si ON si.story_id = s.id
 			 WHERE h.user_id = %d
 			 GROUP BY h.id
 			 ORDER BY h.created_at DESC",
-			$user_id
-		) ) ?: array();
+				$user_id
+			)
+		) ?: array();
 	}
 
 	public function delete_highlight( int $highlight_id, int $user_id ): bool {
 		global $wpdb;
-		$owner = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_story_highlights WHERE id = %d", $highlight_id
-		) );
+		$owner = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}sn_story_highlights WHERE id = %d",
+				$highlight_id
+			)
+		);
 		if ( (int) $owner !== $user_id ) {
 			return false;
 		}
@@ -579,10 +637,10 @@ class Stories {
 				}
 			}
 
-			$wpdb->delete( $wpdb->prefix . 'sn_story_views',     array( 'story_item_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->delete( $wpdb->prefix . 'sn_story_views', array( 'story_item_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->delete( $wpdb->prefix . 'sn_story_reactions', array( 'story_item_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->delete( $wpdb->prefix . 'sn_story_items',     array( 'story_id' => $story_id ),      array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->delete( $wpdb->prefix . 'sn_stories',         array( 'id' => $story_id ),            array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->delete( $wpdb->prefix . 'sn_story_items', array( 'story_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->delete( $wpdb->prefix . 'sn_stories', array( 'id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		}
 	}
 
@@ -594,7 +652,11 @@ class Stories {
 		$loader = \Arshid6Social\Template_Loader::instance();
 		return $loader->get_template(
 			'stories/tray.php',
-			array( 'stories' => $tray, 'viewer_id' => $viewer, 'stories_obj' => $this ),
+			array(
+				'stories'     => $tray,
+				'viewer_id'   => $viewer,
+				'stories_obj' => $this,
+			),
 			true
 		);
 	}
@@ -690,6 +752,7 @@ class Stories {
 			wp_send_json_error( array( 'message' => __( 'Too many stories. Please wait.', '6arshid-social-community' ) ), 429 );
 		}
 
+		// Nonce already verified above via $this->nonce_check(); safe to read $_POST/$_FILES for the rest of this method.
 		// phpcs:disable WordPress.Security.NonceVerification
 		$privacy    = sanitize_key( wp_unslash( $_POST['privacy'] ?? 'public' ) );
 		$media_type = sanitize_key( wp_unslash( $_POST['media_type'] ?? 'text' ) );
@@ -707,7 +770,8 @@ class Stories {
 			'duration'     => $duration,
 		);
 
-		// Handle media upload if present.
+		// Handle media upload if present. Nonce already verified above via $this->nonce_check().
+		// phpcs:disable WordPress.Security.NonceVerification
 		if ( 'text' !== $media_type && ! empty( $_FILES['media']['tmp_name'] ) ) {
 			$context = 'image' === $media_type ? 'story_image' : 'story_video';
 
@@ -727,23 +791,26 @@ class Stories {
 				$upload['path'],
 				$upload['url'],
 				$upload['mime'],
-				sanitize_file_name( (string) ( $_FILES['media']['name'] ?? '' ) ), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+				sanitize_file_name( (string) ( $_FILES['media']['name'] ?? '' ) ),
 				$user_id
 			);
 			if ( $attach_id ) {
 				$item['attachment_id'] = $attach_id;
 			}
 		}
+		// phpcs:enable
 
 		$story_id = $this->create( $user_id, $privacy, array( $item ) );
 		if ( ! $story_id ) {
 			wp_send_json_error( array( 'message' => __( 'Could not create story.', '6arshid-social-community' ) ) );
 		}
 
-		wp_send_json_success( array(
-			'story_id' => $story_id,
-			'message'  => __( 'Story created.', '6arshid-social-community' ),
-		) );
+		wp_send_json_success(
+			array(
+				'story_id' => $story_id,
+				'message'  => __( 'Story created.', '6arshid-social-community' ),
+			)
+		);
 	}
 
 	public function ajax_delete_story(): void {
@@ -809,7 +876,10 @@ class Stories {
 		$reason   = sanitize_text_field( wp_unslash( $_POST['reason'] ?? 'spam' ) );
 		// phpcs:enable
 		\Arshid6Social\Components\Moderation\Moderation::add_report(
-			get_current_user_id(), $story_id, 'story', $reason
+			get_current_user_id(),
+			$story_id,
+			'story',
+			$reason
 		);
 		wp_send_json_success();
 	}
@@ -825,7 +895,7 @@ class Stories {
 		$this->nonce_check();
 		// phpcs:disable WordPress.Security.NonceVerification
 		$friend_id = absint( $_POST['friend_id'] ?? 0 );
-		$add       = (bool) ( $_POST['add'] ?? true );
+		$add       = (bool) sanitize_text_field( wp_unslash( $_POST['add'] ?? true ) );
 		// phpcs:enable
 		$user_id = get_current_user_id();
 
@@ -905,10 +975,12 @@ class Stories {
 	 */
 	public function get_story( int $story_id ): ?object {
 		global $wpdb;
-		$row = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_stories WHERE id = %d",
-			$story_id
-		) );
+		$row = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_stories WHERE id = %d",
+				$story_id
+			)
+		);
 		return $row ?: null;
 	}
 
@@ -917,12 +989,14 @@ class Stories {
 	 */
 	public function get_story_by_item( int $story_item_id ): ?object {
 		global $wpdb;
-		$row = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT s.* FROM {$wpdb->prefix}sn_stories s
+		$row = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT s.* FROM {$wpdb->prefix}sn_stories s
 			 JOIN {$wpdb->prefix}sn_story_items si ON si.story_id = s.id
 			 WHERE si.id = %d",
-			$story_item_id
-		) );
+				$story_item_id
+			)
+		);
 		return $row ?: null;
 	}
 
@@ -982,12 +1056,14 @@ class Stories {
 
 	private function get_item_owner( int $story_item_id ): ?int {
 		global $wpdb;
-		$result = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT s.user_id FROM {$wpdb->prefix}sn_story_items si
+		$result = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT s.user_id FROM {$wpdb->prefix}sn_story_items si
 			 JOIN {$wpdb->prefix}sn_stories s ON s.id = si.story_id
 			 WHERE si.id = %d",
-			$story_item_id
-		) );
+				$story_item_id
+			)
+		);
 		return $result ? (int) $result : null;
 	}
 
@@ -999,31 +1075,36 @@ class Stories {
 	private function notify( int $recipient_id, int $sender_id, string $action, int $secondary_id ): void {
 		$notifications = ARSHID6SOCIAL()->component( 'notifications' );
 		if ( $notifications ) {
-			$notifications->add( array(
-				'user_id'           => $recipient_id,
-				'item_id'           => $sender_id,
-				'secondary_item_id' => $secondary_id,
-				'component_name'    => 'stories',
-				'component_action'  => $action,
-			) );
+			$notifications->add(
+				array(
+					'user_id'           => $recipient_id,
+					'item_id'           => $sender_id,
+					'secondary_item_id' => $secondary_id,
+					'component_name'    => 'stories',
+					'component_action'  => $action,
+				)
+			);
 		}
 	}
 
 	private function format_tray( array $tray, int $viewer_id ): array {
-		return array_map( static function ( $story ) use ( $viewer_id ) {
-			return array(
-				'id'           => (int) $story->id,
-				'user_id'      => (int) $story->user_id,
-				'display_name' => $story->display_name,
-				'user_login'   => $story->user_login,
-				'avatar'       => get_avatar_url( (int) $story->user_id, array( 'size' => 56 ) ),
-				'total_items'  => (int) $story->total_items,
-				'unseen_count' => (int) $story->unseen_count,
-				'is_own'       => (int) $story->user_id === $viewer_id,
-				'expires_at'   => $story->expires_at,
-				'profile_url'  => esc_url( home_url( '/members/' . $story->user_login . '/' ) ),
-			);
-		}, $tray );
+		return array_map(
+			static function ( $story ) use ( $viewer_id ) {
+				return array(
+					'id'           => (int) $story->id,
+					'user_id'      => (int) $story->user_id,
+					'display_name' => $story->display_name,
+					'user_login'   => $story->user_login,
+					'avatar'       => get_avatar_url( (int) $story->user_id, array( 'size' => 56 ) ),
+					'total_items'  => (int) $story->total_items,
+					'unseen_count' => (int) $story->unseen_count,
+					'is_own'       => (int) $story->user_id === $viewer_id,
+					'expires_at'   => $story->expires_at,
+					'profile_url'  => esc_url( home_url( '/members/' . $story->user_login . '/' ) ),
+				);
+			},
+			$tray
+		);
 	}
 
 	// ── REST ─────────────────────────────────────────────────────────────────

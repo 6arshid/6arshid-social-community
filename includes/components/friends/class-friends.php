@@ -30,8 +30,8 @@ class Friends {
 		add_action( 'wp_ajax_arshid6social_block_user', array( $this, 'ajax_block_user' ) );
 		add_action( 'wp_ajax_arshid6social_unblock_user', array( $this, 'ajax_unblock_user' ) );
 		add_action( 'wp_ajax_arshid6social_get_friend_suggestions', array( $this, 'ajax_get_friend_suggestions' ) );
-		add_action( 'wp_ajax_arshid6social_get_friends',            array( $this, 'ajax_get_friends' ) );
-		add_action( 'wp_ajax_nopriv_arshid6social_get_friends',     array( $this, 'ajax_get_friends' ) );
+		add_action( 'wp_ajax_arshid6social_get_friends', array( $this, 'ajax_get_friends' ) );
+		add_action( 'wp_ajax_nopriv_arshid6social_get_friends', array( $this, 'ajax_get_friends' ) );
 	}
 
 	// ── Friend requests ──────────────────────────────────────────────────────
@@ -124,7 +124,11 @@ class Friends {
 		$result = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_friends',
 			array( 'is_confirmed' => 1 ),
-			array( 'initiator_user_id' => $requester_id, 'friend_user_id' => $accepter_id, 'is_confirmed' => 0 ),
+			array(
+				'initiator_user_id' => $requester_id,
+				'friend_user_id'    => $accepter_id,
+				'is_confirmed'      => 0,
+			),
 			array( '%d' ),
 			array( '%d', '%d', '%d' )
 		);
@@ -242,7 +246,10 @@ class Friends {
 		global $wpdb;
 		$deleted = $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_follow',
-			array( 'follower_id' => $follower_id, 'followee_id' => $followee_id ),
+			array(
+				'follower_id' => $follower_id,
+				'followee_id' => $followee_id,
+			),
 			array( '%d', '%d' )
 		);
 
@@ -329,7 +336,10 @@ class Friends {
 		global $wpdb;
 		$deleted = (bool) $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_blocks',
-			array( 'blocker_id' => $blocker_id, 'blocked_id' => $blocked_id ),
+			array(
+				'blocker_id' => $blocker_id,
+				'blocked_id' => $blocked_id,
+			),
 			array( '%d', '%d' )
 		);
 		if ( $deleted ) {
@@ -462,7 +472,12 @@ class Friends {
 
 		$result = $this->send_request( get_current_user_id(), $target );
 		if ( true === $result ) {
-			wp_send_json_success( array( 'status' => 'pending_sent', 'message' => __( 'Friend request sent.', '6arshid-social-community' ) ) );
+			wp_send_json_success(
+				array(
+					'status'  => 'pending_sent',
+					'message' => __( 'Friend request sent.', '6arshid-social-community' ),
+				)
+			);
 		} else {
 			wp_send_json_error( array( 'message' => $result ?: __( 'Could not send request.', '6arshid-social-community' ) ) );
 		}
@@ -472,35 +487,60 @@ class Friends {
 		$this->nonce_check_and_auth();
 		$requester = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$this->accept_request( get_current_user_id(), $requester );
-		wp_send_json_success( array( 'status' => 'friends', 'message' => __( 'Friend request accepted.', '6arshid-social-community' ) ) );
+		wp_send_json_success(
+			array(
+				'status'  => 'friends',
+				'message' => __( 'Friend request accepted.', '6arshid-social-community' ),
+			)
+		);
 	}
 
 	public function ajax_reject_friend_request(): void {
 		$this->nonce_check_and_auth();
 		$requester = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$this->reject_or_withdraw( get_current_user_id(), $requester );
-		wp_send_json_success( array( 'status' => 'not_friends', 'message' => __( 'Request rejected.', '6arshid-social-community' ) ) );
+		wp_send_json_success(
+			array(
+				'status'  => 'not_friends',
+				'message' => __( 'Request rejected.', '6arshid-social-community' ),
+			)
+		);
 	}
 
 	public function ajax_remove_friend(): void {
 		$this->nonce_check_and_auth();
 		$friend = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$this->remove_friend( get_current_user_id(), $friend );
-		wp_send_json_success( array( 'status' => 'not_friends', 'message' => __( 'Friend removed.', '6arshid-social-community' ) ) );
+		wp_send_json_success(
+			array(
+				'status'  => 'not_friends',
+				'message' => __( 'Friend removed.', '6arshid-social-community' ),
+			)
+		);
 	}
 
 	public function ajax_follow_user(): void {
 		$this->nonce_check_and_auth();
 		$target = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$this->follow( get_current_user_id(), $target );
-		wp_send_json_success( array( 'following' => true, 'message' => __( 'You are now following this member.', '6arshid-social-community' ) ) );
+		wp_send_json_success(
+			array(
+				'following' => true,
+				'message'   => __( 'You are now following this member.', '6arshid-social-community' ),
+			)
+		);
 	}
 
 	public function ajax_unfollow_user(): void {
 		$this->nonce_check_and_auth();
 		$target = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$this->unfollow( get_current_user_id(), $target );
-		wp_send_json_success( array( 'following' => false, 'message' => __( 'You have unfollowed this member.', '6arshid-social-community' ) ) );
+		wp_send_json_success(
+			array(
+				'following' => false,
+				'message'   => __( 'You have unfollowed this member.', '6arshid-social-community' ),
+			)
+		);
 	}
 
 	public function ajax_block_user(): void {
@@ -510,14 +550,24 @@ class Friends {
 		$reason = sanitize_textarea_field( wp_unslash( $_POST['reason'] ?? '' ) );
 		// phpcs:enable
 		$this->block( get_current_user_id(), $target, $reason );
-		wp_send_json_success( array( 'blocked' => true, 'message' => __( 'User blocked.', '6arshid-social-community' ) ) );
+		wp_send_json_success(
+			array(
+				'blocked' => true,
+				'message' => __( 'User blocked.', '6arshid-social-community' ),
+			)
+		);
 	}
 
 	public function ajax_unblock_user(): void {
 		$this->nonce_check_and_auth();
 		$target = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$this->unblock( get_current_user_id(), $target );
-		wp_send_json_success( array( 'blocked' => false, 'message' => __( 'User unblocked.', '6arshid-social-community' ) ) );
+		wp_send_json_success(
+			array(
+				'blocked' => false,
+				'message' => __( 'User unblocked.', '6arshid-social-community' ),
+			)
+		);
 	}
 
 	public function ajax_get_friends(): void {
@@ -534,20 +584,30 @@ class Friends {
 		if ( $current_user_id !== $user_id ) {
 			$privacy = get_user_meta( $user_id, 'arshid6social_friends_list_privacy', true ) ?: 'private';
 			if ( 'private' === $privacy ) {
-				wp_send_json_success( array( 'friends' => array(), 'hasMore' => false, 'private' => true ) );
+				wp_send_json_success(
+					array(
+						'friends' => array(),
+						'hasMore' => false,
+						'private' => true,
+					)
+				);
 				return;
 			}
 		}
 
 		global $wpdb;
-		$offset  = ( $page - 1 ) * $per_page;
-		$ids     = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$offset = ( $page - 1 ) * $per_page;
+		$ids    = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
 				"SELECT IF(initiator_user_id = %d, friend_user_id, initiator_user_id) as friend_id
 				 FROM {$wpdb->prefix}sn_friends
 				 WHERE (initiator_user_id = %d OR friend_user_id = %d) AND is_confirmed = 1
 				 ORDER BY date_created DESC LIMIT %d OFFSET %d",
-				$user_id, $user_id, $user_id, $per_page + 1, $offset
+				$user_id,
+				$user_id,
+				$user_id,
+				$per_page + 1,
+				$offset
 			)
 		);
 
@@ -561,7 +621,9 @@ class Friends {
 		$data         = array();
 		foreach ( $ids as $fid ) {
 			$user = get_userdata( (int) $fid );
-			if ( ! $user || ! $members_comp ) continue;
+			if ( ! $user || ! $members_comp ) {
+				continue;
+			}
 			$item = $members_comp->format_member( $user );
 			if ( $current ) {
 				$item['friendshipStatus'] = $this->get_friendship_status( $current, (int) $fid );
@@ -569,12 +631,17 @@ class Friends {
 			$data[] = $item;
 		}
 
-		wp_send_json_success( array( 'friends' => $data, 'hasMore' => $has_more ) );
+		wp_send_json_success(
+			array(
+				'friends' => $data,
+				'hasMore' => $has_more,
+			)
+		);
 	}
 
 	public function ajax_get_friend_suggestions(): void {
 		$this->nonce_check_and_auth();
-		$suggestions = $this->get_suggestions( get_current_user_id() );
+		$suggestions  = $this->get_suggestions( get_current_user_id() );
 		$members_comp = ARSHID6SOCIAL()->component( 'members' );
 
 		$data = array();

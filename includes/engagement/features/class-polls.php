@@ -12,13 +12,13 @@ defined( 'ABSPATH' ) || exit;
 class Polls {
 
 	public function __construct() {
-		add_action( 'wp_ajax_arshid6social_poll_create',          array( $this, 'ajax_create' ) );
-		add_action( 'wp_ajax_arshid6social_poll_vote',            array( $this, 'ajax_vote' ) );
-		add_action( 'wp_ajax_arshid6social_poll_results',         array( $this, 'ajax_results' ) );
-		add_action( 'wp_ajax_nopriv_arshid6social_poll_results',  array( $this, 'ajax_results' ) );
-		add_action( 'wp_ajax_arshid6social_poll_get_html',        array( $this, 'ajax_get_html' ) );
+		add_action( 'wp_ajax_arshid6social_poll_create', array( $this, 'ajax_create' ) );
+		add_action( 'wp_ajax_arshid6social_poll_vote', array( $this, 'ajax_vote' ) );
+		add_action( 'wp_ajax_arshid6social_poll_results', array( $this, 'ajax_results' ) );
+		add_action( 'wp_ajax_nopriv_arshid6social_poll_results', array( $this, 'ajax_results' ) );
+		add_action( 'wp_ajax_arshid6social_poll_get_html', array( $this, 'ajax_get_html' ) );
 		add_action( 'wp_ajax_nopriv_arshid6social_poll_get_html', array( $this, 'ajax_get_html' ) );
-		add_action( 'wp_ajax_arshid6social_poll_suggest_option',  array( $this, 'ajax_suggest_option' ) );
+		add_action( 'wp_ajax_arshid6social_poll_suggest_option', array( $this, 'ajax_suggest_option' ) );
 
 		// Auto-close expired polls.
 		add_action( 'arshid6social_poll_expire_check', array( $this, 'close_expired' ) );
@@ -79,18 +79,18 @@ class Polls {
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_polls',
 			array(
-				'activity_id'           => absint( $args['activity_id'] ?? 0 ),
-				'user_id'               => absint( $args['user_id'] ?? get_current_user_id() ),
-				'question'              => sanitize_text_field( $args['question'] ?? '' ),
-				'poll_type'             => in_array( $args['poll_type'] ?? 'single', array( 'single', 'multiple', 'ranked' ), true ) ? $args['poll_type'] : 'single',
-				'anonymous'             => (int) ! empty( $args['anonymous'] ),
-				'allow_change_vote'     => (int) ( $args['allow_change_vote'] ?? true ),
-				'results_visibility'    => in_array( $args['results_visibility'] ?? 'always', array( 'always', 'after_vote', 'after_close' ), true ) ? ( $args['results_visibility'] ?? 'always' ) : 'always',
-				'allow_voter_suggest'   => (int) ! empty( $args['allow_voter_suggest'] ) && get_option( 'arshid6social_eng_polls_allow_voter_suggest', false ),
-				'end_date'              => ! empty( $args['end_date'] ) ? sanitize_text_field( $args['end_date'] ) : null,
-				'start_date'            => ! empty( $args['start_date'] ) ? sanitize_text_field( $args['start_date'] ) : null,
-				'status'                => 'open',
-				'created_at'            => current_time( 'mysql' ),
+				'activity_id'         => absint( $args['activity_id'] ?? 0 ),
+				'user_id'             => absint( $args['user_id'] ?? get_current_user_id() ),
+				'question'            => sanitize_text_field( $args['question'] ?? '' ),
+				'poll_type'           => in_array( $args['poll_type'] ?? 'single', array( 'single', 'multiple', 'ranked' ), true ) ? $args['poll_type'] : 'single',
+				'anonymous'           => (int) ! empty( $args['anonymous'] ),
+				'allow_change_vote'   => (int) ( $args['allow_change_vote'] ?? true ),
+				'results_visibility'  => in_array( $args['results_visibility'] ?? 'always', array( 'always', 'after_vote', 'after_close' ), true ) ? ( $args['results_visibility'] ?? 'always' ) : 'always',
+				'allow_voter_suggest' => (int) ! empty( $args['allow_voter_suggest'] ) && get_option( 'arshid6social_eng_polls_allow_voter_suggest', false ),
+				'end_date'            => ! empty( $args['end_date'] ) ? sanitize_text_field( $args['end_date'] ) : null,
+				'start_date'          => ! empty( $args['start_date'] ) ? sanitize_text_field( $args['start_date'] ) : null,
+				'status'              => 'open',
+				'created_at'          => current_time( 'mysql' ),
 			),
 			array( '%d', '%d', '%s', '%s', '%d', '%d', '%s', '%d', '%s', '%s', '%s', '%s' )
 		);
@@ -108,11 +108,11 @@ class Polls {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prefix . 'sn_poll_options',
 				array(
-					'poll_id'    => $poll_id,
-					'option_text' => $text,
+					'poll_id'      => $poll_id,
+					'option_text'  => $text,
 					'option_image' => $image ?: null,
-					'is_correct'  => $is_correct,
-					'sort_order'  => $i,
+					'is_correct'   => $is_correct,
+					'sort_order'   => $i,
 				),
 				array( '%d', '%s', '%s', '%d', '%d' )
 			);
@@ -134,34 +134,51 @@ class Polls {
 
 		$poll = $this->get_poll( $poll_id );
 		if ( ! $poll ) {
-			return array( 'success' => false, 'message' => __( 'Poll not found.', '6arshid-social-community' ) );
+			return array(
+				'success' => false,
+				'message' => __( 'Poll not found.', '6arshid-social-community' ),
+			);
 		}
 
 		if ( 'open' !== $poll->status ) {
-			return array( 'success' => false, 'message' => __( 'This poll is closed.', '6arshid-social-community' ) );
+			return array(
+				'success' => false,
+				'message' => __( 'This poll is closed.', '6arshid-social-community' ),
+			);
 		}
 
 		if ( $poll->start_date && strtotime( $poll->start_date ) > time() ) {
-			return array( 'success' => false, 'message' => __( 'This poll has not started yet.', '6arshid-social-community' ) );
+			return array(
+				'success' => false,
+				'message' => __( 'This poll has not started yet.', '6arshid-social-community' ),
+			);
 		}
 
 		$has_voted = $this->user_has_voted( $poll_id, $user_id );
 
 		if ( $has_voted && ! $poll->allow_change_vote ) {
-			return array( 'success' => false, 'message' => __( 'You have already voted.', '6arshid-social-community' ) );
+			return array(
+				'success' => false,
+				'message' => __( 'You have already voted.', '6arshid-social-community' ),
+			);
 		}
 
 		// Verify options belong to this poll.
-		$valid_ids = $wpdb->get_col( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_poll_options WHERE poll_id = %d",
-			$poll_id
-		) );
+		$valid_ids  = $wpdb->get_col(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_poll_options WHERE poll_id = %d",
+				$poll_id
+			)
+		);
 		$valid_ids  = array_map( 'intval', $valid_ids );
 		$option_ids = array_unique( array_map( 'absint', $option_ids ) );
 		$option_ids = array_values( array_intersect( $option_ids, $valid_ids ) );
 
 		if ( empty( $option_ids ) ) {
-			return array( 'success' => false, 'message' => __( 'Invalid option(s).', '6arshid-social-community' ) );
+			return array(
+				'success' => false,
+				'message' => __( 'Invalid option(s).', '6arshid-social-community' ),
+			);
 		}
 
 		// Enforce single-choice limit.
@@ -173,7 +190,10 @@ class Polls {
 		if ( $has_voted ) {
 			$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prefix . 'sn_poll_votes',
-				array( 'poll_id' => $poll_id, 'user_id' => $user_id ),
+				array(
+					'poll_id' => $poll_id,
+					'user_id' => $user_id,
+				),
 				array( '%d', '%d' )
 			);
 		}
@@ -192,31 +212,42 @@ class Polls {
 			);
 		}
 
-		return array( 'success' => true, 'message' => __( 'Vote recorded.', '6arshid-social-community' ), 'results' => $this->get_results( $poll_id, $user_id ) );
+		return array(
+			'success' => true,
+			'message' => __( 'Vote recorded.', '6arshid-social-community' ),
+			'results' => $this->get_results( $poll_id, $user_id ),
+		);
 	}
 
 	public function get_poll( int $poll_id ): ?object {
 		global $wpdb;
-		return $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_polls WHERE id = %d",
-			$poll_id
-		) );
+		return $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_polls WHERE id = %d",
+				$poll_id
+			)
+		);
 	}
 
 	public function get_poll_by_activity( int $activity_id ): ?object {
 		global $wpdb;
-		return $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_polls WHERE activity_id = %d",
-			$activity_id
-		) );
+		return $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_polls WHERE activity_id = %d",
+				$activity_id
+			)
+		);
 	}
 
 	public function user_has_voted( int $poll_id, int $user_id ): bool {
 		global $wpdb;
-		return (bool) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM {$wpdb->prefix}sn_poll_votes WHERE poll_id = %d AND user_id = %d",
-			$poll_id, $user_id
-		) );
+		return (bool) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_poll_votes WHERE poll_id = %d AND user_id = %d",
+				$poll_id,
+				$user_id
+			)
+		);
 	}
 
 	/**
@@ -227,19 +258,22 @@ class Polls {
 	public function get_results( int $poll_id, int $viewer_id = 0 ): array {
 		global $wpdb;
 
-		$poll    = $this->get_poll( $poll_id );
+		$poll = $this->get_poll( $poll_id );
 		if ( ! $poll ) {
 			return array();
 		}
 
-		$options = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT o.*, COUNT(v.id) AS vote_count
+		$options = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT o.*, COUNT(v.id) AS vote_count
 			FROM {$wpdb->prefix}sn_poll_options o
 			LEFT JOIN {$wpdb->prefix}sn_poll_votes v ON v.option_id = o.id
 			WHERE o.poll_id = %d
 			GROUP BY o.id ORDER BY o.sort_order ASC",
-			$poll_id
-		), ARRAY_A ) ?: array();
+				$poll_id
+			),
+			ARRAY_A
+		) ?: array();
 
 		$total_votes = array_sum( array_column( $options, 'vote_count' ) );
 
@@ -254,26 +288,35 @@ class Polls {
 
 		$user_voted_options = array();
 		if ( $viewer_id ) {
-			$user_voted_options = array_map( 'intval', $wpdb->get_col( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT option_id FROM {$wpdb->prefix}sn_poll_votes WHERE poll_id = %d AND user_id = %d",
-				$poll_id, $viewer_id
-			) ) );
+			$user_voted_options = array_map(
+				'intval',
+				$wpdb->get_col(
+					$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+						"SELECT option_id FROM {$wpdb->prefix}sn_poll_votes WHERE poll_id = %d AND user_id = %d",
+						$poll_id,
+						$viewer_id
+					)
+				)
+			);
 		}
 
-		$formatted_options = array_map( function( array $opt ) use ( $total_votes, $can_see_results, $user_voted_options, $poll ): array {
-			$count      = $can_see_results ? (int) $opt['vote_count'] : null;
-			$percentage = ( $can_see_results && $total_votes > 0 ) ? round( ( (int) $opt['vote_count'] / $total_votes ) * 100, 1 ) : null;
+		$formatted_options = array_map(
+			function ( array $opt ) use ( $total_votes, $can_see_results, $user_voted_options, $poll ): array {
+				$count      = $can_see_results ? (int) $opt['vote_count'] : null;
+				$percentage = ( $can_see_results && $total_votes > 0 ) ? round( ( (int) $opt['vote_count'] / $total_votes ) * 100, 1 ) : null;
 
-			return array(
-				'id'          => (int) $opt['id'],
-				'text'        => esc_html( $opt['option_text'] ),
-				'image'       => $opt['option_image'] ? esc_url( $opt['option_image'] ) : null,
-				'isCorrect'   => (bool) $opt['is_correct'],
-				'voteCount'   => $count,
-				'percentage'  => $percentage,
-				'userVoted'   => in_array( (int) $opt['id'], $user_voted_options, true ),
-			);
-		}, $options );
+				return array(
+					'id'         => (int) $opt['id'],
+					'text'       => esc_html( $opt['option_text'] ),
+					'image'      => $opt['option_image'] ? esc_url( $opt['option_image'] ) : null,
+					'isCorrect'  => (bool) $opt['is_correct'],
+					'voteCount'  => $count,
+					'percentage' => $percentage,
+					'userVoted'  => in_array( (int) $opt['id'], $user_voted_options, true ),
+				);
+			},
+			$options
+		);
 
 		return array(
 			'pollId'        => $poll_id,
@@ -305,9 +348,9 @@ class Polls {
 			return;
 		}
 		$poll_id = (int) $poll->id;
-		$wpdb->delete( $wpdb->prefix . 'sn_poll_votes',   array( 'poll_id' => $poll_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'sn_poll_votes', array( 'poll_id' => $poll_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->delete( $wpdb->prefix . 'sn_poll_options', array( 'poll_id' => $poll_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_polls',        array( 'id' => $poll_id ),      array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'sn_polls', array( 'id' => $poll_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	}
 
 	// ── AJAX ──────────────────────────────────────────────────────────────────
@@ -323,8 +366,7 @@ class Polls {
 		// phpcs:disable WordPress.Security.NonceVerification
 		$activity_id = absint( $_POST['activity_id'] ?? 0 );
 		$question    = sanitize_text_field( wp_unslash( $_POST['question'] ?? '' ) );
-		$options_raw = $_POST['options'] ?? array();
-		$options     = is_array( $options_raw ) ? array_map( 'sanitize_text_field', wp_unslash( $options_raw ) ) : array();
+		$options     = isset( $_POST['options'] ) && is_array( $_POST['options'] ) ? array_map( 'sanitize_text_field', wp_unslash( $_POST['options'] ) ) : array();
 		$poll_type   = sanitize_key( $_POST['poll_type'] ?? 'single' );
 		$anonymous   = ! empty( $_POST['anonymous'] );
 		$end_date    = sanitize_text_field( wp_unslash( $_POST['end_date'] ?? '' ) );
@@ -336,24 +378,28 @@ class Polls {
 
 		// Verify activity ownership.
 		global $wpdb;
-		$owner = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
-			$activity_id
-		) );
+		$owner = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				$activity_id
+			)
+		);
 		if ( $owner !== get_current_user_id() ) {
 			wp_send_json_error( null, 403 );
 		}
 
-		$poll_id = $this->create( array(
-			'activity_id'       => $activity_id,
-			'user_id'           => get_current_user_id(),
-			'question'          => $question,
-			'options'           => $options,
-			'poll_type'         => $poll_type,
-			'anonymous'         => $anonymous,
-			'allow_change_vote' => true,
-			'end_date'          => $end_date,
-		) );
+		$poll_id = $this->create(
+			array(
+				'activity_id'       => $activity_id,
+				'user_id'           => get_current_user_id(),
+				'question'          => $question,
+				'options'           => $options,
+				'poll_type'         => $poll_type,
+				'anonymous'         => $anonymous,
+				'allow_change_vote' => true,
+				'end_date'          => $end_date,
+			)
+		);
 
 		if ( ! $poll_id ) {
 			global $wpdb;
@@ -361,10 +407,12 @@ class Polls {
 			wp_send_json_error( array( 'message' => 'Poll save failed.' . $db_err ), 500 );
 		}
 
-		wp_send_json_success( array(
-			'poll_id' => $poll_id,
-			'results' => $this->get_results( $poll_id, get_current_user_id() ),
-		) );
+		wp_send_json_success(
+			array(
+				'poll_id' => $poll_id,
+				'results' => $this->get_results( $poll_id, get_current_user_id() ),
+			)
+		);
 	}
 
 	/**
@@ -379,10 +427,13 @@ class Polls {
 			return '';
 		}
 
-		$options = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id, option_text FROM {$wpdb->prefix}sn_poll_options WHERE poll_id = %d ORDER BY sort_order ASC",
-			$poll_id
-		), ARRAY_A ) ?: array();
+		$options = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id, option_text FROM {$wpdb->prefix}sn_poll_options WHERE poll_id = %d ORDER BY sort_order ASC",
+				$poll_id
+			),
+			ARRAY_A
+		) ?: array();
 
 		$results    = $viewer_id ? $this->get_results( $poll_id, $viewer_id ) : array();
 		$has_voted  = $viewer_id ? ( $results['hasVoted'] ?? false ) : false;
@@ -468,9 +519,11 @@ class Polls {
 		}
 
 		// Return server-rendered HTML so JS just swaps the DOM node — no client-side data mapping needed.
-		wp_send_json_success( array(
-			'html' => $this->render_html( $poll_id, $user_id ),
-		) );
+		wp_send_json_success(
+			array(
+				'html' => $this->render_html( $poll_id, $user_id ),
+			)
+		);
 	}
 
 	public function ajax_results(): void {

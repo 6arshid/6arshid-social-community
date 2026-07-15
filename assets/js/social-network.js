@@ -16,9 +16,9 @@
 	const AJAX_NONCE = cfg.ajaxNonce || '';
 	const USER_ID        = parseInt( cfg.userId, 10 ) || 0;
 	const I18N           = cfg.i18n          || {};
-	const EJTEMSN_ON      = !! cfg.sixarshidscEnabled;
-	const EJTEMSN_REST    = cfg.sixarshidscRestUrl      || '';
-	const EJTEMSN_PUB_KEY = cfg.sixarshidscStripePubKey || '';
+	const MONETIZATION_ON      = !! cfg.monetizationEnabled;
+	const MONETIZATION_REST    = cfg.monetizationRestUrl      || '';
+	const MONETIZATION_PUB_KEY = cfg.monetizationStripePubKey || '';
 
 	// -- Utility: AJAX ------------------------------------------------------
 	async function doAjax( action, data = {} ) {
@@ -425,17 +425,17 @@
 			</div>`;
 
 		// --- Paid / locked card ---
-		const isLocked = EJTEMSN_ON && !! a.locked;
+		const isLocked = MONETIZATION_ON && !! a.locked;
 		const lockedBlock = isLocked ? ( () => {
-			const preview   = a.lockedPreview ? `<p class="sixarshidsc-locked-preview" style="margin:0 0 12px;color:var(--sn-text-muted,#6b7280);font-style:italic;">${esc( a.lockedPreview )}</p>` : '';
+			const preview   = a.lockedPreview ? `<p class="arshid6social-mon-locked-preview" style="margin:0 0 12px;color:var(--sn-text-muted,#6b7280);font-style:italic;">${esc( a.lockedPreview )}</p>` : '';
 			const priceStr  = esc( a.ppvPriceFormatted || '' );
 			const btnLabel  = USER_ID
 				? `🔓 ${ I18N.unlockFor ? I18N.unlockFor.replace( '%s', priceStr ) : 'Unlock for ' + priceStr }`
 				: `🔓 ${ I18N.loginToUnlock || 'Login to unlock' }`;
 			const action = USER_ID
-				? `<button type="button" class="arshid6social-btn arshid6social-btn--primary sixarshidsc-unlock-btn" data-activity-id="${a.id}" data-price="${esc( priceStr )}">${btnLabel}</button>`
+				? `<button type="button" class="arshid6social-btn arshid6social-btn--primary arshid6social-mon-unlock-btn" data-activity-id="${a.id}" data-price="${esc( priceStr )}">${btnLabel}</button>`
 				: `<a href="${esc( cfg.siteUrl || '/' )}login/" class="arshid6social-btn arshid6social-btn--primary">${btnLabel}</a>`;
-			return `<div class="sixarshidsc-locked-content" style="border:2px dashed var(--sn-border,#e5e7eb);border-radius:10px;padding:20px 16px;text-align:center;margin:8px 0;">
+			return `<div class="arshid6social-mon-locked-content" style="border:2px dashed var(--sn-border,#e5e7eb);border-radius:10px;padding:20px 16px;text-align:center;margin:8px 0;">
 				${preview}
 				<div style="font-size:1.5rem;margin-bottom:8px;">💰</div>
 				<p style="margin:0 0 12px;font-weight:600;">${ I18N.paidContent || 'Paid content' }</p>
@@ -1184,9 +1184,9 @@
 			}
 
 			// Show/hide PPV price row when "Paid" privacy is selected.
-			if ( form && EJTEMSN_ON ) {
+			if ( form && MONETIZATION_ON ) {
 				const privSel  = form.querySelector( '.arshid6social-privacy-select' );
-				const priceRow = form.querySelector( '.sixarshidsc-price-row' );
+				const priceRow = form.querySelector( '.arshid6social-mon-price-row' );
 				if ( privSel && priceRow ) {
 					const togglePriceRow = () => {
 						priceRow.style.display = privSel.value === 'paid' ? 'flex' : 'none';
@@ -1234,8 +1234,8 @@
 						const privacyEl = form.querySelector( '[name="privacy"]' );
 						const chosenPrivacy = privacyEl ? privacyEl.value : 'public';
 						formData.append( 'privacy', chosenPrivacy );
-						if ( 'paid' === chosenPrivacy && EJTEMSN_ON ) {
-							const priceInput = form.querySelector( '.sixarshidsc-ppv-price-input' );
+						if ( 'paid' === chosenPrivacy && MONETIZATION_ON ) {
+							const priceInput = form.querySelector( '.arshid6social-mon-ppv-price-input' );
 							const priceDollars = priceInput ? parseFloat( priceInput.value ) || 0 : 0;
 							formData.append( 'ppv_price', String( Math.round( priceDollars * 100 ) ) );
 						}
@@ -2076,51 +2076,51 @@
 
 	// ── Paid content: Stripe payment flow ─────────────────────────────────────
 
-	let sixarshidscStripeLoaded = false;
+	let monetizationStripeLoaded = false;
 
-	function sixarshidscLoadStripe( pubKey, cb ) {
+	function monetizationLoadStripe( pubKey, cb ) {
 		if ( window.Stripe ) { cb( window.Stripe( pubKey ) ); return; }
-		if ( sixarshidscStripeLoaded ) { const t = setInterval( () => { if ( window.Stripe ) { clearInterval(t); cb( window.Stripe( pubKey ) ); } }, 100 ); return; }
-		sixarshidscStripeLoaded = true;
+		if ( monetizationStripeLoaded ) { const t = setInterval( () => { if ( window.Stripe ) { clearInterval(t); cb( window.Stripe( pubKey ) ); } }, 100 ); return; }
+		monetizationStripeLoaded = true;
 		const s = document.createElement( 'script' );
 		s.src = 'https://js.stripe.com/v3/';
 		s.onload = () => cb( window.Stripe( pubKey ) );
 		document.head.appendChild( s );
 	}
 
-	function sixarshidscShowPaymentModal( activityId, checkoutData ) {
-		const existing = document.getElementById( 'sixarshidsc-payment-modal' );
+	function monetizationShowPaymentModal( activityId, checkoutData ) {
+		const existing = document.getElementById( 'arshid6social-mon-payment-modal' );
 		if ( existing ) existing.remove();
 
 		const overlay = document.createElement( 'div' );
-		overlay.id = 'sixarshidsc-payment-modal';
+		overlay.id = 'arshid6social-mon-payment-modal';
 		overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px;';
 		overlay.innerHTML = `
 			<div style="background:#fff;border-radius:12px;padding:24px;width:100%;max-width:420px;position:relative;">
-				<button id="sixarshidsc-modal-close" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:1.4rem;cursor:pointer;line-height:1;" aria-label="Close">&times;</button>
+				<button id="arshid6social-mon-modal-close" style="position:absolute;top:12px;right:12px;background:none;border:none;font-size:1.4rem;cursor:pointer;line-height:1;" aria-label="Close">&times;</button>
 				<h3 style="margin:0 0 4px;font-size:1.1rem;">${ I18N.paidContent || 'Paid content' }</h3>
 				<p style="margin:0 0 16px;color:#6b7280;font-size:.9rem;">${ I18N.unlockFor ? I18N.unlockFor.replace('%s', checkoutData.price_formatted) : 'Unlock for ' + checkoutData.price_formatted }</p>
-				<div id="sixarshidsc-payment-element" style="margin-bottom:16px;"></div>
-				<button id="sixarshidsc-pay-btn" class="arshid6social-btn arshid6social-btn--primary" style="width:100%;">
+				<div id="arshid6social-mon-payment-element" style="margin-bottom:16px;"></div>
+				<button id="arshid6social-mon-pay-btn" class="arshid6social-btn arshid6social-btn--primary" style="width:100%;">
 					${ I18N.payNow || 'Pay now' } — ${esc( checkoutData.price_formatted )}
 				</button>
-				<p id="sixarshidsc-pay-error" style="color:#dc2626;margin:10px 0 0;display:none;font-size:.875rem;"></p>
-				<p id="sixarshidsc-pay-processing" style="color:#6b7280;margin:10px 0 0;display:none;font-size:.875rem;">${ I18N.paymentProcessing || 'Processing payment, please wait…' }</p>
+				<p id="arshid6social-mon-pay-error" style="color:#dc2626;margin:10px 0 0;display:none;font-size:.875rem;"></p>
+				<p id="arshid6social-mon-pay-processing" style="color:#6b7280;margin:10px 0 0;display:none;font-size:.875rem;">${ I18N.paymentProcessing || 'Processing payment, please wait…' }</p>
 			</div>`;
 		document.body.appendChild( overlay );
 
 		const closeModal = () => overlay.remove();
-		document.getElementById( 'sixarshidsc-modal-close' ).addEventListener( 'click', closeModal );
+		document.getElementById( 'arshid6social-mon-modal-close' ).addEventListener( 'click', closeModal );
 		overlay.addEventListener( 'click', ( e ) => { if ( e.target === overlay ) closeModal(); } );
 
-		sixarshidscLoadStripe( checkoutData.pub_key, ( stripe ) => {
+		monetizationLoadStripe( checkoutData.pub_key, ( stripe ) => {
 			const elements = stripe.elements( { clientSecret: checkoutData.client_secret } );
 			const payEl    = elements.create( 'payment' );
-			payEl.mount( '#sixarshidsc-payment-element' );
+			payEl.mount( '#arshid6social-mon-payment-element' );
 
-			const payBtn      = document.getElementById( 'sixarshidsc-pay-btn' );
-			const errEl       = document.getElementById( 'sixarshidsc-pay-error' );
-			const procEl      = document.getElementById( 'sixarshidsc-pay-processing' );
+			const payBtn      = document.getElementById( 'arshid6social-mon-pay-btn' );
+			const errEl       = document.getElementById( 'arshid6social-mon-pay-error' );
+			const procEl      = document.getElementById( 'arshid6social-mon-pay-processing' );
 
 			payBtn.addEventListener( 'click', async () => {
 				payBtn.disabled = true;
@@ -2147,7 +2147,7 @@
 				const piId = paymentIntent?.id || checkoutData.payment_intent;
 
 				try {
-					const vr = await fetch( EJTEMSN_REST + 'ppv/' + activityId + '/verify', {
+					const vr = await fetch( MONETIZATION_REST + 'ppv/' + activityId + '/verify', {
 						method:  'POST',
 						headers: { 'X-WP-Nonce': cfg.nonce, 'Content-Type': 'application/json' },
 						body:    JSON.stringify( { payment_intent: piId } ),
@@ -2155,7 +2155,7 @@
 					const vd = await vr.json();
 					if ( vd.entitled ) {
 						const dest = checkoutData.activity_url
-							|| ( location.origin + location.pathname + '?sixarshidsc_paid_activity=' + activityId );
+							|| ( location.origin + location.pathname + '?arshid6social_monetization_paid_activity=' + activityId );
 						location.href = dest;
 						return;
 					}
@@ -2166,14 +2166,14 @@
 				const poll = setInterval( async () => {
 					polls++;
 					try {
-						const r = await fetch( EJTEMSN_REST + 'ppv/' + activityId + '/status', {
+						const r = await fetch( MONETIZATION_REST + 'ppv/' + activityId + '/status', {
 							headers: { 'X-WP-Nonce': cfg.nonce },
 						} );
 						const d = await r.json();
 						if ( d.entitled ) {
 							clearInterval( poll );
 							const dest = checkoutData.activity_url
-								|| ( location.origin + location.pathname + '?sixarshidsc_paid_activity=' + activityId );
+								|| ( location.origin + location.pathname + '?arshid6social_monetization_paid_activity=' + activityId );
 							location.href = dest;
 							return;
 						}
@@ -2185,14 +2185,14 @@
 	}
 
 	function initUnlockButtons() {
-		document.querySelectorAll( '.sixarshidsc-unlock-btn:not([data-bound])' ).forEach( ( btn ) => {
+		document.querySelectorAll( '.arshid6social-mon-unlock-btn:not([data-bound])' ).forEach( ( btn ) => {
 			btn.dataset.bound = '1';
 			btn.addEventListener( 'click', async () => {
-				if ( ! EJTEMSN_ON || ! EJTEMSN_REST ) return;
+				if ( ! MONETIZATION_ON || ! MONETIZATION_REST ) return;
 				btn.disabled = true;
 				const activityId = btn.dataset.activityId;
 				try {
-					const r = await fetch( EJTEMSN_REST + 'ppv/' + activityId + '/checkout', {
+					const r = await fetch( MONETIZATION_REST + 'ppv/' + activityId + '/checkout', {
 						method: 'POST',
 						headers: { 'X-WP-Nonce': cfg.nonce, 'Content-Type': 'application/json' },
 					} );
@@ -2201,7 +2201,7 @@
 						location.reload(); return;
 					}
 					if ( data.client_secret ) {
-						sixarshidscShowPaymentModal( activityId, data );
+						monetizationShowPaymentModal( activityId, data );
 					} else {
 						showNotice( ( data.message || I18N.error || 'Error.' ), 'error' );
 					}
@@ -2387,7 +2387,7 @@
 							<option value="public" ${currentPrivacy === 'public' ? 'selected' : ''}>\uD83C\uDF10 ${I18N.privacyPublic || 'Public'}</option>
 							<option value="friends" ${currentPrivacy === 'friends' ? 'selected' : ''}>\uD83D\uDC65 ${I18N.privacyFriends || 'Friends'}</option>
 							<option value="private" ${currentPrivacy === 'private' ? 'selected' : ''}>\uD83D\uDD12 ${I18N.privacyPrivate || 'Only Me'}</option>
-							${EJTEMSN_ON ? `<option value="paid" ${currentPrivacy === 'paid' ? 'selected' : ''}>\uD83D\uDCB0 ${I18N.privacyPaid || 'Paid'}</option>` : ''}
+							${MONETIZATION_ON ? `<option value="paid" ${currentPrivacy === 'paid' ? 'selected' : ''}>\uD83D\uDCB0 ${I18N.privacyPaid || 'Paid'}</option>` : ''}
 						</select>
 						<button class="arshid6social-btn arshid6social-btn--primary arshid6social-btn--sm arshid6social-edit-save">${I18N.save || 'Save'}</button>
 						<button class="arshid6social-btn arshid6social-btn--ghost arshid6social-btn--sm arshid6social-edit-cancel">${I18N.cancel || 'Cancel'}</button>
@@ -3565,12 +3565,12 @@
 
 	// Document-level delegation: show/hide PPV price row whenever the privacy
 	// select changes (catches any form, even lazily inserted ones).
-	if ( EJTEMSN_ON ) {
+	if ( MONETIZATION_ON ) {
 		document.addEventListener( 'change', ( e ) => {
 			if ( ! e.target.classList.contains( 'arshid6social-privacy-select' ) ) return;
 			const form = e.target.closest( 'form' );
 			if ( ! form ) return;
-			const priceRow = form.querySelector( '.sixarshidsc-price-row' );
+			const priceRow = form.querySelector( '.arshid6social-mon-price-row' );
 			if ( priceRow ) {
 				priceRow.style.display = e.target.value === 'paid' ? 'flex' : 'none';
 			}
@@ -3774,16 +3774,16 @@
 	}
 
 	// -- Post-payment redirect handler --------------------------------------
-	( function sixarshidscHandleReturnFromPayment() {
-		if ( ! EJTEMSN_ON || ! EJTEMSN_REST ) return;
+	( function monetizationHandleReturnFromPayment() {
+		if ( ! MONETIZATION_ON || ! MONETIZATION_REST ) return;
 
 		const params     = new URLSearchParams( location.search );
-		const activityId = params.get( 'sixarshidsc_paid_activity' );
+		const activityId = params.get( 'arshid6social_monetization_paid_activity' );
 		if ( ! activityId ) return;
 
 		// Clean the URL so a manual refresh doesn't re-trigger the handler.
 		const cleanUrl = new URL( location.href );
-		cleanUrl.searchParams.delete( 'sixarshidsc_paid_activity' );
+		cleanUrl.searchParams.delete( 'arshid6social_monetization_paid_activity' );
 		cleanUrl.searchParams.delete( 'payment_intent' );
 		cleanUrl.searchParams.delete( 'payment_intent_client_secret' );
 		cleanUrl.searchParams.delete( 'redirect_status' );
@@ -3805,7 +3805,7 @@
 		const pollInterval = setInterval( async () => {
 			polls++;
 			try {
-				const r = await fetch( EJTEMSN_REST + 'ppv/' + activityId + '/status', {
+				const r = await fetch( MONETIZATION_REST + 'ppv/' + activityId + '/status', {
 					headers: { 'X-WP-Nonce': cfg.nonce },
 				} );
 				const d = await r.json();

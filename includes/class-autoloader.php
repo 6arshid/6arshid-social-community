@@ -33,7 +33,7 @@ class Autoloader {
 		'Arshid6Social\\Components\\Verification\\'  => 'components/verification/',
 		'Arshid6Social\\Components\\Stories\\'       => 'components/stories/',
 		'Arshid6Social\\Components\\Marketplace\\'   => 'components/marketplace/',
-		'Arshid6Social\\Components\\Monetization\\' => 'components/monetization/',
+		'Arshid6Social\\Components\\Monetization\\'  => 'components/monetization/',
 		'Arshid6Social\\Components\\Ads\\'           => 'components/ads/',
 		'Arshid6Social\\Components\\Search\\'        => 'components/search/',
 		'Arshid6Social\\Engagement\\Features\\'      => 'engagement/features/',

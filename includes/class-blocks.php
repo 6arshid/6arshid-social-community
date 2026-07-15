@@ -56,7 +56,12 @@ class Blocks {
 			return '';
 		}
 
-		$result  = $members_component->get_members( array( 'type' => $type, 'per_page' => $per_page ) );
+		$result  = $members_component->get_members(
+			array(
+				'type'     => $type,
+				'per_page' => $per_page,
+			)
+		);
 		$members = $result['members'];
 
 		global $arshid6social_is_page;
@@ -164,7 +169,12 @@ class Blocks {
 		}
 
 		$statuses = ( 'all' === $status ) ? array( 'public', 'private' ) : array( 'public' );
-		$result   = $groups_component->get_groups( array( 'status' => $statuses, 'per_page' => $per_page ) );
+		$result   = $groups_component->get_groups(
+			array(
+				'status'   => $statuses,
+				'per_page' => $per_page,
+			)
+		);
 		$groups   = $result['groups'];
 
 		global $arshid6social_is_page;

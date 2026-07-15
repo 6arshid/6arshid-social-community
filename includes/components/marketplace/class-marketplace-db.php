@@ -58,7 +58,7 @@ class Marketplace_DB {
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"{$wpdb->prefix}arshid6social_listings",
 				array( 'uid' => self::generate_uid() ),
-				array( 'id'  => $row->id ),
+				array( 'id' => $row->id ),
 				array( '%s' ),
 				array( '%d' )
 			);
@@ -230,12 +230,14 @@ class Marketplace_DB {
 		global $wpdb;
 		$table = $wpdb->prefix . 'sn_messages_threads';
 
-		$has_col = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+		$has_col = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
 			 WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = 'type'",
-			DB_NAME,
-			$table
-		) );
+				DB_NAME,
+				$table
+			)
+		);
 
 		if ( ! $has_col ) {
 			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -261,15 +263,60 @@ class Marketplace_DB {
 		}
 
 		$categories = array(
-			array( 'name' => 'Vehicles',     'slug' => 'vehicles',     'icon' => '🚗', 'sort_order' => 1 ),
-			array( 'name' => 'Property',     'slug' => 'property',     'icon' => '🏠', 'sort_order' => 2 ),
-			array( 'name' => 'Electronics',  'slug' => 'electronics',  'icon' => '📱', 'sort_order' => 3 ),
-			array( 'name' => 'Home & Garden','slug' => 'home-garden',  'icon' => '🏡', 'sort_order' => 4 ),
-			array( 'name' => 'Fashion',      'slug' => 'fashion',      'icon' => '👗', 'sort_order' => 5 ),
-			array( 'name' => 'Jobs',         'slug' => 'jobs',         'icon' => '💼', 'sort_order' => 6 ),
-			array( 'name' => 'Services',     'slug' => 'services',     'icon' => '🔧', 'sort_order' => 7 ),
-			array( 'name' => 'Free Stuff',   'slug' => 'free',         'icon' => '🎁', 'sort_order' => 8 ),
-			array( 'name' => 'Other',        'slug' => 'other',        'icon' => '📦', 'sort_order' => 9 ),
+			array(
+				'name'       => 'Vehicles',
+				'slug'       => 'vehicles',
+				'icon'       => '🚗',
+				'sort_order' => 1,
+			),
+			array(
+				'name'       => 'Property',
+				'slug'       => 'property',
+				'icon'       => '🏠',
+				'sort_order' => 2,
+			),
+			array(
+				'name'       => 'Electronics',
+				'slug'       => 'electronics',
+				'icon'       => '📱',
+				'sort_order' => 3,
+			),
+			array(
+				'name'       => 'Home & Garden',
+				'slug'       => 'home-garden',
+				'icon'       => '🏡',
+				'sort_order' => 4,
+			),
+			array(
+				'name'       => 'Fashion',
+				'slug'       => 'fashion',
+				'icon'       => '👗',
+				'sort_order' => 5,
+			),
+			array(
+				'name'       => 'Jobs',
+				'slug'       => 'jobs',
+				'icon'       => '💼',
+				'sort_order' => 6,
+			),
+			array(
+				'name'       => 'Services',
+				'slug'       => 'services',
+				'icon'       => '🔧',
+				'sort_order' => 7,
+			),
+			array(
+				'name'       => 'Free Stuff',
+				'slug'       => 'free',
+				'icon'       => '🎁',
+				'sort_order' => 8,
+			),
+			array(
+				'name'       => 'Other',
+				'slug'       => 'other',
+				'icon'       => '📦',
+				'sort_order' => 9,
+			),
 		);
 
 		foreach ( $categories as $cat ) {
@@ -303,10 +350,10 @@ class Marketplace_DB {
 			'arshid6social_marketplace_expiry_days'        => 30,
 			'arshid6social_marketplace_moderation'         => 'auto',
 			'arshid6social_marketplace_require_verified'   => false,
-			'arshid6social_marketplace_auto_hide_threshold'=> 3,
+			'arshid6social_marketplace_auto_hide_threshold' => 3,
 			'arshid6social_marketplace_banned_words'       => '',
 			'arshid6social_marketplace_allow_guests'       => true,
-			'arshid6social_marketplace_max_active_listings'=> 20,
+			'arshid6social_marketplace_max_active_listings' => 20,
 			'arshid6social_marketplace_daily_new_listings' => 5,
 			'arshid6social_marketplace_safety_tips'        => __( 'Meet in a public place. Inspect the item before paying. Never share personal financial information.', '6arshid-social-community' ),
 			'arshid6social_marketplace_prohibited_policy'  => __( 'The following items are prohibited: weapons, illegal substances, counterfeit goods, and any other items prohibited by local law.', '6arshid-social-community' ),
@@ -354,21 +401,25 @@ class Marketplace_DB {
 
 		// Remove the type column from the shared messages table.
 		$threads_table = $wpdb->prefix . 'sn_messages_threads';
-		$has_col       = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
+		$has_col       = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
 			 WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s AND COLUMN_NAME = 'type'",
-			DB_NAME,
-			$threads_table
-		) );
+				DB_NAME,
+				$threads_table
+			)
+		);
 		if ( $has_col ) {
 			$wpdb->query( "ALTER TABLE `{$threads_table}` DROP COLUMN `type`, DROP KEY `type`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		}
 
 		// Remove all marketplace options.
 		$option_prefix = 'arshid6social_marketplace';
-		$wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
-			$wpdb->esc_like( $option_prefix ) . '%'
-		) );
+		$wpdb->query(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$wpdb->esc_like( $option_prefix ) . '%'
+			)
+		);
 	}
 }

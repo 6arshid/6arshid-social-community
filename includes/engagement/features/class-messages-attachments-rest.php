@@ -14,17 +14,25 @@ class Messages_Attachments_REST {
 	const NS = 'arshid6social/v1';
 
 	public function register_routes(): void {
-		register_rest_route( self::NS, '/messages/(?P<id>\d+)/attachments', array(
-			'methods'             => \WP_REST_Server::READABLE,
-			'callback'            => array( $this, 'get_attachments' ),
-			'permission_callback' => 'is_user_logged_in',
-		) );
+		register_rest_route(
+			self::NS,
+			'/messages/(?P<id>\d+)/attachments',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_attachments' ),
+				'permission_callback' => 'is_user_logged_in',
+			)
+		);
 
-		register_rest_route( self::NS, '/attachments/message/(?P<id>\d+)', array(
-			'methods'             => \WP_REST_Server::DELETABLE,
-			'callback'            => array( $this, 'delete_attachment' ),
-			'permission_callback' => 'is_user_logged_in',
-		) );
+		register_rest_route(
+			self::NS,
+			'/attachments/message/(?P<id>\d+)',
+			array(
+				'methods'             => \WP_REST_Server::DELETABLE,
+				'callback'            => array( $this, 'delete_attachment' ),
+				'permission_callback' => 'is_user_logged_in',
+			)
+		);
 	}
 
 	private function feature(): ?Messages_Attachments {
@@ -46,10 +54,12 @@ class Messages_Attachments_REST {
 		$att_id  = absint( $req['id'] );
 		$user_id = get_current_user_id();
 
-		$att = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}arshid6social_attachments WHERE id = %d AND parent_type = 'message'",
-			$att_id
-		) );
+		$att = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}arshid6social_attachments WHERE id = %d AND parent_type = 'message'",
+				$att_id
+			)
+		);
 
 		if ( ! $att ) {
 			return new \WP_REST_Response( null, 404 );

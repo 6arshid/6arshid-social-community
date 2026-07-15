@@ -38,10 +38,10 @@ $messages_base_url = $messages_page_id ? get_permalink( $messages_page_id ) : ho
 // Photo URLs (prefer WP attachment; fall back to stored file_url)
 $photo_urls = array();
 foreach ( $photos as $ph ) {
-	$full  = $ph->attachment_id ? wp_get_attachment_url( (int) $ph->attachment_id ) : '';
-	$thumb = $ph->attachment_id ? wp_get_attachment_image_url( (int) $ph->attachment_id, 'medium' ) : '';
+	$full         = $ph->attachment_id ? wp_get_attachment_url( (int) $ph->attachment_id ) : '';
+	$thumb        = $ph->attachment_id ? wp_get_attachment_image_url( (int) $ph->attachment_id, 'medium' ) : '';
 	$photo_urls[] = array(
-		'full'  => $full  ?: $ph->file_url,
+		'full'  => $full ?: $ph->file_url,
 		'thumb' => $thumb ?: $ph->file_url,
 	);
 }
@@ -66,15 +66,15 @@ $condition_labels = array(
 	'poor'     => __( 'Poor', '6arshid-social-community' ),
 	'used'     => __( 'Used', '6arshid-social-community' ),
 );
-$condition_label = $condition_labels[ $listing->item_condition ] ?? ucfirst( $listing->item_condition );
+$condition_label  = $condition_labels[ $listing->item_condition ] ?? ucfirst( $listing->item_condition );
 
 // Status badge
 $status_label = array(
-	'active'  => '',
-	'pending' => __( 'Pending Review', '6arshid-social-community' ),
-	'sold'    => __( 'Sold', '6arshid-social-community' ),
-	'draft'   => __( 'Draft', '6arshid-social-community' ),
-	'archived'=> __( 'Archived', '6arshid-social-community' ),
+	'active'   => '',
+	'pending'  => __( 'Pending Review', '6arshid-social-community' ),
+	'sold'     => __( 'Sold', '6arshid-social-community' ),
+	'draft'    => __( 'Draft', '6arshid-social-community' ),
+	'archived' => __( 'Archived', '6arshid-social-community' ),
 );
 ?>
 
@@ -89,10 +89,12 @@ $status_label = array(
 	data-messages-url="<?php echo esc_url( $messages_base_url ); ?>"
 	data-saved="<?php echo $is_saved ? '1' : '0'; ?>"
 	data-login="<?php echo is_user_logged_in() ? '' : esc_url( wp_login_url( get_permalink() ) ); ?>"
-	data-saved-posts-url="<?php
+	data-saved-posts-url="
+	<?php
 		$_sp_id = (int) get_option( 'arshid6social_page_saved_posts', 0 );
 		echo esc_url( $_sp_id ? get_permalink( $_sp_id ) : home_url( '/saved-posts/' ) );
-	?>">
+	?>
+	">
 
 	<?php /* ── Breadcrumb ──────────────────────────────────────────────────── */ ?>
 	<nav class="arshid6social-mkt-breadcrumb" aria-label="<?php esc_attr_e( 'Breadcrumb', '6arshid-social-community' ); ?>">
@@ -136,16 +138,19 @@ $status_label = array(
 				<?php endif; ?>
 			</div>
 
-			<?php if ( count( $photo_urls ) > 1 ) : ?>
+				<?php if ( count( $photo_urls ) > 1 ) : ?>
 			<div class="arshid6social-mkt-gallery-thumbs" role="list">
-				<?php foreach ( $photo_urls as $i => $ph ) : ?>
+					<?php foreach ( $photo_urls as $i => $ph ) : ?>
 				<button type="button"
 					class="arshid6social-mkt-gallery-thumb<?php echo 0 === $i ? ' is-active' : ''; ?>"
 					data-full="<?php echo esc_url( $ph['full'] ); ?>"
 					data-index="<?php echo esc_attr( $i ); ?>"
-					aria-label="<?php
-					/* translators: %d: photo number */
-					printf( esc_attr__( 'Photo %d', '6arshid-social-community' ), absint( $i + 1 ) ); ?>"
+					aria-label="
+						<?php
+						/* translators: %d: photo number */
+						printf( esc_attr__( 'Photo %d', '6arshid-social-community' ), absint( $i + 1 ) );
+						?>
+					"
 					role="listitem">
 					<img src="<?php echo esc_url( $ph['thumb'] ); ?>" alt="" loading="lazy">
 				</button>
@@ -224,7 +229,7 @@ $status_label = array(
 			</div>
 			<?php else : ?>
 
-			<?php /* Owner controls */ ?>
+				<?php /* Owner controls */ ?>
 			<div class="arshid6social-mkt-s-owner-bar">
 				<strong><?php esc_html_e( 'Your listing', '6arshid-social-community' ); ?></strong>
 				<div class="arshid6social-mkt-s-owner-actions">
@@ -239,7 +244,19 @@ $status_label = array(
 						<?php esc_html_e( 'Re-activate', '6arshid-social-community' ); ?>
 					</button>
 					<?php endif; ?>
-					<a href="<?php echo esc_url( add_query_arg( array( 'action' => 'edit', 'id' => $uid ), $base_url ) ); ?>"
+					<a href="
+					<?php
+					echo esc_url(
+						add_query_arg(
+							array(
+								'action' => 'edit',
+								'id'     => $uid,
+							),
+							$base_url
+						)
+					);
+					?>
+								"
 						class="arshid6social-mkt-btn arshid6social-mkt-btn--outline arshid6social-mkt-btn--sm">
 						<?php esc_html_e( 'Edit', '6arshid-social-community' ); ?>
 					</a>
@@ -263,11 +280,13 @@ $status_label = array(
 						<?php echo arshid6social_verified_badge( $seller->ID ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					</a>
 					<span class="arshid6social-mkt-seller-since">
-						<?php printf(
+						<?php
+						printf(
 							/* translators: %s: date user joined */
 							esc_html__( 'Member since %s', '6arshid-social-community' ),
 							esc_html( date_i18n( 'M Y', strtotime( $seller->user_registered ) ) )
-						); ?>
+						);
+						?>
 					</span>
 				</div>
 			</div>
@@ -376,7 +395,7 @@ $mkt_single_css     =
 	'.arshid6social-mkt-toast--success{background:#166534}' .
 	'.arshid6social-mkt-toast--info{background:#1e40af}';
 if ( ! wp_style_is( 'arshid6social-mkt-single-inline', 'registered' ) ) {
-	wp_register_style( 'arshid6social-mkt-single-inline', false, array( 'arshid6social-main' ), null );
+	wp_register_style( 'arshid6social-mkt-single-inline', false, array( 'arshid6social-main' ), ARSHID6SOCIAL_VERSION );
 	wp_enqueue_style( 'arshid6social-mkt-single-inline' );
 	wp_style_add_data( 'arshid6social-mkt-single-inline', 'group', 1 );
 }

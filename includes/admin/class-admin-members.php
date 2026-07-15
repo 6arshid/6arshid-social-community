@@ -33,7 +33,7 @@ final class Admin_Members {
 	private function __construct() {}
 
 	private function hooks(): void {
-		add_action( 'wp_ajax_arshid6social_admin_suspend_user',       array( $this, 'ajax_suspend_user' ) );
+		add_action( 'wp_ajax_arshid6social_admin_suspend_user', array( $this, 'ajax_suspend_user' ) );
 		add_action( 'wp_ajax_arshid6social_admin_delete_member_data', array( $this, 'ajax_delete_member_data' ) );
 
 		// Register columns for Screen Options column-visibility checkboxes.
@@ -111,8 +111,8 @@ final class Admin_Members {
 		$col_class = fn( string $col ) => in_array( $col, $hidden_columns, true ) ? ' hidden' : '';
 
 		// ── Request params ────────────────────────────────────────────────────
-		$search  = isset( $_GET['s'] )     ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
-		$paged   = isset( $_GET['paged'] ) ? max( 1, absint( $_GET['paged'] ) )              : 1;  // phpcs:ignore WordPress.Security.NonceVerification
+		$search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+		$paged  = isset( $_GET['paged'] ) ? max( 1, absint( $_GET['paged'] ) ) : 1;  // phpcs:ignore WordPress.Security.NonceVerification
 
 		$args = array(
 			'number' => $per_page,
@@ -121,7 +121,16 @@ final class Admin_Members {
 		);
 
 		$users       = get_users( $args );
-		$total_users = (int) ( new \WP_User_Query( array_merge( $args, array( 'count_total' => true, 'number' => 0, 'offset' => 0 ) ) ) )->get_total();
+		$total_users = (int) ( new \WP_User_Query(
+			array_merge(
+				$args,
+				array(
+					'count_total' => true,
+					'number'      => 0,
+					'offset'      => 0,
+				)
+			)
+		) )->get_total();
 		$total_pages = (int) ceil( $total_users / $per_page );
 
 		?>
@@ -157,14 +166,16 @@ final class Admin_Members {
 					</span>
 					<?php if ( $total_pages > 1 ) : ?>
 						<?php
-						echo paginate_links( // phpcs:ignore WordPress.Security.EscapeOutput
-							array(
-								'base'      => add_query_arg( 'paged', '%#%' ),
-								'format'    => '',
-								'current'   => $paged,
-								'total'     => $total_pages,
-								'prev_text' => '&laquo;',
-								'next_text' => '&raquo;',
+						echo wp_kses_post(
+							paginate_links(
+								array(
+									'base'      => add_query_arg( 'paged', '%#%' ),
+									'format'    => '',
+									'current'   => $paged,
+									'total'     => $total_pages,
+									'prev_text' => '&laquo;',
+									'next_text' => '&raquo;',
+								)
 							)
 						);
 						?>
@@ -206,7 +217,7 @@ final class Admin_Members {
 									<?php
 									$susp_reason = get_user_meta( $user->ID, 'arshid6social_suspended_reason', true );
 									if ( $susp_reason && 'auto_threshold' !== $susp_reason ) :
-									?>
+										?>
 										<br><small style="color:#555;"><?php echo esc_html( $susp_reason ); ?></small>
 									<?php elseif ( 'auto_threshold' === $susp_reason ) : ?>
 										<br><small style="color:#888;"><?php esc_html_e( 'Auto (report threshold)', '6arshid-social-community' ); ?></small>
@@ -251,14 +262,16 @@ final class Admin_Members {
 				<div class="tablenav bottom">
 					<div class="tablenav-pages">
 						<?php
-						echo paginate_links( // phpcs:ignore WordPress.Security.EscapeOutput
-							array(
-								'base'      => add_query_arg( 'paged', '%#%' ),
-								'format'    => '',
-								'current'   => $paged,
-								'total'     => $total_pages,
-								'prev_text' => '&laquo;',
-								'next_text' => '&raquo;',
+						echo wp_kses_post(
+							paginate_links(
+								array(
+									'base'      => add_query_arg( 'paged', '%#%' ),
+									'format'    => '',
+									'current'   => $paged,
+									'total'     => $total_pages,
+									'prev_text' => '&laquo;',
+									'next_text' => '&raquo;',
+								)
 							)
 						);
 						?>
@@ -372,17 +385,19 @@ final class Admin_Members {
 		$upload_base = $upload_dir['basedir'];
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$rows = $wpdb->get_results( $wpdb->prepare(
-			"SELECT p.ID, pm.meta_value AS rel_path
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT p.ID, pm.meta_value AS rel_path
 			 FROM {$wpdb->posts} p
 			 JOIN {$wpdb->postmeta} pm
 			      ON pm.post_id = p.ID AND pm.meta_key = '_wp_attached_file'
 			 WHERE p.post_type = 'attachment'
 			   AND p.post_author = %d
 			   AND pm.meta_value NOT LIKE %s",
-			$user_id,
-			$wpdb->esc_like( 'social-network/' ) . '%'
-		) );
+				$user_id,
+				$wpdb->esc_like( 'social-network/' ) . '%'
+			)
+		);
 
 		if ( ! $rows ) {
 			return;
@@ -399,11 +414,13 @@ final class Admin_Members {
 			}
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$meta_raw = $wpdb->get_var( $wpdb->prepare(
-				"SELECT meta_value FROM {$wpdb->postmeta}
+			$meta_raw = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT meta_value FROM {$wpdb->postmeta}
 				 WHERE post_id = %d AND meta_key = '_wp_attachment_metadata' LIMIT 1",
-				$att_id
-			) );
+					$att_id
+				)
+			);
 			if ( $meta_raw ) {
 				$meta = maybe_unserialize( $meta_raw );
 				if ( is_array( $meta ) && ! empty( $meta['sizes'] ) ) {

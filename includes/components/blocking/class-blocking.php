@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
  * Class Blocking
  *
  * Expands the core Friends block system:
- * - Block-list management page + shortcode [sn_block_list]
+ * - Block-list management page + shortcode [arshid6social_block_list]
  * - Admin site-wide block (separate from user-level blocks)
  * - Block reason tracking
  * - Hooks arshid6social_is_blocked() enforcement into activity, search, REST
@@ -29,18 +29,19 @@ class Blocking {
 	}
 
 	private function hooks(): void {
-		// Shortcode.
+		// Shortcode (primary name + legacy alias for existing post content).
+		add_shortcode( 'arshid6social_block_list', array( $this, 'shortcode_block_list' ) );
 		add_shortcode( 'sn_block_list', array( $this, 'shortcode_block_list' ) );
 
 		// Wire block enforcement into activity query args.
 		add_filter( 'arshid6social_get_activity_args', array( $this, 'filter_activity_args' ) );
 
 		// Block UI trigger on profile/activity/message/story (AJAX).
-		add_action( 'wp_ajax_arshid6social_block_with_reason',   array( $this, 'ajax_block_with_reason' ) );
-		add_action( 'wp_ajax_arshid6social_unblock_user',        array( $this, 'ajax_unblock_user' ) );
-		add_action( 'wp_ajax_arshid6social_get_block_list',      array( $this, 'ajax_get_block_list' ) );
-		add_action( 'wp_ajax_arshid6social_admin_site_block',    array( $this, 'ajax_admin_site_block' ) );
-		add_action( 'wp_ajax_arshid6social_admin_site_unblock',  array( $this, 'ajax_admin_site_unblock' ) );
+		add_action( 'wp_ajax_arshid6social_block_with_reason', array( $this, 'ajax_block_with_reason' ) );
+		add_action( 'wp_ajax_arshid6social_unblock_user', array( $this, 'ajax_unblock_user' ) );
+		add_action( 'wp_ajax_arshid6social_get_block_list', array( $this, 'ajax_get_block_list' ) );
+		add_action( 'wp_ajax_arshid6social_admin_site_block', array( $this, 'ajax_admin_site_block' ) );
+		add_action( 'wp_ajax_arshid6social_admin_site_unblock', array( $this, 'ajax_admin_site_unblock' ) );
 
 		// Filter members directory to exclude blocked users.
 		add_filter( 'arshid6social_members_query_args', array( $this, 'filter_members_args' ) );
@@ -57,7 +58,7 @@ class Blocking {
 		// Admin column on user list.
 		if ( is_admin() ) {
 			add_filter( 'user_row_actions', array( $this, 'add_site_block_action' ), 10, 2 );
-			add_action( 'admin_action_arshid6social_site_block',   array( $this, 'handle_admin_site_block' ) );
+			add_action( 'admin_action_arshid6social_site_block', array( $this, 'handle_admin_site_block' ) );
 			add_action( 'admin_action_arshid6social_site_unblock', array( $this, 'handle_admin_site_unblock' ) );
 		}
 	}
@@ -69,15 +70,15 @@ class Blocking {
 			return '<p>' . esc_html__( 'You must be logged in to view your block list.', '6arshid-social-community' ) . '</p>';
 		}
 
-		$user_id  = get_current_user_id();
-		$friends  = ARSHID6SOCIAL()->component( 'friends' );
+		$user_id = get_current_user_id();
+		$friends = ARSHID6SOCIAL()->component( 'friends' );
 		if ( ! $friends ) {
 			return '';
 		}
 
-		$page     = max( 1, (int) ( $_GET['block_page'] ?? 1 ) ); // phpcs:ignore WordPress.Security.NonceVerification
-		$blocks   = $friends->get_block_list( $user_id, $page );
-		$loader   = \Arshid6Social\Template_Loader::instance();
+		$page   = max( 1, (int) wp_unslash( $_GET['block_page'] ?? 1 ) ); // phpcs:ignore WordPress.Security.NonceVerification -- read-only own-list pagination, no state change.
+		$blocks = $friends->get_block_list( $user_id, $page );
+		$loader = \Arshid6Social\Template_Loader::instance();
 
 		return $loader->get_template(
 			'blocking/block-list.php',
@@ -104,13 +105,15 @@ class Blocking {
 		}
 
 		global $wpdb;
-		$blocked_ids = $wpdb->get_col( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT blocked_id FROM {$wpdb->prefix}sn_blocks WHERE blocker_id = %d
+		$blocked_ids = $wpdb->get_col(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT blocked_id FROM {$wpdb->prefix}sn_blocks WHERE blocker_id = %d
 			 UNION
 			 SELECT blocker_id FROM {$wpdb->prefix}sn_blocks WHERE blocked_id = %d",
-			$current_user_id,
-			$current_user_id
-		) );
+				$current_user_id,
+				$current_user_id
+			)
+		);
 
 		if ( ! empty( $blocked_ids ) ) {
 			$args['exclude_user_ids'] = array_merge(
@@ -131,19 +134,23 @@ class Blocking {
 		}
 
 		global $wpdb;
-		$blocked_ids = $wpdb->get_col( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT blocked_id FROM {$wpdb->prefix}sn_blocks WHERE blocker_id = %d
+		$blocked_ids = $wpdb->get_col(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT blocked_id FROM {$wpdb->prefix}sn_blocks WHERE blocker_id = %d
 			 UNION
 			 SELECT blocker_id FROM {$wpdb->prefix}sn_blocks WHERE blocked_id = %d",
-			$current,
-			$current
-		) );
+				$current,
+				$current
+			)
+		);
 
 		if ( ! empty( $blocked_ids ) ) {
-			$args['exclude'] = array_unique( array_merge(
-				(array) ( $args['exclude'] ?? array() ),
-				array_map( 'absint', $blocked_ids )
-			) );
+			$args['exclude'] = array_unique(
+				array_merge(
+					(array) ( $args['exclude'] ?? array() ),
+					array_map( 'absint', $blocked_ids )
+				)
+			);
 		}
 
 		return $args;
@@ -158,13 +165,15 @@ class Blocking {
 		}
 
 		global $wpdb;
-		$blocked = $wpdb->get_col( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT blocked_id FROM {$wpdb->prefix}sn_blocks WHERE blocker_id = %d
+		$blocked = $wpdb->get_col(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT blocked_id FROM {$wpdb->prefix}sn_blocks WHERE blocker_id = %d
 			 UNION
 			 SELECT blocker_id FROM {$wpdb->prefix}sn_blocks WHERE blocked_id = %d",
-			$current,
-			$current
-		) );
+				$current,
+				$current
+			)
+		);
 
 		return array_unique( array_merge( $exclude_ids, array_map( 'absint', $blocked ) ) );
 	}
@@ -204,8 +213,8 @@ class Blocking {
 		$reason = sanitize_textarea_field( wp_unslash( $_POST['reason'] ?? '' ) );
 		// phpcs:enable
 
-		$current  = get_current_user_id();
-		$friends  = ARSHID6SOCIAL()->component( 'friends' );
+		$current = get_current_user_id();
+		$friends = ARSHID6SOCIAL()->component( 'friends' );
 
 		if ( ! $friends || ! $target || $target === $current ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid request.', '6arshid-social-community' ) ) );
@@ -221,19 +230,23 @@ class Blocking {
 		$blocked = $friends->block( $current, $target, $reason );
 
 		if ( ! $blocked && ! $friends->is_blocked( $current, $target ) ) {
-			wp_send_json_error( array(
-				'message' => __( 'Could not block user.', '6arshid-social-community' ),
-				'db_error' => $wpdb->last_error,
-				'target'   => $target,
-				'current'  => $current,
-			) );
+			wp_send_json_error(
+				array(
+					'message'  => __( 'Could not block user.', '6arshid-social-community' ),
+					'db_error' => $wpdb->last_error,
+					'target'   => $target,
+					'current'  => $current,
+				)
+			);
 			return;
 		}
 
-		wp_send_json_success( array(
-			'blocked' => true,
-			'message' => __( 'User blocked.', '6arshid-social-community' ),
-		) );
+		wp_send_json_success(
+			array(
+				'blocked' => true,
+				'message' => __( 'User blocked.', '6arshid-social-community' ),
+			)
+		);
 	}
 
 	public function ajax_unblock_user(): void {
@@ -246,10 +259,12 @@ class Blocking {
 			$friends->unblock( $current, $target );
 		}
 
-		wp_send_json_success( array(
-			'blocked' => false,
-			'message' => __( 'User unblocked.', '6arshid-social-community' ),
-		) );
+		wp_send_json_success(
+			array(
+				'blocked' => false,
+				'message' => __( 'User unblocked.', '6arshid-social-community' ),
+			)
+		);
 	}
 
 	public function ajax_get_block_list(): void {
@@ -259,7 +274,12 @@ class Blocking {
 		$friends = ARSHID6SOCIAL()->component( 'friends' );
 
 		if ( ! $friends ) {
-			wp_send_json_success( array( 'blocks' => array(), 'hasMore' => false ) );
+			wp_send_json_success(
+				array(
+					'blocks'  => array(),
+					'hasMore' => false,
+				)
+			);
 		}
 
 		$blocks  = $friends->get_block_list( $current, $page );
@@ -271,13 +291,18 @@ class Blocking {
 			if ( ! $user ) {
 				continue;
 			}
-			$item = $members ? $members->format_member( $user ) : array( 'id' => $block->blocked_id );
+			$item                 = $members ? $members->format_member( $user ) : array( 'id' => $block->blocked_id );
 			$item['block_date']   = $block->date_created;
 			$item['block_reason'] = $block->reason ?? '';
-			$data[] = $item;
+			$data[]               = $item;
 		}
 
-		wp_send_json_success( array( 'blocks' => $data, 'hasMore' => count( $blocks ) >= 20 ) );
+		wp_send_json_success(
+			array(
+				'blocks'  => $data,
+				'hasMore' => count( $blocks ) >= 20,
+			)
+		);
 	}
 
 	// ── Admin site-wide block ─────────────────────────────────────────────────
@@ -325,7 +350,11 @@ class Blocking {
 	private function do_site_block( int $user_id ): void {
 		update_user_meta( $user_id, 'arshid6social_site_blocked', true );
 		\Arshid6Social\Components\Moderation\Moderation::log_action(
-			get_current_user_id(), 'site_blocked', 'user', $user_id, array()
+			get_current_user_id(),
+			'site_blocked',
+			'user',
+			$user_id,
+			array()
 		);
 		do_action( 'arshid6social_user_site_blocked', $user_id );
 	}
@@ -333,7 +362,11 @@ class Blocking {
 	private function do_site_unblock( int $user_id ): void {
 		delete_user_meta( $user_id, 'arshid6social_site_blocked' );
 		\Arshid6Social\Components\Moderation\Moderation::log_action(
-			get_current_user_id(), 'site_unblocked', 'user', $user_id, array()
+			get_current_user_id(),
+			'site_unblocked',
+			'user',
+			$user_id,
+			array()
 		);
 		do_action( 'arshid6social_user_site_unblocked', $user_id );
 	}
@@ -348,13 +381,13 @@ class Blocking {
 		$is_blocked = arshid6social_is_site_blocked( $user->ID );
 
 		if ( $is_blocked ) {
-			$url = wp_nonce_url(
+			$url                                   = wp_nonce_url(
 				admin_url( 'admin.php?action=arshid6social_site_unblock&user=' . $user->ID ),
 				'arshid6social_site_unblock_' . $user->ID
 			);
 			$actions['arshid6social_site_unblock'] = '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Site-Unblock', '6arshid-social-community' ) . '</a>';
 		} else {
-			$url = wp_nonce_url(
+			$url                                 = wp_nonce_url(
 				admin_url( 'admin.php?action=arshid6social_site_block&user=' . $user->ID ),
 				'arshid6social_site_block_' . $user->ID
 			);

@@ -3,6 +3,7 @@
  * Shown when a non-member tries to access a private/hidden group.
  *
  * Variables available:
+ *
  *  @var array $group Formatted group array from Groups::format_group()
  *
  * @package Arshid6Social

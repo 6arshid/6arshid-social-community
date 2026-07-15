@@ -24,16 +24,18 @@ class Messages {
 
 	public static function get_thread_uid( int $thread_id ): string {
 		global $wpdb;
-		$uid = (string) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT uniqid FROM {$wpdb->prefix}sn_messages_threads WHERE id = %d",
-			$thread_id
-		) );
+		$uid = (string) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT uniqid FROM {$wpdb->prefix}sn_messages_threads WHERE id = %d",
+				$thread_id
+			)
+		);
 		if ( ! $uid ) {
 			$uid = wp_generate_uuid4();
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prefix . 'sn_messages_threads',
 				array( 'uniqid' => $uid ),
-				array( 'id'     => $thread_id ),
+				array( 'id' => $thread_id ),
 				array( '%s' ),
 				array( '%d' )
 			);
@@ -43,10 +45,12 @@ class Messages {
 
 	public static function thread_id_from_uid( string $uid ): int {
 		global $wpdb;
-		return (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_messages_threads WHERE uniqid = %s",
-			sanitize_text_field( $uid )
-		) );
+		return (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_messages_threads WHERE uniqid = %s",
+				sanitize_text_field( $uid )
+			)
+		);
 	}
 
 	public static function get_user_uid( int $user_id ): string {
@@ -59,12 +63,14 @@ class Messages {
 	}
 
 	public static function user_id_from_uid( string $uid ): int {
-		$users = get_users( array(
-			'meta_key'   => 'arshid6social_uid',
-			'meta_value' => sanitize_text_field( $uid ),
-			'number'     => 1,
-			'fields'     => 'ID',
-		) );
+		$users = get_users(
+			array(
+				'meta_key'   => 'arshid6social_uid',
+				'meta_value' => sanitize_text_field( $uid ),
+				'number'     => 1,
+				'fields'     => 'ID',
+			)
+		);
 		return $users ? (int) $users[0] : 0;
 	}
 
@@ -138,7 +144,7 @@ class Messages {
 		if ( $messages_page_id ) {
 			$messages_post = get_post( $messages_page_id );
 			if ( $messages_post instanceof \WP_Post ) {
-				$post = $messages_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride
+				$post                        = $messages_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride
 				$wp_query->queried_object    = $post;
 				$wp_query->queried_object_id = $post->ID;
 				$wp_query->is_page           = true;
@@ -240,7 +246,7 @@ class Messages {
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_messages_threads',
 			array( 'uniqid' => wp_generate_uuid4() ),
-			array( 'id'     => $thread_id ),
+			array( 'id' => $thread_id ),
 			array( '%s' ),
 			array( '%d' )
 		);
@@ -251,11 +257,11 @@ class Messages {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prefix . 'sn_messages_recipients',
 				array(
-					'thread_id'   => $thread_id,
-					'user_id'     => $participant_id,
+					'thread_id'    => $thread_id,
+					'user_id'      => $participant_id,
 					'unread_count' => $participant_id !== $sender_id ? 1 : 0,
-					'sender_only' => 0,
-					'is_deleted'  => 0,
+					'sender_only'  => 0,
+					'is_deleted'   => 0,
 				),
 				array( '%d', '%d', '%d', '%d', '%d' )
 			);
@@ -361,7 +367,13 @@ class Messages {
 					   )
 					 ORDER BY t.date_created DESC
 					 LIMIT %d OFFSET %d",
-					$user_id, $like, $like, $user_id, $like, $per_page, $offset
+					$user_id,
+					$like,
+					$like,
+					$user_id,
+					$like,
+					$per_page,
+					$offset
 				)
 			);
 
@@ -384,7 +396,11 @@ class Messages {
 					             AND u.display_name LIKE %s
 					       )
 					   )",
-					$user_id, $like, $like, $user_id, $like
+					$user_id,
+					$like,
+					$like,
+					$user_id,
+					$like
 				)
 			);
 		} else {
@@ -396,7 +412,9 @@ class Messages {
 					 WHERE r.user_id = %d AND r.is_deleted = 0
 					 ORDER BY t.date_created DESC
 					 LIMIT %d OFFSET %d",
-					$user_id, $per_page, $offset
+					$user_id,
+					$per_page,
+					$offset
 				)
 			);
 
@@ -408,8 +426,8 @@ class Messages {
 			);
 		}
 
-		$total_pages   = (int) ceil( $total / $per_page );
-		$total_unread  = $this->get_unread_count( $user_id );
+		$total_pages  = (int) ceil( $total / $per_page );
+		$total_unread = $this->get_unread_count( $user_id );
 
 		return array(
 			'threads'      => array_map( array( $this, 'format_thread' ), $threads ),
@@ -541,7 +559,7 @@ class Messages {
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_messages_threads',
 			array( 'uniqid' => wp_generate_uuid4() ),
-			array( 'id'     => $new_thread_id ),
+			array( 'id' => $new_thread_id ),
 			array( '%s' ),
 			array( '%d' )
 		);
@@ -576,7 +594,10 @@ class Messages {
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_messages_recipients',
 			array( 'unread_count' => 0 ),
-			array( 'thread_id' => $thread_id, 'user_id' => $user_id ),
+			array(
+				'thread_id' => $thread_id,
+				'user_id'   => $user_id,
+			),
 			array( '%d' ),
 			array( '%d', '%d' )
 		);
@@ -627,9 +648,9 @@ class Messages {
 			$user = get_userdata( $pid );
 			if ( $user && $members_comp ) {
 				$participant_data[] = array(
-					'id'        => (int) $pid,
-					'name'      => esc_html( $user->display_name ),
-					'avatarUrl' => esc_url( $members_comp->avatar->get_avatar_url( (int) $pid, 40 ) ),
+					'id'         => (int) $pid,
+					'name'       => esc_html( $user->display_name ),
+					'avatarUrl'  => esc_url( $members_comp->avatar->get_avatar_url( (int) $pid, 40 ) ),
 					'profileUrl' => esc_url( home_url( '/members/' . $user->user_nicename . '/' ) ),
 				);
 			}
@@ -671,17 +692,17 @@ class Messages {
 		}
 
 		return array(
-			'id'              => (int) $message->id,
-			'threadId'        => (int) $message->thread_id,
-			'senderId'        => (int) $message->sender_id,
-			'senderName'      => $user ? esc_html( $user->display_name ) : '',
-			'senderAvatar'    => $members_comp ? esc_url( $members_comp->avatar->get_avatar_url( (int) $message->sender_id, 40 ) ) : '',
+			'id'               => (int) $message->id,
+			'threadId'         => (int) $message->thread_id,
+			'senderId'         => (int) $message->sender_id,
+			'senderName'       => $user ? esc_html( $user->display_name ) : '',
+			'senderAvatar'     => $members_comp ? esc_url( $members_comp->avatar->get_avatar_url( (int) $message->sender_id, 40 ) ) : '',
 			'senderProfileUrl' => $user ? esc_url( home_url( '/members/' . $user->user_nicename . '/' ) ) : '',
-			'message'         => $msg_content,
-			'dateSent'        => esc_attr( $message->date_sent ),
-			'isMine'          => is_user_logged_in() && ( (int) $message->sender_id === get_current_user_id() ),
-			'isEdited'        => ! empty( $message->is_edited ),
-			'attachments'     => $attachments,
+			'message'          => $msg_content,
+			'dateSent'         => esc_attr( $message->date_sent ),
+			'isMine'           => is_user_logged_in() && ( (int) $message->sender_id === get_current_user_id() ),
+			'isEdited'         => ! empty( $message->is_edited ),
+			'attachments'      => $attachments,
 		);
 	}
 
@@ -694,9 +715,9 @@ class Messages {
 	 */
 	public function heartbeat_received( array $response, array $data ): array {
 		if ( isset( $data['arshid6social_messages_poll'] ) && is_user_logged_in() ) {
-			$thread_id  = absint( $data['arshid6social_messages_poll']['thread_id'] );
-			$last_id    = absint( $data['arshid6social_messages_poll']['last_message_id'] );
-			$user_id    = get_current_user_id();
+			$thread_id = absint( $data['arshid6social_messages_poll']['thread_id'] );
+			$last_id   = absint( $data['arshid6social_messages_poll']['last_message_id'] );
+			$user_id   = get_current_user_id();
 
 			if ( $thread_id && $last_id ) {
 				global $wpdb;
@@ -815,16 +836,18 @@ class Messages {
 			wp_send_json_error( array( 'message' => __( 'Invalid recipient.', '6arshid-social-community' ) ), 400 );
 		}
 
-		$thread_id  = $this->get_or_create_thread( get_current_user_id(), $recipient_id );
+		$thread_id = $this->get_or_create_thread( get_current_user_id(), $recipient_id );
 
 		if ( ! $thread_id ) {
 			wp_send_json_error( array( 'message' => __( 'Could not create conversation.', '6arshid-social-community' ) ), 500 );
 		}
 
-		wp_send_json_success( array(
-			'thread_id'  => $thread_id,
-			'thread_uid' => self::get_thread_uid( $thread_id ),
-		) );
+		wp_send_json_success(
+			array(
+				'thread_id'  => $thread_id,
+				'thread_uid' => self::get_thread_uid( $thread_id ),
+			)
+		);
 	}
 
 	public function ajax_delete_thread(): void {
@@ -836,16 +859,18 @@ class Messages {
 		}
 
 		global $wpdb;
-		$thread_id      = absint( $_POST['thread_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
+		$thread_id       = absint( $_POST['thread_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$delete_for_both = ! empty( $_POST['delete_for_both'] ); // phpcs:ignore WordPress.Security.NonceVerification
-		$user_id        = get_current_user_id();
+		$user_id         = get_current_user_id();
 
 		// Verify current user is a participant in this thread.
-		$is_participant = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			'SELECT COUNT(*) FROM ' . $wpdb->prefix . 'sn_messages_recipients WHERE thread_id = %d AND user_id = %d',
-			$thread_id,
-			$user_id
-		) );
+		$is_participant = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				'SELECT COUNT(*) FROM ' . $wpdb->prefix . 'sn_messages_recipients WHERE thread_id = %d AND user_id = %d',
+				$thread_id,
+				$user_id
+			)
+		);
 
 		if ( ! $is_participant ) {
 			wp_send_json_error( array( 'message' => __( 'Access denied.', '6arshid-social-community' ) ), 403 );
@@ -865,7 +890,10 @@ class Messages {
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prefix . 'sn_messages_recipients',
 				array( 'is_deleted' => 1 ),
-				array( 'thread_id' => $thread_id, 'user_id' => $user_id ),
+				array(
+					'thread_id' => $thread_id,
+					'user_id'   => $user_id,
+				),
 				array( '%d' ),
 				array( '%d', '%d' )
 			);
@@ -912,10 +940,12 @@ class Messages {
 			wp_send_json_error( array( 'message' => __( 'Invalid request.', '6arshid-social-community' ) ), 400 );
 		}
 
-		$message = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_messages WHERE id = %d AND is_deleted = 0",
-			$message_id
-		) );
+		$message = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_messages WHERE id = %d AND is_deleted = 0",
+				$message_id
+			)
+		);
 
 		if ( ! $message || (int) $message->sender_id !== $user_id ) {
 			wp_send_json_error( array( 'message' => __( 'Access denied.', '6arshid-social-community' ) ), 403 );
@@ -945,22 +975,24 @@ class Messages {
 		}
 
 		global $wpdb;
-		$message_id  = absint( $_POST['message_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
-		$for_both    = ! empty( $_POST['delete_for_both'] ); // phpcs:ignore WordPress.Security.NonceVerification
-		$user_id     = get_current_user_id();
+		$message_id = absint( $_POST['message_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
+		$for_both   = ! empty( $_POST['delete_for_both'] ); // phpcs:ignore WordPress.Security.NonceVerification
+		$user_id    = get_current_user_id();
 
 		if ( ! $message_id ) {
 			wp_send_json_error( array( 'message' => __( 'Invalid request.', '6arshid-social-community' ) ), 400 );
 		}
 
-		$message = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT m.*, r.thread_id as r_thread_id
+		$message = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT m.*, r.thread_id as r_thread_id
 			 FROM {$wpdb->prefix}sn_messages m
 			 JOIN {$wpdb->prefix}sn_messages_recipients r ON r.thread_id = m.thread_id AND r.user_id = %d AND r.is_deleted = 0
 			 WHERE m.id = %d AND m.is_deleted = 0",
-			$user_id,
-			$message_id
-		) );
+				$user_id,
+				$message_id
+			)
+		);
 
 		if ( ! $message ) {
 			wp_send_json_error( array( 'message' => __( 'Access denied.', '6arshid-social-community' ) ), 403 );
@@ -998,7 +1030,7 @@ class Messages {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
-		$thread_id = absint( $_POST['thread_id']       ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
+		$thread_id = absint( $_POST['thread_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$last_id   = absint( $_POST['last_message_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$user_id   = get_current_user_id();
 
@@ -1008,26 +1040,32 @@ class Messages {
 
 		global $wpdb;
 
-		$is_participant = (bool) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_messages_recipients WHERE thread_id = %d AND user_id = %d AND is_deleted = 0",
-			$thread_id,
-			$user_id
-		) );
+		$is_participant = (bool) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_messages_recipients WHERE thread_id = %d AND user_id = %d AND is_deleted = 0",
+				$thread_id,
+				$user_id
+			)
+		);
 
 		if ( ! $is_participant ) {
 			wp_send_json_error( array( 'message' => __( 'Access denied.', '6arshid-social-community' ) ), 403 );
 		}
 
-		$new_messages = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_messages WHERE thread_id = %d AND id > %d AND is_deleted = 0 ORDER BY date_sent ASC",
-			$thread_id,
-			$last_id
-		) );
+		$new_messages = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_messages WHERE thread_id = %d AND id > %d AND is_deleted = 0 ORDER BY date_sent ASC",
+				$thread_id,
+				$last_id
+			)
+		);
 
-		wp_send_json_success( array(
-			'messages'     => array_map( array( $this, 'format_message' ), $new_messages ),
-			'unread_count' => $this->get_unread_count( $user_id ),
-		) );
+		wp_send_json_success(
+			array(
+				'messages'     => array_map( array( $this, 'format_message' ), $new_messages ),
+				'unread_count' => $this->get_unread_count( $user_id ),
+			)
+		);
 	}
 
 	/**

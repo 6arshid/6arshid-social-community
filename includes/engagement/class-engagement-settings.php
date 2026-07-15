@@ -27,10 +27,10 @@ class Engagement_Settings {
 			'messages_attachments' => __( 'Message Attachments', '6arshid-social-community' ),
 		);
 
-		add_filter( 'arshid6social_settings_tabs',            array( $this, 'add_tab' ) );
-		add_action( 'admin_init',                       array( $this, 'register_settings' ) );
-		add_action( 'arshid6social_settings_tab_engagement',  array( $this, 'render' ) );
-		add_action( 'admin_enqueue_scripts',             array( $this, 'enqueue_sortable' ) );
+		add_filter( 'arshid6social_settings_tabs', array( $this, 'add_tab' ) );
+		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_action( 'arshid6social_settings_tab_engagement', array( $this, 'render' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_sortable' ) );
 	}
 
 	public function add_tab( array $tabs ): array {
@@ -39,85 +39,96 @@ class Engagement_Settings {
 	}
 
 	public function enqueue_sortable(): void {
-		// phpcs:disable WordPress.Security.NonceVerification
-		if ( ( $_GET['page'] ?? '' ) !== 'arshid6social-settings' || ( $_GET['tab'] ?? '' ) !== 'engagement' ) {
+		// phpcs:ignore WordPress.Security.NonceVerification -- read-only page detection, no state change.
+		if ( sanitize_key( wp_unslash( $_GET['page'] ?? '' ) ) !== 'arshid6social-settings' || sanitize_key( wp_unslash( $_GET['tab'] ?? '' ) ) !== 'engagement' ) {
 			return;
 		}
-		// phpcs:enable
 		wp_enqueue_script( 'jquery-ui-sortable' );
 	}
 
 	public function register_settings(): void {
-		$bool     = array( 'type' => 'boolean', 'sanitize_callback' => 'rest_sanitize_boolean' );
-		$int      = array( 'type' => 'integer', 'sanitize_callback' => 'absint' );
-		$text     = array( 'type' => 'string',  'sanitize_callback' => 'sanitize_text_field' );
-		$textarea = array( 'type' => 'string',  'sanitize_callback' => 'sanitize_textarea_field' );
+		$bool     = array(
+			'type'              => 'boolean',
+			'sanitize_callback' => 'rest_sanitize_boolean',
+		);
+		$int      = array(
+			'type'              => 'integer',
+			'sanitize_callback' => 'absint',
+		);
+		$text     = array(
+			'type'              => 'string',
+			'sanitize_callback' => 'sanitize_text_field',
+		);
+		$textarea = array(
+			'type'              => 'string',
+			'sanitize_callback' => 'sanitize_textarea_field',
+		);
 
 		$network_keys = array_keys( Features\Social_Share_External::networks() );
 
 		$schemas = array(
 			// Social Embeds.
-			'arshid6social_eng_social_embeds'        => $bool,
-			'arshid6social_eng_embed_locations'      => $this->choices_schema( array( 'activity', 'comments', 'messages' ) ),
-			'arshid6social_eng_embed_max_per_post'   => $int,
-			'arshid6social_eng_embed_lazy_load'      => $bool,
-			'arshid6social_eng_embed_cache_hours'    => $int,
-			'arshid6social_eng_embed_strip_tracking' => $bool,
-			'arshid6social_eng_embed_og_fallback'    => $bool,
-			'arshid6social_eng_embed_og_generic'     => $bool,
-			'arshid6social_eng_embed_fb_token'       => $text,
-			'arshid6social_eng_embed_ig_token'       => $text,
-			'arshid6social_eng_embed_banned_domains' => $textarea,
+			'arshid6social_eng_social_embeds'              => $bool,
+			'arshid6social_eng_embed_locations'            => $this->choices_schema( array( 'activity', 'comments', 'messages' ) ),
+			'arshid6social_eng_embed_max_per_post'         => $int,
+			'arshid6social_eng_embed_lazy_load'            => $bool,
+			'arshid6social_eng_embed_cache_hours'          => $int,
+			'arshid6social_eng_embed_strip_tracking'       => $bool,
+			'arshid6social_eng_embed_og_fallback'          => $bool,
+			'arshid6social_eng_embed_og_generic'           => $bool,
+			'arshid6social_eng_embed_fb_token'             => $text,
+			'arshid6social_eng_embed_ig_token'             => $text,
+			'arshid6social_eng_embed_banned_domains'       => $textarea,
 
 			// Per-provider toggles (arshid6social_eng_embed_{id}).
-			'arshid6social_eng_embed_youtube'             => $bool,
-			'arshid6social_eng_embed_vimeo'               => $bool,
-			'arshid6social_eng_embed_twitter'             => $bool,
-			'arshid6social_eng_embed_instagram'           => $bool,
-			'arshid6social_eng_embed_facebook'            => $bool,
-			'arshid6social_eng_embed_tiktok'              => $bool,
-			'arshid6social_eng_embed_spotify'             => $bool,
-			'arshid6social_eng_embed_soundcloud'          => $bool,
-			'arshid6social_eng_embed_pinterest'           => $bool,
-			'arshid6social_eng_embed_reddit'              => $bool,
-			'arshid6social_eng_embed_twitch'              => $bool,
-			'arshid6social_eng_embed_dailymotion'         => $bool,
-			'arshid6social_eng_embed_apple_music'         => $bool,
-			'arshid6social_eng_embed_linkedin'            => $bool,
-			'arshid6social_eng_embed_telegram'            => $bool,
-			'arshid6social_eng_embed_threads'             => $bool,
-			'arshid6social_eng_embed_bluesky'             => $bool,
-			'arshid6social_eng_embed_aparat'              => $bool,
-			'arshid6social_eng_embed_og_generic_provider' => $bool,
+			'arshid6social_eng_embed_youtube'              => $bool,
+			'arshid6social_eng_embed_vimeo'                => $bool,
+			'arshid6social_eng_embed_twitter'              => $bool,
+			'arshid6social_eng_embed_instagram'            => $bool,
+			'arshid6social_eng_embed_facebook'             => $bool,
+			'arshid6social_eng_embed_tiktok'               => $bool,
+			'arshid6social_eng_embed_spotify'              => $bool,
+			'arshid6social_eng_embed_soundcloud'           => $bool,
+			'arshid6social_eng_embed_pinterest'            => $bool,
+			'arshid6social_eng_embed_reddit'               => $bool,
+			'arshid6social_eng_embed_twitch'               => $bool,
+			'arshid6social_eng_embed_dailymotion'          => $bool,
+			'arshid6social_eng_embed_apple_music'          => $bool,
+			'arshid6social_eng_embed_linkedin'             => $bool,
+			'arshid6social_eng_embed_telegram'             => $bool,
+			'arshid6social_eng_embed_threads'              => $bool,
+			'arshid6social_eng_embed_bluesky'              => $bool,
+			'arshid6social_eng_embed_aparat'               => $bool,
+			'arshid6social_eng_embed_og_generic_provider'  => $bool,
 
 			// Feature toggles.
-			'arshid6social_eng_hashtags'             => $bool,
-			'arshid6social_eng_tag_friends'          => $bool,
-			'arshid6social_eng_bookmarks'            => $bool,
-			'arshid6social_eng_sticky_posts'         => $bool,
-			'arshid6social_eng_share_posts'          => $bool,
-			'arshid6social_eng_polls'                => $bool,
-			'arshid6social_eng_advanced_polls'       => $bool,
-			'arshid6social_eng_comments_gifs'        => $bool,
-			'arshid6social_eng_comments_attachments' => $bool,
-			'arshid6social_eng_messages_attachments' => $bool,
+			'arshid6social_eng_hashtags'                   => $bool,
+			'arshid6social_eng_tag_friends'                => $bool,
+			'arshid6social_eng_bookmarks'                  => $bool,
+			'arshid6social_eng_sticky_posts'               => $bool,
+			'arshid6social_eng_share_posts'                => $bool,
+			'arshid6social_eng_polls'                      => $bool,
+			'arshid6social_eng_advanced_polls'             => $bool,
+			'arshid6social_eng_comments_gifs'              => $bool,
+			'arshid6social_eng_comments_attachments'       => $bool,
+			'arshid6social_eng_messages_attachments'       => $bool,
 
 			// Feature options.
-			'arshid6social_eng_polls_max_options'         => $int,
-			'arshid6social_eng_polls_allow_voter_suggest' => $bool,
-			'arshid6social_eng_hashtag_banned'            => $textarea,
-			'arshid6social_eng_tag_photo_tags'            => $bool,
-			'arshid6social_eng_tag_privacy'               => $this->enum_schema( array( 'everyone', 'friends', 'nobody' ), 'everyone' ),
-			'arshid6social_eng_tag_review'                => $bool,
-			'arshid6social_eng_bookmark_collections'      => $bool,
-			'arshid6social_eng_share_external'            => $bool,
-			'arshid6social_eng_sticky_multiple'           => $bool,
-			'arshid6social_eng_giphy_api_key'             => $text,
-			'arshid6social_eng_gif_cache'                 => $bool,
-			'arshid6social_eng_comment_att_max_mb'        => $int,
-			'arshid6social_eng_comment_att_types'         => $this->choices_schema( array( 'image', 'document' ) ),
-			'arshid6social_eng_msg_att_max_mb'            => $int,
-			'arshid6social_eng_msg_att_types'             => $this->choices_schema( array( 'image', 'audio', 'document' ) ),
+			'arshid6social_eng_polls_max_options'          => $int,
+			'arshid6social_eng_polls_allow_voter_suggest'  => $bool,
+			'arshid6social_eng_hashtag_banned'             => $textarea,
+			'arshid6social_eng_tag_photo_tags'             => $bool,
+			'arshid6social_eng_tag_privacy'                => $this->enum_schema( array( 'everyone', 'friends', 'nobody' ), 'everyone' ),
+			'arshid6social_eng_tag_review'                 => $bool,
+			'arshid6social_eng_bookmark_collections'       => $bool,
+			'arshid6social_eng_share_external'             => $bool,
+			'arshid6social_eng_sticky_multiple'            => $bool,
+			'arshid6social_eng_giphy_api_key'              => $text,
+			'arshid6social_eng_gif_cache'                  => $bool,
+			'arshid6social_eng_comment_att_max_mb'         => $int,
+			'arshid6social_eng_comment_att_types'          => $this->choices_schema( array( 'image', 'document' ) ),
+			'arshid6social_eng_msg_att_max_mb'             => $int,
+			'arshid6social_eng_msg_att_types'              => $this->choices_schema( array( 'image', 'audio', 'document' ) ),
 
 			// External Social Share.
 			'arshid6social_eng_social_share_external'      => $bool,
@@ -179,13 +190,16 @@ class Engagement_Settings {
 	}
 
 	public function render(): void {
-		wp_add_inline_style( 'arshid6social-admin', '
+		wp_add_inline_style(
+			'arshid6social-admin',
+			'
 		.arshid6social-eng-section{margin:24px 0 0;padding:16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;}
 		.arshid6social-eng-section h3{margin:0 0 12px;font-size:14px;color:#111827;}
 		.arshid6social-eng-toggle{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:600;}
 		.arshid6social-eng-sub{padding:8px 0 0 24px;}
 		.arshid6social-eng-sub label{display:block;margin-bottom:6px;}
-		' );
+		'
+		);
 		?>
 
 		<h2><?php esc_html_e( 'Engagement Features', '6arshid-social-community' ); ?></h2>
@@ -208,25 +222,25 @@ class Engagement_Settings {
 	// phpcs:disable Generic.Files.LineLength
 	private function render_social_embeds(): void {
 		$providers = array(
-			'youtube'       => 'YouTube',
-			'vimeo'         => 'Vimeo',
-			'twitter'       => 'X / Twitter',
-			'instagram'     => 'Instagram',
-			'facebook'      => 'Facebook',
-			'tiktok'        => 'TikTok',
-			'spotify'       => 'Spotify',
-			'soundcloud'    => 'SoundCloud',
-			'pinterest'     => 'Pinterest',
-			'reddit'        => 'Reddit',
-			'twitch'        => 'Twitch',
-			'dailymotion'   => 'Dailymotion',
-			'apple_music'   => 'Apple Music / Podcasts',
-			'linkedin'      => 'LinkedIn',
-			'telegram'      => 'Telegram',
-			'threads'       => 'Threads',
-			'bluesky'       => 'Bluesky',
-			'aparat'        => 'آپارات (Aparat)',
-			'og_generic'    => __( 'Generic Link Preview (Open Graph)', '6arshid-social-community' ),
+			'youtube'     => 'YouTube',
+			'vimeo'       => 'Vimeo',
+			'twitter'     => 'X / Twitter',
+			'instagram'   => 'Instagram',
+			'facebook'    => 'Facebook',
+			'tiktok'      => 'TikTok',
+			'spotify'     => 'Spotify',
+			'soundcloud'  => 'SoundCloud',
+			'pinterest'   => 'Pinterest',
+			'reddit'      => 'Reddit',
+			'twitch'      => 'Twitch',
+			'dailymotion' => 'Dailymotion',
+			'apple_music' => 'Apple Music / Podcasts',
+			'linkedin'    => 'LinkedIn',
+			'telegram'    => 'Telegram',
+			'threads'     => 'Threads',
+			'bluesky'     => 'Bluesky',
+			'aparat'      => 'آپارات (Aparat)',
+			'og_generic'  => __( 'Generic Link Preview (Open Graph)', '6arshid-social-community' ),
 		);
 
 		$locations = (array) get_option( 'arshid6social_eng_embed_locations', array( 'activity', 'comments', 'messages' ) );
@@ -279,7 +293,7 @@ class Engagement_Settings {
 					'messages' => __( 'Private messages', '6arshid-social-community' ),
 				);
 				foreach ( $loc_options as $val => $lbl ) :
-				?>
+					?>
 				<label style="display:block;margin-bottom:5px;">
 					<input type="checkbox" name="arshid6social_eng_embed_locations[]" value="<?php echo esc_attr( $val ); ?>"
 						<?php checked( in_array( $val, $locations, true ) ); ?> />
@@ -391,7 +405,11 @@ class Engagement_Settings {
 					<select name="arshid6social_eng_tag_privacy">
 						<?php
 						$cur = get_option( 'arshid6social_eng_tag_privacy', 'everyone' );
-						foreach ( array( 'everyone' => __( 'Everyone', '6arshid-social-community' ), 'friends' => __( 'Friends only', '6arshid-social-community' ), 'nobody' => __( 'Nobody', '6arshid-social-community' ) ) as $v => $l ) :
+						foreach ( array(
+							'everyone' => __( 'Everyone', '6arshid-social-community' ),
+							'friends'  => __( 'Friends only', '6arshid-social-community' ),
+							'nobody'   => __( 'Nobody', '6arshid-social-community' ),
+						) as $v => $l ) :
 							?>
 							<option value="<?php echo esc_attr( $v ); ?>" <?php selected( $cur, $v ); ?>><?php echo esc_html( $l ); ?></option>
 						<?php endforeach; ?>
@@ -505,11 +523,16 @@ class Engagement_Settings {
 					<input type="number" name="arshid6social_eng_comment_att_max_mb" min="1" max="100"
 						value="<?php echo esc_attr( get_option( 'arshid6social_eng_comment_att_max_mb', 5 ) ); ?>" style="width:70px;" />
 				</label>
-				<?php foreach ( array( 'image' => __( 'Images (JPEG, PNG, GIF, WebP)', '6arshid-social-community' ), 'document' => __( 'Documents (PDF)', '6arshid-social-community' ) ) as $k => $l ) : ?>
+				<?php
+				foreach ( array(
+					'image'    => __( 'Images (JPEG, PNG, GIF, WebP)', '6arshid-social-community' ),
+					'document' => __( 'Documents (PDF)', '6arshid-social-community' ),
+				) as $k => $l ) :
+					?>
 					<label>
 						<input type="checkbox" name="arshid6social_eng_comment_att_types[]" value="<?php echo esc_attr( $k ); ?>"
-							<?php checked( in_array( $k, $types, true ) ); ?> />
-						<?php echo esc_html( $l ); ?>
+									<?php checked( in_array( $k, $types, true ) ); ?> />
+									<?php echo esc_html( $l ); ?>
 					</label>
 				<?php endforeach; ?>
 			</div>
@@ -529,11 +552,17 @@ class Engagement_Settings {
 					<input type="number" name="arshid6social_eng_msg_att_max_mb" min="1" max="100"
 						value="<?php echo esc_attr( get_option( 'arshid6social_eng_msg_att_max_mb', 10 ) ); ?>" style="width:70px;" />
 				</label>
-				<?php foreach ( array( 'image' => __( 'Images', '6arshid-social-community' ), 'audio' => __( 'Voice notes / Audio', '6arshid-social-community' ), 'document' => __( 'Documents (PDF)', '6arshid-social-community' ) ) as $k => $l ) : ?>
+				<?php
+				foreach ( array(
+					'image'    => __( 'Images', '6arshid-social-community' ),
+					'audio'    => __( 'Voice notes / Audio', '6arshid-social-community' ),
+					'document' => __( 'Documents (PDF)', '6arshid-social-community' ),
+				) as $k => $l ) :
+					?>
 					<label>
 						<input type="checkbox" name="arshid6social_eng_msg_att_types[]" value="<?php echo esc_attr( $k ); ?>"
-							<?php checked( in_array( $k, $types, true ) ); ?> />
-						<?php echo esc_html( $l ); ?>
+									<?php checked( in_array( $k, $types, true ) ); ?> />
+									<?php echo esc_html( $l ); ?>
 					</label>
 				<?php endforeach; ?>
 			</div>
@@ -542,13 +571,13 @@ class Engagement_Settings {
 	}
 
 	private function render_social_share_external(): void {
-		$all_networks    = Features\Social_Share_External::networks();
-		$enabled_nets    = (array) get_option( 'arshid6social_eng_social_share_networks', Features\Social_Share_External::default_networks() );
-		$position        = get_option( 'arshid6social_eng_social_share_position', 'bottom' );
-		$pages           = (array) get_option( 'arshid6social_eng_social_share_pages', array( 'feed', 'single', 'profile', 'group' ) );
-		$style           = get_option( 'arshid6social_eng_social_share_style', 'icon_text' );
-		$max_visible     = (int) get_option( 'arshid6social_eng_social_share_max_visible', 8 );
-		$use_native      = (bool) get_option( 'arshid6social_eng_social_share_native', true );
+		$all_networks = Features\Social_Share_External::networks();
+		$enabled_nets = (array) get_option( 'arshid6social_eng_social_share_networks', Features\Social_Share_External::default_networks() );
+		$position     = get_option( 'arshid6social_eng_social_share_position', 'bottom' );
+		$pages        = (array) get_option( 'arshid6social_eng_social_share_pages', array( 'feed', 'single', 'profile', 'group' ) );
+		$style        = get_option( 'arshid6social_eng_social_share_style', 'icon_text' );
+		$max_visible  = (int) get_option( 'arshid6social_eng_social_share_max_visible', 8 );
+		$use_native   = (bool) get_option( 'arshid6social_eng_social_share_native', true );
 
 		// Sort all_networks by saved drag-order.
 		$saved_order_raw = get_option( 'arshid6social_eng_social_share_network_order', '' );
@@ -649,11 +678,13 @@ class Engagement_Settings {
 				<label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
 					<strong><?php esc_html_e( 'Button position:', '6arshid-social-community' ); ?></strong>
 					<select name="arshid6social_eng_social_share_position">
-						<?php foreach ( array(
+						<?php
+						foreach ( array(
 							'bottom'   => __( 'In actions bar (bottom of post)', '6arshid-social-community' ),
 							'top'      => __( 'Above post content', '6arshid-social-community' ),
 							'floating' => __( 'Floating button (fixed on screen)', '6arshid-social-community' ),
-						) as $v => $l ) : ?>
+						) as $v => $l ) :
+							?>
 							<option value="<?php echo esc_attr( $v ); ?>" <?php selected( $position, $v ); ?>><?php echo esc_html( $l ); ?></option>
 						<?php endforeach; ?>
 					</select>
@@ -662,17 +693,19 @@ class Engagement_Settings {
 				<!-- Pages -->
 				<p style="margin-bottom:4px;"><strong><?php esc_html_e( 'Show on pages:', '6arshid-social-community' ); ?></strong></p>
 				<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px;">
-					<?php foreach ( array(
+					<?php
+					foreach ( array(
 						'feed'    => __( 'Activity Feed', '6arshid-social-community' ),
 						'single'  => __( 'Single Activity', '6arshid-social-community' ),
 						'profile' => __( 'Member Profiles', '6arshid-social-community' ),
 						'group'   => __( 'Group Pages', '6arshid-social-community' ),
-					) as $v => $l ) : ?>
+					) as $v => $l ) :
+						?>
 					<label style="display:inline-flex;align-items:center;gap:5px;">
 						<input type="checkbox" name="arshid6social_eng_social_share_pages[]"
 							value="<?php echo esc_attr( $v ); ?>"
-							<?php checked( in_array( $v, $pages, true ) ); ?> />
-						<?php echo esc_html( $l ); ?>
+															<?php checked( in_array( $v, $pages, true ) ); ?> />
+															<?php echo esc_html( $l ); ?>
 					</label>
 					<?php endforeach; ?>
 				</div>
@@ -681,11 +714,13 @@ class Engagement_Settings {
 				<label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
 					<strong><?php esc_html_e( 'Button style:', '6arshid-social-community' ); ?></strong>
 					<select name="arshid6social_eng_social_share_style">
-						<?php foreach ( array(
+						<?php
+						foreach ( array(
 							'icon_text' => __( 'Icon + Label', '6arshid-social-community' ),
 							'icon_only' => __( 'Icon only', '6arshid-social-community' ),
 							'text_only' => __( 'Text only', '6arshid-social-community' ),
-						) as $v => $l ) : ?>
+						) as $v => $l ) :
+							?>
 							<option value="<?php echo esc_attr( $v ); ?>" <?php selected( $style, $v ); ?>><?php echo esc_html( $l ); ?></option>
 						<?php endforeach; ?>
 					</select>

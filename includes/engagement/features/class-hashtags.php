@@ -16,18 +16,18 @@ class Hashtags {
 
 	public function __construct() {
 		// Process hashtags when activity is created/edited.
-		add_action( 'arshid6social_activity_added',   array( $this, 'process_activity' ), 10, 2 );
+		add_action( 'arshid6social_activity_added', array( $this, 'process_activity' ), 10, 2 );
 		add_action( 'arshid6social_activity_deleted', array( $this, 'delete_relations' ), 10, 1 );
 
 		// Rewrite: /tag/{slug}/
-		add_action( 'init',              array( $this, 'add_rewrite_rules' ) );
-		add_filter( 'query_vars',        array( $this, 'register_query_vars' ) );
+		add_action( 'init', array( $this, 'add_rewrite_rules' ) );
+		add_filter( 'query_vars', array( $this, 'register_query_vars' ) );
 		add_action( 'template_redirect', array( $this, 'handle_archive_page' ) );
 
 		// AJAX.
-		add_action( 'wp_ajax_arshid6social_hashtag_autocomplete',        array( $this, 'ajax_autocomplete' ) );
+		add_action( 'wp_ajax_arshid6social_hashtag_autocomplete', array( $this, 'ajax_autocomplete' ) );
 		add_action( 'wp_ajax_nopriv_arshid6social_hashtag_autocomplete', array( $this, 'ajax_autocomplete' ) );
-		add_action( 'wp_ajax_arshid6social_hashtag_follow',   array( $this, 'ajax_follow' ) );
+		add_action( 'wp_ajax_arshid6social_hashtag_follow', array( $this, 'ajax_follow' ) );
 		add_action( 'wp_ajax_arshid6social_hashtag_unfollow', array( $this, 'ajax_unfollow' ) );
 
 		// Cron: rebuild trending cache every hour.
@@ -36,7 +36,8 @@ class Hashtags {
 			wp_schedule_event( time(), 'hourly', 'arshid6social_hashtag_trending_refresh' );
 		}
 
-		// Shortcode.
+		// Shortcode (primary name + legacy alias for existing post content).
+		add_shortcode( 'arshid6social_trending_hashtags', array( $this, 'shortcode_trending' ) );
 		add_shortcode( 'sn_trending_hashtags', array( $this, 'shortcode_trending' ) );
 
 		// Render hashtag links in activity content output.
@@ -80,7 +81,7 @@ class Hashtags {
 		if ( $activity_page_id ) {
 			$activity_post = get_post( $activity_page_id );
 			if ( $activity_post instanceof \WP_Post ) {
-				$post = $activity_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride
+				$post                        = $activity_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride
 				$wp_query->queried_object    = $post;
 				$wp_query->queried_object_id = $post->ID;
 				$wp_query->is_page           = true;
@@ -130,12 +131,15 @@ class Hashtags {
 	private function load_activities_for_archive( object $hashtag, int $per_page = 20 ): array {
 		global $wpdb;
 
-		$ids = $wpdb->get_col( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT object_id FROM {$wpdb->prefix}sn_hashtag_relations
+		$ids = $wpdb->get_col(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT object_id FROM {$wpdb->prefix}sn_hashtag_relations
 			WHERE hashtag_id = %d AND object_type = 'activity'
 			ORDER BY created_at DESC LIMIT %d",
-			$hashtag->id, $per_page
-		) );
+				$hashtag->id,
+				$per_page
+			)
+		);
 
 		if ( empty( $ids ) ) {
 			return array();
@@ -178,7 +182,10 @@ class Hashtags {
 		// Remove stale relations for this object first.
 		$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_hashtag_relations',
-			array( 'object_id' => $object_id, 'object_type' => $object_type ),
+			array(
+				'object_id'   => $object_id,
+				'object_type' => $object_type,
+			),
 			array( '%d', '%s' )
 		);
 
@@ -194,10 +201,14 @@ class Hashtags {
 			}
 
 			// Avoid duplicate relations.
-			$exists = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_hashtag_relations WHERE hashtag_id = %d AND object_id = %d AND object_type = %s",
-				$hashtag_id, $object_id, $object_type
-			) );
+			$exists = (int) $wpdb->get_var(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					"SELECT COUNT(*) FROM {$wpdb->prefix}sn_hashtag_relations WHERE hashtag_id = %d AND object_id = %d AND object_type = %s",
+					$hashtag_id,
+					$object_id,
+					$object_type
+				)
+			);
 
 			if ( ! $exists ) {
 				$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -243,10 +254,12 @@ class Hashtags {
 	private function get_or_create( string $slug ): int|false {
 		global $wpdb;
 
-		$row = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_hashtags WHERE slug = %s",
-			$slug
-		) );
+		$row = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_hashtags WHERE slug = %s",
+				$slug
+			)
+		);
 
 		if ( $row ) {
 			return (int) $row->id;
@@ -267,14 +280,16 @@ class Hashtags {
 
 	public function get_by_slug( string $slug ): ?object {
 		global $wpdb;
-		return $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT h.*,
+		return $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT h.*,
 				( SELECT COUNT(*) FROM {$wpdb->prefix}sn_hashtag_relations r
 				  WHERE r.hashtag_id = h.id AND r.object_type = 'activity' ) AS post_count
 			FROM {$wpdb->prefix}sn_hashtags h
 			WHERE h.slug = %s",
-			$slug
-		) );
+				$slug
+			)
+		);
 	}
 
 	/**
@@ -284,7 +299,10 @@ class Hashtags {
 		global $wpdb;
 		$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_hashtag_relations',
-			array( 'object_id' => $activity_id, 'object_type' => 'activity' ),
+			array(
+				'object_id'   => $activity_id,
+				'object_type' => 'activity',
+			),
 			array( '%d', '%s' )
 		);
 	}
@@ -307,16 +325,19 @@ class Hashtags {
 
 		global $wpdb;
 		$interval = '24h' === $period ? '1 DAY' : '7 DAY';
-		$rows = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT h.slug, h.hashtag, COUNT(r.id) AS use_count
+		$rows     = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT h.slug, h.hashtag, COUNT(r.id) AS use_count
 			FROM {$wpdb->prefix}sn_hashtag_relations r
 			JOIN {$wpdb->prefix}sn_hashtags h ON h.id = r.hashtag_id
 			WHERE r.created_at >= NOW() - INTERVAL {$interval}
 			GROUP BY h.id
 			ORDER BY use_count DESC
 			LIMIT %d",
-			$limit
-		), ARRAY_A );
+				$limit
+			),
+			ARRAY_A
+		);
 
 		$rows = $rows ?: array();
 		set_transient( $cache_key, $rows, HOUR_IN_SECONDS );
@@ -365,7 +386,11 @@ class Hashtags {
 		global $wpdb;
 		$wpdb->replace( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_hashtag_follows',
-			array( 'hashtag_id' => $hashtag_id, 'user_id' => get_current_user_id(), 'created_at' => current_time( 'mysql' ) ),
+			array(
+				'hashtag_id' => $hashtag_id,
+				'user_id'    => get_current_user_id(),
+				'created_at' => current_time( 'mysql' ),
+			),
 			array( '%d', '%d', '%s' )
 		);
 
@@ -384,7 +409,10 @@ class Hashtags {
 		global $wpdb;
 		$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'sn_hashtag_follows',
-			array( 'hashtag_id' => $hashtag_id, 'user_id' => get_current_user_id() ),
+			array(
+				'hashtag_id' => $hashtag_id,
+				'user_id'    => get_current_user_id(),
+			),
 			array( '%d', '%d' )
 		);
 
@@ -396,10 +424,13 @@ class Hashtags {
 			return false;
 		}
 		global $wpdb;
-		return (bool) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM {$wpdb->prefix}sn_hashtag_follows WHERE hashtag_id = %d AND user_id = %d",
-			$hashtag_id, $user_id
-		) );
+		return (bool) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_hashtag_follows WHERE hashtag_id = %d AND user_id = %d",
+				$hashtag_id,
+				$user_id
+			)
+		);
 	}
 
 	// ── Autocomplete ──────────────────────────────────────────────────────────
@@ -416,16 +447,19 @@ class Hashtags {
 		}
 
 		global $wpdb;
-		$rows = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT h.slug, h.hashtag, COUNT(r.id) AS use_count
+		$rows = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT h.slug, h.hashtag, COUNT(r.id) AS use_count
 			FROM {$wpdb->prefix}sn_hashtags h
 			LEFT JOIN {$wpdb->prefix}sn_hashtag_relations r ON r.hashtag_id = h.id
 			WHERE h.slug LIKE %s
 			GROUP BY h.id
 			ORDER BY use_count DESC
 			LIMIT 10",
-			$wpdb->esc_like( mb_strtolower( $q, 'UTF-8' ) ) . '%'
-		), ARRAY_A );
+				$wpdb->esc_like( mb_strtolower( $q, 'UTF-8' ) ) . '%'
+			),
+			ARRAY_A
+		);
 
 		wp_send_json_success( $rows ?: array() );
 	}
@@ -438,39 +472,51 @@ class Hashtags {
 		}
 
 		global $wpdb;
-		$followers = $wpdb->get_col( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_hashtag_follows WHERE hashtag_id = %d",
-			$hashtag_id
-		) );
+		$followers = $wpdb->get_col(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}sn_hashtag_follows WHERE hashtag_id = %d",
+				$hashtag_id
+			)
+		);
 
 		$notif_component = ARSHID6SOCIAL()->component( 'notifications' );
 		if ( ! $notif_component ) {
 			return;
 		}
 
-		$row = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
-			$object_id
-		) );
+		$row       = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				$object_id
+			)
+		);
 		$poster_id = $row ? (int) $row->user_id : 0;
 
 		foreach ( $followers as $user_id ) {
-			$notif_component->add( array(
-				'user_id'           => (int) $user_id,
-				'item_id'           => $poster_id,
-				'secondary_item_id' => $object_id,
-				'component_name'    => 'hashtags',
-				'component_action'  => 'hashtag_new_post',
-				'sender_id'         => $poster_id,
-			) );
+			$notif_component->add(
+				array(
+					'user_id'           => (int) $user_id,
+					'item_id'           => $poster_id,
+					'secondary_item_id' => $object_id,
+					'component_name'    => 'hashtags',
+					'component_action'  => 'hashtag_new_post',
+					'sender_id'         => $poster_id,
+				)
+			);
 		}
 	}
 
 	// ── Shortcode ─────────────────────────────────────────────────────────────
 
 	public function shortcode_trending( array $atts ): string {
-		$atts   = shortcode_atts( array( 'period' => '24h', 'limit' => 10 ), $atts );
-		$tags   = $this->get_trending( $atts['period'], (int) $atts['limit'] );
+		$atts = shortcode_atts(
+			array(
+				'period' => '24h',
+				'limit'  => 10,
+			),
+			$atts
+		);
+		$tags = $this->get_trending( $atts['period'], (int) $atts['limit'] );
 		if ( empty( $tags ) ) {
 			return '<p class="arshid6social-no-trending">' . esc_html__( 'No trending hashtags yet.', '6arshid-social-community' ) . '</p>';
 		}
@@ -500,22 +546,34 @@ class Hashtags {
 		global $wpdb;
 		$hashtag = $this->get_by_slug( $slug );
 		if ( ! $hashtag ) {
-			return array( 'ids' => array(), 'total' => 0 );
+			return array(
+				'ids'   => array(),
+				'total' => 0,
+			);
 		}
 
 		$offset = ( $page - 1 ) * $per_page;
-		$total  = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM {$wpdb->prefix}sn_hashtag_relations WHERE hashtag_id = %d AND object_type = 'activity'",
-			$hashtag->id
-		) );
+		$total  = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_hashtag_relations WHERE hashtag_id = %d AND object_type = 'activity'",
+				$hashtag->id
+			)
+		);
 
-		$ids = $wpdb->get_col( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT object_id FROM {$wpdb->prefix}sn_hashtag_relations
+		$ids = $wpdb->get_col(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT object_id FROM {$wpdb->prefix}sn_hashtag_relations
 			WHERE hashtag_id = %d AND object_type = 'activity'
 			ORDER BY created_at DESC LIMIT %d OFFSET %d",
-			$hashtag->id, $per_page, $offset
-		) );
+				$hashtag->id,
+				$per_page,
+				$offset
+			)
+		);
 
-		return array( 'ids' => array_map( 'intval', $ids ), 'total' => $total );
+		return array(
+			'ids'   => array_map( 'intval', $ids ),
+			'total' => $total,
+		);
 	}
 }

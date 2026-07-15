@@ -15,50 +15,87 @@ class Messages_REST extends \WP_REST_Controller {
 	protected $rest_base = 'messages';
 
 	public function register_routes(): void {
-		register_rest_route( $this->namespace, '/threads', array(
+		register_rest_route(
+			$this->namespace,
+			'/threads',
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_threads' ),
-				'permission_callback' => 'is_user_logged_in',
-				'args'                => array( 'page' => array( 'type' => 'integer', 'default' => 1, 'sanitize_callback' => 'absint' ) ),
-			),
-			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'create_thread' ),
-				'permission_callback' => 'is_user_logged_in',
-				'args'                => array(
-					'recipients' => array( 'required' => true, 'type' => 'array' ),
-					'subject'    => array( 'type' => 'string', 'default' => 'New Message', 'sanitize_callback' => 'sanitize_text_field' ),
-					'content'    => array( 'required' => true, 'type' => 'string' ),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_threads' ),
+					'permission_callback' => 'is_user_logged_in',
+					'args'                => array(
+						'page' => array(
+							'type'              => 'integer',
+							'default'           => 1,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'create_thread' ),
+					'permission_callback' => 'is_user_logged_in',
+					'args'                => array(
+						'recipients' => array(
+							'required' => true,
+							'type'     => 'array',
+						),
+						'subject'    => array(
+							'type'              => 'string',
+							'default'           => 'New Message',
+							'sanitize_callback' => 'sanitize_text_field',
+						),
+						'content'    => array(
+							'required' => true,
+							'type'     => 'string',
+						),
+					),
+				),
+			)
+		);
 
-		register_rest_route( $this->namespace, '/threads/(?P<id>[\d]+)/messages', array(
+		register_rest_route(
+			$this->namespace,
+			'/threads/(?P<id>[\d]+)/messages',
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_messages' ),
-				'permission_callback' => array( $this, 'is_thread_participant' ),
-			),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_messages' ),
+					'permission_callback' => array( $this, 'is_thread_participant' ),
+				),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'send_message' ),
+					'permission_callback' => array( $this, 'is_thread_participant' ),
+					'args'                => array(
+						'content' => array(
+							'required' => true,
+							'type'     => 'string',
+						),
+					),
+				),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/threads/(?P<id>[\d]+)/read',
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'send_message' ),
+				'callback'            => array( $this, 'mark_read' ),
 				'permission_callback' => array( $this, 'is_thread_participant' ),
-				'args'                => array( 'content' => array( 'required' => true, 'type' => 'string' ) ),
-			),
-		) );
+			)
+		);
 
-		register_rest_route( $this->namespace, '/threads/(?P<id>[\d]+)/read', array(
-			'methods'             => \WP_REST_Server::CREATABLE,
-			'callback'            => array( $this, 'mark_read' ),
-			'permission_callback' => array( $this, 'is_thread_participant' ),
-		) );
-
-		register_rest_route( $this->namespace, '/unread-count', array(
-			'methods'             => \WP_REST_Server::READABLE,
-			'callback'            => array( $this, 'unread_count' ),
-			'permission_callback' => 'is_user_logged_in',
-		) );
+		register_rest_route(
+			$this->namespace,
+			'/unread-count',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'unread_count' ),
+				'permission_callback' => 'is_user_logged_in',
+			)
+		);
 	}
 
 	/**
@@ -70,11 +107,13 @@ class Messages_REST extends \WP_REST_Controller {
 			return false;
 		}
 		global $wpdb;
-		return (bool) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_messages_recipients WHERE thread_id = %d AND user_id = %d AND is_deleted = 0",
-			absint( $request['id'] ),
-			get_current_user_id()
-		) );
+		return (bool) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_messages_recipients WHERE thread_id = %d AND user_id = %d AND is_deleted = 0",
+				absint( $request['id'] ),
+				get_current_user_id()
+			)
+		);
 	}
 
 	public function get_threads( $request ): \WP_REST_Response {
@@ -83,9 +122,9 @@ class Messages_REST extends \WP_REST_Controller {
 	}
 
 	public function create_thread( $request ): \WP_REST_Response|\WP_Error {
-		$component    = ARSHID6SOCIAL()->component( 'messages' );
-		$recipients   = array_map( 'absint', (array) $request->get_param( 'recipients' ) );
-		$thread_id    = $component->start_thread(
+		$component  = ARSHID6SOCIAL()->component( 'messages' );
+		$recipients = array_map( 'absint', (array) $request->get_param( 'recipients' ) );
+		$thread_id  = $component->start_thread(
 			$recipients,
 			$request->get_param( 'subject' ),
 			wp_kses_post( $request->get_param( 'content' ) )

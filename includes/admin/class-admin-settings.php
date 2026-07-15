@@ -27,14 +27,14 @@ final class Admin_Settings {
 	}
 
 	private function __construct() {
-		add_action( 'admin_footer',                        array( $this, 'print_video_uploader_script' ) );
-		add_action( 'wp_ajax_arshid6social_upload_video',        array( $this, 'ajax_upload_video' ) );
-		add_action( 'admin_enqueue_scripts',               array( $this, 'enqueue_settings_assets' ) );
+		add_action( 'admin_footer', array( $this, 'print_video_uploader_script' ) );
+		add_action( 'wp_ajax_arshid6social_upload_video', array( $this, 'ajax_upload_video' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_settings_assets' ) );
 	}
 
 	public function enqueue_settings_assets(): void {
-		// phpcs:ignore WordPress.Security.NonceVerification
-		if ( ( $_GET['page'] ?? '' ) !== 'arshid6social-settings' ) {
+		// phpcs:ignore WordPress.Security.NonceVerification -- read-only page detection, no state change.
+		if ( sanitize_key( wp_unslash( $_GET['page'] ?? '' ) ) !== 'arshid6social-settings' ) {
 			return;
 		}
 		wp_enqueue_media();
@@ -72,8 +72,8 @@ final class Admin_Settings {
 	 * Outputs the video-uploader JS in the footer.
 	 */
 	public function print_video_uploader_script(): void {
-		// phpcs:ignore WordPress.Security.NonceVerification
-		if ( ( $_GET['page'] ?? '' ) !== 'arshid6social-settings' ) {
+		// phpcs:ignore WordPress.Security.NonceVerification -- read-only page detection, no state change.
+		if ( sanitize_key( wp_unslash( $_GET['page'] ?? '' ) ) !== 'arshid6social-settings' ) {
 			return;
 		}
 
@@ -167,11 +167,26 @@ ENDJS;
 	 * @return array<string, array<string, array{type: string, sanitize_callback: callable}>>
 	 */
 	private function option_schemas(): array {
-		$bool     = array( 'type' => 'boolean', 'sanitize_callback' => 'rest_sanitize_boolean' );
-		$int      = array( 'type' => 'integer', 'sanitize_callback' => 'absint' );
-		$text     = array( 'type' => 'string',  'sanitize_callback' => 'sanitize_text_field' );
-		$textarea = array( 'type' => 'string',  'sanitize_callback' => 'sanitize_textarea_field' );
-		$url      = array( 'type' => 'string',  'sanitize_callback' => 'esc_url_raw' );
+		$bool     = array(
+			'type'              => 'boolean',
+			'sanitize_callback' => 'rest_sanitize_boolean',
+		);
+		$int      = array(
+			'type'              => 'integer',
+			'sanitize_callback' => 'absint',
+		);
+		$text     = array(
+			'type'              => 'string',
+			'sanitize_callback' => 'sanitize_text_field',
+		);
+		$textarea = array(
+			'type'              => 'string',
+			'sanitize_callback' => 'sanitize_textarea_field',
+		);
+		$url      = array(
+			'type'              => 'string',
+			'sanitize_callback' => 'esc_url_raw',
+		);
 
 		$pagination_default_scroll = $this->enum_schema( array( 'infinite_scroll', 'pagination' ), 'infinite_scroll' );
 		$pagination_default_pages  = $this->enum_schema( array( 'infinite_scroll', 'pagination' ), 'pagination' );
@@ -190,38 +205,38 @@ ENDJS;
 				'arshid6social_activity_stats_bar'   => $bool,
 			),
 			'arshid6social_members'       => array(
-				'arshid6social_members_per_page'            => $int,
-				'arshid6social_members_pagination_type'     => $pagination_default_pages,
-				'arshid6social_who_to_follow_per_page'      => $int,
-				'arshid6social_members_show_friend_count'   => $bool,
-				'arshid6social_profile_photo_size'          => $int,
-				'arshid6social_cover_photo_width'           => $int,
-				'arshid6social_cover_photo_height'          => $int,
-				'arshid6social_max_upload_size_mb'          => $int,
-				'arshid6social_allowed_upload_types'        => $this->choices_schema( array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' ), false ),
-				'arshid6social_verification_enabled'        => $bool,
-				'arshid6social_verification_types'          => $this->verification_types_schema(),
-				'arshid6social_verification_badge_image'    => $int,
-				'arshid6social_verification_require_doc'    => $bool,
-				'arshid6social_verification_expiry_months'  => $int,
-				'arshid6social_verification_doc_purge'      => $bool,
-				'arshid6social_verification_rate_limit'     => $int,
+				'arshid6social_members_per_page'           => $int,
+				'arshid6social_members_pagination_type'    => $pagination_default_pages,
+				'arshid6social_who_to_follow_per_page'     => $int,
+				'arshid6social_members_show_friend_count'  => $bool,
+				'arshid6social_profile_photo_size'         => $int,
+				'arshid6social_cover_photo_width'          => $int,
+				'arshid6social_cover_photo_height'         => $int,
+				'arshid6social_max_upload_size_mb'         => $int,
+				'arshid6social_allowed_upload_types'       => $this->choices_schema( array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' ), false ),
+				'arshid6social_verification_enabled'       => $bool,
+				'arshid6social_verification_types'         => $this->verification_types_schema(),
+				'arshid6social_verification_badge_image'   => $int,
+				'arshid6social_verification_require_doc'   => $bool,
+				'arshid6social_verification_expiry_months' => $int,
+				'arshid6social_verification_doc_purge'     => $bool,
+				'arshid6social_verification_rate_limit'    => $int,
 			),
 			'arshid6social_activity'      => array(
-				'arshid6social_activity_per_page'              => $int,
-				'arshid6social_activity_allow_comments'        => $bool,
-				'arshid6social_activity_allow_media'           => $bool,
-				'arshid6social_activity_allowed_media_types'   => $this->choices_schema( array( 'image', 'video', 'audio', 'document' ) ),
-				'arshid6social_activity_pagination_type'       => $pagination_default_scroll,
-				'arshid6social_stories_enabled'                => $bool,
-				'arshid6social_stories_expiry_hours'           => $int,
-				'arshid6social_stories_max_video_secs'         => $int,
-				'arshid6social_stories_allow_video'            => $bool,
-				'arshid6social_stories_highlights'             => $bool,
-				'arshid6social_stories_rate_limit'             => $int,
-				'arshid6social_stories_bottom_bar'             => $bool,
+				'arshid6social_activity_per_page'        => $int,
+				'arshid6social_activity_allow_comments'  => $bool,
+				'arshid6social_activity_allow_media'     => $bool,
+				'arshid6social_activity_allowed_media_types' => $this->choices_schema( array( 'image', 'video', 'audio', 'document' ) ),
+				'arshid6social_activity_pagination_type' => $pagination_default_scroll,
+				'arshid6social_stories_enabled'          => $bool,
+				'arshid6social_stories_expiry_hours'     => $int,
+				'arshid6social_stories_max_video_secs'   => $int,
+				'arshid6social_stories_allow_video'      => $bool,
+				'arshid6social_stories_highlights'       => $bool,
+				'arshid6social_stories_rate_limit'       => $int,
+				'arshid6social_stories_bottom_bar'       => $bool,
 				'arshid6social_stories_bottom_bar_marketplace' => $bool,
-				'arshid6social_stories_bottom_bar_messages'    => $bool,
+				'arshid6social_stories_bottom_bar_messages' => $bool,
 			),
 			'arshid6social_groups'        => array( 'arshid6social_groups_per_page' => $int ),
 			'arshid6social_messages'      => array(
@@ -233,23 +248,23 @@ ENDJS;
 				'arshid6social_email_digest'        => $this->enum_schema( array( 'none', 'daily', 'weekly' ), 'daily' ),
 			),
 			'arshid6social_security'      => array(
-				'arshid6social_enable_akismet'            => $bool,
-				'arshid6social_enable_recaptcha'          => $bool,
-				'arshid6social_recaptcha_site_key'        => $text,
-				'arshid6social_recaptcha_secret_key'      => $text,
-				'arshid6social_new_member_moderation'     => $bool,
-				'arshid6social_auto_suspend_threshold'    => $int,
-				'arshid6social_banned_words'              => $textarea,
-				'arshid6social_rate_limit_posts'          => $int,
-				'arshid6social_rate_limit_messages'       => $int,
-				'arshid6social_rate_limit_friends'        => $int,
-				'arshid6social_blocking_enabled'          => $bool,
-				'arshid6social_blocking_show_reason'      => $bool,
-				'arshid6social_report_reasons'            => $textarea,
-				'arshid6social_suspend_reasons'           => $textarea,
-				'arshid6social_report_allow_attachments'  => $bool,
-				'arshid6social_reserved_usernames'        => $textarea,
-				'arshid6social_username_min_length'       => array(
+				'arshid6social_enable_akismet'           => $bool,
+				'arshid6social_enable_recaptcha'         => $bool,
+				'arshid6social_recaptcha_site_key'       => $text,
+				'arshid6social_recaptcha_secret_key'     => $text,
+				'arshid6social_new_member_moderation'    => $bool,
+				'arshid6social_auto_suspend_threshold'   => $int,
+				'arshid6social_banned_words'             => $textarea,
+				'arshid6social_rate_limit_posts'         => $int,
+				'arshid6social_rate_limit_messages'      => $int,
+				'arshid6social_rate_limit_friends'       => $int,
+				'arshid6social_blocking_enabled'         => $bool,
+				'arshid6social_blocking_show_reason'     => $bool,
+				'arshid6social_report_reasons'           => $textarea,
+				'arshid6social_suspend_reasons'          => $textarea,
+				'arshid6social_report_allow_attachments' => $bool,
+				'arshid6social_reserved_usernames'       => $textarea,
+				'arshid6social_username_min_length'      => array(
 					'type'              => 'integer',
 					'sanitize_callback' => static function ( $value ): int {
 						return max( 1, min( 60, absint( $value ) ) );
@@ -257,7 +272,7 @@ ENDJS;
 				),
 			),
 			'arshid6social_appearance'    => array(
-				'arshid6social_primary_color' => array(
+				'arshid6social_primary_color'  => array(
 					'type'              => 'string',
 					'sanitize_callback' => static function ( $value ): string {
 						return sanitize_hex_color( (string) $value ) ?: '#2563eb';
@@ -275,9 +290,9 @@ ENDJS;
 				'arshid6social_marketplace_slug'        => $this->slug_schema( 'marketplace' ),
 			),
 			'arshid6social_search'        => array(
-				'arshid6social_search_pagination_type'      => $pagination_default_pages,
-				'arshid6social_search_results_per_section'  => $int,
-				'arshid6social_search_per_page'             => $int,
+				'arshid6social_search_pagination_type'     => $pagination_default_pages,
+				'arshid6social_search_results_per_section' => $int,
+				'arshid6social_search_per_page'            => $int,
 			),
 		);
 	}
@@ -380,7 +395,7 @@ ENDJS;
 			<nav class="nav-tab-wrapper arshid6social-nav-tabs">
 				<?php foreach ( $tabs as $tab => $label ) : ?>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=arshid6social-settings&tab=' . $tab ) ); ?>"
-					   class="nav-tab <?php echo ( $current_tab === $tab ) ? 'nav-tab-active' : ''; ?>">
+						class="nav-tab <?php echo ( $current_tab === $tab ) ? 'nav-tab-active' : ''; ?>">
 						<?php echo esc_html( $label ); ?>
 					</a>
 				<?php endforeach; ?>
@@ -506,9 +521,11 @@ ENDJS;
 						</p>
 						<button type="button" id="arshid6social-import-sample" class="button button-primary"
 							<?php disabled( $imported ); ?>>
-							<?php echo $imported
+							<?php
+							echo $imported
 								? esc_html__( 'Already Imported', '6arshid-social-community' )
-								: esc_html__( 'Import Sample Data', '6arshid-social-community' ); ?>
+								: esc_html__( 'Import Sample Data', '6arshid-social-community' );
+							?>
 						</button>
 						<span id="arshid6social-import-status" style="display:none;margin-inline-start:.75rem;font-size:.875rem;vertical-align:middle;"></span>
 					</td>
@@ -603,12 +620,30 @@ ENDJS;
 	private function render_components_tab(): void {
 		$enabled = (array) get_option( 'arshid6social_enabled_components', array() );
 		$all     = array(
-			'activity'      => array( 'label' => __( 'Activity Streams', '6arshid-social-community' ),  'desc' => __( 'News feed, posts, reactions, comments', '6arshid-social-community' ) ),
-			'groups'        => array( 'label' => __( 'Groups', '6arshid-social-community' ),             'desc' => __( 'Public, private, and hidden groups', '6arshid-social-community' ) ),
-			'friends'       => array( 'label' => __( 'Friends & Follow', '6arshid-social-community' ),   'desc' => __( 'Friend requests, follow, block', '6arshid-social-community' ) ),
-			'messages'      => array( 'label' => __( 'Private Messages', '6arshid-social-community' ),   'desc' => __( 'One-to-one and group messaging', '6arshid-social-community' ) ),
-			'notifications' => array( 'label' => __( 'Notifications', '6arshid-social-community' ),      'desc' => __( 'On-site and email notifications', '6arshid-social-community' ) ),
-			'moderation'    => array( 'label' => __( 'Moderation', '6arshid-social-community' ),         'desc' => __( 'Reports, bans, audit log', '6arshid-social-community' ) ),
+			'activity'      => array(
+				'label' => __( 'Activity Streams', '6arshid-social-community' ),
+				'desc'  => __( 'News feed, posts, reactions, comments', '6arshid-social-community' ),
+			),
+			'groups'        => array(
+				'label' => __( 'Groups', '6arshid-social-community' ),
+				'desc'  => __( 'Public, private, and hidden groups', '6arshid-social-community' ),
+			),
+			'friends'       => array(
+				'label' => __( 'Friends & Follow', '6arshid-social-community' ),
+				'desc'  => __( 'Friend requests, follow, block', '6arshid-social-community' ),
+			),
+			'messages'      => array(
+				'label' => __( 'Private Messages', '6arshid-social-community' ),
+				'desc'  => __( 'One-to-one and group messaging', '6arshid-social-community' ),
+			),
+			'notifications' => array(
+				'label' => __( 'Notifications', '6arshid-social-community' ),
+				'desc'  => __( 'On-site and email notifications', '6arshid-social-community' ),
+			),
+			'moderation'    => array(
+				'label' => __( 'Moderation', '6arshid-social-community' ),
+				'desc'  => __( 'Reports, bans, audit log', '6arshid-social-community' ),
+			),
 		);
 
 		// Engagement Pack options (stored in their own flags, not arshid6social_enabled_components).
@@ -744,7 +779,7 @@ ENDJS;
 	}
 
 	private function render_verification_settings(): void {
-		$types        = (array) get_option( 'arshid6social_verification_types', array() );
+		$types         = (array) get_option( 'arshid6social_verification_types', array() );
 		$badge_img_id  = (int) get_option( 'arshid6social_verification_badge_image', 0 );
 		$badge_img_url = $badge_img_id ? wp_get_attachment_image_url( $badge_img_id, array( 32, 32 ) ) : '';
 		?>
@@ -1130,7 +1165,7 @@ ENDJS;
 						border:2px dashed #555;
 					"></div>
 					<img src="<?php echo esc_url( get_avatar_url( $viewer_id, array( 'size' => 52 ) ) ); ?>"
-					     style="width:52px;height:52px;border-radius:50%;object-fit:cover;margin:2px;" />
+						style="width:52px;height:52px;border-radius:50%;object-fit:cover;margin:2px;" />
 					<span style="
 						position:absolute;bottom:0;right:0;
 						background:#2563eb;color:#fff;
@@ -1147,10 +1182,11 @@ ENDJS;
 
 			<?php if ( empty( $tray ) ) : ?>
 			<!-- Placeholder bubbles when no stories exist -->
-			<?php
-			$placeholder_colors = array( '#e04343', '#43b0e0', '#43e08e' );
-			$placeholder_labels = array( 'User A', 'User B', 'User C' );
-			foreach ( $placeholder_colors as $i => $color ) : ?>
+				<?php
+				$placeholder_colors = array( '#e04343', '#43b0e0', '#43e08e' );
+				$placeholder_labels = array( 'User A', 'User B', 'User C' );
+				foreach ( $placeholder_colors as $i => $color ) :
+					?>
 			<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;opacity:0.45;">
 				<div style="position:relative;width:56px;height:56px;">
 					<div style="
@@ -1166,18 +1202,19 @@ ENDJS;
 				</div>
 				<span style="color:#aaa;font-size:11px;"><?php echo esc_html( $placeholder_labels[ $i ] ); ?></span>
 			</div>
-			<?php endforeach; ?>
+				<?php endforeach; ?>
 			<span style="color:#666;font-size:12px;align-self:center;padding-left:4px;font-style:italic;">
 				<?php esc_html_e( 'â† placeholder (no active stories)', '6arshid-social-community' ); ?>
 			</span>
 
 			<?php else : ?>
 			<!-- Real stories from the database -->
-			<?php foreach ( array_slice( $tray, 0, 8 ) as $story ) :
-				$story_uid  = (int) $story->user_id;
-				$has_unseen = (int) $story->unseen_count > 0;
-				$ring_color = $has_unseen ? 'linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)' : '#555';
-				?>
+				<?php
+				foreach ( array_slice( $tray, 0, 8 ) as $story ) :
+					$story_uid  = (int) $story->user_id;
+					$has_unseen = (int) $story->unseen_count > 0;
+					$ring_color = $has_unseen ? 'linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)' : '#555';
+					?>
 			<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;">
 				<div style="position:relative;width:56px;height:56px;">
 					<div style="
@@ -1193,13 +1230,13 @@ ENDJS;
 						<?php endif; ?>
 					</div>
 					<img src="<?php echo esc_url( get_avatar_url( $story_uid, array( 'size' => 48 ) ) ); ?>"
-					     style="position:absolute;inset:<?php echo $has_unseen ? '4px' : '2px'; ?>;border-radius:50%;object-fit:cover;" />
+						style="position:absolute;inset:<?php echo $has_unseen ? '4px' : '2px'; ?>;border-radius:50%;object-fit:cover;" />
 				</div>
 				<span style="color:#ccc;font-size:11px;max-width:60px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
 					<?php echo esc_html( $story->display_name ); ?>
 				</span>
 			</div>
-			<?php endforeach; ?>
+				<?php endforeach; ?>
 			<?php endif; ?>
 		</div>
 		<?php
@@ -1404,12 +1441,12 @@ ENDJS;
 
 	private function render_appearance_tab(): void {
 		wp_enqueue_media();
-		$default_video    = '/assets/videos/home-bg.mp4';
-		$saved_video      = (string) get_option( 'arshid6social_home_video_url', '' );
-		$saved_type       = (string) get_option( 'arshid6social_home_bg_type', 'video' );
-		$preview_url      = $saved_video ?: $default_video;
-		$logo_mobile_id   = (int) get_option( 'arshid6social_logo_mobile', 0 );
-		$logo_mobile_url  = $logo_mobile_id  ? wp_get_attachment_image_url( $logo_mobile_id,  'thumbnail' ) : '';
+		$default_video   = '/assets/videos/home-bg.mp4';
+		$saved_video     = (string) get_option( 'arshid6social_home_video_url', '' );
+		$saved_type      = (string) get_option( 'arshid6social_home_bg_type', 'video' );
+		$preview_url     = $saved_video ?: $default_video;
+		$logo_mobile_id  = (int) get_option( 'arshid6social_logo_mobile', 0 );
+		$logo_mobile_url = $logo_mobile_id ? wp_get_attachment_image_url( $logo_mobile_id, 'thumbnail' ) : '';
 		?>
 		<table class="form-table" role="presentation">
 			<tr>
@@ -1532,7 +1569,8 @@ ENDJS;
 							</div>
 
 							<p id="arshid6social-video-desc" class="description">
-								<?php echo $saved_video
+								<?php
+								echo $saved_video
 									? esc_html__( 'Custom background is active.', '6arshid-social-community' )
 									: esc_html__( 'Using default video.', '6arshid-social-community' );
 								?>

@@ -25,12 +25,17 @@ function arshid6social_is_blocked( int $user_a, int $user_b ): bool {
 	}
 	// Fallback: direct DB query if Friends component not loaded.
 	global $wpdb;
-	return (bool) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		"SELECT id FROM {$wpdb->prefix}sn_blocks
+	return (bool) $wpdb->get_var(
+		$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			"SELECT id FROM {$wpdb->prefix}sn_blocks
 		 WHERE (blocker_id = %d AND blocked_id = %d)
 		    OR (blocker_id = %d AND blocked_id = %d)",
-		$user_a, $user_b, $user_b, $user_a
-	) );
+			$user_a,
+			$user_b,
+			$user_b,
+			$user_a
+		)
+	);
 }
 
 /**
@@ -159,10 +164,12 @@ function arshid6social_current_user_can_view_activity( int $activity_id ): bool 
 		$activity = $component->get_by_id( $activity_id );
 	} else {
 		global $wpdb;
-		$activity = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id, user_id, privacy FROM {$wpdb->prefix}sn_activity WHERE id = %d LIMIT 1",
-			$activity_id
-		) );
+		$activity = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id, user_id, privacy FROM {$wpdb->prefix}sn_activity WHERE id = %d LIMIT 1",
+				$activity_id
+			)
+		);
 	}
 
 	if ( ! $activity ) {

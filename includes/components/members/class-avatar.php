@@ -43,7 +43,15 @@ class Avatar {
 		}
 
 		$user = get_userdata( $user_id );
-		return esc_url( get_avatar_url( $user ? $user->user_email : $user_id, array( 'size' => $size, 'default' => 'mm' ) ) );
+		return esc_url(
+			get_avatar_url(
+				$user ? $user->user_email : $user_id,
+				array(
+					'size'    => $size,
+					'default' => 'mm',
+				)
+			)
+		);
 	}
 
 	/**

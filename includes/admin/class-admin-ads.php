@@ -27,9 +27,9 @@ final class Admin_Ads {
 	private function __construct() {}
 
 	private function hooks(): void {
-		add_action( 'admin_init',                       array( $this, 'handle_save' ) );
-		add_action( 'admin_enqueue_scripts',            array( $this, 'enqueue_page_styles' ) );
-		add_action( 'wp_ajax_arshid6social_delete_ad',        array( $this, 'ajax_delete' ) );
+		add_action( 'admin_init', array( $this, 'handle_save' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_page_styles' ) );
+		add_action( 'wp_ajax_arshid6social_delete_ad', array( $this, 'ajax_delete' ) );
 		add_action( 'wp_ajax_arshid6social_toggle_ad_status', array( $this, 'ajax_toggle_status' ) );
 	}
 
@@ -90,7 +90,15 @@ final class Admin_Ads {
 			$wpdb->insert( $table, $data ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		}
 
-		wp_safe_redirect( add_query_arg( array( 'page' => 'arshid6social-ads', 'saved' => '1' ), admin_url( 'admin.php' ) ) );
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page'  => 'arshid6social-ads',
+					'saved' => '1',
+				),
+				admin_url( 'admin.php' )
+			)
+		);
 		exit;
 	}
 
@@ -116,17 +124,21 @@ final class Admin_Ads {
 		}
 		$ad_id = absint( $_POST['ad_id'] ?? 0 );
 		global $wpdb;
-		$current    = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT status FROM {$wpdb->prefix}sn_ads WHERE id = %d",
-			$ad_id
-		) );
+		$current    = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT status FROM {$wpdb->prefix}sn_ads WHERE id = %d",
+				$ad_id
+			)
+		);
 		$new_status = ( 'active' === $current ) ? 'inactive' : 'active';
 		$wpdb->update( $wpdb->prefix . 'sn_ads', array( 'status' => $new_status ), array( 'id' => $ad_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		wp_send_json_success( array(
-			'status'       => $new_status,
-			'status_label' => 'active' === $new_status ? __( 'Active', '6arshid-social-community' ) : __( 'Inactive', '6arshid-social-community' ),
-			'label'        => 'active' === $new_status ? __( 'Deactivate', '6arshid-social-community' ) : __( 'Activate', '6arshid-social-community' ),
-		) );
+		wp_send_json_success(
+			array(
+				'status'       => $new_status,
+				'status_label' => 'active' === $new_status ? __( 'Active', '6arshid-social-community' ) : __( 'Inactive', '6arshid-social-community' ),
+				'label'        => 'active' === $new_status ? __( 'Deactivate', '6arshid-social-community' ) : __( 'Activate', '6arshid-social-community' ),
+			)
+		);
 	}
 
 	// ── Render ────────────────────────────────────────────────────────────────
@@ -155,7 +167,13 @@ final class Admin_Ads {
 			ARRAY_A
 		) ?: array();
 		$saved   = ! empty( $_GET['saved'] );
-		$add_url = add_query_arg( array( 'page' => 'arshid6social-ads', 'action' => 'add' ), admin_url( 'admin.php' ) );
+		$add_url = add_query_arg(
+			array(
+				'page'   => 'arshid6social-ads',
+				'action' => 'add',
+			),
+			admin_url( 'admin.php' )
+		);
 		$nonce   = wp_create_nonce( 'arshid6social_admin_ads_nonce' );
 		$ajax    = admin_url( 'admin-ajax.php' );
 		?>
@@ -187,13 +205,21 @@ final class Admin_Ads {
 				<?php if ( ! $ads ) : ?>
 					<tr><td colspan="10"><?php esc_html_e( 'No ads yet. Click "+ Add New Ad" to create one.', '6arshid-social-community' ); ?></td></tr>
 				<?php else : ?>
-					<?php foreach ( $ads as $ad ) :
-						$edit_url   = add_query_arg( array( 'page' => 'arshid6social-ads', 'action' => 'edit', 'ad_id' => $ad['id'] ), admin_url( 'admin.php' ) );
+					<?php
+					foreach ( $ads as $ad ) :
+						$edit_url   = add_query_arg(
+							array(
+								'page'   => 'arshid6social-ads',
+								'action' => 'edit',
+								'ad_id'  => $ad['id'],
+							),
+							admin_url( 'admin.php' )
+						);
 						$ctr        = $ad['impressions'] > 0 ? round( ( $ad['clicks'] / $ad['impressions'] ) * 100, 2 ) : 0;
 						$is_active  = 'active' === $ad['status'];
 						$toggle_lbl = $is_active ? __( 'Deactivate', '6arshid-social-community' ) : __( 'Activate', '6arshid-social-community' );
 						$status_lbl = $is_active ? __( 'Active', '6arshid-social-community' ) : __( 'Inactive', '6arshid-social-community' );
-					?>
+						?>
 					<tr id="arshid6social-ad-row-<?php echo (int) $ad['id']; ?>">
 						<td><?php echo (int) $ad['id']; ?></td>
 						<td><strong><?php echo esc_html( $ad['title'] ); ?></strong></td>
@@ -293,10 +319,13 @@ ENDJS;
 		);
 
 		if ( $ad_id ) {
-			$row = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_ads WHERE id = %d",
-				$ad_id
-			), ARRAY_A );
+			$row = $wpdb->get_row(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					"SELECT * FROM {$wpdb->prefix}sn_ads WHERE id = %d",
+					$ad_id
+				),
+				ARRAY_A
+			);
 			if ( $row ) {
 				$ad = array_merge( $ad, $row );
 			}
@@ -341,9 +370,10 @@ ENDJS;
 							</button>
 							<span id="arshid6social-ad-upload-status" style="margin-left:8px;color:#666;font-size:13px"></span>
 							<div id="arshid6social-ad-file-preview" style="margin-top:8px">
-								<?php if ( $ad['file_url'] ) :
+								<?php
+								if ( $ad['file_url'] ) :
 									$is_video = (bool) preg_match( '/\.(mp4|webm|ogg|ogv)$/i', $ad['file_url'] );
-								?>
+									?>
 									<?php if ( $is_video ) : ?>
 										<video src="<?php echo esc_url( $ad['file_url'] ); ?>" controls style="max-width:100%;max-height:180px"></video>
 									<?php else : ?>

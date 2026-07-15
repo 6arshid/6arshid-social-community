@@ -46,7 +46,6 @@ class Setup_Wizard {
 
 		$chrome_css = '#wpadminbar,#adminmenuback,#adminmenuwrap,#adminmenu{display:none!important}#wpcontent{margin-left:0!important}#wpbody-content{padding-bottom:0!important}#wpbody{padding-top:0!important}body.wp-admin{background:#f8fafc!important;margin:0!important}';
 
-
 		$wizard_css = '*{box-sizing:border-box;}.sn6w{min-height:100vh;display:flex;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;color:#0f172a;}.sn6w-bar{position:fixed;top:0;left:0;right:0;height:3px;background:#e2e8f0;z-index:200;}.sn6w-bar-fill{height:100%;background:#2563eb;transition:width .35s ease;width:16.66%;}.sn6w-hdr{background:#fff;border-bottom:1px solid #f1f5f9;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;margin-top:3px;position:sticky;top:3px;z-index:100;}.sn6w-logo{font-size:1rem;font-weight:700;color:#0f172a;letter-spacing:-.02em;}.sn6w-logo em{color:#2563eb;font-style:normal;}.sn6w-hdr-step{font-size:.8125rem;color:#64748b;font-weight:500;}.sn6w-skip{font-size:.8125rem;color:#94a3b8;text-decoration:none;}.sn6w-skip:hover{color:#64748b;}.sn6w-body{flex:1;display:flex;justify-content:center;padding:2rem 1.5rem 5.5rem;}.sn6w-step{display:none;width:100%;max-width:700px;}.sn6w-step.is-active{display:block;}.sn6w-card{background:#fff;border:1px solid #e8edf2;border-radius:16px;box-shadow:0 1px 3px rgb(0 0 0/.05),0 4px 16px rgb(0 0 0/.04);overflow:hidden;}.sn6w-card-hd{padding:1.75rem 2rem 1.25rem;border-bottom:1px solid #f4f6f8;}.sn6w-card-hd h2{margin:0 0 .25rem;font-size:1.25rem;font-weight:700;color:#0f172a;letter-spacing:-.02em;}.sn6w-card-hd p{margin:0;color:#64748b;font-size:.9rem;line-height:1.55;}.sn6w-card-bd{padding:1.5rem 2rem;}.sn6w-sec{margin-bottom:1.5rem;}.sn6w-sec:last-child{margin-bottom:0;}.sn6w-sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;}.sn6w-sec-ttl{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#94a3b8;}.sn6w-tog-all{background:none;border:none;cursor:pointer;font-size:.8125rem;color:#2563eb;font-weight:500;padding:0;line-height:1;font-family:inherit;}.sn6w-tog-all:hover{text-decoration:underline;}.sn6w-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;}.sn6w-feat{position:relative;}.sn6w-feat input{position:absolute;opacity:0;pointer-events:none;}.sn6w-feat-lbl{display:flex;align-items:flex-start;gap:.625rem;padding:.7rem .875rem;border:1.5px solid #e8edf2;border-radius:10px;cursor:pointer;transition:border-color .12s,background .12s;height:100%;user-select:none;-webkit-user-select:none;}.sn6w-feat-lbl:hover{border-color:#bfdbfe;background:#fafcff;}.sn6w-feat input:checked~.sn6w-feat-lbl{border-color:#2563eb;background:#eff6ff;}.sn6w-feat-ico{font-size:.9rem;width:28px;height:28px;background:#f1f5f9;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:background .12s;}.sn6w-feat input:checked~.sn6w-feat-lbl .sn6w-feat-ico{background:#dbeafe;}.sn6w-feat-txt{flex:1;min-width:0;}.sn6w-feat-name{font-size:.8375rem;font-weight:600;color:#1e293b;display:block;line-height:1.3;}.sn6w-feat-desc{font-size:.72rem;color:#94a3b8;display:block;line-height:1.35;margin-top:2px;}.sn6w-feat-chk{width:15px;height:15px;border-radius:50%;border:1.5px solid #cbd5e1;flex-shrink:0;margin-top:3px;transition:all .12s;display:flex;align-items:center;justify-content:center;font-size:8px;color:transparent;}.sn6w-feat input:checked~.sn6w-feat-lbl .sn6w-feat-chk{background:#2563eb;border-color:#2563eb;color:#fff;}.sn6w-feat-ico svg,.sn6w-mode-ico svg,.sn6w-media-lbl svg,.sn6w-feat-chk svg,.sn6w-tc-chk svg,.tp-df-ic svg,.sn6w-done-ic svg{display:block;}.sn6w-feat-ico svg{color:#475569;}.sn6w-feat input:checked~.sn6w-feat-lbl .sn6w-feat-ico svg{color:#2563eb;}.sn6w-done-ic{color:#16a34a;}.sn6w-div{height:1px;background:#f4f6f8;margin:1.25rem 0;}.sn6w-field{margin-bottom:1.375rem;}.sn6w-field:last-child{margin-bottom:0;}.sn6w-field-lbl{display:block;font-size:.875rem;font-weight:600;color:#1e293b;margin-bottom:.625rem;}.sn6w-color-wrap{display:flex;align-items:center;gap:1rem;}input[type="color"].sn6w-color-inp{width:42px;height:42px;border:1.5px solid #e2e8f0;border-radius:10px;padding:3px;cursor:pointer;background:#fff;}.sn6w-presets{display:flex;gap:.5rem;flex-wrap:wrap;}.sn6w-preset{width:26px;height:26px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;transition:transform .12s;outline:none;}.sn6w-preset:hover{transform:scale(1.18);}.sn6w-preset.on{outline:2.5px solid #0f172a;outline-offset:2px;}.sn6w-mode-row{display:flex;gap:.5rem;}.sn6w-mode{flex:1;position:relative;}.sn6w-mode input{position:absolute;opacity:0;}.sn6w-mode-lbl{display:flex;flex-direction:column;align-items:center;gap:.25rem;padding:.875rem .5rem;border:1.5px solid #e8edf2;border-radius:10px;cursor:pointer;text-align:center;transition:all .12s;}.sn6w-mode-lbl:hover{border-color:#bfdbfe;}.sn6w-mode input:checked+.sn6w-mode-lbl{border-color:#2563eb;background:#eff6ff;}.sn6w-mode-ico{font-size:1.375rem;}.sn6w-mode-nm{font-size:.8125rem;font-weight:600;color:#334155;}.sn6w-mode-ht{font-size:.7rem;color:#94a3b8;}.sn6w-media-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.625rem;}.sn6w-media{position:relative;}.sn6w-media input{position:absolute;opacity:0;}.sn6w-media-lbl{display:flex;align-items:center;gap:.375rem;padding:.375rem .75rem;border:1.5px solid #e8edf2;border-radius:6px;cursor:pointer;font-size:.8125rem;font-weight:500;color:#64748b;transition:all .12s;}.sn6w-media-lbl:hover{border-color:#bfdbfe;color:#2563eb;}.sn6w-media input:checked+.sn6w-media-lbl{border-color:#2563eb;background:#eff6ff;color:#2563eb;}.sn6w-theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:.875rem;}.sn6w-tc{position:relative;}.sn6w-tc input{position:absolute;opacity:0;}.sn6w-tc-card{border:2px solid #e8edf2;border-radius:12px;overflow:hidden;cursor:pointer;transition:all .12s;background:#fff;display:block;}.sn6w-tc-card:hover{border-color:#93c5fd;}.sn6w-tc input:checked+.sn6w-tc-card{border-color:#2563eb;box-shadow:0 0 0 3px rgb(37 99 235/.1);}.sn6w-tc-rec{position:absolute;top:8px;left:8px;background:#2563eb;color:#fff;font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:99px;text-transform:uppercase;letter-spacing:.05em;z-index:2;}.sn6w-tc-chk{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:#2563eb;color:#fff;display:none;align-items:center;justify-content:center;font-size:11px;z-index:2;}.sn6w-tc input:checked+.sn6w-tc-card .sn6w-tc-chk{display:flex;}.sn6w-tc-preview{width:100%;height:110px;overflow:hidden;}.sn6w-tc-body{padding:.75rem 1rem .875rem;}.sn6w-tc-name{font-weight:700;font-size:.9rem;color:#0f172a;margin:0 0 3px;}.sn6w-tc-desc{font-size:.78rem;color:#64748b;margin:0 0 .5rem;line-height:1.4;}.sn6w-tc-tags{display:flex;flex-wrap:wrap;gap:4px;}.sn6w-tag{font-size:.68rem;font-weight:600;padding:2px 7px;border-radius:99px;}.tag-b{background:#eff6ff;color:#2563eb;}.tag-g{background:#f0fdf4;color:#16a34a;}.tag-p{background:#faf5ff;color:#7c3aed;}.tag-s{background:#f1f5f9;color:#475569;}.tp-sn6{background:#000;display:flex;height:100%;}.tp-sn6-sb{width:28%;padding:8px 6px;display:flex;flex-direction:column;gap:6px;border-right:1px solid #2f3336;}.tp-sn6-si{height:8px;border-radius:4px;background:#2f3336;}.tp-sn6-si.on{background:#fff;width:60%;}.tp-sn6-fd{flex:1;padding:6px;display:flex;flex-direction:column;gap:5px;}.tp-sn6-st{display:flex;gap:4px;margin-bottom:4px;}.tp-sn6-s{width:22px;height:22px;border-radius:50%;border:2px solid #2563eb;background:#1a1a2e;flex-shrink:0;}.tp-sn6-po{background:#111;border:1px solid #2f3336;border-radius:6px;padding:5px;}.tp-sn6-av{width:12px;height:12px;border-radius:50%;background:#2563eb;display:inline-block;vertical-align:middle;margin-right:4px;}.tp-sn6-ln{height:5px;border-radius:3px;background:#2f3336;margin-top:4px;}.tp-sn6-ln.s{width:60%;}.tp-df{background:#f0f0f0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:100%;}.tp-df-ic{font-size:28px;}.tp-df-tx{font-size:10px;color:#64748b;font-weight:500;}.sn6w-chk-row{display:flex;align-items:flex-start;gap:.625rem;padding:.875rem;border:1.5px solid #e8edf2;border-radius:10px;cursor:pointer;margin-bottom:.5rem;transition:border-color .12s;}.sn6w-chk-row:last-of-type{margin-bottom:0;}.sn6w-chk-row:hover{border-color:#bfdbfe;}.sn6w-chk-row input[type="checkbox"]{margin-top:2px;flex-shrink:0;accent-color:#2563eb;width:16px;height:16px;cursor:pointer;}.sn6w-chk-nm{font-size:.875rem;font-weight:600;color:#1e293b;display:block;line-height:1.3;}.sn6w-chk-ht{font-size:.8rem;color:#94a3b8;display:block;margin-top:2px;}input[type="number"].sn6w-num{width:80px;height:38px;border:1.5px solid #e2e8f0;border-radius:8px;padding:0 .625rem;font-size:.9375rem;color:#0f172a;}input[type="number"].sn6w-num:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgb(37 99 235/.1);}.sn6w-done{text-align:center;padding:1.5rem 0 .5rem;}.sn6w-done-ic{font-size:3rem;margin-bottom:.875rem;}.sn6w-done h2{margin:0 0 .375rem;font-size:1.375rem;font-weight:700;}.sn6w-done>p{color:#64748b;margin:0 0 1.5rem;}.sn6w-sample{border:1.5px solid #e8edf2;border-radius:12px;padding:1.25rem 1.5rem;background:#f8fafc;text-align:left;margin:0 auto 1.5rem;max-width:440px;}.sn6w-sample h3{margin:0 0 .375rem;font-size:.9375rem;font-weight:700;}.sn6w-sample p{margin:0 0 1rem;color:#64748b;font-size:.875rem;line-height:1.5;}.sn6w-done-acts{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;}.sn6w-alert{padding:.75rem 1rem;border-radius:8px;font-size:.875rem;display:none;}.sn6w-alert-info{background:#eff6ff;color:#1e3a8a;border-left:3px solid #2563eb;}.sn6w-alert-ok{background:#f0fdf4;color:#14532d;border-left:3px solid #16a34a;}.sn6w-footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #f1f5f9;padding:.875rem 2rem;display:flex;align-items:center;justify-content:space-between;z-index:100;}.sn6w-btn{display:inline-flex;align-items:center;gap:.375rem;padding:.5rem 1.25rem;border-radius:8px;font-size:.9375rem;font-weight:500;border:none;cursor:pointer;height:42px;text-decoration:none;transition:all .12s;font-family:inherit;}.sn6w-btn-primary{background:#2563eb;color:#fff;}.sn6w-btn-primary:hover{background:#1d4ed8;color:#fff;}.sn6w-btn-ghost{background:#f8fafc;color:#64748b;border:1.5px solid #e2e8f0;}.sn6w-btn-ghost:hover{border-color:#cbd5e1;color:#334155;}.sn6w-btn:disabled{opacity:.6;pointer-events:none;}.sn6w-step-lbl{font-size:.875rem;color:#94a3b8;font-weight:500;}';
 		wp_add_inline_style( 'arshid6social-admin', $chrome_css . $wizard_css );
 	}
@@ -106,16 +105,40 @@ class Setup_Wizard {
 								<div class="sn6w-grid" id="grp-comp">
 									<?php
 									$components = array(
-										'activity'      => array( 'ico' => 'newspaper', 'label' => __( 'Activity Streams', '6arshid-social-community' ),  'desc' => __( 'News feed, posts, reactions, comments', '6arshid-social-community' ) ),
-										'groups'        => array( 'ico' => 'people', 'label' => __( 'Groups', '6arshid-social-community' ),             'desc' => __( 'Public, private, and hidden groups', '6arshid-social-community' ) ),
-										'friends'       => array( 'ico' => 'person-plus', 'label' => __( 'Friends & Follow', '6arshid-social-community' ),   'desc' => __( 'Friend requests, follow, block', '6arshid-social-community' ) ),
-										'messages'      => array( 'ico' => 'chat-dots', 'label' => __( 'Private Messages', '6arshid-social-community' ),   'desc' => __( 'One-to-one and group messaging', '6arshid-social-community' ) ),
-										'notifications' => array( 'ico' => 'bell', 'label' => __( 'Notifications', '6arshid-social-community' ),      'desc' => __( 'On-site and email notifications', '6arshid-social-community' ) ),
-										'moderation'    => array( 'ico' => 'shield-check', 'label' => __( 'Moderation', '6arshid-social-community' ),        'desc' => __( 'Reports, bans, audit log', '6arshid-social-community' ) ),
+										'activity'      => array(
+											'ico'   => 'newspaper',
+											'label' => __( 'Activity Streams', '6arshid-social-community' ),
+											'desc'  => __( 'News feed, posts, reactions, comments', '6arshid-social-community' ),
+										),
+										'groups'        => array(
+											'ico'   => 'people',
+											'label' => __( 'Groups', '6arshid-social-community' ),
+											'desc'  => __( 'Public, private, and hidden groups', '6arshid-social-community' ),
+										),
+										'friends'       => array(
+											'ico'   => 'person-plus',
+											'label' => __( 'Friends & Follow', '6arshid-social-community' ),
+											'desc'  => __( 'Friend requests, follow, block', '6arshid-social-community' ),
+										),
+										'messages'      => array(
+											'ico'   => 'chat-dots',
+											'label' => __( 'Private Messages', '6arshid-social-community' ),
+											'desc'  => __( 'One-to-one and group messaging', '6arshid-social-community' ),
+										),
+										'notifications' => array(
+											'ico'   => 'bell',
+											'label' => __( 'Notifications', '6arshid-social-community' ),
+											'desc'  => __( 'On-site and email notifications', '6arshid-social-community' ),
+										),
+										'moderation'    => array(
+											'ico'   => 'shield-check',
+											'label' => __( 'Moderation', '6arshid-social-community' ),
+											'desc'  => __( 'Reports, bans, audit log', '6arshid-social-community' ),
+										),
 									);
 									$saved_comp = (array) get_option( 'arshid6social_enabled_components', array_keys( $components ) );
 									foreach ( $components as $key => $info ) :
-									?>
+										?>
 									<div class="sn6w-feat">
 										<input type="checkbox" name="components[]" value="<?php echo esc_attr( $key ); ?>" id="c-<?php echo esc_attr( $key ); ?>" <?php checked( in_array( $key, $saved_comp, true ) ); ?> />
 										<label class="sn6w-feat-lbl" for="c-<?php echo esc_attr( $key ); ?>">
@@ -141,13 +164,29 @@ class Setup_Wizard {
 								<div class="sn6w-grid" id="grp-pack">
 									<?php
 									$pack = array(
-										'arshid6social_stories_enabled'      => array( 'ico' => 'film', 'label' => __( 'Stories', '6arshid-social-community' ),             'desc' => __( '24-hour ephemeral photo, video & text stories', '6arshid-social-community' ) ),
-										'arshid6social_verification_enabled' => array( 'ico' => 'patch-check',  'label' => __( 'Verification Badges', '6arshid-social-community' ), 'desc' => __( 'Verified badge & admin approval queue', '6arshid-social-community' ) ),
-										'arshid6social_blocking_enabled'     => array( 'ico' => 'slash-circle',  'label' => __( 'Block System', '6arshid-social-community' ),         'desc' => __( 'Block / unblock users with optional reason', '6arshid-social-community' ) ),
-										'arshid6social_activity_stats_bar'   => array( 'ico' => 'bar-chart',  'label' => __( 'Activity Stats Bar', '6arshid-social-community' ),   'desc' => __( 'Engagement counts below each post', '6arshid-social-community' ) ),
+										'arshid6social_stories_enabled'      => array(
+											'ico'   => 'film',
+											'label' => __( 'Stories', '6arshid-social-community' ),
+											'desc'  => __( '24-hour ephemeral photo, video & text stories', '6arshid-social-community' ),
+										),
+										'arshid6social_verification_enabled' => array(
+											'ico'   => 'patch-check',
+											'label' => __( 'Verification Badges', '6arshid-social-community' ),
+											'desc'  => __( 'Verified badge & admin approval queue', '6arshid-social-community' ),
+										),
+										'arshid6social_blocking_enabled'     => array(
+											'ico'   => 'slash-circle',
+											'label' => __( 'Block System', '6arshid-social-community' ),
+											'desc'  => __( 'Block / unblock users with optional reason', '6arshid-social-community' ),
+										),
+										'arshid6social_activity_stats_bar'   => array(
+											'ico'   => 'bar-chart',
+											'label' => __( 'Activity Stats Bar', '6arshid-social-community' ),
+											'desc'  => __( 'Engagement counts below each post', '6arshid-social-community' ),
+										),
 									);
 									foreach ( $pack as $opt_key => $info ) :
-									?>
+										?>
 									<div class="sn6w-feat">
 										<input type="checkbox" name="pack_features[]" value="<?php echo esc_attr( $opt_key ); ?>" id="p-<?php echo esc_attr( $opt_key ); ?>"
 											<?php checked( (bool) get_option( $opt_key, 'arshid6social_blocking_enabled' === $opt_key ) ); ?> />
@@ -185,19 +224,59 @@ class Setup_Wizard {
 								<div class="sn6w-grid" id="grp-eng">
 									<?php
 									$eng_features = array(
-										'hashtags'             => array( 'ico' => 'hash', 'label' => __( 'Hashtags', '6arshid-social-community' ),            'desc' => __( '#tags on posts, trending & follow', '6arshid-social-community' ) ),
-										'tag_friends'          => array( 'ico' => 'at',    'label' => __( 'Tag & @Mentions', '6arshid-social-community' ),      'desc' => __( 'Mention members in posts and comments', '6arshid-social-community' ) ),
-										'bookmarks'            => array( 'ico' => 'bookmark',   'label' => __( 'Bookmarks', '6arshid-social-community' ),            'desc' => __( 'Save posts to a personal collection', '6arshid-social-community' ) ),
-										'sticky_posts'         => array( 'ico' => 'pin-angle',   'label' => __( 'Sticky Posts', '6arshid-social-community' ),         'desc' => __( 'Pin posts to the top of the feed', '6arshid-social-community' ) ),
-										'share_posts'          => array( 'ico' => 'arrow-repeat',   'label' => __( 'Share / Repost', '6arshid-social-community' ),       'desc' => __( 'Reshare posts within the network', '6arshid-social-community' ) ),
-										'polls'                => array( 'ico' => 'list-check',   'label' => __( 'Polls', '6arshid-social-community' ),                'desc' => __( 'Single and multiple-choice polls', '6arshid-social-community' ) ),
-										'advanced_polls'       => array( 'ico' => 'ui-checks-grid',  'label' => __( 'Advanced Polls', '6arshid-social-community' ),       'desc' => __( 'Image polls, quiz mode, ranked choice', '6arshid-social-community' ) ),
-										'comments_gifs'        => array( 'ico' => 'camera-reels',   'label' => __( 'GIFs in Comments', '6arshid-social-community' ),     'desc' => __( 'Giphy / Tenor GIF picker in comments', '6arshid-social-community' ) ),
-										'comments_attachments' => array( 'ico' => 'paperclip',   'label' => __( 'Comment Attachments', '6arshid-social-community' ),  'desc' => __( 'Upload images or files in comments', '6arshid-social-community' ) ),
-										'messages_attachments' => array( 'ico' => 'upload',   'label' => __( 'Message Attachments', '6arshid-social-community' ),  'desc' => __( 'Send files in private messages', '6arshid-social-community' ) ),
+										'hashtags'       => array(
+											'ico'   => 'hash',
+											'label' => __( 'Hashtags', '6arshid-social-community' ),
+											'desc'  => __( '#tags on posts, trending & follow', '6arshid-social-community' ),
+										),
+										'tag_friends'    => array(
+											'ico'   => 'at',
+											'label' => __( 'Tag & @Mentions', '6arshid-social-community' ),
+											'desc'  => __( 'Mention members in posts and comments', '6arshid-social-community' ),
+										),
+										'bookmarks'      => array(
+											'ico'   => 'bookmark',
+											'label' => __( 'Bookmarks', '6arshid-social-community' ),
+											'desc'  => __( 'Save posts to a personal collection', '6arshid-social-community' ),
+										),
+										'sticky_posts'   => array(
+											'ico'   => 'pin-angle',
+											'label' => __( 'Sticky Posts', '6arshid-social-community' ),
+											'desc'  => __( 'Pin posts to the top of the feed', '6arshid-social-community' ),
+										),
+										'share_posts'    => array(
+											'ico'   => 'arrow-repeat',
+											'label' => __( 'Share / Repost', '6arshid-social-community' ),
+											'desc'  => __( 'Reshare posts within the network', '6arshid-social-community' ),
+										),
+										'polls'          => array(
+											'ico'   => 'list-check',
+											'label' => __( 'Polls', '6arshid-social-community' ),
+											'desc'  => __( 'Single and multiple-choice polls', '6arshid-social-community' ),
+										),
+										'advanced_polls' => array(
+											'ico'   => 'ui-checks-grid',
+											'label' => __( 'Advanced Polls', '6arshid-social-community' ),
+											'desc'  => __( 'Image polls, quiz mode, ranked choice', '6arshid-social-community' ),
+										),
+										'comments_gifs'  => array(
+											'ico'   => 'camera-reels',
+											'label' => __( 'GIFs in Comments', '6arshid-social-community' ),
+											'desc'  => __( 'Giphy / Tenor GIF picker in comments', '6arshid-social-community' ),
+										),
+										'comments_attachments' => array(
+											'ico'   => 'paperclip',
+											'label' => __( 'Comment Attachments', '6arshid-social-community' ),
+											'desc'  => __( 'Upload images or files in comments', '6arshid-social-community' ),
+										),
+										'messages_attachments' => array(
+											'ico'   => 'upload',
+											'label' => __( 'Message Attachments', '6arshid-social-community' ),
+											'desc'  => __( 'Send files in private messages', '6arshid-social-community' ),
+										),
 									);
 									foreach ( $eng_features as $ekey => $einfo ) :
-									?>
+										?>
 									<div class="sn6w-feat">
 										<input type="checkbox" name="engagement_features[]" value="<?php echo esc_attr( $ekey ); ?>" id="e-<?php echo esc_attr( $ekey ); ?>"
 											<?php checked( (bool) get_option( 'arshid6social_eng_' . $ekey, false ) ); ?> />
@@ -251,14 +330,26 @@ class Setup_Wizard {
 									<div class="sn6w-media-row">
 										<?php
 										$allowed_media_types = (array) get_option( 'arshid6social_activity_allowed_media_types', array( 'image' ) );
-										$media_types = array(
-											'image'    => array( 'ico' => 'image', 'label' => 'Images' ),
-											'video'    => array( 'ico' => 'camera-video', 'label' => 'Videos' ),
-											'audio'    => array( 'ico' => 'music-note-beamed', 'label' => 'Audio' ),
-											'document' => array( 'ico' => 'file-earmark-pdf', 'label' => 'PDF' ),
+										$media_types         = array(
+											'image'    => array(
+												'ico'   => 'image',
+												'label' => 'Images',
+											),
+											'video'    => array(
+												'ico'   => 'camera-video',
+												'label' => 'Videos',
+											),
+											'audio'    => array(
+												'ico'   => 'music-note-beamed',
+												'label' => 'Audio',
+											),
+											'document' => array(
+												'ico'   => 'file-earmark-pdf',
+												'label' => 'PDF',
+											),
 										);
 										foreach ( $media_types as $mt_key => $mt ) :
-										?>
+											?>
 										<div class="sn6w-media">
 											<input type="checkbox" name="allowed_media_types[]" value="<?php echo esc_attr( $mt_key ); ?>" id="mt-<?php echo esc_attr( $mt_key ); ?>"
 												<?php checked( in_array( $mt_key, $allowed_media_types, true ) ); ?> />
@@ -294,7 +385,7 @@ class Setup_Wizard {
 										$presets     = array( '#2563eb', '#7c3aed', '#db2777', '#ea580c', '#16a34a', '#0891b2', '#0f172a' );
 										$saved_color = get_option( 'arshid6social_primary_color', '#2563eb' );
 										foreach ( $presets as $p ) :
-										?>
+											?>
 										<button type="button" class="sn6w-preset <?php echo ( $saved_color === $p ) ? 'on' : ''; ?>"
 											style="background:<?php echo esc_attr( $p ); ?>;"
 											data-color="<?php echo esc_attr( $p ); ?>"
@@ -310,14 +401,26 @@ class Setup_Wizard {
 								<label class="sn6w-field-lbl"><?php esc_html_e( 'Display Mode', '6arshid-social-community' ); ?></label>
 								<div class="sn6w-mode-row">
 									<?php
-									$modes = array(
-										'off'  => array( 'ico' => 'sun', 'name' => __( 'Light', '6arshid-social-community' ), 'ht' => __( 'Always light', '6arshid-social-community' ) ),
-										'auto' => array( 'ico' => 'circle-half', 'name' => __( 'Auto', '6arshid-social-community' ),  'ht' => __( 'Follows system', '6arshid-social-community' ) ),
-										'on'   => array( 'ico' => 'moon', 'name' => __( 'Dark', '6arshid-social-community' ),  'ht' => __( 'Always dark', '6arshid-social-community' ) ),
+									$modes      = array(
+										'off'  => array(
+											'ico'  => 'sun',
+											'name' => __( 'Light', '6arshid-social-community' ),
+											'ht'   => __( 'Always light', '6arshid-social-community' ),
+										),
+										'auto' => array(
+											'ico'  => 'circle-half',
+											'name' => __( 'Auto', '6arshid-social-community' ),
+											'ht'   => __( 'Follows system', '6arshid-social-community' ),
+										),
+										'on'   => array(
+											'ico'  => 'moon',
+											'name' => __( 'Dark', '6arshid-social-community' ),
+											'ht'   => __( 'Always dark', '6arshid-social-community' ),
+										),
 									);
 									$saved_mode = get_option( 'arshid6social_dark_mode', 'auto' );
 									foreach ( $modes as $val => $mode ) :
-									?>
+										?>
 									<div class="sn6w-mode">
 										<input type="radio" name="dark_mode" id="dm-<?php echo esc_attr( $val ); ?>" value="<?php echo esc_attr( $val ); ?>" <?php checked( $saved_mode, $val ); ?> />
 										<label class="sn6w-mode-lbl" for="dm-<?php echo esc_attr( $val ); ?>">
@@ -474,9 +577,11 @@ class Setup_Wizard {
 									<p><?php esc_html_e( 'Populate with demo content: 50 users, activities, notifications, marketplace listings, groups, messages, stories, and more.', '6arshid-social-community' ); ?></p>
 									<button type="button" id="wizard-import-sample" class="sn6w-btn sn6w-btn-primary"
 										<?php echo get_option( 'arshid6social_sample_data_imported' ) ? 'disabled' : ''; ?>>
-										<?php echo get_option( 'arshid6social_sample_data_imported' )
+										<?php
+										echo get_option( 'arshid6social_sample_data_imported' )
 											? esc_html__( 'Sample data already imported', '6arshid-social-community' )
-											: esc_html__( 'Import Sample Data', '6arshid-social-community' ); ?>
+											: esc_html__( 'Import Sample Data', '6arshid-social-community' );
+										?>
 									</button>
 									<span id="wizard-import-status" style="display:none;margin-left:.75rem;font-size:.875rem;"></span>
 								</div>
@@ -720,14 +825,14 @@ class Setup_Wizard {
 
 		switch ( $step ) {
 			case 1:
-				$components   = isset( $_POST['components'] ) && is_array( $_POST['components'] ) // phpcs:ignore WordPress.Security.NonceVerification
-					? array_map( 'sanitize_key', $_POST['components'] ) // phpcs:ignore WordPress.Security.NonceVerification
+				$components   = isset( $_POST['components'] ) && is_array( $_POST['components'] ) // phpcs:ignore WordPress.Security.NonceVerification -- nonce already verified above via check_ajax_referer().
+					? array_map( 'sanitize_key', wp_unslash( $_POST['components'] ) )
 					: array();
 				$components[] = 'members';
 				update_option( 'arshid6social_enabled_components', array_unique( $components ) );
 
-				$pack_features    = isset( $_POST['pack_features'] ) && is_array( $_POST['pack_features'] ) // phpcs:ignore WordPress.Security.NonceVerification
-					? array_map( 'sanitize_key', $_POST['pack_features'] ) // phpcs:ignore WordPress.Security.NonceVerification
+				$pack_features    = isset( $_POST['pack_features'] ) && is_array( $_POST['pack_features'] ) // phpcs:ignore WordPress.Security.NonceVerification -- nonce already verified above via check_ajax_referer().
+					? array_map( 'sanitize_key', wp_unslash( $_POST['pack_features'] ) )
 					: array();
 				$all_pack_options = array( 'arshid6social_stories_enabled', 'arshid6social_verification_enabled', 'arshid6social_blocking_enabled', 'arshid6social_activity_stats_bar' );
 				foreach ( $all_pack_options as $pack_opt ) {
@@ -736,27 +841,34 @@ class Setup_Wizard {
 				break;
 
 			case 2:
-				$eng_features = isset( $_POST['engagement_features'] ) && is_array( $_POST['engagement_features'] ) // phpcs:ignore WordPress.Security.NonceVerification
-					? array_map( 'sanitize_key', $_POST['engagement_features'] ) // phpcs:ignore WordPress.Security.NonceVerification
+				$eng_features = isset( $_POST['engagement_features'] ) && is_array( $_POST['engagement_features'] ) // phpcs:ignore WordPress.Security.NonceVerification -- nonce already verified above via check_ajax_referer().
+					? array_map( 'sanitize_key', wp_unslash( $_POST['engagement_features'] ) )
 					: array();
 				$all_eng_keys = array(
-					'hashtags', 'tag_friends', 'bookmarks', 'sticky_posts',
-					'share_posts', 'polls', 'advanced_polls', 'comments_gifs',
-					'comments_attachments', 'messages_attachments',
+					'hashtags',
+					'tag_friends',
+					'bookmarks',
+					'sticky_posts',
+					'share_posts',
+					'polls',
+					'advanced_polls',
+					'comments_gifs',
+					'comments_attachments',
+					'messages_attachments',
 				);
 				foreach ( $all_eng_keys as $eng_key ) {
 					update_option( 'arshid6social_eng_' . $eng_key, in_array( $eng_key, $eng_features, true ) );
 				}
 
-				$marketplace_enabled = '1' === ( $_POST['marketplace_enabled'] ?? '0' ); // phpcs:ignore WordPress.Security.NonceVerification
+				$marketplace_enabled = '1' === sanitize_text_field( wp_unslash( $_POST['marketplace_enabled'] ?? '0' ) ); // phpcs:ignore WordPress.Security.NonceVerification -- nonce already verified above via check_ajax_referer().
 				update_option( 'arshid6social_marketplace_enabled', $marketplace_enabled );
 				if ( $marketplace_enabled ) {
 					\Arshid6Social\Components\Marketplace\Marketplace_Settings::maybe_create_marketplace_page();
 				}
 
-				update_option( 'arshid6social_activity_allow_media', '1' === ( $_POST['allow_media'] ?? '0' ) ); // phpcs:ignore WordPress.Security.NonceVerification
-				$allowed_media_types = isset( $_POST['allowed_media_types'] ) && is_array( $_POST['allowed_media_types'] ) // phpcs:ignore WordPress.Security.NonceVerification
-					? array_map( 'sanitize_key', $_POST['allowed_media_types'] ) // phpcs:ignore WordPress.Security.NonceVerification
+				update_option( 'arshid6social_activity_allow_media', '1' === sanitize_text_field( wp_unslash( $_POST['allow_media'] ?? '0' ) ) ); // phpcs:ignore WordPress.Security.NonceVerification -- nonce already verified above via check_ajax_referer().
+				$allowed_media_types = isset( $_POST['allowed_media_types'] ) && is_array( $_POST['allowed_media_types'] ) // phpcs:ignore WordPress.Security.NonceVerification -- nonce already verified above via check_ajax_referer().
+					? array_map( 'sanitize_key', wp_unslash( $_POST['allowed_media_types'] ) )
 					: array();
 				update_option( 'arshid6social_activity_allowed_media_types', $allowed_media_types );
 				break;
@@ -767,7 +879,7 @@ class Setup_Wizard {
 				break;
 
 			case 4:
-				$chosen_theme  = sanitize_key( $_POST['chosen_theme'] ?? '6arshid-social-community' ); // phpcs:ignore WordPress.Security.NonceVerification
+				$chosen_theme = sanitize_key( $_POST['chosen_theme'] ?? '6arshid-social-community' ); // phpcs:ignore WordPress.Security.NonceVerification
 				update_option( 'arshid6social_chosen_theme', $chosen_theme );
 				$theme_message = '';
 				if ( 'default' !== $chosen_theme ) {
@@ -777,9 +889,9 @@ class Setup_Wizard {
 				return;
 
 			case 5:
-				update_option( 'arshid6social_new_member_moderation', (bool) ( $_POST['new_member_moderation'] ?? false ) ); // phpcs:ignore WordPress.Security.NonceVerification
-				update_option( 'arshid6social_enable_akismet', (bool) ( $_POST['enable_akismet'] ?? true ) ); // phpcs:ignore WordPress.Security.NonceVerification
-				update_option( 'arshid6social_auto_suspend_threshold', absint( $_POST['auto_suspend_threshold'] ?? 5 ) ); // phpcs:ignore WordPress.Security.NonceVerification
+				update_option( 'arshid6social_new_member_moderation', (bool) sanitize_text_field( wp_unslash( $_POST['new_member_moderation'] ?? false ) ) ); // phpcs:ignore WordPress.Security.NonceVerification -- nonce already verified above via check_ajax_referer().
+				update_option( 'arshid6social_enable_akismet', (bool) sanitize_text_field( wp_unslash( $_POST['enable_akismet'] ?? true ) ) ); // phpcs:ignore WordPress.Security.NonceVerification -- nonce already verified above via check_ajax_referer().
+				update_option( 'arshid6social_auto_suspend_threshold', absint( $_POST['auto_suspend_threshold'] ?? 5 ) ); // phpcs:ignore WordPress.Security.NonceVerification -- nonce already verified above via check_ajax_referer().
 				break;
 
 			case 6:

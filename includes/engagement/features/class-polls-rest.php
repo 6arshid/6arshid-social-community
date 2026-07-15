@@ -14,30 +14,46 @@ class Polls_REST {
 	const NS = 'arshid6social/v1';
 
 	public function register_routes(): void {
-		register_rest_route( self::NS, '/polls', array(
-			'methods'             => \WP_REST_Server::CREATABLE,
-			'callback'            => array( $this, 'create' ),
-			'permission_callback' => array( $this, 'can_create' ),
-		) );
+		register_rest_route(
+			self::NS,
+			'/polls',
+			array(
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'create' ),
+				'permission_callback' => array( $this, 'can_create' ),
+			)
+		);
 
-		register_rest_route( self::NS, '/polls/(?P<id>\d+)', array(
-			'methods'             => \WP_REST_Server::READABLE,
-			'callback'            => array( $this, 'get' ),
-			// Public polls only: the get() callback enforces parent-activity visibility via arshid6social_current_user_can_view_activity().
-			'permission_callback' => '__return_true',
-		) );
+		register_rest_route(
+			self::NS,
+			'/polls/(?P<id>\d+)',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get' ),
+				// Public polls only: the get() callback enforces parent-activity visibility via arshid6social_current_user_can_view_activity().
+				'permission_callback' => '__return_true',
+			)
+		);
 
-		register_rest_route( self::NS, '/polls/(?P<id>\d+)/vote', array(
-			'methods'             => \WP_REST_Server::CREATABLE,
-			'callback'            => array( $this, 'vote' ),
-			'permission_callback' => array( $this, 'can_vote' ),
-		) );
+		register_rest_route(
+			self::NS,
+			'/polls/(?P<id>\d+)/vote',
+			array(
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'callback'            => array( $this, 'vote' ),
+				'permission_callback' => array( $this, 'can_vote' ),
+			)
+		);
 
-		register_rest_route( self::NS, '/polls/(?P<id>\d+)/export', array(
-			'methods'             => \WP_REST_Server::READABLE,
-			'callback'            => array( $this, 'export_csv' ),
-			'permission_callback' => array( $this, 'can_export' ),
-		) );
+		register_rest_route(
+			self::NS,
+			'/polls/(?P<id>\d+)/export',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'export_csv' ),
+				'permission_callback' => array( $this, 'can_export' ),
+			)
+		);
 	}
 
 	private function feature(): ?Polls {
@@ -92,21 +108,29 @@ class Polls_REST {
 			return new \WP_REST_Response( null, 503 );
 		}
 
-		$poll_id = $f->create( array(
-			'activity_id'        => absint( $req->get_param( 'activity_id' ) ),
-			'user_id'            => get_current_user_id(),
-			'question'           => sanitize_text_field( $req->get_param( 'question' ) ?: '' ),
-			'options'            => (array) ( $req->get_param( 'options' ) ?: array() ),
-			'poll_type'          => sanitize_key( $req->get_param( 'poll_type' ) ?: 'single' ),
-			'anonymous'          => (bool) $req->get_param( 'anonymous' ),
-			'allow_change_vote'  => (bool) ( $req->get_param( 'allow_change_vote' ) ?? true ),
-			'results_visibility' => sanitize_key( $req->get_param( 'results_visibility' ) ?: 'always' ),
-			'end_date'           => sanitize_text_field( $req->get_param( 'end_date' ) ?: '' ),
-			'start_date'         => sanitize_text_field( $req->get_param( 'start_date' ) ?: '' ),
-		) );
+		$poll_id = $f->create(
+			array(
+				'activity_id'        => absint( $req->get_param( 'activity_id' ) ),
+				'user_id'            => get_current_user_id(),
+				'question'           => sanitize_text_field( $req->get_param( 'question' ) ?: '' ),
+				'options'            => (array) ( $req->get_param( 'options' ) ?: array() ),
+				'poll_type'          => sanitize_key( $req->get_param( 'poll_type' ) ?: 'single' ),
+				'anonymous'          => (bool) $req->get_param( 'anonymous' ),
+				'allow_change_vote'  => (bool) ( $req->get_param( 'allow_change_vote' ) ?? true ),
+				'results_visibility' => sanitize_key( $req->get_param( 'results_visibility' ) ?: 'always' ),
+				'end_date'           => sanitize_text_field( $req->get_param( 'end_date' ) ?: '' ),
+				'start_date'         => sanitize_text_field( $req->get_param( 'start_date' ) ?: '' ),
+			)
+		);
 
 		return $poll_id
-			? new \WP_REST_Response( array( 'poll_id' => $poll_id, 'results' => $f->get_results( $poll_id, get_current_user_id() ) ), 201 )
+			? new \WP_REST_Response(
+				array(
+					'poll_id' => $poll_id,
+					'results' => $f->get_results( $poll_id, get_current_user_id() ),
+				),
+				201
+			)
 			: new \WP_REST_Response( array( 'message' => __( 'Failed to create poll.', '6arshid-social-community' ) ), 400 );
 	}
 
@@ -178,13 +202,16 @@ class Polls_REST {
 			fputcsv( $out, array() );
 			fputcsv( $out, array( __( 'Voter', '6arshid-social-community' ), __( 'Option', '6arshid-social-community' ), __( 'Voted At', '6arshid-social-community' ) ) );
 
-			$votes = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT v.user_id, v.voted_at, o.option_text
+			$votes = $wpdb->get_results(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					"SELECT v.user_id, v.voted_at, o.option_text
 				FROM {$wpdb->prefix}sn_poll_votes v
 				JOIN {$wpdb->prefix}sn_poll_options o ON o.id = v.option_id
 				WHERE v.poll_id = %d ORDER BY v.voted_at ASC",
-				$poll_id
-			), ARRAY_A );
+					$poll_id
+				),
+				ARRAY_A
+			);
 
 			foreach ( $votes as $v ) {
 				$user = get_userdata( (int) $v['user_id'] );

@@ -16,19 +16,19 @@ class Tag_Friends {
 
 	public function __construct() {
 		// Process mentions after activity posted/commented.
-		add_action( 'arshid6social_activity_added',    array( $this, 'process_activity_tags' ), 10, 2 );
+		add_action( 'arshid6social_activity_added', array( $this, 'process_activity_tags' ), 10, 2 );
 		add_action( 'arshid6social_activity_commented', array( $this, 'process_comment_tags' ), 10, 3 );
 
 		// Render clickable @mentions in content.
 		add_filter( 'arshid6social_activity_content', array( $this, 'linkify' ), 20 );
 
 		// AJAX.
-		add_action( 'wp_ajax_arshid6social_mention_autocomplete',        array( $this, 'ajax_autocomplete' ) );
+		add_action( 'wp_ajax_arshid6social_mention_autocomplete', array( $this, 'ajax_autocomplete' ) );
 		add_action( 'wp_ajax_nopriv_arshid6social_mention_autocomplete', array( $this, 'ajax_autocomplete' ) );
-		add_action( 'wp_ajax_arshid6social_tag_photo',    array( $this, 'ajax_tag_photo' ) );
-		add_action( 'wp_ajax_arshid6social_remove_tag',   array( $this, 'ajax_remove_tag' ) );
-		add_action( 'wp_ajax_arshid6social_approve_tag',  array( $this, 'ajax_approve_tag' ) );
-		add_action( 'wp_ajax_arshid6social_reject_tag',   array( $this, 'ajax_reject_tag' ) );
+		add_action( 'wp_ajax_arshid6social_tag_photo', array( $this, 'ajax_tag_photo' ) );
+		add_action( 'wp_ajax_arshid6social_remove_tag', array( $this, 'ajax_remove_tag' ) );
+		add_action( 'wp_ajax_arshid6social_approve_tag', array( $this, 'ajax_approve_tag' ) );
+		add_action( 'wp_ajax_arshid6social_reject_tag', array( $this, 'ajax_reject_tag' ) );
 		add_action( 'wp_ajax_arshid6social_save_tag_privacy', array( $this, 'ajax_save_tag_privacy' ) );
 	}
 
@@ -42,10 +42,12 @@ class Tag_Friends {
 
 	public function process_comment_tags( int $comment_id, int $activity_id, int $commenter_id ): void {
 		global $wpdb;
-		$row = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT content FROM {$wpdb->prefix}sn_activity WHERE id = %d",
-			$comment_id
-		) );
+		$row = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT content FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				$comment_id
+			)
+		);
 		if ( $row ) {
 			$this->process_mentions( $comment_id, 'activity', wp_strip_all_tags( $row->content ), $commenter_id );
 		}
@@ -90,14 +92,16 @@ class Tag_Friends {
 			$this->create_tag_record( $object_id, $object_type, $user->ID, $actor_id, $status );
 
 			if ( $notif_comp ) {
-				$notif_comp->add( array(
-					'user_id'           => $user->ID,
-					'item_id'           => $actor_id,
-					'secondary_item_id' => $object_id,
-					'component_name'    => 'tag_friends',
-					'component_action'  => 'activity_mention',
-					'sender_id'         => $actor_id,
-				) );
+				$notif_comp->add(
+					array(
+						'user_id'           => $user->ID,
+						'item_id'           => $actor_id,
+						'secondary_item_id' => $object_id,
+						'component_name'    => 'tag_friends',
+						'component_action'  => 'activity_mention',
+						'sender_id'         => $actor_id,
+					)
+				);
 			}
 		}
 	}
@@ -105,11 +109,15 @@ class Tag_Friends {
 	private function create_tag_record( int $object_id, string $object_type, int $tagged_user_id, int $tagger_id, string $status = 'approved' ): int|false {
 		global $wpdb;
 
-		$exists = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_post_tags
+		$exists = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sn_post_tags
 			WHERE object_id = %d AND object_type = %s AND tagged_user_id = %d",
-			$object_id, $object_type, $tagged_user_id
-		) );
+				$object_id,
+				$object_type,
+				$tagged_user_id
+			)
+		);
 
 		if ( $exists ) {
 			return $exists;
@@ -166,8 +174,8 @@ class Tag_Friends {
 		// phpcs:disable WordPress.Security.NonceVerification
 		$activity_id    = absint( $_POST['activity_id'] ?? 0 );
 		$tagged_user_id = absint( $_POST['user_id'] ?? 0 );
-		$x              = (float) ( $_POST['x'] ?? 0 );
-		$y              = (float) ( $_POST['y'] ?? 0 );
+		$x              = (float) wp_unslash( $_POST['x'] ?? 0 );
+		$y              = (float) wp_unslash( $_POST['y'] ?? 0 );
 		// phpcs:enable
 
 		if ( ! $activity_id || ! $tagged_user_id ) {
@@ -177,10 +185,12 @@ class Tag_Friends {
 		global $wpdb;
 
 		// Verify the activity belongs to the current user.
-		$activity = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
-			$activity_id
-		) );
+		$activity = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				$activity_id
+			)
+		);
 
 		if ( ! $activity || (int) $activity->user_id !== get_current_user_id() ) {
 			wp_send_json_error( null, 403 );
@@ -191,33 +201,44 @@ class Tag_Friends {
 			wp_send_json_error( null, 404 );
 		}
 
-		$review  = (bool) get_option( 'arshid6social_eng_tag_review', false );
-		$status  = $review ? 'pending' : 'approved';
-		$tag_id  = $this->create_tag_record( $activity_id, 'activity', $tagged_user_id, get_current_user_id(), $status );
+		$review = (bool) get_option( 'arshid6social_eng_tag_review', false );
+		$status = $review ? 'pending' : 'approved';
+		$tag_id = $this->create_tag_record( $activity_id, 'activity', $tagged_user_id, get_current_user_id(), $status );
 
 		if ( $tag_id ) {
 			$x = max( 0.0, min( 100.0, $x ) );
 			$y = max( 0.0, min( 100.0, $y ) );
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prefix . 'sn_post_tag_coords',
-				array( 'tag_id' => $tag_id, 'x_percent' => $x, 'y_percent' => $y ),
+				array(
+					'tag_id'    => $tag_id,
+					'x_percent' => $x,
+					'y_percent' => $y,
+				),
 				array( '%d', '%f', '%f' )
 			);
 
 			$notif_comp = ARSHID6SOCIAL()->component( 'notifications' );
 			if ( $notif_comp ) {
-				$notif_comp->add( array(
-					'user_id'           => $tagged_user_id,
-					'item_id'           => get_current_user_id(),
-					'secondary_item_id' => $activity_id,
-					'component_name'    => 'tag_friends',
-					'component_action'  => 'activity_mention',
-					'sender_id'         => get_current_user_id(),
-				) );
+				$notif_comp->add(
+					array(
+						'user_id'           => $tagged_user_id,
+						'item_id'           => get_current_user_id(),
+						'secondary_item_id' => $activity_id,
+						'component_name'    => 'tag_friends',
+						'component_action'  => 'activity_mention',
+						'sender_id'         => get_current_user_id(),
+					)
+				);
 			}
 		}
 
-		wp_send_json_success( array( 'tag_id' => $tag_id, 'status' => $status ) );
+		wp_send_json_success(
+			array(
+				'tag_id' => $tag_id,
+				'status' => $status,
+			)
+		);
 	}
 
 	public function ajax_remove_tag(): void {
@@ -232,10 +253,12 @@ class Tag_Friends {
 		$user_id = get_current_user_id();
 
 		global $wpdb;
-		$tag = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_post_tags WHERE id = %d",
-			$tag_id
-		) );
+		$tag = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_post_tags WHERE id = %d",
+				$tag_id
+			)
+		);
 
 		if ( ! $tag ) {
 			wp_send_json_error( null, 404 );
@@ -272,10 +295,12 @@ class Tag_Friends {
 		$user_id = get_current_user_id();
 
 		global $wpdb;
-		$tag = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_post_tags WHERE id = %d",
-			$tag_id
-		) );
+		$tag = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}sn_post_tags WHERE id = %d",
+				$tag_id
+			)
+		);
 
 		if ( ! $tag || (int) $tag->tagged_user_id !== $user_id ) {
 			wp_send_json_error( null, 403 );
@@ -332,13 +357,16 @@ class Tag_Friends {
 			if ( $friends_comp ) {
 				$friend_ids = $friends_comp->get_friend_ids( $user_id );
 				if ( $friend_ids ) {
-					$in = implode( ',', array_map( 'absint', $friend_ids ) );
-					$friends_first = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-						"SELECT ID, user_login, display_name FROM {$wpdb->users}
+					$in            = implode( ',', array_map( 'absint', $friend_ids ) );
+					$friends_first = $wpdb->get_results(
+						$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+							"SELECT ID, user_login, display_name FROM {$wpdb->users}
 						WHERE ID IN ($in) AND (user_login LIKE %s OR display_name LIKE %s) LIMIT 5", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-						'%' . $wpdb->esc_like( $q ) . '%',
-						'%' . $wpdb->esc_like( $q ) . '%'
-					), ARRAY_A );
+							'%' . $wpdb->esc_like( $q ) . '%',
+							'%' . $wpdb->esc_like( $q ) . '%'
+						),
+						ARRAY_A
+					);
 				}
 			}
 		}
@@ -356,8 +384,8 @@ class Tag_Friends {
 			WHERE (user_login LIKE %s OR display_name LIKE %s)";
 
 		if ( $exclude ) {
-			$placeholders = implode( ', ', array_fill( 0, count( $exclude ), '%d' ) );
-			$others_sql  .= " AND ID NOT IN ($placeholders)"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$placeholders  = implode( ', ', array_fill( 0, count( $exclude ), '%d' ) );
+			$others_sql   .= " AND ID NOT IN ($placeholders)"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$others_params = array_merge( $others_params, $exclude );
 		}
 
@@ -367,14 +395,17 @@ class Tag_Friends {
 
 		$all = array_merge( $friends_first, $others );
 
-		$result = array_map( function( array $u ): array {
-			return array(
-				'id'          => (int) $u['ID'],
-				'login'       => esc_attr( $u['user_login'] ),
-				'displayName' => esc_html( $u['display_name'] ),
-				'avatar'      => esc_url( get_avatar_url( (int) $u['ID'], array( 'size' => 32 ) ) ),
-			);
-		}, $all );
+		$result = array_map(
+			function ( array $u ): array {
+				return array(
+					'id'          => (int) $u['ID'],
+					'login'       => esc_attr( $u['user_login'] ),
+					'displayName' => esc_html( $u['display_name'] ),
+					'avatar'      => esc_url( get_avatar_url( (int) $u['ID'], array( 'size' => 32 ) ) ),
+				);
+			},
+			$all
+		);
 
 		wp_send_json_success( $result );
 	}
@@ -389,12 +420,16 @@ class Tag_Friends {
 
 	public function get_tags_for_object( int $object_id, string $object_type ): array {
 		global $wpdb;
-		return $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT t.*, c.x_percent, c.y_percent
+		return $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT t.*, c.x_percent, c.y_percent
 			FROM {$wpdb->prefix}sn_post_tags t
 			LEFT JOIN {$wpdb->prefix}sn_post_tag_coords c ON c.tag_id = t.id
 			WHERE t.object_id = %d AND t.object_type = %s AND t.status = 'approved'",
-			$object_id, $object_type
-		), ARRAY_A ) ?: array();
+				$object_id,
+				$object_type
+			),
+			ARRAY_A
+		) ?: array();
 	}
 }

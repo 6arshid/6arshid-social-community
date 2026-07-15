@@ -12,11 +12,11 @@ defined( 'ABSPATH' ) || exit;
 class Share_Posts {
 
 	public function __construct() {
-		add_action( 'wp_ajax_arshid6social_share_post',         array( $this, 'ajax_share' ) );
-		add_action( 'wp_ajax_arshid6social_share_to_message',   array( $this, 'ajax_share_to_message' ) );
-		add_action( 'wp_ajax_arshid6social_share_count',        array( $this, 'ajax_share_count' ) );
-		add_action( 'arshid6social_activity_deleted',            array( $this, 'on_activity_deleted' ) );
-		add_filter( 'arshid6social_format_activity',             array( $this, 'add_share_count_to_activity' ), 10, 2 );
+		add_action( 'wp_ajax_arshid6social_share_post', array( $this, 'ajax_share' ) );
+		add_action( 'wp_ajax_arshid6social_share_to_message', array( $this, 'ajax_share_to_message' ) );
+		add_action( 'wp_ajax_arshid6social_share_count', array( $this, 'ajax_share_count' ) );
+		add_action( 'arshid6social_activity_deleted', array( $this, 'on_activity_deleted' ) );
+		add_filter( 'arshid6social_format_activity', array( $this, 'add_share_count_to_activity' ), 10, 2 );
 	}
 
 	public function add_share_count_to_activity( array $formatted, object $raw ): array {
@@ -58,8 +58,8 @@ class Share_Posts {
 		$root_id = $this->get_root_id( $original_id );
 
 		// Build share activity content.
-		$sharer   = get_userdata( $user_id );
-		$orig_url = \Arshid6Social\Components\Activity\Activity::get_permalink( $root_id );
+		$sharer      = get_userdata( $user_id );
+		$orig_url    = \Arshid6Social\Components\Activity\Activity::get_permalink( $root_id );
 		$orig_author = get_userdata( (int) $original->user_id );
 
 		$content = '';
@@ -110,14 +110,16 @@ class Share_Posts {
 		// Notify original author.
 		$notif_comp = ARSHID6SOCIAL()->component( 'notifications' );
 		if ( $notif_comp && (int) $original->user_id !== $user_id ) {
-			$notif_comp->add( array(
-				'user_id'           => (int) $original->user_id,
-				'item_id'           => $user_id,
-				'secondary_item_id' => $new_activity_id,
-				'component_name'    => 'share',
-				'component_action'  => 'activity_reaction',
-				'sender_id'         => $user_id,
-			) );
+			$notif_comp->add(
+				array(
+					'user_id'           => (int) $original->user_id,
+					'item_id'           => $user_id,
+					'secondary_item_id' => $new_activity_id,
+					'component_name'    => 'share',
+					'component_action'  => 'activity_reaction',
+					'sender_id'         => $user_id,
+				)
+			);
 		}
 
 		return $new_activity_id;
@@ -128,19 +130,23 @@ class Share_Posts {
 	 */
 	public function get_root_id( int $activity_id ): int {
 		global $wpdb;
-		$row = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT root_id FROM {$wpdb->prefix}sn_shares WHERE original_id = %d LIMIT 1",
-			$activity_id
-		) );
+		$row = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT root_id FROM {$wpdb->prefix}sn_shares WHERE original_id = %d LIMIT 1",
+				$activity_id
+			)
+		);
 		return $row ? (int) $row->root_id : $activity_id;
 	}
 
 	public function get_share_count( int $root_id ): int {
 		global $wpdb;
-		return (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM {$wpdb->prefix}sn_shares WHERE root_id = %d",
-			$root_id
-		) );
+		return (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_shares WHERE root_id = %d",
+				$root_id
+			)
+		);
 	}
 
 	public function on_activity_deleted( int $activity_id ): void {
@@ -170,7 +176,7 @@ class Share_Posts {
 		}
 
 		// Rate limit.
-		$limit = (int) get_option( 'arshid6social_rate_limit_posts', 10 );
+		$limit  = (int) get_option( 'arshid6social_rate_limit_posts', 10 );
 		$rl_key = 'arshid6social_rl_share_' . get_current_user_id();
 		$count  = (int) get_transient( $rl_key );
 		if ( $count >= $limit ) {
@@ -190,10 +196,12 @@ class Share_Posts {
 		$activity_comp = ARSHID6SOCIAL()->component( 'activity' );
 		$formatted     = $activity_comp ? $activity_comp->format_activity( $activity_comp->get_by_id( $new_id ) ) : array();
 
-		wp_send_json_success( array(
-			'activity'    => $formatted,
-			'share_count' => $this->get_share_count( $this->get_root_id( $original_id ) ),
-		) );
+		wp_send_json_success(
+			array(
+				'activity'    => $formatted,
+				'share_count' => $this->get_share_count( $this->get_root_id( $original_id ) ),
+			)
+		);
 	}
 
 	public function ajax_share_to_message(): void {
@@ -225,7 +233,7 @@ class Share_Posts {
 			wp_send_json_error( array( 'message' => __( 'This post cannot be shared.', '6arshid-social-community' ) ), 403 );
 		}
 
-		$url     = \Arshid6Social\Components\Activity\Activity::get_permalink( (int) $activity->id );
+		$url = \Arshid6Social\Components\Activity\Activity::get_permalink( (int) $activity->id );
 		/* translators: %s: post URL */
 		$content = sprintf( __( 'Shared a post: %s', '6arshid-social-community' ), esc_url( $url ) );
 

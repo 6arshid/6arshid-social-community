@@ -51,7 +51,12 @@ class Stripe_API {
 	private static function request( string $method, string $endpoint, array $params = array() ): array {
 		$secret = Monetization_Crypto::get_stripe_secret();
 		if ( '' === $secret ) {
-			return array( 'error' => array( 'type' => 'configuration', 'message' => 'Stripe secret key is not configured.' ) );
+			return array(
+				'error' => array(
+					'type'    => 'configuration',
+					'message' => 'Stripe secret key is not configured.',
+				),
+			);
 		}
 
 		$url  = self::API_BASE . ltrim( $endpoint, '/' );
@@ -68,20 +73,30 @@ class Stripe_API {
 			if ( 'GET' === $args['method'] ) {
 				$url = add_query_arg( $params, $url );
 			} else {
-				$args['body']                       = self::flatten( $params );
-				$args['headers']['Content-Type']    = 'application/x-www-form-urlencoded';
+				$args['body']                    = self::flatten( $params );
+				$args['headers']['Content-Type'] = 'application/x-www-form-urlencoded';
 			}
 		}
 
 		$response = wp_remote_request( $url, $args );
 
 		if ( is_wp_error( $response ) ) {
-			return array( 'error' => array( 'type' => 'network', 'message' => $response->get_error_message() ) );
+			return array(
+				'error' => array(
+					'type'    => 'network',
+					'message' => $response->get_error_message(),
+				),
+			);
 		}
 
 		$body = json_decode( wp_remote_retrieve_body( $response ), true );
 		if ( ! is_array( $body ) ) {
-			return array( 'error' => array( 'type' => 'parse', 'message' => 'Invalid response from Stripe.' ) );
+			return array(
+				'error' => array(
+					'type'    => 'parse',
+					'message' => 'Invalid response from Stripe.',
+				),
+			);
 		}
 
 		return $body;
@@ -100,12 +115,16 @@ class Stripe_API {
 	 * @return array  Stripe PaymentIntent object, or ['error' => ...] on failure.
 	 */
 	public static function create_payment_intent( int $amount_cents, string $currency, array $metadata = array() ): array {
-		return self::request( 'POST', 'payment_intents', array(
-			'amount'                     => $amount_cents,
-			'currency'                   => strtolower( $currency ),
-			'automatic_payment_methods'  => array( 'enabled' => 'true' ),
-			'metadata'                   => $metadata,
-		) );
+		return self::request(
+			'POST',
+			'payment_intents',
+			array(
+				'amount'                    => $amount_cents,
+				'currency'                  => strtolower( $currency ),
+				'automatic_payment_methods' => array( 'enabled' => 'true' ),
+				'metadata'                  => $metadata,
+			)
+		);
 	}
 
 	/**

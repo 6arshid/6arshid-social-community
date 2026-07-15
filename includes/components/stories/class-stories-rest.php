@@ -22,203 +22,331 @@ class Stories_REST extends \WP_REST_Controller {
 
 	public function register_routes(): void {
 		// GET /stories/tray — viewer's tray.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/tray', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/tray',
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_tray' ),
-				// Public tray: guests see only public stories; get_tray() filters by viewer ID (0 for guests).
-				'permission_callback' => '__return_true',
-			),
-		) );
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_tray' ),
+					// Public tray: guests see only public stories; get_tray() filters by viewer ID (0 for guests).
+					'permission_callback' => '__return_true',
+				),
+			)
+		);
 
 		// POST /stories — create a story.
-		register_rest_route( $this->namespace, '/' . $this->rest_base, array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base,
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'create_story' ),
-				'permission_callback' => 'is_user_logged_in',
-				'args'                => array(
-					'privacy'      => array( 'default' => 'public',  'sanitize_callback' => 'sanitize_key' ),
-					'media_type'   => array( 'default' => 'text',    'sanitize_callback' => 'sanitize_key' ),
-					'text_content' => array( 'default' => '',        'sanitize_callback' => 'sanitize_textarea_field' ),
-					'bg_color'     => array( 'default' => '#2563eb', 'sanitize_callback' => 'sanitize_hex_color' ),
-					'duration'     => array( 'default' => 5,         'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'create_story' ),
+					'permission_callback' => 'is_user_logged_in',
+					'args'                => array(
+						'privacy'      => array(
+							'default'           => 'public',
+							'sanitize_callback' => 'sanitize_key',
+						),
+						'media_type'   => array(
+							'default'           => 'text',
+							'sanitize_callback' => 'sanitize_key',
+						),
+						'text_content' => array(
+							'default'           => '',
+							'sanitize_callback' => 'sanitize_textarea_field',
+						),
+						'bg_color'     => array(
+							'default'           => '#2563eb',
+							'sanitize_callback' => 'sanitize_hex_color',
+						),
+						'duration'     => array(
+							'default'           => 5,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// DELETE /stories/{id}.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)',
 			array(
-				'methods'             => \WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'delete_story' ),
-				'permission_callback' => array( $this, 'can_delete_story' ),
-				'args'                => array(
-					'id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'delete_story' ),
+					'permission_callback' => array( $this, 'can_delete_story' ),
+					'args'                => array(
+						'id' => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// GET /stories/{id}/items.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/items', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/items',
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_items' ),
-				// Public items: get_items() callback verifies story visibility before returning content.
-				'permission_callback' => '__return_true',
-				'args'                => array(
-					'id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_items' ),
+					// Public items: get_items() callback verifies story visibility before returning content.
+					'permission_callback' => '__return_true',
+					'args'                => array(
+						'id' => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// GET /stories/{id}/viewers — owner only.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/viewers', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/viewers',
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_viewers' ),
-				'permission_callback' => array( $this, 'can_view_viewers' ),
-				'args'                => array(
-					'id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_viewers' ),
+					'permission_callback' => array( $this, 'can_view_viewers' ),
+					'args'                => array(
+						'id' => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// POST /stories/{id}/view.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/view', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/view',
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'mark_viewed' ),
-				'permission_callback' => array( $this, 'can_access_story_item' ),
-				'args'                => array(
-					'id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'mark_viewed' ),
+					'permission_callback' => array( $this, 'can_access_story_item' ),
+					'args'                => array(
+						'id' => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// POST /stories/{id}/react.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/react', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/react',
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'react' ),
-				'permission_callback' => array( $this, 'can_access_story_item' ),
-				'args'                => array(
-					'id'       => array( 'required' => true,  'sanitize_callback' => 'absint' ),
-					'reaction' => array( 'default'  => '❤️', 'sanitize_callback' => 'sanitize_text_field' ),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'react' ),
+					'permission_callback' => array( $this, 'can_access_story_item' ),
+					'args'                => array(
+						'id'       => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+						'reaction' => array(
+							'default'           => '❤️',
+							'sanitize_callback' => 'sanitize_text_field',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// POST /stories/{id}/reply.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/reply', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/reply',
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'reply' ),
-				'permission_callback' => array( $this, 'can_access_story_item' ),
-				'args'                => array(
-					'id'      => array( 'required' => true, 'sanitize_callback' => 'absint' ),
-					'message' => array( 'required' => true, 'sanitize_callback' => 'sanitize_textarea_field' ),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'reply' ),
+					'permission_callback' => array( $this, 'can_access_story_item' ),
+					'args'                => array(
+						'id'      => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+						'message' => array(
+							'required'          => true,
+							'sanitize_callback' => 'sanitize_textarea_field',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// POST /stories/{id}/report.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)/report', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/report',
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'report' ),
-				'permission_callback' => array( $this, 'can_report_story' ),
-				'args'                => array(
-					'id'     => array( 'required' => true, 'sanitize_callback' => 'absint' ),
-					'reason' => array( 'default' => 'spam', 'sanitize_callback' => 'sanitize_text_field' ),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'report' ),
+					'permission_callback' => array( $this, 'can_report_story' ),
+					'args'                => array(
+						'id'     => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+						'reason' => array(
+							'default'           => 'spam',
+							'sanitize_callback' => 'sanitize_text_field',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// GET/POST /stories/close-friends.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/close-friends', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/close-friends',
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_close_friends' ),
-				'permission_callback' => 'is_user_logged_in',
-			),
-			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'toggle_close_friend' ),
-				'permission_callback' => 'is_user_logged_in',
-				'args'                => array(
-					'friend_id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
-					'add'       => array( 'default'  => true ),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_close_friends' ),
+					'permission_callback' => 'is_user_logged_in',
 				),
-			),
-		) );
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'toggle_close_friend' ),
+					'permission_callback' => 'is_user_logged_in',
+					'args'                => array(
+						'friend_id' => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+						'add'       => array( 'default' => true ),
+					),
+				),
+			)
+		);
 
 		// POST /stories/mute, DELETE /stories/mute.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/mute', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/mute',
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'mute' ),
-				'permission_callback' => 'is_user_logged_in',
-				'args'                => array(
-					'user_id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'mute' ),
+					'permission_callback' => 'is_user_logged_in',
+					'args'                => array(
+						'user_id' => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-			array(
-				'methods'             => \WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'unmute' ),
-				'permission_callback' => 'is_user_logged_in',
-				'args'                => array(
-					'user_id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'unmute' ),
+					'permission_callback' => 'is_user_logged_in',
+					'args'                => array(
+						'user_id' => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// GET/POST/DELETE /stories/highlights.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/highlights', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/highlights',
 			array(
-				'methods'             => \WP_REST_Server::READABLE,
-				'callback'            => array( $this, 'get_highlights' ),
-				// Public highlights: only public story data is exposed; no private content returned for guests.
-				'permission_callback' => '__return_true',
-				'args'                => array(
-					'user_id' => array( 'default' => 0, 'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_highlights' ),
+					// Public highlights: only public story data is exposed; no private content returned for guests.
+					'permission_callback' => '__return_true',
+					'args'                => array(
+						'user_id' => array(
+							'default'           => 0,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'create_highlight' ),
-				'permission_callback' => 'is_user_logged_in',
-				'args'                => array(
-					'title'     => array( 'required' => true, 'sanitize_callback' => 'sanitize_text_field' ),
-					'cover_url' => array( 'default'  => '',   'sanitize_callback' => 'esc_url_raw' ),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'create_highlight' ),
+					'permission_callback' => 'is_user_logged_in',
+					'args'                => array(
+						'title'     => array(
+							'required'          => true,
+							'sanitize_callback' => 'sanitize_text_field',
+						),
+						'cover_url' => array(
+							'default'           => '',
+							'sanitize_callback' => 'esc_url_raw',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// DELETE /stories/highlights/{id}.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/highlights/(?P<id>[\d]+)', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/highlights/(?P<id>[\d]+)',
 			array(
-				'methods'             => \WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'delete_highlight' ),
-				'permission_callback' => array( $this, 'can_delete_highlight' ),
-				'args'                => array(
-					'id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'delete_highlight' ),
+					'permission_callback' => array( $this, 'can_delete_highlight' ),
+					'args'                => array(
+						'id' => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
 		// POST /stories/highlights/{id}/add.
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/highlights/(?P<id>[\d]+)/add', array(
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/highlights/(?P<id>[\d]+)/add',
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'add_to_highlight' ),
-				'permission_callback' => 'is_user_logged_in',
-				'args'                => array(
-					'id'       => array( 'required' => true, 'sanitize_callback' => 'absint' ),
-					'story_id' => array( 'required' => true, 'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'add_to_highlight' ),
+					'permission_callback' => 'is_user_logged_in',
+					'args'                => array(
+						'id'       => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+						'story_id' => array(
+							'required'          => true,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 	}
 
 	// ── Callbacks ─────────────────────────────────────────────────────────────
@@ -441,10 +569,12 @@ class Stories_REST extends \WP_REST_Controller {
 			return false;
 		}
 		global $wpdb;
-		$owner_id = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_stories WHERE id = %d",
-			absint( $request['id'] )
-		) );
+		$owner_id = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}sn_stories WHERE id = %d",
+				absint( $request['id'] )
+			)
+		);
 		if ( ! $owner_id ) {
 			return true; // Resource not found; let the callback return a 404.
 		}
@@ -456,10 +586,12 @@ class Stories_REST extends \WP_REST_Controller {
 			return false;
 		}
 		global $wpdb;
-		$owner_id = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_stories WHERE id = %d",
-			absint( $request['id'] )
-		) );
+		$owner_id = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}sn_stories WHERE id = %d",
+				absint( $request['id'] )
+			)
+		);
 		if ( ! $owner_id ) {
 			return true; // Resource not found; let the callback return an empty result.
 		}
@@ -471,10 +603,12 @@ class Stories_REST extends \WP_REST_Controller {
 			return false;
 		}
 		global $wpdb;
-		$owner_id = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_story_highlights WHERE id = %d",
-			absint( $request['id'] )
-		) );
+		$owner_id = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}sn_story_highlights WHERE id = %d",
+				absint( $request['id'] )
+			)
+		);
 		if ( ! $owner_id ) {
 			return true; // Resource not found; let the callback return a 404.
 		}

@@ -14,37 +14,66 @@ class Sticky_Posts_REST {
 	const NS = 'arshid6social/v1';
 
 	public function register_routes(): void {
-		register_rest_route( self::NS, '/activity/(?P<id>\d+)/sticky', array(
+		register_rest_route(
+			self::NS,
+			'/activity/(?P<id>\d+)/sticky',
 			array(
-				'methods'             => \WP_REST_Server::CREATABLE,
-				'callback'            => array( $this, 'pin' ),
-				'permission_callback' => array( $this, 'can_pin_activity' ),
-				'args'                => array(
-					'scope'      => array( 'default' => 'profile', 'sanitize_callback' => 'sanitize_key' ),
-					'scope_id'   => array( 'default' => 0, 'sanitize_callback' => 'absint' ),
-					'expires_at' => array( 'default' => null, 'sanitize_callback' => 'sanitize_text_field' ),
+				array(
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => array( $this, 'pin' ),
+					'permission_callback' => array( $this, 'can_pin_activity' ),
+					'args'                => array(
+						'scope'      => array(
+							'default'           => 'profile',
+							'sanitize_callback' => 'sanitize_key',
+						),
+						'scope_id'   => array(
+							'default'           => 0,
+							'sanitize_callback' => 'absint',
+						),
+						'expires_at' => array(
+							'default'           => null,
+							'sanitize_callback' => 'sanitize_text_field',
+						),
+					),
 				),
-			),
-			array(
-				'methods'             => \WP_REST_Server::DELETABLE,
-				'callback'            => array( $this, 'unpin' ),
-				'permission_callback' => array( $this, 'can_pin_activity' ),
-				'args'                => array(
-					'scope'    => array( 'default' => 'profile', 'sanitize_callback' => 'sanitize_key' ),
-					'scope_id' => array( 'default' => 0, 'sanitize_callback' => 'absint' ),
+				array(
+					'methods'             => \WP_REST_Server::DELETABLE,
+					'callback'            => array( $this, 'unpin' ),
+					'permission_callback' => array( $this, 'can_pin_activity' ),
+					'args'                => array(
+						'scope'    => array(
+							'default'           => 'profile',
+							'sanitize_callback' => 'sanitize_key',
+						),
+						'scope_id' => array(
+							'default'           => 0,
+							'sanitize_callback' => 'absint',
+						),
+					),
 				),
-			),
-		) );
+			)
+		);
 
-		register_rest_route( self::NS, '/sticky', array(
-			'methods'             => \WP_REST_Server::READABLE,
-			'callback'            => array( $this, 'get_stickies' ),
-			'permission_callback' => '__return_true',
-			'args'                => array(
-				'scope'    => array( 'default' => 'site', 'sanitize_callback' => 'sanitize_key' ),
-				'scope_id' => array( 'default' => 0, 'sanitize_callback' => 'absint' ),
-			),
-		) );
+		register_rest_route(
+			self::NS,
+			'/sticky',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'get_stickies' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'scope'    => array(
+						'default'           => 'site',
+						'sanitize_callback' => 'sanitize_key',
+					),
+					'scope_id' => array(
+						'default'           => 0,
+						'sanitize_callback' => 'absint',
+					),
+				),
+			)
+		);
 	}
 
 	public function can_pin_activity( \WP_REST_Request $req ): bool {
@@ -69,7 +98,7 @@ class Sticky_Posts_REST {
 			return false;
 		}
 		if ( 'group' === $scope ) {
-			$groups = ARSHID6SOCIAL()->component( 'groups' );
+			$groups         = ARSHID6SOCIAL()->component( 'groups' );
 			$is_group_admin = $groups && $groups->is_admin( get_current_user_id(), absint( $req['scope_id'] ?? 0 ) );
 			if ( ! $is_group_admin && ! current_user_can( 'arshid6social_manage_groups' ) ) {
 				return false;

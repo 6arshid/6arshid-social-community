@@ -6,9 +6,9 @@ namespace Arshid6Social\Components\Monetization;
  *
  * Responsibilities:
  *  – Hooks arshid6social_format_activity to inject lock/price metadata.
- *  – Provides sixarshidsc_user_can_view_paid_activity() global helper.
- *  – REST: POST /sixarshidsc/v1/ppv/{id}/checkout  → creates Stripe PaymentIntent.
- *  – REST: GET  /sixarshidsc/v1/ppv/{id}/status    → returns current entitlement state.
+ *  – Provides arshid6social_monetization_user_can_view_paid_activity() global helper.
+ *  – REST: POST /arshid6social/v1/ppv/{id}/checkout  → creates Stripe PaymentIntent.
+ *  – REST: GET  /arshid6social/v1/ppv/{id}/status    → returns current entitlement state.
  *
  * Entitlements are ONLY granted from the verified webhook handler
  * (class-monetization-webhook.php). The checkout REST endpoint returns a
@@ -48,10 +48,12 @@ class Paid_Activity {
 		global $wpdb;
 
 		// Owner always sees their own post.
-		$owner = (int) $wpdb->get_var( $wpdb->prepare(
-			"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
-			$activity_id
-		) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$owner = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				$activity_id
+			)
+		); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		if ( $owner === $user_id ) {
 			return true;
 		}
@@ -62,17 +64,19 @@ class Paid_Activity {
 		}
 
 		// Entitlement lookup.
-		$has = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sixarshidsc_entitlements
+		$has = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sixarshidsc_entitlements
 			  WHERE user_id    = %d
 			    AND object_type = 'activity'
 			    AND object_id   = %d
 			    AND ( expires_at IS NULL OR expires_at > %s )
 			  LIMIT 1",
-			$user_id,
-			$activity_id,
-			current_time( 'mysql' )
-		) );
+				$user_id,
+				$activity_id,
+				current_time( 'mysql' )
+			)
+		);
 
 		return (bool) $has;
 	}
@@ -99,17 +103,19 @@ class Paid_Activity {
 
 		global $wpdb;
 
-		$price_cents = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT meta_value FROM {$wpdb->prefix}sn_activity_meta
-			  WHERE activity_id = %d AND meta_key = '_sixarshidsc_ppv_price' LIMIT 1",
-			(int) $activity->id
-		) );
+		$price_cents = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT meta_value FROM {$wpdb->prefix}sn_activity_meta
+			  WHERE activity_id = %d AND meta_key = '_arshid6social_monetization_ppv_price' LIMIT 1",
+				(int) $activity->id
+			)
+		);
 
-		$currency      = strtoupper( (string) get_option( 'sixarshidsc_currency', 'USD' ) );
-		$current_uid   = get_current_user_id();
-		$is_owner      = (int) $activity->user_id === $current_uid;
-		$entitled      = $is_owner || ( $current_uid && self::can_view( $current_uid, (int) $activity->id ) );
-		$locked        = ! $entitled;
+		$currency    = strtoupper( (string) get_option( 'arshid6social_monetization_currency', 'USD' ) );
+		$current_uid = get_current_user_id();
+		$is_owner    = (int) $activity->user_id === $current_uid;
+		$entitled    = $is_owner || ( $current_uid && self::can_view( $current_uid, (int) $activity->id ) );
+		$locked      = ! $entitled;
 
 		$formatted['isPaid']            = true;
 		$formatted['ppvPrice']          = $price_cents;
@@ -119,7 +125,7 @@ class Paid_Activity {
 		$formatted['locked']            = $locked;
 
 		if ( $locked ) {
-			$plain = wp_strip_all_tags( $formatted['content'] );
+			$plain                      = wp_strip_all_tags( $formatted['content'] );
 			$formatted['lockedPreview'] = mb_strlen( $plain ) > 120
 				? mb_substr( $plain, 0, 120 ) . '…'
 				: $plain;
@@ -137,17 +143,25 @@ class Paid_Activity {
 	public static function format_price( int $cents, string $currency ): string {
 		$amount  = $cents / 100;
 		$symbols = array(
-			'USD' => '$', 'EUR' => '€', 'GBP' => '£',
-			'CAD' => 'CA$', 'AUD' => 'A$', 'JPY' => '¥',
-			'CHF' => 'CHF ', 'SEK' => 'kr ', 'NOK' => 'kr ',
-			'TRY' => '₺', 'AED' => 'AED ', 'SAR' => 'SAR ',
+			'USD' => '$',
+			'EUR' => '€',
+			'GBP' => '£',
+			'CAD' => 'CA$',
+			'AUD' => 'A$',
+			'JPY' => '¥',
+			'CHF' => 'CHF ',
+			'SEK' => 'kr ',
+			'NOK' => 'kr ',
+			'TRY' => '₺',
+			'AED' => 'AED ',
+			'SAR' => 'SAR ',
 		);
-		$sym = $symbols[ $currency ] ?? ( $currency . ' ' );
+		$sym     = $symbols[ $currency ] ?? ( $currency . ' ' );
 		return $sym . number_format( $amount, 2 );
 	}
 
 	// -------------------------------------------------------------------------
-	// REST: POST /sixarshidsc/v1/ppv/{id}/checkout
+	// REST: POST /arshid6social/v1/ppv/{id}/checkout
 	// -------------------------------------------------------------------------
 
 	public function rest_checkout( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
@@ -156,10 +170,12 @@ class Paid_Activity {
 
 		global $wpdb;
 
-		$activity = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id, user_id, privacy FROM {$wpdb->prefix}sn_activity WHERE id = %d",
-			$activity_id
-		) );
+		$activity = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id, user_id, privacy FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				$activity_id
+			)
+		);
 
 		if ( ! $activity ) {
 			return new \WP_Error( 'not_found', __( 'Activity not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
@@ -174,24 +190,30 @@ class Paid_Activity {
 			return rest_ensure_response( array( 'already_entitled' => true ) );
 		}
 
-		$price_cents = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT meta_value FROM {$wpdb->prefix}sn_activity_meta
-			  WHERE activity_id = %d AND meta_key = '_sixarshidsc_ppv_price' LIMIT 1",
-			$activity_id
-		) );
+		$price_cents = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT meta_value FROM {$wpdb->prefix}sn_activity_meta
+			  WHERE activity_id = %d AND meta_key = '_arshid6social_monetization_ppv_price' LIMIT 1",
+				$activity_id
+			)
+		);
 
 		if ( $price_cents <= 0 ) {
 			return new \WP_Error( 'no_price', __( 'This post has no price configured.', '6arshid-social-community' ), array( 'status' => 400 ) );
 		}
 
-		$currency = strtoupper( (string) get_option( 'sixarshidsc_currency', 'USD' ) );
+		$currency = strtoupper( (string) get_option( 'arshid6social_monetization_currency', 'USD' ) );
 
-		$pi = Stripe_API::create_payment_intent( $price_cents, $currency, array(
-			'sixarshidsc_type' => 'ppv',
-			'activity_id'  => (string) $activity_id,
-			'buyer_id'     => (string) $user_id,
-			'creator_id'   => (string) (int) $activity->user_id,
-		) );
+		$pi = Stripe_API::create_payment_intent(
+			$price_cents,
+			$currency,
+			array(
+				'arshid6social_monetization_type' => 'ppv',
+				'activity_id'                     => (string) $activity_id,
+				'buyer_id'                        => (string) $user_id,
+				'creator_id'                      => (string) (int) $activity->user_id,
+			)
+		);
 
 		if ( ! empty( $pi['error'] ) ) {
 			return new \WP_Error(
@@ -201,23 +223,25 @@ class Paid_Activity {
 			);
 		}
 
-		$activity_url = add_query_arg( 'sixarshidsc_paid_activity', $activity_id, home_url( '/' ) );
+		$activity_url = add_query_arg( 'arshid6social_monetization_paid_activity', $activity_id, home_url( '/' ) );
 
-		return rest_ensure_response( array(
-			'client_secret'   => $pi['client_secret'],
-			'payment_intent'  => $pi['id'],
-			'amount'          => $price_cents,
-			'currency'        => $currency,
-			'price_formatted' => self::format_price( $price_cents, $currency ),
-			'pub_key'         => Monetization_Crypto::get_stripe_pub_key(),
-			'return_url'      => $activity_url,
-			'activity_url'    => $activity_url,
-			'activity_id'     => $activity_id,
-		) );
+		return rest_ensure_response(
+			array(
+				'client_secret'   => $pi['client_secret'],
+				'payment_intent'  => $pi['id'],
+				'amount'          => $price_cents,
+				'currency'        => $currency,
+				'price_formatted' => self::format_price( $price_cents, $currency ),
+				'pub_key'         => Monetization_Crypto::get_stripe_pub_key(),
+				'return_url'      => $activity_url,
+				'activity_url'    => $activity_url,
+				'activity_id'     => $activity_id,
+			)
+		);
 	}
 
 	// -------------------------------------------------------------------------
-	// REST: GET /sixarshidsc/v1/ppv/{id}/status
+	// REST: GET /arshid6social/v1/ppv/{id}/status
 	// -------------------------------------------------------------------------
 
 	public function rest_status( \WP_REST_Request $request ): \WP_REST_Response {
@@ -228,7 +252,7 @@ class Paid_Activity {
 	}
 
 	// -------------------------------------------------------------------------
-	// REST: POST /sixarshidsc/v1/ppv/{id}/verify
+	// REST: POST /arshid6social/v1/ppv/{id}/verify
 	// -------------------------------------------------------------------------
 	// Called immediately after stripe.confirmPayment() resolves on the client.
 	// Retrieves the PaymentIntent directly from Stripe, validates it, then calls
@@ -256,14 +280,19 @@ class Paid_Activity {
 		}
 
 		if ( ( $pi['status'] ?? '' ) !== 'succeeded' ) {
-			return rest_ensure_response( array( 'entitled' => false, 'pi_status' => $pi['status'] ?? '' ) );
+			return rest_ensure_response(
+				array(
+					'entitled'  => false,
+					'pi_status' => $pi['status'] ?? '',
+				)
+			);
 		}
 
 		$meta = $pi['metadata'] ?? array();
 		if (
-			( $meta['sixarshidsc_type'] ?? '' ) !== 'ppv' ||
+			( $meta['arshid6social_monetization_type'] ?? '' ) !== 'ppv' ||
 			(int) ( $meta['activity_id'] ?? 0 ) !== $activity_id ||
-			(int) ( $meta['buyer_id']    ?? 0 ) !== $user_id
+			(int) ( $meta['buyer_id'] ?? 0 ) !== $user_id
 		) {
 			return new \WP_Error( 'metadata_mismatch', __( 'Payment metadata does not match.', '6arshid-social-community' ), array( 'status' => 403 ) );
 		}
@@ -278,9 +307,9 @@ class Paid_Activity {
 
 	public static function grant_ppv_entitlement( array $pi ): void {
 		$meta        = $pi['metadata'] ?? array();
-		$buyer_id    = (int) ( $meta['buyer_id']    ?? 0 );
+		$buyer_id    = (int) ( $meta['buyer_id'] ?? 0 );
 		$activity_id = (int) ( $meta['activity_id'] ?? 0 );
-		$creator_id  = (int) ( $meta['creator_id']  ?? 0 );
+		$creator_id  = (int) ( $meta['creator_id'] ?? 0 );
 
 		if ( ! $buyer_id || ! $activity_id ) {
 			return;
@@ -296,10 +325,12 @@ class Paid_Activity {
 
 		// Transaction — only insert if no row with this gateway_ref exists yet
 		// (verify endpoint and webhook may both call this; gateway_ref is not UNIQUE).
-		$exists = $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sixarshidsc_transactions WHERE gateway_ref = %s LIMIT 1",
-			$gateway_ref
-		) );
+		$exists = $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id FROM {$wpdb->prefix}sixarshidsc_transactions WHERE gateway_ref = %s LIMIT 1",
+				$gateway_ref
+			)
+		);
 		if ( ! $exists ) {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prefix . 'sixarshidsc_transactions',
@@ -320,25 +351,35 @@ class Paid_Activity {
 		}
 
 		// Purchase row — idempotent.
-		$wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"INSERT INTO {$wpdb->prefix}sixarshidsc_purchases
+		$wpdb->query(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"INSERT INTO {$wpdb->prefix}sixarshidsc_purchases
 				(buyer_id, activity_id, creator_id, gateway_payment_id, amount, fee, currency, status, created_at)
 			 VALUES (%d, %d, %d, %s, %f, %f, %s, 'completed', %s)
 			 ON DUPLICATE KEY UPDATE status = 'completed', gateway_payment_id = VALUES(gateway_payment_id)",
-			$buyer_id, $activity_id, $creator_id,
-			$gateway_ref,
-			$amount_cents / 100, $fee_cents / 100, $currency,
-			$now
-		) );
+				$buyer_id,
+				$activity_id,
+				$creator_id,
+				$gateway_ref,
+				$amount_cents / 100,
+				$fee_cents / 100,
+				$currency,
+				$now
+			)
+		);
 
 		// Permanent entitlement — idempotent.
-		$wpdb->query( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"INSERT INTO {$wpdb->prefix}sixarshidsc_entitlements
+		$wpdb->query(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"INSERT INTO {$wpdb->prefix}sixarshidsc_entitlements
 				(user_id, object_type, object_id, source, expires_at, created_at)
 			 VALUES (%d, 'activity', %d, 'ppv', NULL, %s)
 			 ON DUPLICATE KEY UPDATE source = source",
-			$buyer_id, $activity_id, $now
-		) );
+				$buyer_id,
+				$activity_id,
+				$now
+			)
+		);
 
 		\Arshid6Social\Cache::delete( "activity_{$activity_id}" );
 	}
@@ -349,41 +390,56 @@ class Paid_Activity {
 
 	public function register_rest_routes(): void {
 		register_rest_route(
-			'sixarshidsc/v1',
+			'arshid6social/v1',
 			'/ppv/(?P<id>[\d]+)/checkout',
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'rest_checkout' ),
 				'permission_callback' => 'is_user_logged_in',
 				'args'                => array(
-					'id' => array( 'type' => 'integer', 'required' => true, 'minimum' => 1 ),
+					'id' => array(
+						'type'     => 'integer',
+						'required' => true,
+						'minimum'  => 1,
+					),
 				),
 			)
 		);
 
 		register_rest_route(
-			'sixarshidsc/v1',
+			'arshid6social/v1',
 			'/ppv/(?P<id>[\d]+)/status',
 			array(
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'rest_status' ),
 				'permission_callback' => '__return_true',
 				'args'                => array(
-					'id' => array( 'type' => 'integer', 'required' => true, 'minimum' => 1 ),
+					'id' => array(
+						'type'     => 'integer',
+						'required' => true,
+						'minimum'  => 1,
+					),
 				),
 			)
 		);
 
 		register_rest_route(
-			'sixarshidsc/v1',
+			'arshid6social/v1',
 			'/ppv/(?P<id>[\d]+)/verify',
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'rest_verify_payment' ),
 				'permission_callback' => 'is_user_logged_in',
 				'args'                => array(
-					'id'             => array( 'type' => 'integer', 'required' => true, 'minimum' => 1 ),
-					'payment_intent' => array( 'type' => 'string',  'required' => true ),
+					'id'             => array(
+						'type'     => 'integer',
+						'required' => true,
+						'minimum'  => 1,
+					),
+					'payment_intent' => array(
+						'type'     => 'string',
+						'required' => true,
+					),
 				),
 			)
 		);
@@ -394,14 +450,14 @@ class Paid_Activity {
 // Global helper — usable outside the namespace.
 // ─────────────────────────────────────────────────────────────────────────────
 
-if ( ! function_exists( 'sixarshidsc_user_can_view_paid_activity' ) ) {
+if ( ! function_exists( 'arshid6social_monetization_user_can_view_paid_activity' ) ) {
 	/**
 	 * Returns true if $user_id is entitled to view a paid activity.
 	 *
 	 * @param int $user_id     0 = guest.
 	 * @param int $activity_id
 	 */
-	function sixarshidsc_user_can_view_paid_activity( int $user_id, int $activity_id ): bool {
+	function arshid6social_monetization_user_can_view_paid_activity( int $user_id, int $activity_id ): bool {
 		return \Arshid6Social\Components\Monetization\Paid_Activity::can_view( $user_id, $activity_id );
 	}
 }

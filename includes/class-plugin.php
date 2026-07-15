@@ -77,20 +77,34 @@ final class Plugin {
 		}
 
 		if ( get_option( 'arshid6social_rewrite_version' ) !== ARSHID6SOCIAL_VERSION ) {
-			add_action( 'init', static function () {
-				flush_rewrite_rules( false );
-				update_option( 'arshid6social_rewrite_version', ARSHID6SOCIAL_VERSION );
-				// Migrate dark_mode: 'auto' caused plugin to go dark when OS
-				// was dark even though the WP theme was light. Switch to 'off'.
-				if ( 'auto' === get_option( 'arshid6social_dark_mode' ) ) {
-					update_option( 'arshid6social_dark_mode', 'off' );
-				}
-			}, 999 );
+			add_action(
+				'init',
+				static function () {
+					flush_rewrite_rules( false );
+					update_option( 'arshid6social_rewrite_version', ARSHID6SOCIAL_VERSION );
+					// Migrate dark_mode: 'auto' caused plugin to go dark when OS
+					// was dark even though the WP theme was light. Switch to 'off'.
+					if ( 'auto' === get_option( 'arshid6social_dark_mode' ) ) {
+						update_option( 'arshid6social_dark_mode', 'off' );
+					}
+				},
+				999
+			);
 		}
 
 		// Flush rewrite rules whenever permalink base slugs change.
-		add_action( 'update_option_arshid6social_permalink_tag_base',      static function () { flush_rewrite_rules( false ); } );
-		add_action( 'update_option_arshid6social_permalink_activity_base', static function () { flush_rewrite_rules( false ); } );
+		add_action(
+			'update_option_arshid6social_permalink_tag_base',
+			static function () {
+				flush_rewrite_rules( false );
+			}
+		);
+		add_action(
+			'update_option_arshid6social_permalink_activity_base',
+			static function () {
+				flush_rewrite_rules( false );
+			}
+		);
 	}
 
 	/**
@@ -230,7 +244,7 @@ final class Plugin {
 		if ( get_option( 'arshid6social_marketplace_enabled', false ) && ! in_array( 'marketplace', $saved, true ) ) {
 			$saved[] = 'marketplace';
 		}
-		if ( get_option( 'sixarshidsc_enabled', false ) && ! in_array( 'monetization', $saved, true ) ) {
+		if ( get_option( 'arshid6social_monetization_enabled', false ) && ! in_array( 'monetization', $saved, true ) ) {
 			$saved[] = 'monetization';
 		}
 
@@ -309,7 +323,6 @@ final class Plugin {
 
 		// Inject unread-count badge spans into classic WP nav menus (non-socialnetworksix themes).
 		add_filter( 'walker_nav_menu_start_el', array( $this, 'inject_nav_badges' ), 10, 4 );
-
 	}
 
 	/**
@@ -323,21 +336,35 @@ final class Plugin {
 			return $ids;
 		}
 		$ids = array(
-			'guest'  => array_values( array_filter( array_map( 'intval', array(
-				get_option( 'arshid6social_page_login',           0 ),
-				get_option( 'arshid6social_page_register',        0 ),
-				get_option( 'arshid6social_page_forgot_password', 0 ),
-				get_option( 'arshid6social_page_reset_password',  0 ),
-				get_option( 'arshid6social_page_home',            0 ),
-			) ) ) ),
-			'member' => array_values( array_filter( array_map( 'intval', array(
-				get_option( 'arshid6social_page_activity',      0 ),
-				get_option( 'arshid6social_page_dashboard',     0 ),
-				get_option( 'arshid6social_page_groups',        0 ),
-				get_option( 'arshid6social_page_messages',      0 ),
-				get_option( 'arshid6social_page_notifications', 0 ),
-				get_option( 'arshid6social_page_saved_posts',   0 ),
-			) ) ) ),
+			'guest'  => array_values(
+				array_filter(
+					array_map(
+						'intval',
+						array(
+							get_option( 'arshid6social_page_login', 0 ),
+							get_option( 'arshid6social_page_register', 0 ),
+							get_option( 'arshid6social_page_forgot_password', 0 ),
+							get_option( 'arshid6social_page_reset_password', 0 ),
+							get_option( 'arshid6social_page_home', 0 ),
+						)
+					)
+				)
+			),
+			'member' => array_values(
+				array_filter(
+					array_map(
+						'intval',
+						array(
+							get_option( 'arshid6social_page_activity', 0 ),
+							get_option( 'arshid6social_page_dashboard', 0 ),
+							get_option( 'arshid6social_page_groups', 0 ),
+							get_option( 'arshid6social_page_messages', 0 ),
+							get_option( 'arshid6social_page_notifications', 0 ),
+							get_option( 'arshid6social_page_saved_posts', 0 ),
+						)
+					)
+				)
+			),
 		);
 		return $ids;
 	}
@@ -367,45 +394,54 @@ final class Plugin {
 		$guest_only_ids  = $page_ids['guest'];
 		$member_only_ids = $page_ids['member'];
 
-		return array_values( array_filter( $items, static function ( $item ) use (
-			$logged_in, $guest_only_ids, $member_only_ids, $guest_slugs, $member_slugs
-		) {
-			$object_id = (int) $item->object_id;
+		return array_values(
+			array_filter(
+				$items,
+				static function ( $item ) use (
+					$logged_in,
+					$guest_only_ids,
+					$member_only_ids,
+					$guest_slugs,
+					$member_slugs
+				) {
+					$object_id = (int) $item->object_id;
 
-			// Method 1: match by option page ID (works when options are set).
-			$is_guest_page  = in_array( $object_id, $guest_only_ids, true );
-			$is_member_page = in_array( $object_id, $member_only_ids, true );
+					// Method 1: match by option page ID (works when options are set).
+					$is_guest_page  = in_array( $object_id, $guest_only_ids, true );
+					$is_member_page = in_array( $object_id, $member_only_ids, true );
 
-			if ( ! $is_guest_page && ! $is_member_page ) {
-				// Method 2: match by page post slug (works for page-type items).
-				if ( 'page' === $item->object && $object_id ) {
-					$slug = (string) get_post_field( 'post_name', $object_id );
-					if ( $slug ) {
-						$is_guest_page  = in_array( $slug, $guest_slugs, true );
-						$is_member_page = in_array( $slug, $member_slugs, true );
+					if ( ! $is_guest_page && ! $is_member_page ) {
+						// Method 2: match by page post slug (works for page-type items).
+						if ( 'page' === $item->object && $object_id ) {
+							$slug = (string) get_post_field( 'post_name', $object_id );
+							if ( $slug ) {
+								$is_guest_page  = in_array( $slug, $guest_slugs, true );
+								$is_member_page = in_array( $slug, $member_slugs, true );
+							}
+						}
 					}
-				}
-			}
 
-			if ( ! $is_guest_page && ! $is_member_page && ! empty( $item->url ) ) {
-				// Method 3: match by URL path segment (works for custom links too).
-				$path     = (string) ( wp_parse_url( $item->url, PHP_URL_PATH ) ?? '' );
-				$segments = array_filter( explode( '/', $path ) );
-				$url_slug = strtolower( (string) end( $segments ) );
-				if ( $url_slug ) {
-					$is_guest_page  = in_array( $url_slug, $guest_slugs, true );
-					$is_member_page = in_array( $url_slug, $member_slugs, true );
-				}
-			}
+					if ( ! $is_guest_page && ! $is_member_page && ! empty( $item->url ) ) {
+						// Method 3: match by URL path segment (works for custom links too).
+						$path     = (string) ( wp_parse_url( $item->url, PHP_URL_PATH ) ?? '' );
+						$segments = array_filter( explode( '/', $path ) );
+						$url_slug = strtolower( (string) end( $segments ) );
+						if ( $url_slug ) {
+							$is_guest_page  = in_array( $url_slug, $guest_slugs, true );
+							$is_member_page = in_array( $url_slug, $member_slugs, true );
+						}
+					}
 
-			if ( $logged_in && $is_guest_page ) {
-				return false;
-			}
-			if ( ! $logged_in && $is_member_page ) {
-				return false;
-			}
-			return true;
-		} ) );
+					if ( $logged_in && $is_guest_page ) {
+						return false;
+					}
+					if ( ! $logged_in && $is_member_page ) {
+						return false;
+					}
+					return true;
+				}
+			)
+		);
 	}
 
 	/**
@@ -428,7 +464,7 @@ final class Plugin {
 		if ( null === $badge_map ) {
 			$badge_map = array(
 				(int) get_option( 'arshid6social_page_notifications', 0 ) => 'arshid6social-notification-count',
-				(int) get_option( 'arshid6social_page_messages',      0 ) => 'arshid6social-messages-count',
+				(int) get_option( 'arshid6social_page_messages', 0 ) => 'arshid6social-messages-count',
 			);
 		}
 
@@ -477,7 +513,7 @@ final class Plugin {
 		$guest_ids  = $page_ids['guest'];
 		$member_ids = $page_ids['member'];
 
-		$is_guest_page  = ( $page_id && in_array( $page_id, $guest_ids, true ) )
+		$is_guest_page = ( $page_id && in_array( $page_id, $guest_ids, true ) )
 			|| ( $slug && in_array( $slug, $guest_slugs, true ) );
 
 		$is_member_page = ( $page_id && in_array( $page_id, $member_ids, true ) )
@@ -535,7 +571,7 @@ final class Plugin {
 		// Home splash: redirect logged-in users to activity feed.
 		if ( $home_id && is_page( $home_id ) && is_user_logged_in() ) {
 			$activity_id = (int) get_option( 'arshid6social_page_activity', 0 );
-			$url = $activity_id ? get_permalink( $activity_id ) : home_url( '/activity/' );
+			$url         = $activity_id ? get_permalink( $activity_id ) : home_url( '/activity/' );
 			wp_safe_redirect( $url );
 			exit;
 		}

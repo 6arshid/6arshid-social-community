@@ -3,6 +3,7 @@
  * Single activity post — injected via the_content filter.
  *
  * Variables:
+ *
  *  @var array $activity  Formatted activity item from format_activity().
  *
  * @package Arshid6Social

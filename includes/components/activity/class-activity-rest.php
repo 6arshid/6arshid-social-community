@@ -30,10 +30,27 @@ class Activity_REST extends \WP_REST_Controller {
 					// Public feed: unauthenticated access is allowed; the callback restricts results to public-only for guests.
 					'permission_callback' => '__return_true',
 					'args'                => array(
-						'page'    => array( 'type' => 'integer', 'default' => 1, 'minimum' => 1, 'sanitize_callback' => 'absint' ),
-						'user_id' => array( 'type' => 'integer', 'default' => 0, 'sanitize_callback' => 'absint' ),
-						'scope'   => array( 'type' => 'string', 'default' => 'all', 'sanitize_callback' => 'sanitize_key' ),
-						'search'  => array( 'type' => 'string', 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ),
+						'page'    => array(
+							'type'              => 'integer',
+							'default'           => 1,
+							'minimum'           => 1,
+							'sanitize_callback' => 'absint',
+						),
+						'user_id' => array(
+							'type'              => 'integer',
+							'default'           => 0,
+							'sanitize_callback' => 'absint',
+						),
+						'scope'   => array(
+							'type'              => 'string',
+							'default'           => 'all',
+							'sanitize_callback' => 'sanitize_key',
+						),
+						'search'  => array(
+							'type'              => 'string',
+							'default'           => '',
+							'sanitize_callback' => 'sanitize_text_field',
+						),
 					),
 				),
 				array(
@@ -41,9 +58,21 @@ class Activity_REST extends \WP_REST_Controller {
 					'callback'            => array( $this, 'create_item' ),
 					'permission_callback' => array( $this, 'can_create_item' ),
 					'args'                => array(
-						'content'   => array( 'required' => true, 'type' => 'string' ),
-						'privacy'   => array( 'type' => 'string', 'default' => 'public', 'enum' => array( 'public', 'friends', 'private', 'paid' ) ),
-						'ppv_price' => array( 'type' => 'integer', 'default' => 0, 'minimum' => 0, 'sanitize_callback' => 'absint' ),
+						'content'   => array(
+							'required' => true,
+							'type'     => 'string',
+						),
+						'privacy'   => array(
+							'type'    => 'string',
+							'default' => 'public',
+							'enum'    => array( 'public', 'friends', 'private', 'paid' ),
+						),
+						'ppv_price' => array(
+							'type'              => 'integer',
+							'default'           => 0,
+							'minimum'           => 0,
+							'sanitize_callback' => 'absint',
+						),
 					),
 				),
 			)
@@ -76,7 +105,11 @@ class Activity_REST extends \WP_REST_Controller {
 					'callback'            => array( $this, 'react' ),
 					'permission_callback' => array( $this, 'can_access_item' ),
 					'args'                => array(
-						'reaction_type' => array( 'type' => 'string', 'default' => 'like', 'sanitize_callback' => 'sanitize_key' ),
+						'reaction_type' => array(
+							'type'              => 'string',
+							'default'           => 'like',
+							'sanitize_callback' => 'sanitize_key',
+						),
 					),
 				),
 			)
@@ -124,7 +157,7 @@ class Activity_REST extends \WP_REST_Controller {
 			$query_args['privacy'] = 'public';
 		}
 
-		$data     = $component->get_activity( $query_args );
+		$data = $component->get_activity( $query_args );
 
 		$response = rest_ensure_response( $data['activities'] );
 		$response->header( 'X-WP-Total', $data['total'] );
@@ -135,14 +168,16 @@ class Activity_REST extends \WP_REST_Controller {
 	public function create_item( $request ): \WP_REST_Response|\WP_Error {
 		$component = ARSHID6SOCIAL()->component( 'activity' );
 
-		$activity_id = $component->add( array(
-			'user_id'   => get_current_user_id(),
-			'content'   => wp_kses_post( $request->get_param( 'content' ) ),
-			'privacy'   => $request->get_param( 'privacy' ),
-			'type'      => 'activity_update',
-			'component' => 'activity',
-			'ppv_price' => (int) $request->get_param( 'ppv_price' ),
-		) );
+		$activity_id = $component->add(
+			array(
+				'user_id'   => get_current_user_id(),
+				'content'   => wp_kses_post( $request->get_param( 'content' ) ),
+				'privacy'   => $request->get_param( 'privacy' ),
+				'type'      => 'activity_update',
+				'component' => 'activity',
+				'ppv_price' => (int) $request->get_param( 'ppv_price' ),
+			)
+		);
 
 		if ( ! $activity_id ) {
 			return new \WP_Error( 'arshid6social_create_failed', __( 'Failed to create activity.', '6arshid-social-community' ), array( 'status' => 500 ) );
@@ -228,14 +263,28 @@ class Activity_REST extends \WP_REST_Controller {
 			if ( $existing ) {
 				$wpdb->update( $wpdb->prefix . 'sn_activity_reactions', array( 'reaction_type' => $reaction_type ), array( 'id' => $existing->id ), array( '%s' ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			} else {
-				$wpdb->insert( $wpdb->prefix . 'sn_activity_reactions', array( 'activity_id' => $activity_id, 'user_id' => $user_id, 'reaction_type' => $reaction_type, 'date_created' => current_time( 'mysql' ) ), array( '%d', '%d', '%s', '%s' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$wpdb->insert(
+					$wpdb->prefix . 'sn_activity_reactions',
+					array(
+						'activity_id'   => $activity_id,
+						'user_id'       => $user_id,
+						'reaction_type' => $reaction_type,
+						'date_created'  => current_time( 'mysql' ),
+					),
+					array( '%d', '%d', '%s', '%s' )
+				); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			}
 			$reacted = true;
 		}
 
 		$count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}sn_activity_reactions WHERE activity_id = %d AND reaction_type = %s", $activity_id, $reaction_type ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
-		return rest_ensure_response( array( 'reacted' => $reacted, 'count' => $count ) );
+		return rest_ensure_response(
+			array(
+				'reacted' => $reacted,
+				'count'   => $count,
+			)
+		);
 	}
 
 	public function record_view( $request ): \WP_REST_Response|\WP_Error {

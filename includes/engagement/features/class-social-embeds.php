@@ -33,7 +33,7 @@ class Social_Embeds {
 
 	public function __construct() {
 		add_filter( 'arshid6social_activity_content', array( $this, 'filter_activity' ), 30, 2 );
-		add_filter( 'arshid6social_message_content',  array( $this, 'filter_message' ),  30 );
+		add_filter( 'arshid6social_message_content', array( $this, 'filter_message' ), 30 );
 
 		// Daily cache prune.
 		add_action( 'arshid6social_embed_cache_prune', array( Social_Embeds_Cache::class, 'prune' ) );
@@ -61,10 +61,8 @@ class Social_Embeds {
 			if ( ! in_array( 'comments', $locations, true ) ) {
 				return $content;
 			}
-		} else {
-			if ( ! in_array( 'activity', $locations, true ) ) {
+		} elseif ( ! in_array( 'activity', $locations, true ) ) {
 				return $content;
-			}
 		}
 
 		return $this->process( $content );
@@ -216,7 +214,7 @@ class Social_Embeds {
 					array( 'status' => 404 )
 				);
 			}
-			$all = Social_Embeds_Providers::all();
+			$all      = Social_Embeds_Providers::all();
 			$provider = $all['og_generic'] ?? null;
 		}
 

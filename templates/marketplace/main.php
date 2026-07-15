@@ -69,16 +69,17 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 			<?php esc_html_e( 'Browse by Category', '6arshid-social-community' ); ?>
 		</h2>
 		<div class="arshid6social-mkt-cat-grid" role="list">
-			<?php foreach ( $categories as $cat ) :
-				$cat_url = add_query_arg( 'cat', $cat->id, $marketplace_url );
-				$is_active = ( $active_cat === (int) $cat->id );
-			?>
+			<?php
+			foreach ( $categories as $category ) :
+				$cat_url   = add_query_arg( 'cat', $category->id, $marketplace_url );
+				$is_active = ( $active_cat === (int) $category->id );
+				?>
 			<a href="<?php echo esc_url( $cat_url ); ?>"
 				class="arshid6social-mkt-cat-card<?php echo $is_active ? ' arshid6social-mkt-cat-card--active' : ''; ?>"
 				role="listitem"
 				aria-current="<?php echo $is_active ? 'page' : 'false'; ?>">
-				<span class="arshid6social-mkt-cat-icon" aria-hidden="true"><?php echo esc_html( $cat->icon ); ?></span>
-				<span class="arshid6social-mkt-cat-name"><?php echo esc_html( $cat->name ); ?></span>
+				<span class="arshid6social-mkt-cat-icon" aria-hidden="true"><?php echo esc_html( $category->icon ); ?></span>
+				<span class="arshid6social-mkt-cat-name"><?php echo esc_html( $category->name ); ?></span>
 			</a>
 			<?php endforeach; ?>
 		</div>
@@ -95,10 +96,11 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 				<a href="<?php echo esc_url( remove_query_arg( 'q', $marketplace_url ) ); ?>" class="arshid6social-mkt-filter-remove" aria-label="<?php esc_attr_e( 'Remove search filter', '6arshid-social-community' ); ?>">×</a>
 			</span>
 		<?php endif; ?>
-		<?php if ( $active_cat ) :
+		<?php
+		if ( $active_cat ) :
 			global $wpdb;
 			$cat_name = $wpdb->get_var( $wpdb->prepare( "SELECT name FROM {$wpdb->prefix}arshid6social_categories WHERE id = %d", $active_cat ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		?>
+			?>
 			<span class="arshid6social-mkt-filter-chip">
 				<?php echo esc_html( $cat_name ?: __( 'Category', '6arshid-social-community' ) ); ?>
 				<a href="<?php echo esc_url( remove_query_arg( 'cat', $marketplace_url ) ); ?>" class="arshid6social-mkt-filter-remove" aria-label="<?php esc_attr_e( 'Remove category filter', '6arshid-social-community' ); ?>">×</a>
@@ -114,9 +116,11 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 	<section class="arshid6social-mkt-section" aria-labelledby="arshid6social-mkt-listings-heading">
 		<div class="arshid6social-mkt-listings-header">
 			<h2 class="arshid6social-mkt-section-title" id="arshid6social-mkt-listings-heading">
-				<?php echo $search_q || $active_cat
+				<?php
+				echo $search_q || $active_cat
 					? esc_html__( 'Results', '6arshid-social-community' )
-					: esc_html__( 'Recently Listed', '6arshid-social-community' ); ?>
+					: esc_html__( 'Recently Listed', '6arshid-social-community' );
+				?>
 			</h2>
 			<div class="arshid6social-mkt-view-sort">
 				<button class="arshid6social-mkt-view-btn arshid6social-mkt-view-btn--active" data-view="grid" aria-label="<?php esc_attr_e( 'Grid view', '6arshid-social-community' ); ?>" title="<?php esc_attr_e( 'Grid view', '6arshid-social-community' ); ?>">
@@ -142,7 +146,7 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 			data-page="1">
 
 			<?php /* Skeleton cards — replaced by real cards once JS loads */ ?>
-			<?php for ( $s = 0; $s < 6; $s++ ) : ?>
+			<?php for ( $skeleton_i = 0; $skeleton_i < 6; $skeleton_i++ ) : ?>
 			<div class="arshid6social-mkt-card arshid6social-mkt-skeleton" aria-hidden="true">
 				<div class="arshid6social-mkt-card-img arshid6social-skeleton-box"></div>
 				<div class="arshid6social-mkt-card-body">
@@ -174,7 +178,7 @@ $nonce      = wp_create_nonce( 'arshid6social_marketplace' );
 </div><!-- .arshid6social-mkt-wrap -->
 
 <?php
-$mkt_primary = sanitize_hex_color( get_option( 'arshid6social_primary_color', '#2563eb' ) ) ?: '#2563eb';
+$mkt_primary  = sanitize_hex_color( get_option( 'arshid6social_primary_color', '#2563eb' ) ) ?: '#2563eb';
 $mkt_main_css =
 	':root{--mkt-primary:' . esc_attr( $mkt_primary ) . ';--mkt-primary-10:color-mix(in srgb,var(--mkt-primary) 10%,transparent);--mkt-radius:10px;--mkt-shadow:0 1px 4px rgba(0,0,0,.08);--mkt-border:#e2e8f0;--mkt-text:#0f172a;--mkt-muted:#64748b;--mkt-bg:#f8fafc}' .
 	'.arshid6social-dark-mode{--mkt-border:#334155;--mkt-text:#f1f5f9;--mkt-muted:#94a3b8;--mkt-bg:#1e293b}' .
@@ -241,7 +245,7 @@ $mkt_main_css =
 	'.arshid6social-dark-mode .arshid6social-mkt-search-input{color:#f1f5f9}' .
 	'@media(max-width:640px){.arshid6social-mkt-hero{flex-direction:column;align-items:stretch}.arshid6social-mkt-post-btn{justify-content:center}.arshid6social-mkt-cat-grid{grid-template-columns:repeat(auto-fill,minmax(88px,1fr))}.arshid6social-mkt-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}.arshid6social-mkt-grid[data-view="list"] .arshid6social-mkt-card-img{width:100px}}';
 if ( ! wp_style_is( 'arshid6social-mkt-main-inline', 'registered' ) ) {
-	wp_register_style( 'arshid6social-mkt-main-inline', false, array( 'arshid6social-main' ), null );
+	wp_register_style( 'arshid6social-mkt-main-inline', false, array( 'arshid6social-main' ), ARSHID6SOCIAL_VERSION );
 	wp_enqueue_style( 'arshid6social-mkt-main-inline' );
 	wp_style_add_data( 'arshid6social-mkt-main-inline', 'group', 1 );
 }

@@ -56,7 +56,7 @@ class Marketplace {
 
 	private function register_hooks(): void {
 		// Cron callbacks.
-		add_action( 'arshid6social_marketplace_expire_listings',     array( $this, 'cron_expire_listings' ) );
+		add_action( 'arshid6social_marketplace_expire_listings', array( $this, 'cron_expire_listings' ) );
 		add_action( 'arshid6social_marketplace_saved_search_alerts', array( $this, 'cron_saved_search_alerts' ) );
 
 		// Clear cron events when the marketplace is disabled via settings.
@@ -156,10 +156,10 @@ class Marketplace {
 			return esc_html__( 'Free', '6arshid-social-community' );
 		}
 
-		$symbol    = (string) get_option( 'arshid6social_marketplace_currency_symbol',   '$' );
-		$position  = (string) get_option( 'arshid6social_marketplace_currency_position', 'before' );
-		$decimals  = (int)    get_option( 'arshid6social_marketplace_currency_decimals',  2 );
-		$thousands = (string) get_option( 'arshid6social_marketplace_currency_thousands', ',' );
+		$symbol      = (string) get_option( 'arshid6social_marketplace_currency_symbol', '$' );
+		$position    = (string) get_option( 'arshid6social_marketplace_currency_position', 'before' );
+		$decimals    = (int) get_option( 'arshid6social_marketplace_currency_decimals', 2 );
+		$thousands   = (string) get_option( 'arshid6social_marketplace_currency_thousands', ',' );
 		$decimal_sep = '.';
 
 		$formatted = number_format( (float) $price, $decimals, $decimal_sep, $thousands );
@@ -184,7 +184,7 @@ class Marketplace {
 		$d_lat    = deg2rad( $lat2 - $lat1 );
 		$d_lng    = deg2rad( $lng2 - $lng1 );
 		$a        = sin( $d_lat / 2 ) ** 2
-		          + cos( deg2rad( $lat1 ) ) * cos( deg2rad( $lat2 ) ) * sin( $d_lng / 2 ) ** 2;
+					+ cos( deg2rad( $lat1 ) ) * cos( deg2rad( $lat2 ) ) * sin( $d_lng / 2 ) ** 2;
 		return $earth_km * 2 * asin( sqrt( $a ) );
 	}
 

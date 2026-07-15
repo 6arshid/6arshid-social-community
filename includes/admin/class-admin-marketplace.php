@@ -172,9 +172,9 @@ final class Admin_Marketplace {
 		$hidden_columns = $screen ? get_hidden_columns( $screen ) : array();
 
 		// ── Request params ────────────────────────────────────────────────────
-		$search        = isset( $_GET['s'] )      ? sanitize_text_field( wp_unslash( $_GET['s'] ) )   : ''; // phpcs:ignore WordPress.Security.NonceVerification
-		$status_filter = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) )     : ''; // phpcs:ignore WordPress.Security.NonceVerification
-		$paged         = isset( $_GET['paged'] )  ? max( 1, absint( $_GET['paged'] ) )                : 1;  // phpcs:ignore WordPress.Security.NonceVerification
+		$search        = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+		$status_filter = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+		$paged         = isset( $_GET['paged'] ) ? max( 1, absint( $_GET['paged'] ) ) : 1;  // phpcs:ignore WordPress.Security.NonceVerification
 
 		// ── Build WHERE ───────────────────────────────────────────────────────
 		$where  = 'WHERE 1=1';
@@ -198,7 +198,7 @@ final class Admin_Marketplace {
 		$status_counts_raw = $wpdb->get_results(
 			"SELECT status, COUNT(*) AS cnt FROM {$wpdb->prefix}arshid6social_listings GROUP BY status"
 		);
-		$counts = array( 'all' => 0 );
+		$counts            = array( 'all' => 0 );
 		foreach ( $status_counts_raw as $row ) {
 			$counts[ $row->status ] = (int) $row->cnt;
 			$counts['all']         += (int) $row->cnt;
@@ -206,12 +206,14 @@ final class Admin_Marketplace {
 
 		// ── Total for pagination ──────────────────────────────────────────────
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$total = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-			"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_listings l
+		$total       = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_listings l
 			 LEFT JOIN {$wpdb->users} u ON u.ID = l.seller_id
 			 $where",
-			...$params
-		) );
+				...$params
+			)
+		);
 		$total_pages = (int) ceil( $total / $per_page );
 		$offset      = ( $paged - 1 ) * $per_page;
 
@@ -255,10 +257,10 @@ final class Admin_Marketplace {
 				$tab_items = array( '' => __( 'All', '6arshid-social-community' ) ) + $status_labels;
 				$tab_list  = array();
 				foreach ( $tab_items as $tab_key => $tab_label ) {
-					$count     = ( '' === $tab_key ) ? $counts['all'] : ( $counts[ $tab_key ] ?? 0 );
-					$is_active = ( $status_filter === $tab_key );
-					$url       = $tab_key ? add_query_arg( 'status', $tab_key, $current_url ) : $current_url;
-					$class     = $is_active ? ' class="current"' : '';
+					$count      = ( '' === $tab_key ) ? $counts['all'] : ( $counts[ $tab_key ] ?? 0 );
+					$is_active  = ( $status_filter === $tab_key );
+					$url        = $tab_key ? add_query_arg( 'status', $tab_key, $current_url ) : $current_url;
+					$class      = $is_active ? ' class="current"' : '';
 					$tab_list[] = sprintf(
 						'<li><a href="%s"%s>%s <span class="count">(%s)</span></a>',
 						esc_url( $url ),
@@ -316,23 +318,32 @@ final class Admin_Marketplace {
 						<?php else : ?>
 							<?php foreach ( $listings as $listing ) : ?>
 								<?php
-								$delete_url = wp_nonce_url(
+								$delete_url   = wp_nonce_url(
 									add_query_arg(
-										array( 'action' => 'delete', 'listing_id' => $listing->id ),
+										array(
+											'action'     => 'delete',
+											'listing_id' => $listing->id,
+										),
 										$current_url
 									),
 									'arshid6social_mkt_delete_' . $listing->id
 								);
-								$archive_url = wp_nonce_url(
+								$archive_url  = wp_nonce_url(
 									add_query_arg(
-										array( 'action' => 'set_archived', 'listing_id' => $listing->id ),
+										array(
+											'action'     => 'set_archived',
+											'listing_id' => $listing->id,
+										),
 										$current_url
 									),
 									'arshid6social_mkt_set_archived_' . $listing->id
 								);
 								$activate_url = wp_nonce_url(
 									add_query_arg(
-										array( 'action' => 'set_active', 'listing_id' => $listing->id ),
+										array(
+											'action'     => 'set_active',
+											'listing_id' => $listing->id,
+										),
 										$current_url
 									),
 									'arshid6social_mkt_set_active_' . $listing->id
@@ -350,7 +361,7 @@ final class Admin_Marketplace {
 								$price    = $listing->is_free
 									? __( 'Free', '6arshid-social-community' )
 									: \Arshid6Social\Components\Marketplace\Marketplace::format_price( $listing->price );
-								?>
+	?>
 								<tr>
 									<th class="check-column" scope="row">
 										<input type="checkbox" name="listing_ids[]" value="<?php echo esc_attr( $listing->id ); ?>" />
@@ -502,14 +513,16 @@ final class Admin_Marketplace {
 				</span>
 				<?php if ( $total_pages > 1 ) : ?>
 					<?php
-					echo paginate_links( // phpcs:ignore WordPress.Security.EscapeOutput
-						array(
-							'base'      => add_query_arg( 'paged', '%#%' ),
-							'format'    => '',
-							'current'   => $paged,
-							'total'     => $total_pages,
-							'prev_text' => '&laquo;',
-							'next_text' => '&raquo;',
+					echo wp_kses_post(
+						paginate_links(
+							array(
+								'base'      => add_query_arg( 'paged', '%#%' ),
+								'format'    => '',
+								'current'   => $paged,
+								'total'     => $total_pages,
+								'prev_text' => '&laquo;',
+								'next_text' => '&raquo;',
+							)
 						)
 					);
 					?>
@@ -551,7 +564,10 @@ final class Admin_Marketplace {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->update(
 				"{$wpdb->prefix}arshid6social_listings",
-				array( 'status' => $new_status, 'updated_at' => current_time( 'mysql' ) ),
+				array(
+					'status'     => $new_status,
+					'updated_at' => current_time( 'mysql' ),
+				),
 				array( 'id' => $listing_id ),
 				array( '%s', '%s' ),
 				array( '%d' )

@@ -19,26 +19,28 @@ class Media_Handler {
 
 	/** Contexts and their allowed MIME types. */
 	const CONTEXTS = array(
-		'story_image' => array(
-			'allowed_mime'  => array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' ),
-			'max_size_opt'  => 'arshid6social_max_upload_size_mb',
-			'subdir'        => 'social-network/stories',
-			'public'        => true,
+		'story_image'      => array(
+			'allowed_mime' => array( 'image/jpeg', 'image/png', 'image/gif', 'image/webp' ),
+			'max_size_opt' => 'arshid6social_max_upload_size_mb',
+			'subdir'       => 'social-network/stories',
+			'public'       => true,
 		),
-		'story_video' => array(
-			'allowed_mime'  => array( 'video/mp4', 'video/webm', 'video/ogg' ),
-			'max_size_opt'  => 'arshid6social_max_upload_size_mb',
-			'subdir'        => 'social-network/stories',
-			'public'        => true,
+		'story_video'      => array(
+			'allowed_mime' => array( 'video/mp4', 'video/webm', 'video/ogg' ),
+			'max_size_opt' => 'arshid6social_max_upload_size_mb',
+			'subdir'       => 'social-network/stories',
+			'public'       => true,
 		),
 		'verification_doc' => array(
-			'allowed_mime'  => array(
-				'image/jpeg', 'image/png', 'image/webp',
+			'allowed_mime' => array(
+				'image/jpeg',
+				'image/png',
+				'image/webp',
 				'application/pdf',
 			),
-			'max_size_opt'  => 'arshid6social_max_upload_size_mb',
-			'subdir'        => 'social-network/verification-docs',
-			'public'        => false,
+			'max_size_opt' => 'arshid6social_max_upload_size_mb',
+			'subdir'       => 'social-network/verification-docs',
+			'public'       => false,
 		),
 	);
 
@@ -137,10 +139,12 @@ class Media_Handler {
 		$rel_path   = ltrim( str_replace( $upload_dir['basedir'], '', $path ), '/\\' );
 
 		global $wpdb;
-		$attach_id = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND meta_value = %s LIMIT 1",
-			$rel_path
-		) );
+		$attach_id = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND meta_value = %s LIMIT 1",
+				$rel_path
+			)
+		);
 
 		if ( $attach_id ) {
 			wp_delete_attachment( $attach_id, true );
@@ -260,14 +264,14 @@ class Media_Handler {
 
 	private static function mime_to_ext( string $mime ): string {
 		$map = array(
-			'image/jpeg'       => 'jpg',
-			'image/png'        => 'png',
-			'image/gif'        => 'gif',
-			'image/webp'       => 'webp',
-			'video/mp4'        => 'mp4',
-			'video/webm'       => 'webm',
-			'video/ogg'        => 'ogv',
-			'application/pdf'  => 'pdf',
+			'image/jpeg'      => 'jpg',
+			'image/png'       => 'png',
+			'image/gif'       => 'gif',
+			'image/webp'      => 'webp',
+			'video/mp4'       => 'mp4',
+			'video/webm'      => 'webm',
+			'video/ogg'       => 'ogv',
+			'application/pdf' => 'pdf',
 		);
 		return $map[ $mime ] ?? 'bin';
 	}

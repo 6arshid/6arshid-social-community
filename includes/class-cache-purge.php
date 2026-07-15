@@ -13,8 +13,8 @@ class Cache_Purge {
 
 	public static function boot(): void {
 		add_action( 'admin_post_arshid6social_purge_cache', array( __CLASS__, 'handle' ) );
-		add_action( 'admin_notices',               array( __CLASS__, 'notice' ) );
-		add_action( 'admin_bar_menu',              array( __CLASS__, 'admin_bar_button' ), 100 );
+		add_action( 'admin_notices', array( __CLASS__, 'notice' ) );
+		add_action( 'admin_bar_menu', array( __CLASS__, 'admin_bar_button' ), 100 );
 	}
 
 	/** Admin bar quick-purge button (top bar). */
@@ -22,15 +22,17 @@ class Cache_Purge {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-		$bar->add_node( array(
-			'id'    => 'arshid6social-purge-cache',
-			'title' => '🗑 Purge WPSN Cache',
-			'href'  => wp_nonce_url(
-				admin_url( 'admin-post.php?action=arshid6social_purge_cache' ),
-				'arshid6social_purge_cache'
-			),
-			'meta'  => array( 'title' => __( 'Purge all 6Arshid Social Community caches', '6arshid-social-community' ) ),
-		) );
+		$bar->add_node(
+			array(
+				'id'    => 'arshid6social-purge-cache',
+				'title' => '🗑 Purge WPSN Cache',
+				'href'  => wp_nonce_url(
+					admin_url( 'admin-post.php?action=arshid6social_purge_cache' ),
+					'arshid6social_purge_cache'
+				),
+				'meta'  => array( 'title' => __( 'Purge all 6Arshid Social Community caches', '6arshid-social-community' ) ),
+			)
+		);
 	}
 
 	/** Handle the purge request. */

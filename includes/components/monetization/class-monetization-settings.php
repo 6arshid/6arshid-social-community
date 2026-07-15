@@ -4,7 +4,7 @@ namespace Arshid6Social\Components\Monetization;
 /**
  * Admin settings tab for the Paid Content & Creator Subscriptions component.
  *
- * Registers all sixarshidsc_* options under the 'arshid6social_monetization' group
+ * Registers all arshid6social_monetization_* options under the 'arshid6social_monetization' group
  * so the core admin-settings form picks it up automatically when the
  * 'monetization' tab is active.
  *
@@ -32,9 +32,9 @@ class Monetization_Settings {
 			}
 		}
 
-		add_action( 'admin_init',                                array( $this, 'register_settings' ) );
-		add_action( 'arshid6social_settings_tab_monetization',  array( $this, 'render' ) );
-		add_action( 'admin_enqueue_scripts',                     array( $this, 'enqueue_tab_styles' ) );
+		add_action( 'admin_init', array( $this, 'register_settings' ) );
+		add_action( 'arshid6social_settings_tab_monetization', array( $this, 'render' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_tab_styles' ) );
 
 		// Boot creator settings so the admin IBAN payout panel is always shown
 		// in the Monetization tab (priority 20, after main settings form).
@@ -55,119 +55,168 @@ class Monetization_Settings {
 	public function register_settings(): void {
 
 		// Feature toggle.
-		register_setting( self::OPTION_GROUP, 'sixarshidsc_enabled', array(
-			'type'              => 'boolean',
-			'default'           => false,
-			'sanitize_callback' => static function ( $v ) { return (bool) $v; },
-		) );
+		register_setting(
+			self::OPTION_GROUP,
+			'arshid6social_monetization_enabled',
+			array(
+				'type'              => 'boolean',
+				'default'           => false,
+				'sanitize_callback' => static function ( $v ) {
+					return (bool) $v; },
+			)
+		);
 
-		// Active gateway (extensible via sixarshidsc_payment_gateways filter).
-		register_setting( self::OPTION_GROUP, 'sixarshidsc_active_gateway', array(
-			'type'              => 'string',
-			'default'           => 'stripe_connect',
-			'sanitize_callback' => 'sanitize_key',
-		) );
+		// Active gateway (extensible via arshid6social_monetization_payment_gateways filter).
+		register_setting(
+			self::OPTION_GROUP,
+			'arshid6social_monetization_active_gateway',
+			array(
+				'type'              => 'string',
+				'default'           => 'stripe_connect',
+				'sanitize_callback' => 'sanitize_key',
+			)
+		);
 
 		// Test-mode toggle.
-		register_setting( self::OPTION_GROUP, 'sixarshidsc_stripe_test_mode', array(
-			'type'              => 'boolean',
-			'default'           => true,
-			'sanitize_callback' => static function ( $v ) { return (bool) $v; },
-		) );
+		register_setting(
+			self::OPTION_GROUP,
+			'arshid6social_monetization_stripe_test_mode',
+			array(
+				'type'              => 'boolean',
+				'default'           => true,
+				'sanitize_callback' => static function ( $v ) {
+					return (bool) $v; },
+			)
+		);
 
 		// Publishable keys — plain text (safe to store unencrypted; these are
 		// client-visible by Stripe's own design). Keep existing if submitted blank.
-		foreach ( array( 'sixarshidsc_stripe_pub_key_live', 'sixarshidsc_stripe_pub_key_test' ) as $opt ) {
-			register_setting( self::OPTION_GROUP, $opt, array(
-				'type'              => 'string',
-				'default'           => '',
-				'sanitize_callback' => static function ( $value ) use ( $opt ) {
-					$value = sanitize_text_field( wp_unslash( (string) $value ) );
-					// Empty submission keeps the existing value.
-					if ( '' === trim( $value ) ) {
-						return (string) get_option( $opt, '' );
-					}
-					return $value;
-				},
-			) );
+		foreach ( array( 'arshid6social_monetization_stripe_pub_key_live', 'arshid6social_monetization_stripe_pub_key_test' ) as $opt ) {
+			register_setting(
+				self::OPTION_GROUP,
+				$opt,
+				array(
+					'type'              => 'string',
+					'default'           => '',
+					'sanitize_callback' => static function ( $value ) use ( $opt ) {
+						$value = sanitize_text_field( wp_unslash( (string) $value ) );
+						// Empty submission keeps the existing value.
+						if ( '' === trim( $value ) ) {
+							return (string) get_option( $opt, '' );
+						}
+						return $value;
+					},
+				)
+			);
 		}
 
 		// Secret keys + webhook secrets — encrypted before storage.
 		// Empty submission keeps the existing encrypted blob (so the admin
 		// does not accidentally clear a key just by saving other settings).
 		foreach ( array(
-			'sixarshidsc_stripe_secret_live',
-			'sixarshidsc_stripe_webhook_secret_live',
-			'sixarshidsc_stripe_secret_test',
-			'sixarshidsc_stripe_webhook_secret_test',
+			'arshid6social_monetization_stripe_secret_live',
+			'arshid6social_monetization_stripe_webhook_secret_live',
+			'arshid6social_monetization_stripe_secret_test',
+			'arshid6social_monetization_stripe_webhook_secret_test',
 		) as $opt ) {
-			register_setting( self::OPTION_GROUP, $opt, array(
-				'type'              => 'string',
-				'default'           => '',
-				'sanitize_callback' => static function ( $value ) use ( $opt ) {
-					try {
-						$value = sanitize_text_field( wp_unslash( (string) $value ) );
-						if ( '' === trim( $value ) ) {
+			register_setting(
+				self::OPTION_GROUP,
+				$opt,
+				array(
+					'type'              => 'string',
+					'default'           => '',
+					'sanitize_callback' => static function ( $value ) use ( $opt ) {
+						try {
+							$value = sanitize_text_field( wp_unslash( (string) $value ) );
+							if ( '' === trim( $value ) ) {
+								return (string) get_option( $opt, '' );
+							}
+							// WordPress can fire sanitize_callbacks twice; the second
+							// call receives the already-encrypted blob — pass it through.
+							if ( Monetization_Crypto::is_encrypted( $value ) ) {
+								return $value;
+							}
+							$encrypted = Monetization_Crypto::encrypt( $value );
+							// If encryption returned empty (failure), keep existing value.
+							return ( '' !== $encrypted ) ? $encrypted : (string) get_option( $opt, '' );
+						} catch ( \Throwable $e ) {
+							if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+								error_log( '[ARSHID6SOCIAL Monetization] Key save failed for ' . $opt . ': ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
+							}
 							return (string) get_option( $opt, '' );
 						}
-						// WordPress can fire sanitize_callbacks twice; the second
-						// call receives the already-encrypted blob — pass it through.
-						if ( Monetization_Crypto::is_encrypted( $value ) ) {
-							return $value;
-						}
-						$encrypted = Monetization_Crypto::encrypt( $value );
-						// If encryption returned empty (failure), keep existing value.
-						return ( '' !== $encrypted ) ? $encrypted : (string) get_option( $opt, '' );
-					} catch ( \Throwable $e ) {
-						if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-							error_log( '[ARSHID6SOCIAL Monetization] Key save failed for ' . $opt . ': ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-						}
-						return (string) get_option( $opt, '' );
-					}
-				},
-			) );
+					},
+				)
+			);
 		}
 
 		// Platform fee — percentage (0–100).
-		register_setting( self::OPTION_GROUP, 'sixarshidsc_platform_fee_pct', array(
-			'type'              => 'number',
-			'default'           => 0,
-			'sanitize_callback' => static function ( $v ) {
-				return max( 0.0, min( 100.0, (float) $v ) );
-			},
-		) );
+		register_setting(
+			self::OPTION_GROUP,
+			'arshid6social_monetization_platform_fee_pct',
+			array(
+				'type'              => 'number',
+				'default'           => 0,
+				'sanitize_callback' => static function ( $v ) {
+					return max( 0.0, min( 100.0, (float) $v ) );
+				},
+			)
+		);
 
 		// Platform fee — flat amount per transaction.
-		register_setting( self::OPTION_GROUP, 'sixarshidsc_platform_fee_flat', array(
-			'type'              => 'number',
-			'default'           => 0,
-			'sanitize_callback' => static function ( $v ) {
-				return max( 0.0, (float) $v );
-			},
-		) );
+		register_setting(
+			self::OPTION_GROUP,
+			'arshid6social_monetization_platform_fee_flat',
+			array(
+				'type'              => 'number',
+				'default'           => 0,
+				'sanitize_callback' => static function ( $v ) {
+					return max( 0.0, (float) $v );
+				},
+			)
+		);
 
 		// Currency code.
-		register_setting( self::OPTION_GROUP, 'sixarshidsc_currency', array(
-			'type'              => 'string',
-			'default'           => 'USD',
-			'sanitize_callback' => static function ( $v ) {
-				$allowed = array(
-					'USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY',
-					'CHF', 'SEK', 'NOK', 'DKK', 'TRY', 'AED', 'SAR',
-				);
-				$v = strtoupper( sanitize_text_field( (string) $v ) );
-				return in_array( $v, $allowed, true ) ? $v : 'USD';
-			},
-		) );
+		register_setting(
+			self::OPTION_GROUP,
+			'arshid6social_monetization_currency',
+			array(
+				'type'              => 'string',
+				'default'           => 'USD',
+				'sanitize_callback' => static function ( $v ) {
+					$allowed = array(
+						'USD',
+						'EUR',
+						'GBP',
+						'CAD',
+						'AUD',
+						'JPY',
+						'CHF',
+						'SEK',
+						'NOK',
+						'DKK',
+						'TRY',
+						'AED',
+						'SAR',
+					);
+					$v = strtoupper( sanitize_text_field( (string) $v ) );
+					return in_array( $v, $allowed, true ) ? $v : 'USD';
+				},
+			)
+		);
 
 		// Minimum subscription price creators can set.
-		register_setting( self::OPTION_GROUP, 'sixarshidsc_min_sub_price', array(
-			'type'              => 'number',
-			'default'           => 1.00,
-			'sanitize_callback' => static function ( $v ) {
-				return max( 0.01, (float) $v );
-			},
-		) );
+		register_setting(
+			self::OPTION_GROUP,
+			'arshid6social_monetization_min_sub_price',
+			array(
+				'type'              => 'number',
+				'default'           => 1.00,
+				'sanitize_callback' => static function ( $v ) {
+					return max( 0.01, (float) $v );
+				},
+			)
+		);
 	}
 
 	// -------------------------------------------------------------------------
@@ -181,7 +230,7 @@ class Monetization_Settings {
 		}
 		wp_add_inline_style(
 			'arshid6social-admin',
-			'.sixarshidsc-section{margin:24px 0 0}.sixarshidsc-section h3{border-bottom:1px solid #ddd;padding-bottom:8px;margin-bottom:0}.sixarshidsc-key-set{color:#46b450;font-weight:600;margin-left:8px}.sixarshidsc-code{font-family:monospace;background:#f6f7f7;padding:4px 8px;border-radius:3px;word-break:break-all}'
+			'.arshid6social-mon-section{margin:24px 0 0}.arshid6social-mon-section h3{border-bottom:1px solid #ddd;padding-bottom:8px;margin-bottom:0}.arshid6social-mon-key-set{color:#46b450;font-weight:600;margin-left:8px}.arshid6social-mon-code{font-family:monospace;background:#f6f7f7;padding:4px 8px;border-radius:3px;word-break:break-all}'
 		);
 	}
 
@@ -190,8 +239,8 @@ class Monetization_Settings {
 	 * Called inside the core admin-settings <form> — do NOT add form tags here.
 	 */
 	public function render(): void {
-		$currency    = esc_html( (string) get_option( 'sixarshidsc_currency', 'USD' ) );
-		$webhook_url = esc_url( rest_url( 'sixarshidsc/v1/webhook' ) );
+		$currency    = esc_html( (string) get_option( 'arshid6social_monetization_currency', 'USD' ) );
+		$webhook_url = esc_url( rest_url( 'arshid6social/v1/webhook' ) );
 		?>
 
 		<?php if ( ! is_ssl() && ! ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ) : ?>
@@ -214,8 +263,8 @@ class Monetization_Settings {
 				<th scope="row"><?php esc_html_e( 'Enable Monetization', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="sixarshidsc_enabled" value="1"
-							<?php checked( get_option( 'sixarshidsc_enabled' ) ); ?> />
+						<input type="checkbox" name="arshid6social_monetization_enabled" value="1"
+							<?php checked( get_option( 'arshid6social_monetization_enabled' ) ); ?> />
 						<?php esc_html_e( 'Activate Paid Content & Creator Subscriptions', '6arshid-social-community' ); ?>
 					</label>
 					<p class="description">
@@ -226,11 +275,11 @@ class Monetization_Settings {
 		</table>
 
 		<!-- Gateway selection -->
-		<div class="sixarshidsc-section">
+		<div class="arshid6social-mon-section">
 			<h3><?php esc_html_e( 'Payment Gateway', '6arshid-social-community' ); ?></h3>
 		</div>
 		<p class="description" style="margin-top:8px">
-			<?php esc_html_e( 'Additional gateways can be registered via the sixarshidsc_payment_gateways filter for regions where Stripe is unavailable.', '6arshid-social-community' ); ?>
+			<?php esc_html_e( 'Additional gateways can be registered via the arshid6social_monetization_payment_gateways filter for regions where Stripe is unavailable.', '6arshid-social-community' ); ?>
 		</p>
 		<table class="form-table" role="presentation">
 			<tr>
@@ -245,14 +294,17 @@ class Monetization_Settings {
 					 *
 					 * @param array<string,string> $gateways key => display label.
 					 */
-					$gateways = (array) apply_filters( 'sixarshidsc_payment_gateways', array(
-						'stripe_connect' => __( 'Stripe Connect (recommended)', '6arshid-social-community' ),
-					) );
-					$active = (string) get_option( 'sixarshidsc_active_gateway', 'stripe_connect' );
+					$gateways = (array) apply_filters(
+						'arshid6social_monetization_payment_gateways',
+						array(
+							'stripe_connect' => __( 'Stripe Connect (recommended)', '6arshid-social-community' ),
+						)
+					);
+					$active   = (string) get_option( 'arshid6social_monetization_active_gateway', 'stripe_connect' );
 					foreach ( $gateways as $key => $label ) :
-					?>
+						?>
 					<label style="display:block;margin-bottom:6px;">
-						<input type="radio" name="sixarshidsc_active_gateway"
+						<input type="radio" name="arshid6social_monetization_active_gateway"
 							value="<?php echo esc_attr( $key ); ?>"
 							<?php checked( $active, $key ); ?> />
 						<?php echo esc_html( $label ); ?>
@@ -263,7 +315,7 @@ class Monetization_Settings {
 		</table>
 
 		<!-- Stripe Connect credentials -->
-		<div class="sixarshidsc-section">
+		<div class="arshid6social-mon-section">
 			<h3><?php esc_html_e( 'Stripe Connect Credentials', '6arshid-social-community' ); ?></h3>
 		</div>
 		<p class="description" style="margin-top:8px">
@@ -273,7 +325,11 @@ class Monetization_Settings {
 					/* translators: %s: Stripe dashboard URL */
 					__( 'Find your API keys in the <a href="%s" target="_blank" rel="noopener noreferrer">Stripe Dashboard → Developers → API keys</a>. The secret key and webhook signing secret are stored <strong>encrypted</strong> and are never exposed to the browser or REST API.', '6arshid-social-community' ),
 					array(
-						'a'      => array( 'href' => array(), 'target' => array(), 'rel' => array() ),
+						'a'      => array(
+							'href'   => array(),
+							'target' => array(),
+							'rel'    => array(),
+						),
 						'strong' => array(),
 					)
 				),
@@ -287,8 +343,8 @@ class Monetization_Settings {
 				<th scope="row"><?php esc_html_e( 'Mode', '6arshid-social-community' ); ?></th>
 				<td>
 					<label>
-						<input type="checkbox" name="sixarshidsc_stripe_test_mode" value="1"
-							<?php checked( get_option( 'sixarshidsc_stripe_test_mode', true ) ); ?> />
+						<input type="checkbox" name="arshid6social_monetization_stripe_test_mode" value="1"
+							<?php checked( get_option( 'arshid6social_monetization_stripe_test_mode', true ) ); ?> />
 						<?php esc_html_e( 'Test mode — use test keys and no real money is charged', '6arshid-social-community' ); ?>
 					</label>
 					<p class="description">
@@ -302,25 +358,25 @@ class Monetization_Settings {
 			<?php esc_html_e( 'Live Keys', '6arshid-social-community' ); ?>
 		</h4>
 		<table class="form-table" role="presentation">
-			<?php $this->render_key_row( 'sixarshidsc_stripe_pub_key_live',          __( 'Publishable Key (Live)', '6arshid-social-community' ),  'pk_live_…', false ); ?>
-			<?php $this->render_key_row( 'sixarshidsc_stripe_secret_live',           __( 'Secret Key (Live)', '6arshid-social-community' ),       'sk_live_…', true ); ?>
-			<?php $this->render_key_row( 'sixarshidsc_stripe_webhook_secret_live',   __( 'Webhook Secret (Live)', '6arshid-social-community' ),   'whsec_…',   true ); ?>
+			<?php $this->render_key_row( 'arshid6social_monetization_stripe_pub_key_live', __( 'Publishable Key (Live)', '6arshid-social-community' ), 'pk_live_…', false ); ?>
+			<?php $this->render_key_row( 'arshid6social_monetization_stripe_secret_live', __( 'Secret Key (Live)', '6arshid-social-community' ), 'sk_live_…', true ); ?>
+			<?php $this->render_key_row( 'arshid6social_monetization_stripe_webhook_secret_live', __( 'Webhook Secret (Live)', '6arshid-social-community' ), 'whsec_…', true ); ?>
 		</table>
 
 		<h4 style="margin:20px 0 0 10px;font-size:13px;color:#3c434a;">
 			<?php esc_html_e( 'Test Keys', '6arshid-social-community' ); ?>
 		</h4>
 		<table class="form-table" role="presentation">
-			<?php $this->render_key_row( 'sixarshidsc_stripe_pub_key_test',          __( 'Publishable Key (Test)', '6arshid-social-community' ),  'pk_test_…', false ); ?>
-			<?php $this->render_key_row( 'sixarshidsc_stripe_secret_test',           __( 'Secret Key (Test)', '6arshid-social-community' ),       'sk_test_…', true ); ?>
-			<?php $this->render_key_row( 'sixarshidsc_stripe_webhook_secret_test',   __( 'Webhook Secret (Test)', '6arshid-social-community' ),   'whsec_…',   true ); ?>
+			<?php $this->render_key_row( 'arshid6social_monetization_stripe_pub_key_test', __( 'Publishable Key (Test)', '6arshid-social-community' ), 'pk_test_…', false ); ?>
+			<?php $this->render_key_row( 'arshid6social_monetization_stripe_secret_test', __( 'Secret Key (Test)', '6arshid-social-community' ), 'sk_test_…', true ); ?>
+			<?php $this->render_key_row( 'arshid6social_monetization_stripe_webhook_secret_test', __( 'Webhook Secret (Test)', '6arshid-social-community' ), 'whsec_…', true ); ?>
 		</table>
 
 		<!-- Webhook URL notice -->
 		<div class="notice notice-info inline" style="margin:16px 0 0">
 			<p>
 				<strong><?php esc_html_e( 'Stripe webhook endpoint:', '6arshid-social-community' ); ?></strong><br />
-				<span class="sixarshidsc-code"><?php echo esc_url( $webhook_url ); ?></span><br />
+				<span class="arshid6social-mon-code"><?php echo esc_url( $webhook_url ); ?></span><br />
 				<span class="description">
 					<?php
 					printf(
@@ -328,7 +384,11 @@ class Monetization_Settings {
 							// translators: %s is the URL to the Stripe Dashboard webhooks settings page.
 							__( 'Register this URL in <a href="%s" target="_blank" rel="noopener noreferrer">Stripe Dashboard → Webhooks</a>. Listen for: <code>customer.subscription.*</code>, <code>invoice.*</code>, <code>payment_intent.*</code>, <code>account.updated</code>.', '6arshid-social-community' ),
 							array(
-								'a'    => array( 'href' => array(), 'target' => array(), 'rel' => array() ),
+								'a'    => array(
+									'href'   => array(),
+									'target' => array(),
+									'rel'    => array(),
+								),
 								'code' => array(),
 							)
 						),
@@ -340,7 +400,7 @@ class Monetization_Settings {
 		</div>
 
 		<!-- Platform revenue -->
-		<div class="sixarshidsc-section">
+		<div class="arshid6social-mon-section">
 			<h3><?php esc_html_e( 'Platform Revenue', '6arshid-social-community' ); ?></h3>
 		</div>
 		<p class="description" style="margin-top:8px">
@@ -349,14 +409,14 @@ class Monetization_Settings {
 		<table class="form-table" role="presentation">
 			<tr>
 				<th scope="row">
-					<label for="sixarshidsc_platform_fee_pct">
+					<label for="arshid6social_monetization_platform_fee_pct">
 						<?php esc_html_e( 'Platform Fee %', '6arshid-social-community' ); ?>
 					</label>
 				</th>
 				<td>
-					<input type="number" id="sixarshidsc_platform_fee_pct" name="sixarshidsc_platform_fee_pct"
+					<input type="number" id="arshid6social_monetization_platform_fee_pct" name="arshid6social_monetization_platform_fee_pct"
 						class="small-text"
-						value="<?php echo esc_attr( (string) get_option( 'sixarshidsc_platform_fee_pct', 0 ) ); ?>"
+						value="<?php echo esc_attr( (string) get_option( 'arshid6social_monetization_platform_fee_pct', 0 ) ); ?>"
 						min="0" max="100" step="0.01" />
 					<span class="description">%</span>
 					<p class="description">
@@ -366,14 +426,14 @@ class Monetization_Settings {
 			</tr>
 			<tr>
 				<th scope="row">
-					<label for="sixarshidsc_platform_fee_flat">
+					<label for="arshid6social_monetization_platform_fee_flat">
 						<?php esc_html_e( 'Platform Flat Fee', '6arshid-social-community' ); ?>
 					</label>
 				</th>
 				<td>
-					<input type="number" id="sixarshidsc_platform_fee_flat" name="sixarshidsc_platform_fee_flat"
+					<input type="number" id="arshid6social_monetization_platform_fee_flat" name="arshid6social_monetization_platform_fee_flat"
 						class="small-text"
-						value="<?php echo esc_attr( (string) get_option( 'sixarshidsc_platform_fee_flat', 0 ) ); ?>"
+						value="<?php echo esc_attr( (string) get_option( 'arshid6social_monetization_platform_fee_flat', 0 ) ); ?>"
 						min="0" step="0.01" />
 					<span class="description"><?php echo esc_html( $currency ); ?></span>
 					<p class="description">
@@ -383,14 +443,14 @@ class Monetization_Settings {
 			</tr>
 			<tr>
 				<th scope="row">
-					<label for="sixarshidsc_currency">
+					<label for="arshid6social_monetization_currency">
 						<?php esc_html_e( 'Currency', '6arshid-social-community' ); ?>
 					</label>
 				</th>
 				<td>
 					<?php
-					$current_currency = (string) get_option( 'sixarshidsc_currency', 'USD' );
-					$currencies = array(
+					$current_currency = (string) get_option( 'arshid6social_monetization_currency', 'USD' );
+					$currencies       = array(
 						'USD' => 'US Dollar (USD)',
 						'EUR' => 'Euro (EUR)',
 						'GBP' => 'British Pound (GBP)',
@@ -406,7 +466,7 @@ class Monetization_Settings {
 						'SAR' => 'Saudi Riyal (SAR)',
 					);
 					?>
-					<select id="sixarshidsc_currency" name="sixarshidsc_currency">
+					<select id="arshid6social_monetization_currency" name="arshid6social_monetization_currency">
 						<?php foreach ( $currencies as $code => $label ) : ?>
 						<option value="<?php echo esc_attr( $code ); ?>"
 							<?php selected( $current_currency, $code ); ?>>
@@ -422,20 +482,20 @@ class Monetization_Settings {
 		</table>
 
 		<!-- Subscription pricing -->
-		<div class="sixarshidsc-section">
+		<div class="arshid6social-mon-section">
 			<h3><?php esc_html_e( 'Subscription Pricing', '6arshid-social-community' ); ?></h3>
 		</div>
 		<table class="form-table" role="presentation" style="margin-top:0">
 			<tr>
 				<th scope="row">
-					<label for="sixarshidsc_min_sub_price">
+					<label for="arshid6social_monetization_min_sub_price">
 						<?php esc_html_e( 'Minimum Subscription Price', '6arshid-social-community' ); ?>
 					</label>
 				</th>
 				<td>
-					<input type="number" id="sixarshidsc_min_sub_price" name="sixarshidsc_min_sub_price"
+					<input type="number" id="arshid6social_monetization_min_sub_price" name="arshid6social_monetization_min_sub_price"
 						class="small-text"
-						value="<?php echo esc_attr( (string) get_option( 'sixarshidsc_min_sub_price', '1.00' ) ); ?>"
+						value="<?php echo esc_attr( (string) get_option( 'arshid6social_monetization_min_sub_price', '1.00' ) ); ?>"
 						min="0.01" step="0.01" />
 					<span class="description"><?php echo esc_html( $currency ); ?></span>
 					<p class="description">
@@ -446,7 +506,7 @@ class Monetization_Settings {
 		</table>
 
 		<!-- Compliance notice -->
-		<div class="sixarshidsc-section">
+		<div class="arshid6social-mon-section">
 			<h3><?php esc_html_e( 'Compliance', '6arshid-social-community' ); ?></h3>
 		</div>
 		<div class="notice notice-warning inline" style="margin:8px 0 0">
@@ -477,13 +537,13 @@ class Monetization_Settings {
 		string $opt_name,
 		string $label,
 		string $placeholder,
-		bool   $is_secret
+		bool $is_secret
 	): void {
 		$is_set = Monetization_Crypto::is_set( $opt_name );
 
 		if ( $is_secret ) {
 			// Never output the decrypted value into the browser.
-			$input_value  = '';
+			$input_value       = '';
 			$input_placeholder = $is_set
 				? __( '— key saved; enter a new value to replace —', '6arshid-social-community' )
 				: $placeholder;
@@ -511,7 +571,7 @@ class Monetization_Settings {
 					placeholder="<?php echo esc_attr( $input_placeholder ); ?>"
 				/>
 				<?php if ( $is_set ) : ?>
-					<span class="sixarshidsc-key-set">&#10003; <?php esc_html_e( 'Saved', '6arshid-social-community' ); ?></span>
+					<span class="arshid6social-mon-key-set">&#10003; <?php esc_html_e( 'Saved', '6arshid-social-community' ); ?></span>
 				<?php endif; ?>
 			</td>
 		</tr>

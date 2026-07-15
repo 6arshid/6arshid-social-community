@@ -231,7 +231,7 @@ class Members {
 		}
 
 		$user_id = get_current_user_id();
-		$fields  = isset( $_POST['fields'] ) && is_array( $_POST['fields'] ) ? $_POST['fields'] : array(); // phpcs:ignore WordPress.Security.NonceVerification
+		$fields  = isset( $_POST['fields'] ) && is_array( $_POST['fields'] ) ? wp_unslash( $_POST['fields'] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification -- nonce already verified above via check_ajax_referer().
 
 		$errors = $this->xprofile->save_profile_data( $user_id, $fields );
 
@@ -256,8 +256,8 @@ class Members {
 		}
 
 		global $wpdb;
-		$user_id  = get_current_user_id();
-		$bio      = wp_kses_post( wp_unslash( $_POST['bio'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
+		$user_id = get_current_user_id();
+		$bio     = wp_kses_post( wp_unslash( $_POST['bio'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		$field_id = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
@@ -351,9 +351,9 @@ class Members {
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification
-		$current  = isset( $_POST['current_password'] ) ? wp_unslash( $_POST['current_password'] ) : '';
-		$new      = isset( $_POST['new_password'] ) ? wp_unslash( $_POST['new_password'] ) : '';
-		$confirm  = isset( $_POST['confirm_password'] ) ? wp_unslash( $_POST['confirm_password'] ) : '';
+		$current = isset( $_POST['current_password'] ) ? wp_unslash( $_POST['current_password'] ) : '';
+		$new     = isset( $_POST['new_password'] ) ? wp_unslash( $_POST['new_password'] ) : '';
+		$confirm = isset( $_POST['confirm_password'] ) ? wp_unslash( $_POST['confirm_password'] ) : '';
 		// phpcs:enable
 
 		if ( '' === $current || '' === $new || '' === $confirm ) {
@@ -398,10 +398,10 @@ class Members {
 
 		$members = $this->get_members(
 			array(
-				'page'    => $page,
-				'search'  => $search,
-				'type'    => $type,
-				'number'  => $per_page,
+				'page'   => $page,
+				'search' => $search,
+				'type'   => $type,
+				'number' => $per_page,
 			)
 		);
 
@@ -494,7 +494,12 @@ class Members {
 
 		// Own username is always "available" (no-op change).
 		if ( $username === $current_user->user_login ) {
-			wp_send_json_success( array( 'message' => __( 'That is your current username.', '6arshid-social-community' ), 'is_current' => true ) );
+			wp_send_json_success(
+				array(
+					'message'    => __( 'That is your current username.', '6arshid-social-community' ),
+					'is_current' => true,
+				)
+			);
 		}
 
 		$existing = get_user_by( 'login', $username );
@@ -502,7 +507,12 @@ class Members {
 			wp_send_json_error( array( 'message' => __( 'That username is already taken.', '6arshid-social-community' ) ) );
 		}
 
-		wp_send_json_success( array( 'message' => __( 'Username is available!', '6arshid-social-community' ), 'is_current' => false ) );
+		wp_send_json_success(
+			array(
+				'message'    => __( 'Username is available!', '6arshid-social-community' ),
+				'is_current' => false,
+			)
+		);
 	}
 
 	/**
@@ -553,7 +563,7 @@ class Members {
 			$wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->users} WHERE user_nicename = %s AND ID != %d", $nicename, $current_user->ID ) ) // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		) {
 			$nicename = $base . '-' . $suffix;
-			$suffix++;
+			++$suffix;
 		}
 
 		$updated = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -580,8 +590,8 @@ class Members {
 
 		wp_send_json_success(
 			array(
-				'message'     => __( 'Username changed successfully!', '6arshid-social-community' ),
-				'new_url'     => $new_profile_url,
+				'message'      => __( 'Username changed successfully!', '6arshid-social-community' ),
+				'new_url'      => $new_profile_url,
 				'new_username' => $new_username,
 			)
 		);
@@ -637,15 +647,26 @@ class Members {
 			if ( $existing ) {
 				$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 					$wpdb->prefix . 'sn_xprofile_data',
-					array( 'value' => $display_name, 'last_updated' => current_time( 'mysql' ) ),
-					array( 'field_id' => $name_field_id, 'user_id' => $user_id ),
+					array(
+						'value'        => $display_name,
+						'last_updated' => current_time( 'mysql' ),
+					),
+					array(
+						'field_id' => $name_field_id,
+						'user_id'  => $user_id,
+					),
 					array( '%s', '%s' ),
 					array( '%d', '%d' )
 				);
 			} else {
 				$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 					$wpdb->prefix . 'sn_xprofile_data',
-					array( 'field_id' => $name_field_id, 'user_id' => $user_id, 'value' => $display_name, 'last_updated' => current_time( 'mysql' ) ),
+					array(
+						'field_id'     => $name_field_id,
+						'user_id'      => $user_id,
+						'value'        => $display_name,
+						'last_updated' => current_time( 'mysql' ),
+					),
 					array( '%d', '%d', '%s', '%s' )
 				);
 			}
@@ -685,13 +706,13 @@ class Members {
 	 */
 	public function get_members( array $args = array() ): array {
 		$defaults = array(
-			'page'     => 1,
-			'number'   => (int) get_option( 'arshid6social_members_per_page', 20 ),
-			'search'   => '',
-			'type'     => 'newest',
-			'exclude'  => array(),
+			'page'    => 1,
+			'number'  => (int) get_option( 'arshid6social_members_per_page', 20 ),
+			'search'  => '',
+			'type'    => 'newest',
+			'exclude' => array(),
 		);
-		$args = wp_parse_args( $args, $defaults );
+		$args     = wp_parse_args( $args, $defaults );
 
 		// Allow 'per_page' as an alias for 'number'.
 		if ( isset( $args['per_page'] ) ) {
@@ -715,17 +736,17 @@ class Members {
 
 		switch ( $args['type'] ) {
 			case 'active':
-				$query_args['orderby'] = 'meta_value';
+				$query_args['orderby']  = 'meta_value';
 				$query_args['meta_key'] = 'last_activity'; // phpcs:ignore WordPress.DB.SlowDBQuery
-				$query_args['order'] = 'DESC';
+				$query_args['order']    = 'DESC';
 				break;
 			case 'alphabetical':
 				$query_args['orderby'] = 'display_name';
-				$query_args['order'] = 'ASC';
+				$query_args['order']   = 'ASC';
 				break;
 			default:
 				$query_args['orderby'] = 'registered';
-				$query_args['order'] = 'DESC';
+				$query_args['order']   = 'DESC';
 		}
 
 		// Always exclude suspended users from the public members list.
@@ -767,19 +788,19 @@ class Members {
 	 */
 	public function format_member( \WP_User $user ): array {
 		return array(
-			'id'            => $user->ID,
-			'name'          => $user->display_name,
-			'username'      => $user->user_login,
-			'profileUrl'    => esc_url( home_url( '/members/' . $user->user_nicename . '/' ) ),
-			'avatarUrl'     => esc_url( $this->avatar->get_avatar_url( $user->ID ) ),
-			'coverUrl'      => esc_url( $this->avatar->get_cover_url( $user->ID ) ),
-			'bio'           => wp_kses_post( $this->xprofile->get_field_value( $user->ID, 'bio' ) ),
-			'isVerified'    => arshid6social_verification() ? arshid6social_verification()->is_verified( $user->ID ) : (bool) get_user_meta( $user->ID, 'arshid6social_verified', true ),
-			'isSuspended'   => (bool) get_user_meta( $user->ID, 'arshid6social_suspended', true ),
-			'isOnline'      => $this->is_user_online( $user->ID ),
-			'friendCount'   => $this->get_friend_count( $user->ID ),
-			'lastActivity'  => get_user_meta( $user->ID, 'arshid6social_last_activity', true ) ?: '',
-			'registered'    => $user->user_registered,
+			'id'           => $user->ID,
+			'name'         => $user->display_name,
+			'username'     => $user->user_login,
+			'profileUrl'   => esc_url( home_url( '/members/' . $user->user_nicename . '/' ) ),
+			'avatarUrl'    => esc_url( $this->avatar->get_avatar_url( $user->ID ) ),
+			'coverUrl'     => esc_url( $this->avatar->get_cover_url( $user->ID ) ),
+			'bio'          => wp_kses_post( $this->xprofile->get_field_value( $user->ID, 'bio' ) ),
+			'isVerified'   => arshid6social_verification() ? arshid6social_verification()->is_verified( $user->ID ) : (bool) get_user_meta( $user->ID, 'arshid6social_verified', true ),
+			'isSuspended'  => (bool) get_user_meta( $user->ID, 'arshid6social_suspended', true ),
+			'isOnline'     => $this->is_user_online( $user->ID ),
+			'friendCount'  => $this->get_friend_count( $user->ID ),
+			'lastActivity' => get_user_meta( $user->ID, 'arshid6social_last_activity', true ) ?: '',
+			'registered'   => $user->user_registered,
 		);
 	}
 

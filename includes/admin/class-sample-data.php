@@ -60,21 +60,23 @@ final class Sample_Data {
 		update_option( 'arshid6social_sample_data_imported', true, false );
 		update_option( 'arshid6social_sample_data_ids', $ids, false );
 
-		wp_send_json_success( array(
-			'message' => sprintf(
+		wp_send_json_success(
+			array(
+				'message' => sprintf(
 				/* translators: counts */
-				__( 'Imported: %1$d users, %2$d activities, %3$d notifications, %4$d listings, %5$d groups, %6$d bookmarks, %7$d messages, %8$d stories, %9$d ad.', '6arshid-social-community' ),
-				count( $ids['users'] ),
-				count( $ids['activities'] ),
-				count( $ids['notifications'] ),
-				count( $ids['listings'] ),
-				count( $ids['groups'] ),
-				count( $ids['bookmarks'] ),
-				count( $ids['messages'] ),
-				count( $ids['stories'] ),
-				count( $ids['ads'] )
-			),
-		) );
+					__( 'Imported: %1$d users, %2$d activities, %3$d notifications, %4$d listings, %5$d groups, %6$d bookmarks, %7$d messages, %8$d stories, %9$d ad.', '6arshid-social-community' ),
+					count( $ids['users'] ),
+					count( $ids['activities'] ),
+					count( $ids['notifications'] ),
+					count( $ids['listings'] ),
+					count( $ids['groups'] ),
+					count( $ids['bookmarks'] ),
+					count( $ids['messages'] ),
+					count( $ids['stories'] ),
+					count( $ids['ads'] )
+				),
+			)
+		);
 	}
 
 	public function ajax_delete(): void {
@@ -101,18 +103,56 @@ final class Sample_Data {
 
 	private function first_names(): array {
 		return array(
-			'James', 'Emma', 'Oliver', 'Sophia', 'William', 'Ava', 'Noah', 'Isabella',
-			'Liam', 'Mia', 'Ethan', 'Charlotte', 'Lucas', 'Amelia', 'Mason', 'Harper',
-			'Logan', 'Evelyn', 'Alexander', 'Abigail', 'Ryan', 'Emily', 'Daniel', 'Ella',
+			'James',
+			'Emma',
+			'Oliver',
+			'Sophia',
+			'William',
+			'Ava',
+			'Noah',
+			'Isabella',
+			'Liam',
+			'Mia',
+			'Ethan',
+			'Charlotte',
+			'Lucas',
+			'Amelia',
+			'Mason',
+			'Harper',
+			'Logan',
+			'Evelyn',
+			'Alexander',
+			'Abigail',
+			'Ryan',
+			'Emily',
+			'Daniel',
+			'Ella',
 			'Henry',
 		);
 	}
 
 	private function last_names(): array {
 		return array(
-			'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
-			'Wilson', 'Taylor', 'Anderson', 'Thomas', 'Jackson', 'White', 'Harris',
-			'Martin', 'Thompson', 'Young', 'Robinson', 'Lewis',
+			'Smith',
+			'Johnson',
+			'Williams',
+			'Brown',
+			'Jones',
+			'Garcia',
+			'Miller',
+			'Davis',
+			'Wilson',
+			'Taylor',
+			'Anderson',
+			'Thomas',
+			'Jackson',
+			'White',
+			'Harris',
+			'Martin',
+			'Thompson',
+			'Young',
+			'Robinson',
+			'Lewis',
 		);
 	}
 
@@ -153,46 +193,111 @@ final class Sample_Data {
 
 	private function group_names(): array {
 		return array(
-			'Photography Enthusiasts', 'Web Developers Hub', 'Book Club', 'Fitness Fanatics',
-			'Travel Junkies', 'Home Cooking', 'Movie Buffs', 'Entrepreneurs Network',
-			'Music Lovers', 'Art & Creativity', 'Tech Talks', 'Digital Nomads',
-			'Gaming Community', 'Yoga & Mindfulness', 'Startup Founders',
-			'Data Science Crew', 'Writers Circle', 'Cycling Club', 'Language Exchange',
-			'Investment & Finance', 'Pet Owners', 'Gardening Club', 'Chess Players',
-			'Hiking Adventures', 'UI/UX Designers', 'Coffee Connoisseurs',
-			'Science & Space', 'Sustainability & Eco Life', 'Remote Workers Unite',
-			'Podcast Listeners', 'Stand-Up Comedy Fans', 'Anime Club',
-			'Football Fanatics', 'Running Club', 'Creative Writing',
-			'Blockchain & Crypto', 'Parenting Tips', 'Astronomy Buffs',
-			'Architecture & Design', 'History Geeks', 'Health & Nutrition',
-			'Street Photography', 'Self-Improvement', 'Career Growth',
-			'Vintage & Thrift', '3D Printing Club', 'Machine Learning',
-			'Board Games Night', 'Surfing Community', 'Fashion & Style',
+			'Photography Enthusiasts',
+			'Web Developers Hub',
+			'Book Club',
+			'Fitness Fanatics',
+			'Travel Junkies',
+			'Home Cooking',
+			'Movie Buffs',
+			'Entrepreneurs Network',
+			'Music Lovers',
+			'Art & Creativity',
+			'Tech Talks',
+			'Digital Nomads',
+			'Gaming Community',
+			'Yoga & Mindfulness',
+			'Startup Founders',
+			'Data Science Crew',
+			'Writers Circle',
+			'Cycling Club',
+			'Language Exchange',
+			'Investment & Finance',
+			'Pet Owners',
+			'Gardening Club',
+			'Chess Players',
+			'Hiking Adventures',
+			'UI/UX Designers',
+			'Coffee Connoisseurs',
+			'Science & Space',
+			'Sustainability & Eco Life',
+			'Remote Workers Unite',
+			'Podcast Listeners',
+			'Stand-Up Comedy Fans',
+			'Anime Club',
+			'Football Fanatics',
+			'Running Club',
+			'Creative Writing',
+			'Blockchain & Crypto',
+			'Parenting Tips',
+			'Astronomy Buffs',
+			'Architecture & Design',
+			'History Geeks',
+			'Health & Nutrition',
+			'Street Photography',
+			'Self-Improvement',
+			'Career Growth',
+			'Vintage & Thrift',
+			'3D Printing Club',
+			'Machine Learning',
+			'Board Games Night',
+			'Surfing Community',
+			'Fashion & Style',
 		);
 	}
 
 	private function listing_titles(): array {
 		return array(
-			'iPhone 14 Pro Max 256GB', 'Samsung Galaxy S23 Ultra', 'MacBook Pro M3 14"',
-			'Dell XPS 15 Laptop', 'Sony WH-1000XM5 Headphones', 'Canon EOS R50 Camera',
-			'DJI Mini 3 Drone', 'Apple Watch Series 9', 'iPad Pro 12.9"',
-			'Nintendo Switch OLED', 'Xbox Series X', 'PlayStation 5 Console',
-			'4K OLED Smart TV 55"', 'Keychron Q1 Mechanical Keyboard', 'Logitech MX Master 3',
-			'Bose QuietComfort 45', 'GoPro Hero 11', 'Kindle Paperwhite',
-			'Samsung 49" Ultrawide Monitor', 'LG OLED C2 65"',
-			'Trek Marlin 7 Mountain Bike', 'Specialized Road Bike 2023',
-			'Leather Sofa 3-Seater', 'Standing Desk 160cm', 'Ergonomic Office Chair',
-			'KitchenAid Stand Mixer', 'Nespresso Vertuo Machine', 'Vitamix E310 Blender',
-			'Dyson V15 Detect Vacuum', 'Roomba i7 Robot Vacuum',
-			'Vintage Leather Jacket M', 'Levi\'s 501 Jeans 32x32', 'Nike Air Max 270 US10',
-			'Adidas Ultraboost 22 US9', 'Ray-Ban Wayfarer Sunglasses',
-			'Canon EF 50mm f/1.8 Lens', 'Sony FE 24-70mm Lens',
-			'Acoustic Guitar Yamaha F310', 'Roland FP-30X Digital Piano',
-			'Lego Technic Bugatti Set', 'Pokemon Card Collection Binder',
-			'Camping Tent 4-Person MSR', 'North Face Backpack 60L',
-			'Patagonia Down Jacket L', 'Surfboard 7\'2 Funboard',
-			'Road Bike Helmet Giro', 'Garmin Forerunner 955', 'Fitbit Charge 5',
-			'Portable Projector XGIMI', 'Electric Scooter Xiaomi Pro 2',
+			'iPhone 14 Pro Max 256GB',
+			'Samsung Galaxy S23 Ultra',
+			'MacBook Pro M3 14"',
+			'Dell XPS 15 Laptop',
+			'Sony WH-1000XM5 Headphones',
+			'Canon EOS R50 Camera',
+			'DJI Mini 3 Drone',
+			'Apple Watch Series 9',
+			'iPad Pro 12.9"',
+			'Nintendo Switch OLED',
+			'Xbox Series X',
+			'PlayStation 5 Console',
+			'4K OLED Smart TV 55"',
+			'Keychron Q1 Mechanical Keyboard',
+			'Logitech MX Master 3',
+			'Bose QuietComfort 45',
+			'GoPro Hero 11',
+			'Kindle Paperwhite',
+			'Samsung 49" Ultrawide Monitor',
+			'LG OLED C2 65"',
+			'Trek Marlin 7 Mountain Bike',
+			'Specialized Road Bike 2023',
+			'Leather Sofa 3-Seater',
+			'Standing Desk 160cm',
+			'Ergonomic Office Chair',
+			'KitchenAid Stand Mixer',
+			'Nespresso Vertuo Machine',
+			'Vitamix E310 Blender',
+			'Dyson V15 Detect Vacuum',
+			'Roomba i7 Robot Vacuum',
+			'Vintage Leather Jacket M',
+			'Levi\'s 501 Jeans 32x32',
+			'Nike Air Max 270 US10',
+			'Adidas Ultraboost 22 US9',
+			'Ray-Ban Wayfarer Sunglasses',
+			'Canon EF 50mm f/1.8 Lens',
+			'Sony FE 24-70mm Lens',
+			'Acoustic Guitar Yamaha F310',
+			'Roland FP-30X Digital Piano',
+			'Lego Technic Bugatti Set',
+			'Pokemon Card Collection Binder',
+			'Camping Tent 4-Person MSR',
+			'North Face Backpack 60L',
+			'Patagonia Down Jacket L',
+			'Surfboard 7\'2 Funboard',
+			'Road Bike Helmet Giro',
+			'Garmin Forerunner 955',
+			'Fitbit Charge 5',
+			'Portable Projector XGIMI',
+			'Electric Scooter Xiaomi Pro 2',
 		);
 	}
 
@@ -273,8 +378,16 @@ final class Sample_Data {
 
 	private function story_bg_colors(): array {
 		return array(
-			'#2563eb', '#7c3aed', '#db2777', '#dc2626', '#ea580c',
-			'#ca8a04', '#16a34a', '#0891b2', '#4f46e5', '#be123c',
+			'#2563eb',
+			'#7c3aed',
+			'#db2777',
+			'#dc2626',
+			'#ea580c',
+			'#ca8a04',
+			'#16a34a',
+			'#0891b2',
+			'#4f46e5',
+			'#be123c',
 		);
 	}
 
@@ -330,12 +443,14 @@ final class Sample_Data {
 				continue;
 			}
 
-			wp_update_user( array(
-				'ID'           => $uid,
-				'display_name' => $fn . ' ' . $ln,
-				'first_name'   => $fn,
-				'last_name'    => $ln,
-			) );
+			wp_update_user(
+				array(
+					'ID'           => $uid,
+					'display_name' => $fn . ' ' . $ln,
+					'first_name'   => $fn,
+					'last_name'    => $ln,
+				)
+			);
 			add_user_meta( $uid, '_arshid6social_sample', '1' );
 
 			$user_ids[]     = $uid;
@@ -348,9 +463,9 @@ final class Sample_Data {
 		$date_offset_m = 0;
 
 		for ( $i = 0; $i < 50; $i++ ) {
-			$author_id = ! empty( $user_ids ) ? $user_ids[ $i % count( $user_ids ) ] : $admin_id;
-			$content   = $contents[ $i % count( $contents ) ];
-			$date      = gmdate( 'Y-m-d H:i:s', strtotime( '-' . $date_offset_m . ' minutes', (int) current_time( 'timestamp' ) ) );
+			$author_id      = ! empty( $user_ids ) ? $user_ids[ $i % count( $user_ids ) ] : $admin_id;
+			$content        = $contents[ $i % count( $contents ) ];
+			$date           = gmdate( 'Y-m-d H:i:s', strtotime( '-' . $date_offset_m . ' minutes', (int) current_time( 'timestamp' ) ) );
 			$date_offset_m += 30;
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -379,7 +494,11 @@ final class Sample_Data {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->insert(
 					$wpdb->prefix . 'sn_activity_meta',
-					array( 'activity_id' => $activity_id, 'meta_key' => '_arshid6social_sample', 'meta_value' => '1' ),
+					array(
+						'activity_id' => $activity_id,
+						'meta_key'    => '_arshid6social_sample',
+						'meta_value'  => '1',
+					),
 					array( '%d', '%s', '%s' )
 				);
 				$activity_ids[]      = $activity_id;
@@ -389,19 +508,34 @@ final class Sample_Data {
 
 		// ── 100 Notifications for admin ───────────────────────────────────────
 		$notif_types  = array(
-			array( 'component' => 'activity', 'action' => 'activity_reaction' ),
-			array( 'component' => 'activity', 'action' => 'activity_comment' ),
-			array( 'component' => 'friends',  'action' => 'friend_request' ),
-			array( 'component' => 'friends',  'action' => 'new_follower' ),
-			array( 'component' => 'activity', 'action' => 'activity_mention' ),
+			array(
+				'component' => 'activity',
+				'action'    => 'activity_reaction',
+			),
+			array(
+				'component' => 'activity',
+				'action'    => 'activity_comment',
+			),
+			array(
+				'component' => 'friends',
+				'action'    => 'friend_request',
+			),
+			array(
+				'component' => 'friends',
+				'action'    => 'new_follower',
+			),
+			array(
+				'component' => 'activity',
+				'action'    => 'activity_mention',
+			),
 		);
 		$notif_offset = 0;
 
 		for ( $i = 0; $i < 100; $i++ ) {
-			$type       = $notif_types[ $i % count( $notif_types ) ];
-			$sender_id  = ! empty( $user_ids ) ? $user_ids[ $i % count( $user_ids ) ] : 1;
-			$act_id     = ! empty( $activity_ids ) ? $activity_ids[ $i % count( $activity_ids ) ] : 0;
-			$date       = gmdate( 'Y-m-d H:i:s', strtotime( '-' . $notif_offset . ' minutes', (int) current_time( 'timestamp' ) ) );
+			$type          = $notif_types[ $i % count( $notif_types ) ];
+			$sender_id     = ! empty( $user_ids ) ? $user_ids[ $i % count( $user_ids ) ] : 1;
+			$act_id        = ! empty( $activity_ids ) ? $activity_ids[ $i % count( $activity_ids ) ] : 0;
+			$date          = gmdate( 'Y-m-d H:i:s', strtotime( '-' . $notif_offset . ' minutes', (int) current_time( 'timestamp' ) ) );
 			$notif_offset += 15;
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -473,11 +607,11 @@ final class Sample_Data {
 		$group_offset = 0;
 
 		for ( $i = 0; $i < 50; $i++ ) {
-			$creator_id = ! empty( $user_ids ) ? $user_ids[ $i % count( $user_ids ) ] : $admin_id;
-			$name       = $group_names[ $i % count( $group_names ) ];
-			$slug       = sanitize_title( $name ) . '-sample-' . ( $i + 1 );
-			$status     = $statuses[ $i % 5 ];
-			$date       = gmdate( 'Y-m-d H:i:s', strtotime( '-' . $group_offset . ' hours', (int) current_time( 'timestamp' ) ) );
+			$creator_id    = ! empty( $user_ids ) ? $user_ids[ $i % count( $user_ids ) ] : $admin_id;
+			$name          = $group_names[ $i % count( $group_names ) ];
+			$slug          = sanitize_title( $name ) . '-sample-' . ( $i + 1 );
+			$status        = $statuses[ $i % 5 ];
+			$date          = gmdate( 'Y-m-d H:i:s', strtotime( '-' . $group_offset . ' hours', (int) current_time( 'timestamp' ) ) );
 			$group_offset += 3;
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -551,9 +685,9 @@ final class Sample_Data {
 		$msg_offset = 0;
 
 		for ( $i = 0; $i < 50; $i++ ) {
-			$sender_id = ! empty( $user_ids ) ? $user_ids[ $i % count( $user_ids ) ] : 1;
-			$text      = $msg_texts[ $i % count( $msg_texts ) ];
-			$date      = gmdate( 'Y-m-d H:i:s', strtotime( '-' . $msg_offset . ' minutes', (int) current_time( 'timestamp' ) ) );
+			$sender_id   = ! empty( $user_ids ) ? $user_ids[ $i % count( $user_ids ) ] : 1;
+			$text        = $msg_texts[ $i % count( $msg_texts ) ];
+			$date        = gmdate( 'Y-m-d H:i:s', strtotime( '-' . $msg_offset . ' minutes', (int) current_time( 'timestamp' ) ) );
 			$msg_offset += 20;
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -575,14 +709,26 @@ final class Sample_Data {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->insert(
 				$wpdb->prefix . 'sn_messages_recipients',
-				array( 'thread_id' => $thread_id, 'user_id' => $sender_id, 'unread_count' => 0, 'sender_only' => 0, 'is_deleted' => 0 ),
+				array(
+					'thread_id'    => $thread_id,
+					'user_id'      => $sender_id,
+					'unread_count' => 0,
+					'sender_only'  => 0,
+					'is_deleted'   => 0,
+				),
 				array( '%d', '%d', '%d', '%d', '%d' )
 			);
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->insert(
 				$wpdb->prefix . 'sn_messages_recipients',
-				array( 'thread_id' => $thread_id, 'user_id' => $admin_id, 'unread_count' => 1, 'sender_only' => 0, 'is_deleted' => 0 ),
+				array(
+					'thread_id'    => $thread_id,
+					'user_id'      => $admin_id,
+					'unread_count' => 1,
+					'sender_only'  => 0,
+					'is_deleted'   => 0,
+				),
 				array( '%d', '%d', '%d', '%d', '%d' )
 			);
 
@@ -607,9 +753,9 @@ final class Sample_Data {
 		}
 
 		// ── 30 Stories (text only) ────────────────────────────────────────────
-		$stories_table      = $wpdb->prefix . 'sn_stories';
-		$story_items_table  = $wpdb->prefix . 'sn_story_items';
-		$expiry_hours       = (int) get_option( 'arshid6social_stories_expiry_hours', 24 );
+		$stories_table     = $wpdb->prefix . 'sn_stories';
+		$story_items_table = $wpdb->prefix . 'sn_story_items';
+		$expiry_hours      = (int) get_option( 'arshid6social_stories_expiry_hours', 24 );
 
 		if ( $this->table_exists( $stories_table ) ) {
 			$story_texts  = $this->story_texts();
@@ -617,20 +763,20 @@ final class Sample_Data {
 			$story_offset = 0;
 
 			for ( $i = 0; $i < 30; $i++ ) {
-				$author_id  = ! empty( $user_ids ) ? $user_ids[ $i % count( $user_ids ) ] : $admin_id;
-				$created_at = gmdate( 'Y-m-d H:i:s', strtotime( '-' . $story_offset . ' minutes', (int) current_time( 'timestamp' ) ) );
-				$expires_at = gmdate( 'Y-m-d H:i:s', strtotime( '+' . $expiry_hours . ' hours', strtotime( $created_at ) ) );
+				$author_id     = ! empty( $user_ids ) ? $user_ids[ $i % count( $user_ids ) ] : $admin_id;
+				$created_at    = gmdate( 'Y-m-d H:i:s', strtotime( '-' . $story_offset . ' minutes', (int) current_time( 'timestamp' ) ) );
+				$expires_at    = gmdate( 'Y-m-d H:i:s', strtotime( '+' . $expiry_hours . ' hours', strtotime( $created_at ) ) );
 				$story_offset += 45;
 
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->insert(
 					$stories_table,
 					array(
-						'user_id'    => $author_id,
-						'privacy'    => 'public',
+						'user_id'       => $author_id,
+						'privacy'       => 'public',
 						'close_friends' => 0,
-						'created_at' => $created_at,
-						'expires_at' => $expires_at,
+						'created_at'    => $created_at,
+						'expires_at'    => $expires_at,
 					),
 					array( '%d', '%s', '%d', '%s', '%s' )
 				);
@@ -701,12 +847,14 @@ final class Sample_Data {
 		global $wpdb;
 
 		// Delete sample users.
-		$sample_users = get_users( array(
-			'meta_key'   => '_arshid6social_sample',
-			'meta_value' => '1',
-			'fields'     => 'ids',
-			'number'     => -1,
-		) );
+		$sample_users = get_users(
+			array(
+				'meta_key'   => '_arshid6social_sample',
+				'meta_value' => '1',
+				'fields'     => 'ids',
+				'number'     => -1,
+			)
+		);
 		foreach ( $sample_users as $uid ) {
 			wp_delete_user( (int) $uid );
 		}
@@ -766,8 +914,8 @@ final class Sample_Data {
 		}
 
 		if ( ! empty( $stored['stories'] ) && $this->table_exists( $wpdb->prefix . 'sn_stories' ) ) {
-			$ids  = array_map( 'intval', $stored['stories'] );
-			$phs  = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+			$ids = array_map( 'intval', $stored['stories'] );
+			$phs = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 			// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQLPlaceholders
 			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_story_items WHERE story_id IN ($phs)", ...$ids ) );
 			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_stories WHERE id IN ($phs)", ...$ids ) );

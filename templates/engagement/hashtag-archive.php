@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit;
 $feature = isset( $feature ) ? $feature : arshid6social_eng()->feature( 'hashtags' );
 
 if ( ! isset( $hashtag ) || ! $hashtag ) {
-	wp_redirect( home_url() );
+	wp_safe_redirect( home_url() );
 	exit;
 }
 
@@ -49,7 +49,8 @@ $post_count  = (int) $hashtag->post_count;
 					data-followed="<?php echo $is_followed ? '1' : '0'; ?>"
 					aria-pressed="<?php echo $is_followed ? 'true' : 'false'; ?>"
 				>
-					<?php echo $is_followed
+					<?php
+					echo $is_followed
 						? esc_html__( 'Following', '6arshid-social-community' )
 						: esc_html__( 'Follow', '6arshid-social-community' );
 					?>
@@ -62,9 +63,12 @@ $post_count  = (int) $hashtag->post_count;
 		data-hashtag="<?php echo esc_attr( $slug ); ?>"
 		data-per-page="10">
 		<div class="arshid6social-activity-feed" role="main"
-			aria-label="<?php
+			aria-label="
+			<?php
 			/* translators: %s: hashtag */
-			echo esc_attr( sprintf( __( 'Posts tagged %s', '6arshid-social-community' ), '#' . $slug ) ); ?>">
+			echo esc_attr( sprintf( __( 'Posts tagged %s', '6arshid-social-community' ), '#' . $slug ) );
+			?>
+			">
 		</div>
 		<div class="arshid6social-load-more-sentinel" style="height:1px;"></div>
 	</div>

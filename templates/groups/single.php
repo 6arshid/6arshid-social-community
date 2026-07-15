@@ -3,6 +3,7 @@
  * Single group view template.
  *
  * Variables available:
+ *
  *  @var array  $group        Formatted group array from Groups::format_group()
  *  @var object $component    Groups component instance
  *  @var string $current_tab Active tab slug
@@ -12,13 +13,13 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$group_id   = absint( $group['id'] );
-$is_member  = (bool) ( $group['isMember'] ?? false );
-$is_admin   = (bool) ( $group['isAdmin'] ?? false );
+$group_id  = absint( $group['id'] );
+$is_member = (bool) ( $group['isMember'] ?? false );
+$is_admin  = (bool) ( $group['isAdmin'] ?? false );
 
 // Check group suspension: show notice to non-admins.
-$_group_suspended  = (bool) ( $group['isSuspended'] ?? false );
-$_viewer_is_admin  = current_user_can( 'arshid6social_manage_reports' );
+$_group_suspended = (bool) ( $group['isSuspended'] ?? false );
+$_viewer_is_admin = current_user_can( 'arshid6social_manage_reports' );
 
 if ( $_group_suspended ) {
 	echo '<div class="arshid6social-wrap"><div class="arshid6social-container" style="padding-block:4rem;">';
@@ -47,7 +48,7 @@ $privacy_labels = array(
 	'hidden'  => __( 'Hidden', '6arshid-social-community' ),
 );
 
-$tabs = apply_filters(
+$group_tabs = apply_filters(
 	'arshid6social_group_tabs',
 	array(
 		'activity' => __( 'Activity', '6arshid-social-community' ),
@@ -57,11 +58,11 @@ $tabs = apply_filters(
 );
 
 if ( $is_admin ) {
-	$tabs['manage'] = __( 'Manage', '6arshid-social-community' );
+	$group_tabs['manage'] = __( 'Manage', '6arshid-social-community' );
 }
 
 $current_tab = isset( $current_tab ) ? sanitize_key( $current_tab ) : 'activity';
-if ( ! array_key_exists( $current_tab, $tabs ) ) {
+if ( ! array_key_exists( $current_tab, $group_tabs ) ) {
 	$current_tab = 'activity';
 }
 ?>
@@ -74,11 +75,17 @@ if ( ! array_key_exists( $current_tab, $tabs ) ) {
 
 		<!-- Cover -->
 		<div class="arshid6social-profile-cover"
-			<?php if ( $cover_url ) : ?>style="background-image:url('<?php echo esc_url( $cover_url ); ?>');"<?php endif; ?>
+			<?php
+			if ( $cover_url ) :
+				?>
+				style="background-image:url('<?php echo esc_url( $cover_url ); ?>');"<?php endif; ?>
 			role="img"
-			aria-label="<?php
+			aria-label="
+			<?php
 			/* translators: %s: group name */
-			printf( esc_attr__( '%s cover photo', '6arshid-social-community' ), esc_attr( $group['name'] ) ); ?>">
+			printf( esc_attr__( '%s cover photo', '6arshid-social-community' ), esc_attr( $group['name'] ) );
+			?>
+			">
 			<?php if ( $is_admin ) : ?>
 				<button type="button" class="arshid6social-btn arshid6social-btn-sm arshid6social-btn-secondary arshid6social-cover-edit-btn"
 					data-action="arshid6social-upload-group-cover"
@@ -178,7 +185,7 @@ if ( ! array_key_exists( $current_tab, $tabs ) ) {
 
 		<!-- Tabs -->
 		<nav class="arshid6social-tabs" aria-label="<?php esc_attr_e( 'Group sections', '6arshid-social-community' ); ?>" role="tablist">
-			<?php foreach ( $tabs as $tab_slug => $tab_label ) : ?>
+			<?php foreach ( $group_tabs as $tab_slug => $tab_label ) : ?>
 				<?php $tab_url = home_url( '/groups/' . $group['slug'] . '/' . $tab_slug . '/' ); ?>
 				<a href="<?php echo esc_url( $tab_url ); ?>"
 					class="arshid6social-tab-link <?php echo ( $current_tab === $tab_slug ) ? 'is-active' : ''; ?>"
@@ -265,12 +272,15 @@ if ( ! array_key_exists( $current_tab, $tabs ) ) {
 						?>
 						<p class="arshid6social-text-muted" style="color:var(--arshid6social-text-muted);"><?php esc_html_e( 'No members yet.', '6arshid-social-community' ); ?></p>
 					<?php else : ?>
-						<?php foreach ( $rows as $row ) :
+						<?php
+						foreach ( $rows as $row ) :
 							$member = get_userdata( $row->user_id );
-							if ( ! $member ) continue;
+							if ( ! $member ) {
+								continue;
+							}
 							$member_url    = home_url( '/members/' . $member->user_nicename . '/' );
 							$member_avatar = get_avatar_url( $member->ID, array( 'size' => 60 ) );
-						?>
+							?>
 						<div class="arshid6social-member-card arshid6social-card">
 							<a href="<?php echo esc_url( $member_url ); ?>">
 								<img src="<?php echo esc_url( $member_avatar ); ?>"
@@ -474,5 +484,5 @@ ENDGRPJS;
 </div><!-- .arshid6social-wrap -->
 
 <?php if ( is_user_logged_in() && ! $is_admin ) : ?>
-<?php arshid6social_report_modal(); ?>
+	<?php arshid6social_report_modal(); ?>
 <?php endif; ?>

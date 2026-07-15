@@ -28,10 +28,10 @@ class Monetization_Crypto {
 		if ( null !== $key ) {
 			return $key;
 		}
-		$material = ( defined( 'AUTH_KEY' )       ? AUTH_KEY       : '' )
-		          . ( defined( 'SECURE_AUTH_KEY' ) ? SECURE_AUTH_KEY : '' )
-		          . ( defined( 'LOGGED_IN_KEY' )   ? LOGGED_IN_KEY   : '' )
-		          . ( defined( 'NONCE_KEY' )        ? NONCE_KEY       : '' );
+		$material = ( defined( 'AUTH_KEY' ) ? AUTH_KEY : '' )
+					. ( defined( 'SECURE_AUTH_KEY' ) ? SECURE_AUTH_KEY : '' )
+					. ( defined( 'LOGGED_IN_KEY' ) ? LOGGED_IN_KEY : '' )
+					. ( defined( 'NONCE_KEY' ) ? NONCE_KEY : '' );
 
 		// Fallback if salts are all empty (local dev with no wp-config.php salts).
 		if ( '' === $material ) {
@@ -103,7 +103,7 @@ class Monetization_Crypto {
 			if ( false === $data ) {
 				return '';
 			}
-			$nonce_len  = SODIUM_CRYPTO_SECRETBOX_NONCEBYTES;
+			$nonce_len = SODIUM_CRYPTO_SECRETBOX_NONCEBYTES;
 			if ( strlen( $data ) <= $nonce_len ) {
 				return '';
 			}
@@ -149,7 +149,7 @@ class Monetization_Crypto {
 	 */
 	public static function is_encrypted( string $value ): bool {
 		return ( 0 === strpos( $value, self::PREFIX_SODIUM ) )
-		    || ( 0 === strpos( $value, self::PREFIX_OPENSSL ) );
+			|| ( 0 === strpos( $value, self::PREFIX_OPENSSL ) );
 	}
 
 	// -------------------------------------------------------------------------
@@ -160,8 +160,8 @@ class Monetization_Crypto {
 	 * Returns the active Stripe publishable key (plain text, not encrypted).
 	 */
 	public static function get_stripe_pub_key(): string {
-		$test = (bool) get_option( 'sixarshidsc_stripe_test_mode', true );
-		return (string) get_option( $test ? 'sixarshidsc_stripe_pub_key_test' : 'sixarshidsc_stripe_pub_key_live', '' );
+		$test = (bool) get_option( 'arshid6social_monetization_stripe_test_mode', true );
+		return (string) get_option( $test ? 'arshid6social_monetization_stripe_pub_key_test' : 'arshid6social_monetization_stripe_pub_key_live', '' );
 	}
 
 	/**
@@ -169,8 +169,8 @@ class Monetization_Crypto {
 	 * Handles legacy double-encrypted values by decrypting twice.
 	 */
 	public static function get_stripe_secret(): string {
-		$test = (bool) get_option( 'sixarshidsc_stripe_test_mode', true );
-		$opt  = $test ? 'sixarshidsc_stripe_secret_test' : 'sixarshidsc_stripe_secret_live';
+		$test = (bool) get_option( 'arshid6social_monetization_stripe_test_mode', true );
+		$opt  = $test ? 'arshid6social_monetization_stripe_secret_test' : 'arshid6social_monetization_stripe_secret_live';
 		return self::safe_decrypt( (string) get_option( $opt, '' ) );
 	}
 
@@ -179,8 +179,8 @@ class Monetization_Crypto {
 	 * Handles legacy double-encrypted values by decrypting twice.
 	 */
 	public static function get_stripe_webhook_secret(): string {
-		$test = (bool) get_option( 'sixarshidsc_stripe_test_mode', true );
-		$opt  = $test ? 'sixarshidsc_stripe_webhook_secret_test' : 'sixarshidsc_stripe_webhook_secret_live';
+		$test = (bool) get_option( 'arshid6social_monetization_stripe_test_mode', true );
+		$opt  = $test ? 'arshid6social_monetization_stripe_webhook_secret_test' : 'arshid6social_monetization_stripe_webhook_secret_live';
 		return self::safe_decrypt( (string) get_option( $opt, '' ) );
 	}
 

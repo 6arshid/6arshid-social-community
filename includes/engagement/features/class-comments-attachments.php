@@ -20,7 +20,7 @@ class Comments_Attachments {
 		add_action( 'wp_ajax_arshid6social_comment_upload_attachment', array( $this, 'ajax_upload' ) );
 		add_action( 'wp_ajax_arshid6social_comment_delete_attachment', array( $this, 'ajax_delete' ) );
 		add_action( 'wp_ajax_nopriv_arshid6social_comment_attachment_url', array( $this, 'ajax_serve_attachment' ) );
-		add_action( 'wp_ajax_arshid6social_comment_attachment_url',     array( $this, 'ajax_serve_attachment' ) );
+		add_action( 'wp_ajax_arshid6social_comment_attachment_url', array( $this, 'ajax_serve_attachment' ) );
 
 		// Clean up when comment (activity) is deleted.
 		add_action( 'arshid6social_activity_deleted', array( $this, 'delete_for_comment' ) );
@@ -70,7 +70,7 @@ class Comments_Attachments {
 			$this->strip_exif( $file['tmp_name'], $real_mime );
 		}
 
-		$subdir_filter = function( array $dir ) use ( $comment_id ): array {
+		$subdir_filter = function ( array $dir ) use ( $comment_id ): array {
 			$dir['subdir'] = '/social-network/comments/' . $comment_id;
 			$dir['path']   = $dir['basedir'] . $dir['subdir'];
 			$dir['url']    = $dir['baseurl'] . $dir['subdir'];
@@ -89,7 +89,7 @@ class Comments_Attachments {
 			'error'    => (int) $file['error'],
 			'size'     => (int) $file['size'],
 		);
-		$moved = wp_handle_upload( $upload_data, array( 'test_form' => false ) );
+		$moved       = wp_handle_upload( $upload_data, array( 'test_form' => false ) );
 		remove_filter( 'upload_dir', $subdir_filter );
 
 		if ( ! isset( $moved['file'] ) || isset( $moved['error'] ) ) {
@@ -160,10 +160,12 @@ class Comments_Attachments {
 		}
 
 		global $wpdb;
-		$comment = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id, item_id FROM {$wpdb->prefix}sn_activity WHERE id = %d AND type = 'activity_comment'",
-			$comment_id
-		) );
+		$comment = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id, item_id FROM {$wpdb->prefix}sn_activity WHERE id = %d AND type = 'activity_comment'",
+				$comment_id
+			)
+		);
 		if ( ! $comment || (int) $comment->user_id !== $user_id ) {
 			wp_send_json_error( array( 'message' => 'Comment not found or access denied. user=' . $user_id . ' comment_user=' . ( $comment ? $comment->user_id : 'null' ) ), 403 );
 		}
@@ -212,7 +214,7 @@ class Comments_Attachments {
 				$this->strip_exif( $file['tmp_name'], $real_mime );
 			}
 
-			$subdir_filter = function( array $dir ) use ( $comment_id ): array {
+			$subdir_filter = function ( array $dir ) use ( $comment_id ): array {
 				$dir['subdir'] = '/social-network/comments/' . $comment_id;
 				$dir['path']   = $dir['basedir'] . $dir['subdir'];
 				$dir['url']    = $dir['baseurl'] . $dir['subdir'];
@@ -231,7 +233,7 @@ class Comments_Attachments {
 				'error'    => (int) $file['error'],
 				'size'     => (int) $file['size'],
 			);
-			$moved = wp_handle_upload( $upload_data, array( 'test_form' => false ) );
+			$moved       = wp_handle_upload( $upload_data, array( 'test_form' => false ) );
 			remove_filter( 'upload_dir', $subdir_filter );
 
 			if ( ! isset( $moved['file'] ) || isset( $moved['error'] ) ) {
@@ -273,18 +275,23 @@ class Comments_Attachments {
 				);
 			}
 
-			wp_send_json_success( array(
-				'attachment_id' => $att_id,
-				'url'           => esc_url( $moved['url'] ),
-				'file_name'     => sanitize_file_name( $file['name'] ),
-				'media_type'    => $media_type,
-				'mime_type'     => $real_mime,
-			) );
+			wp_send_json_success(
+				array(
+					'attachment_id' => $att_id,
+					'url'           => esc_url( $moved['url'] ),
+					'file_name'     => sanitize_file_name( $file['name'] ),
+					'media_type'    => $media_type,
+					'mime_type'     => $real_mime,
+				)
+			);
 
 		} catch ( \Throwable $e ) {
-			wp_send_json_error( array(
-				'message' => 'PHP error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine(),
-			), 500 );
+			wp_send_json_error(
+				array(
+					'message' => 'PHP error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine(),
+				),
+				500
+			);
 		}
 	}
 
@@ -309,13 +316,15 @@ class Comments_Attachments {
 		}
 
 		global $wpdb;
-		$att = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT a.*, act.privacy, act.user_id AS post_owner
+		$att = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT a.*, act.privacy, act.user_id AS post_owner
 			FROM {$wpdb->prefix}arshid6social_attachments a
 			JOIN {$wpdb->prefix}sn_activity act ON act.id = a.parent_id
 			WHERE a.id = %d AND a.parent_type = 'comment'",
-			$att_id
-		) );
+				$att_id
+			)
+		);
 
 		if ( ! $att ) {
 			wp_send_json_error( null, 404 );
@@ -327,7 +336,7 @@ class Comments_Attachments {
 			wp_send_json_error( null, 403 );
 		}
 
-		wp_redirect( esc_url_raw( $att->file_url ) );
+		wp_safe_redirect( esc_url_raw( $att->file_url ) );
 		exit;
 	}
 
@@ -360,10 +369,12 @@ class Comments_Attachments {
 
 	private function delete_attachment( int $att_id, int $user_id ): bool {
 		global $wpdb;
-		$att = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}arshid6social_attachments WHERE id = %d",
-			$att_id
-		) );
+		$att = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT * FROM {$wpdb->prefix}arshid6social_attachments WHERE id = %d",
+				$att_id
+			)
+		);
 
 		if ( ! $att || ( (int) $att->uploader_id !== $user_id && ! current_user_can( 'arshid6social_manage_activity' ) ) ) {
 			return false;
@@ -381,10 +392,12 @@ class Comments_Attachments {
 
 	public function delete_for_comment( int $comment_id ): void {
 		global $wpdb;
-		$atts = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id, file_path, wp_attachment_id FROM {$wpdb->prefix}arshid6social_attachments WHERE parent_id = %d AND parent_type = 'comment'",
-			$comment_id
-		) );
+		$atts = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id, file_path, wp_attachment_id FROM {$wpdb->prefix}arshid6social_attachments WHERE parent_id = %d AND parent_type = 'comment'",
+				$comment_id
+			)
+		);
 
 		foreach ( $atts as $att ) {
 			if ( ! empty( $att->wp_attachment_id ) ) {
@@ -396,18 +409,24 @@ class Comments_Attachments {
 
 		$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'arshid6social_attachments',
-			array( 'parent_id' => $comment_id, 'parent_type' => 'comment' ),
+			array(
+				'parent_id'   => $comment_id,
+				'parent_type' => 'comment',
+			),
 			array( '%d', '%s' )
 		);
 	}
 
 	public function get_for_comment( int $comment_id ): array {
 		global $wpdb;
-		return $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id, file_url, file_name, file_size, mime_type, media_type FROM {$wpdb->prefix}arshid6social_attachments
+		return $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id, file_url, file_name, file_size, mime_type, media_type FROM {$wpdb->prefix}arshid6social_attachments
 			WHERE parent_id = %d AND parent_type = 'comment' ORDER BY created_at ASC",
-			$comment_id
-		), ARRAY_A ) ?: array();
+				$comment_id
+			),
+			ARRAY_A
+		) ?: array();
 	}
 
 	// ── REST ──────────────────────────────────────────────────────────────────

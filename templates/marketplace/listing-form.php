@@ -12,10 +12,10 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$nonce       = wp_create_nonce( 'arshid6social_marketplace' );
-$form_token  = wp_generate_uuid4();
-$ajax_url    = admin_url( 'admin-ajax.php' );
-$base_url    = get_permalink( (int) get_option( 'arshid6social_page_marketplace', 0 ) )
+$nonce      = wp_create_nonce( 'arshid6social_marketplace' );
+$form_token = wp_generate_uuid4();
+$ajax_url   = admin_url( 'admin-ajax.php' );
+$base_url   = get_permalink( (int) get_option( 'arshid6social_page_marketplace', 0 ) )
 	?: home_url( '/' . get_option( 'arshid6social_marketplace_slug', 'marketplace' ) . '/' );
 
 $step_labels = array(
@@ -99,11 +99,12 @@ $conditions = array(
 				</label>
 				<select id="mkt-category" name="category_id" class="arshid6social-mkt-select" required>
 					<option value=""><?php esc_html_e( '— Select a category —', '6arshid-social-community' ); ?></option>
-					<?php foreach ( $categories as $cat ) :
-						$indent = str_repeat( '　', $cat['depth'] );
-					?>
-					<option value="<?php echo esc_attr( $cat['id'] ); ?>">
-						<?php echo esc_html( $indent . $cat['icon'] . ' ' . $cat['name'] ); ?>
+					<?php
+					foreach ( $categories as $category ) :
+						$indent = str_repeat( '　', $category['depth'] );
+						?>
+					<option value="<?php echo esc_attr( $category['id'] ); ?>">
+						<?php echo esc_html( $indent . $category['icon'] . ' ' . $category['name'] ); ?>
 					</option>
 					<?php endforeach; ?>
 				</select>
@@ -122,12 +123,14 @@ $conditions = array(
 		<div class="arshid6social-mkt-panel" data-panel="2">
 			<h2 class="arshid6social-mkt-panel-title"><?php esc_html_e( 'Add Photos', '6arshid-social-community' ); ?></h2>
 			<p class="arshid6social-mkt-panel-desc">
-				<?php printf(
+				<?php
+				printf(
 					/* translators: 1: max photos, 2: max MB */
 					esc_html__( 'Upload up to %1$d photos (max %2$d MB each). The first photo will be the cover.', '6arshid-social-community' ),
 					absint( $max_photos ),
 					absint( $max_mb )
-				); ?>
+				);
+				?>
 			</p>
 
 			<div id="arshid6social-mkt-photo-drop" class="arshid6social-mkt-photo-drop" tabindex="0" role="button"
@@ -135,12 +138,14 @@ $conditions = array(
 				<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
 				<p><?php esc_html_e( 'Click to add photos or drag &amp; drop here', '6arshid-social-community' ); ?></p>
 				<span class="arshid6social-mkt-photo-count-label" id="arshid6social-mkt-photo-count-label">
-					<?php printf(
+					<?php
+					printf(
 						/* translators: 1: current count, 2: max count */
 						esc_html__( '%1$d / %2$d photos', '6arshid-social-community' ),
 						0,
 						absint( $max_photos )
-					); ?>
+					);
+					?>
 				</span>
 				<input type="file" id="arshid6social-mkt-photo-input" accept="image/jpeg,image/png,image/webp,image/gif" multiple aria-hidden="true">
 			</div>
@@ -242,13 +247,24 @@ $conditions = array(
 					<option value=""><?php esc_html_e( '— Select country —', '6arshid-social-community' ); ?></option>
 					<?php
 					$countries = array(
-						'IR' => 'Iran', 'US' => 'United States', 'GB' => 'United Kingdom',
-						'DE' => 'Germany', 'FR' => 'France', 'AE' => 'UAE', 'SA' => 'Saudi Arabia',
-						'TR' => 'Turkey', 'CA' => 'Canada', 'AU' => 'Australia', 'DK' => 'Denmark',
-						'SE' => 'Sweden', 'NO' => 'Norway', 'PK' => 'Pakistan', 'AF' => 'Afghanistan',
+						'IR' => 'Iran',
+						'US' => 'United States',
+						'GB' => 'United Kingdom',
+						'DE' => 'Germany',
+						'FR' => 'France',
+						'AE' => 'UAE',
+						'SA' => 'Saudi Arabia',
+						'TR' => 'Turkey',
+						'CA' => 'Canada',
+						'AU' => 'Australia',
+						'DK' => 'Denmark',
+						'SE' => 'Sweden',
+						'NO' => 'Norway',
+						'PK' => 'Pakistan',
+						'AF' => 'Afghanistan',
 					);
 					foreach ( $countries as $code => $name ) :
-					?>
+						?>
 					<option value="<?php echo esc_attr( $code ); ?>"><?php echo esc_html( $name ); ?></option>
 					<?php endforeach; ?>
 				</select>
@@ -294,7 +310,8 @@ $conditions = array(
 
 			<?php
 			$moderation = get_option( 'arshid6social_marketplace_moderation', 'auto' );
-			if ( 'manual' === $moderation ) : ?>
+			if ( 'manual' === $moderation ) :
+				?>
 			<div class="arshid6social-mkt-moderation-notice">
 				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
 				<?php esc_html_e( 'Your listing will be reviewed before it appears publicly.', '6arshid-social-community' ); ?>
@@ -312,9 +329,11 @@ $conditions = array(
 					</button>
 					<button type="button" id="arshid6social-mkt-publish" class="arshid6social-mkt-btn arshid6social-mkt-btn--primary">
 						<span class="arshid6social-mkt-btn-text">
-							<?php echo 'manual' === $moderation
+							<?php
+							echo 'manual' === $moderation
 								? esc_html__( 'Submit for Review', '6arshid-social-community' )
-								: esc_html__( 'Publish Listing', '6arshid-social-community' ); ?>
+								: esc_html__( 'Publish Listing', '6arshid-social-community' );
+							?>
 						</span>
 						<span class="arshid6social-mkt-btn-spinner" hidden aria-hidden="true">
 							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="arshid6social-spin" aria-label="<?php esc_attr_e( 'Loading', '6arshid-social-community' ); ?>"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
@@ -482,9 +501,9 @@ $mkt_form_css      = '
 	.arshid6social-mkt-publish-actions .arshid6social-mkt-btn { flex:1; justify-content:center; }
 }
 ';
-$_mkt_form_handle = 'arshid6social-mkt-form-inline';
+$_mkt_form_handle  = 'arshid6social-mkt-form-inline';
 if ( ! wp_style_is( $_mkt_form_handle, 'registered' ) ) {
-	wp_register_style( $_mkt_form_handle, false, array( 'arshid6social-main' ), null );
+	wp_register_style( $_mkt_form_handle, false, array( 'arshid6social-main' ), ARSHID6SOCIAL_VERSION );
 	wp_enqueue_style( $_mkt_form_handle );
 	wp_style_add_data( $_mkt_form_handle, 'group', 1 );
 }

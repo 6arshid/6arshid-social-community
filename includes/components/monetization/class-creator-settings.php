@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
 class Creator_Settings {
 
 	/** User-meta key that holds the encrypted IBAN. */
-	const IBAN_META = 'sixarshidsc_iban';
+	const IBAN_META = 'arshid6social_monetization_iban';
 
 	/** Prevents double-registration when both Monetization_Settings and Monetization boot. */
 	private static bool $booted = false;
@@ -30,13 +30,13 @@ class Creator_Settings {
 		}
 		self::$booted = true;
 
-		add_action( 'arshid6social_member_settings_after',     array( $this, 'render' ), 10, 1 );
+		add_action( 'arshid6social_member_settings_after', array( $this, 'render' ), 10, 1 );
 		add_action( 'arshid6social_monetization_payouts_tab', array( $this, 'render_admin_payout_panel' ) );
-		add_action( 'wp_ajax_sixarshidsc_save_payout_address',     array( $this, 'ajax_save_address' ) );
-		add_action( 'wp_ajax_sixarshidsc_save_iban',               array( $this, 'ajax_save_iban' ) );
-		add_action( 'wp_ajax_sixarshidsc_admin_get_iban',          array( $this, 'ajax_admin_get_iban' ) );
-		add_action( 'wp_ajax_sixarshidsc_admin_mark_paid',         array( $this, 'ajax_admin_mark_paid' ) );
-		add_action( 'wp_ajax_sixarshidsc_request_cashout',         array( $this, 'ajax_request_cashout' ) );
+		add_action( 'wp_ajax_arshid6social_monetization_save_payout_address', array( $this, 'ajax_save_address' ) );
+		add_action( 'wp_ajax_arshid6social_monetization_save_iban', array( $this, 'ajax_save_iban' ) );
+		add_action( 'wp_ajax_arshid6social_monetization_admin_get_iban', array( $this, 'ajax_admin_get_iban' ) );
+		add_action( 'wp_ajax_arshid6social_monetization_admin_mark_paid', array( $this, 'ajax_admin_mark_paid' ) );
+		add_action( 'wp_ajax_arshid6social_monetization_request_cashout', array( $this, 'ajax_request_cashout' ) );
 	}
 
 	// -------------------------------------------------------------------------
@@ -47,7 +47,7 @@ class Creator_Settings {
 		if ( get_current_user_id() !== $profile_user->ID ) {
 			return;
 		}
-		if ( ! get_option( 'sixarshidsc_enabled' ) ) {
+		if ( ! get_option( 'arshid6social_monetization_enabled' ) ) {
 			return;
 		}
 
@@ -64,25 +64,25 @@ class Creator_Settings {
 		$has_iban       = '' !== $encrypted_iban;
 
 		$address = array(
-			'line1'   => (string) get_user_meta( $user->ID, 'sixarshidsc_address_line1',   true ),
-			'city'    => (string) get_user_meta( $user->ID, 'sixarshidsc_address_city',    true ),
-			'postal'  => (string) get_user_meta( $user->ID, 'sixarshidsc_address_postal',  true ),
-			'country' => (string) get_user_meta( $user->ID, 'sixarshidsc_address_country', true ),
+			'line1'   => (string) get_user_meta( $user->ID, 'arshid6social_monetization_address_line1', true ),
+			'city'    => (string) get_user_meta( $user->ID, 'arshid6social_monetization_address_city', true ),
+			'postal'  => (string) get_user_meta( $user->ID, 'arshid6social_monetization_address_postal', true ),
+			'country' => (string) get_user_meta( $user->ID, 'arshid6social_monetization_address_country', true ),
 		);
 
-		$iban_nonce    = wp_create_nonce( 'sixarshidsc_save_iban_' . $user->ID );
-		$address_nonce = wp_create_nonce( 'sixarshidsc_save_address_' . $user->ID );
+		$iban_nonce    = wp_create_nonce( 'arshid6social_monetization_save_iban_' . $user->ID );
+		$address_nonce = wp_create_nonce( 'arshid6social_monetization_save_address_' . $user->ID );
 		?>
-		<div class="arshid6social-card arshid6social-user-settings-card" id="sixarshidsc-payout-account-card">
+		<div class="arshid6social-card arshid6social-user-settings-card" id="arshid6social-mon-payout-account-card">
 			<div class="arshid6social-card__header"><?php esc_html_e( 'Payout Account', '6arshid-social-community' ); ?></div>
 			<div class="arshid6social-card__body">
 
 				<!-- IBAN form -->
-				<form id="sixarshidsc-iban-form" autocomplete="off">
+				<form id="arshid6social-mon-iban-form" autocomplete="off">
 					<input type="hidden" name="nonce" value="<?php echo esc_attr( $iban_nonce ); ?>" />
 
 					<div class="arshid6social-settings-field">
-						<label class="arshid6social-settings-label" for="sixarshidsc-iban-input">
+						<label class="arshid6social-settings-label" for="arshid6social-mon-iban-input">
 							<?php esc_html_e( 'Bank Account (IBAN)', '6arshid-social-community' ); ?>
 						</label>
 						<p class="arshid6social-settings-desc" style="margin-block-end:.75rem;">
@@ -90,7 +90,7 @@ class Creator_Settings {
 						</p>
 						<input
 							type="text"
-							id="sixarshidsc-iban-input"
+							id="arshid6social-mon-iban-input"
 							name="iban"
 							class="arshid6social-input"
 							placeholder="<?php echo $has_iban ? esc_attr__( '— IBAN saved; enter a new value to replace —', '6arshid-social-community' ) : 'IR000000000000000000000000'; ?>"
@@ -108,20 +108,20 @@ class Creator_Settings {
 					</div>
 
 					<div class="arshid6social-settings-actions" style="margin-block-start:.75rem;">
-						<button type="submit" class="arshid6social-btn arshid6social-btn--primary" id="sixarshidsc-iban-save-btn">
+						<button type="submit" class="arshid6social-btn arshid6social-btn--primary" id="arshid6social-mon-iban-save-btn">
 							<?php esc_html_e( 'Save IBAN', '6arshid-social-community' ); ?>
 						</button>
-						<span class="sixarshidsc-iban-saved-msg" hidden aria-live="polite">
+						<span class="arshid6social-mon-iban-saved-msg" hidden aria-live="polite">
 							&#10003; <?php esc_html_e( 'Saved!', '6arshid-social-community' ); ?>
 						</span>
-						<span class="sixarshidsc-iban-error-msg" hidden aria-live="polite" style="color:var(--sn-color-danger,#dc2626);"></span>
+						<span class="arshid6social-mon-iban-error-msg" hidden aria-live="polite" style="color:var(--sn-color-danger,#dc2626);"></span>
 					</div>
 				</form>
 
 				<hr style="border:none;border-block-start:1px solid var(--sn-border,#e5e7eb);margin:1.25rem 0;" />
 
 				<!-- Address form -->
-				<form id="sixarshidsc-address-form">
+				<form id="arshid6social-mon-address-form">
 					<input type="hidden" name="nonce" value="<?php echo esc_attr( $address_nonce ); ?>" />
 
 					<p class="arshid6social-settings-label" style="margin-block-end:.75rem;font-weight:600;">
@@ -132,10 +132,10 @@ class Creator_Settings {
 					</p>
 
 					<div class="arshid6social-settings-field">
-						<label class="arshid6social-settings-label" for="sixarshidsc-address-line1">
+						<label class="arshid6social-settings-label" for="arshid6social-mon-address-line1">
 							<?php esc_html_e( 'Address Line', '6arshid-social-community' ); ?>
 						</label>
-						<input type="text" id="sixarshidsc-address-line1" name="line1"
+						<input type="text" id="arshid6social-mon-address-line1" name="line1"
 							class="arshid6social-input"
 							value="<?php echo esc_attr( $address['line1'] ); ?>"
 							placeholder="<?php esc_attr_e( 'Street address, apartment, etc.', '6arshid-social-community' ); ?>"
@@ -144,20 +144,20 @@ class Creator_Settings {
 
 					<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-block-start:.75rem;">
 						<div class="arshid6social-settings-field">
-							<label class="arshid6social-settings-label" for="sixarshidsc-address-city">
+							<label class="arshid6social-settings-label" for="arshid6social-mon-address-city">
 								<?php esc_html_e( 'City', '6arshid-social-community' ); ?>
 							</label>
-							<input type="text" id="sixarshidsc-address-city" name="city"
+							<input type="text" id="arshid6social-mon-address-city" name="city"
 								class="arshid6social-input"
 								value="<?php echo esc_attr( $address['city'] ); ?>"
 								placeholder="<?php esc_attr_e( 'City', '6arshid-social-community' ); ?>"
 								style="width:100%;box-sizing:border-box;" />
 						</div>
 						<div class="arshid6social-settings-field">
-							<label class="arshid6social-settings-label" for="sixarshidsc-address-postal">
+							<label class="arshid6social-settings-label" for="arshid6social-mon-address-postal">
 								<?php esc_html_e( 'Postal Code', '6arshid-social-community' ); ?>
 							</label>
-							<input type="text" id="sixarshidsc-address-postal" name="postal"
+							<input type="text" id="arshid6social-mon-address-postal" name="postal"
 								class="arshid6social-input"
 								value="<?php echo esc_attr( $address['postal'] ); ?>"
 								placeholder="<?php esc_attr_e( 'Postal / ZIP code', '6arshid-social-community' ); ?>"
@@ -166,10 +166,10 @@ class Creator_Settings {
 					</div>
 
 					<div class="arshid6social-settings-field" style="margin-block-start:.75rem;">
-						<label class="arshid6social-settings-label" for="sixarshidsc-address-country">
+						<label class="arshid6social-settings-label" for="arshid6social-mon-address-country">
 							<?php esc_html_e( 'Country', '6arshid-social-community' ); ?>
 						</label>
-						<select id="sixarshidsc-address-country" name="country"
+						<select id="arshid6social-mon-address-country" name="country"
 							class="arshid6social-input"
 							style="width:100%;box-sizing:border-box;">
 							<?php
@@ -359,7 +359,7 @@ class Creator_Settings {
 								'ZM' => 'Zambia',
 							);
 							foreach ( $countries as $code => $label ) :
-							?>
+								?>
 							<option value="<?php echo esc_attr( $code ); ?>" <?php selected( $address['country'], $code ); ?>>
 								<?php echo esc_html( $label ); ?>
 							</option>
@@ -368,13 +368,13 @@ class Creator_Settings {
 					</div>
 
 					<div class="arshid6social-settings-actions" style="margin-block-start:1rem;">
-						<button type="submit" class="arshid6social-btn arshid6social-btn--primary" id="sixarshidsc-address-save-btn">
+						<button type="submit" class="arshid6social-btn arshid6social-btn--primary" id="arshid6social-mon-address-save-btn">
 							<?php esc_html_e( 'Save Address', '6arshid-social-community' ); ?>
 						</button>
-						<span class="sixarshidsc-address-saved-msg" hidden aria-live="polite">
+						<span class="arshid6social-mon-address-saved-msg" hidden aria-live="polite">
 							&#10003; <?php esc_html_e( 'Saved!', '6arshid-social-community' ); ?>
 						</span>
-						<span class="sixarshidsc-address-error-msg" hidden aria-live="polite" style="color:var(--sn-color-danger,#dc2626);">
+						<span class="arshid6social-mon-address-error-msg" hidden aria-live="polite" style="color:var(--sn-color-danger,#dc2626);">
 							<?php esc_html_e( 'Error saving. Please try again.', '6arshid-social-community' ); ?>
 						</span>
 					</div>
@@ -391,31 +391,31 @@ class Creator_Settings {
 		$js_payout .= 'var txtNetError=' . wp_json_encode( __( 'Network error. Please try again.', '6arshid-social-community' ) ) . ';';
 		$js_payout .= <<<'ENDJS'
 (function(){
-	var form=document.getElementById('sixarshidsc-iban-form');if(!form)return;
-	var saveBtn=document.getElementById('sixarshidsc-iban-save-btn');
-	var savedEl=form.querySelector('.sixarshidsc-iban-saved-msg');
-	var errEl=form.querySelector('.sixarshidsc-iban-error-msg');
+	var form=document.getElementById('arshid6social-mon-iban-form');if(!form)return;
+	var saveBtn=document.getElementById('arshid6social-mon-iban-save-btn');
+	var savedEl=form.querySelector('.arshid6social-mon-iban-saved-msg');
+	var errEl=form.querySelector('.arshid6social-mon-iban-error-msg');
 	form.addEventListener('submit',async function(e){
 		e.preventDefault();
-		var ibanVal=form.querySelector('#sixarshidsc-iban-input').value.trim();if(!ibanVal)return;
+		var ibanVal=form.querySelector('#arshid6social-mon-iban-input').value.trim();if(!ibanVal)return;
 		if(saveBtn)saveBtn.disabled=true;
-		var data=new FormData(form);data.set('action','sixarshidsc_save_iban');data.set('iban',ibanVal.replace(/\s+/g,'').toUpperCase());
+		var data=new FormData(form);data.set('action','arshid6social_monetization_save_iban');data.set('iban',ibanVal.replace(/\s+/g,'').toUpperCase());
 		try{
 			var resp=await fetch(ajaxUrl,{method:'POST',credentials:'same-origin',body:data});var json=await resp.json();
-			if(json.success){if(savedEl){savedEl.hidden=false;setTimeout(function(){savedEl.hidden=true;},3000);}if(errEl)errEl.hidden=true;form.querySelector('#sixarshidsc-iban-input').value='';form.querySelector('#sixarshidsc-iban-input').placeholder=txtIbanSaved;}
+			if(json.success){if(savedEl){savedEl.hidden=false;setTimeout(function(){savedEl.hidden=true;},3000);}if(errEl)errEl.hidden=true;form.querySelector('#arshid6social-mon-iban-input').value='';form.querySelector('#arshid6social-mon-iban-input').placeholder=txtIbanSaved;}
 			else{var msg=(json.data&&json.data.message)?json.data.message:txtIbanError;if(errEl){errEl.textContent=msg;errEl.hidden=false;}}
 		}catch{if(errEl){errEl.textContent=txtNetError;errEl.hidden=false;}}
 		finally{if(saveBtn)saveBtn.disabled=false;}
 	});
 })();
 (function(){
-	var form=document.getElementById('sixarshidsc-address-form');if(!form)return;
-	var saveBtn=document.getElementById('sixarshidsc-address-save-btn');
-	var savedEl=form.querySelector('.sixarshidsc-address-saved-msg');
-	var errEl=form.querySelector('.sixarshidsc-address-error-msg');
+	var form=document.getElementById('arshid6social-mon-address-form');if(!form)return;
+	var saveBtn=document.getElementById('arshid6social-mon-address-save-btn');
+	var savedEl=form.querySelector('.arshid6social-mon-address-saved-msg');
+	var errEl=form.querySelector('.arshid6social-mon-address-error-msg');
 	form.addEventListener('submit',async function(e){
 		e.preventDefault();if(saveBtn)saveBtn.disabled=true;
-		var data=new FormData(form);data.set('action','sixarshidsc_save_payout_address');
+		var data=new FormData(form);data.set('action','arshid6social_monetization_save_payout_address');
 		try{var resp=await fetch(ajaxUrl,{method:'POST',credentials:'same-origin',body:data});var json=await resp.json();if(json.success){if(savedEl){savedEl.hidden=false;setTimeout(function(){savedEl.hidden=true;},3000);}if(errEl)errEl.hidden=true;}else{if(errEl)errEl.hidden=false;}}
 		catch{if(errEl)errEl.hidden=false;}
 		finally{if(saveBtn)saveBtn.disabled=false;}
@@ -441,56 +441,64 @@ ENDJS;
 		}
 
 		// Total income: completed PPV + subscription receipts where user is creator.
-		$total_income = (float) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COALESCE( SUM( amount - platform_fee ), 0 )
+		$total_income = (float) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COALESCE( SUM( amount - platform_fee ), 0 )
 			   FROM {$table}
 			  WHERE creator_id = %d
 			    AND type IN ('ppv','subscription')
 			    AND status = 'completed'",
-			$user_id
-		) );
+				$user_id
+			)
+		);
 
 		// Total paid out: completed payout transactions.
-		$total_paid_out = (float) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COALESCE( SUM( amount ), 0 )
+		$total_paid_out = (float) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COALESCE( SUM( amount ), 0 )
 			   FROM {$table}
 			  WHERE creator_id = %d
 			    AND type = 'payout'
 			    AND status = 'completed'",
-			$user_id
-		) );
+				$user_id
+			)
+		);
 
 		// Pending cashout requests (payout in pending state).
-		$pending_cashout = (float) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COALESCE( SUM( amount ), 0 )
+		$pending_cashout = (float) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COALESCE( SUM( amount ), 0 )
 			   FROM {$table}
 			  WHERE creator_id = %d
 			    AND type = 'payout'
 			    AND status = 'pending'",
-			$user_id
-		) );
+				$user_id
+			)
+		);
 
 		$available = max( 0.0, $total_income - $total_paid_out - $pending_cashout );
 
-		$currency = strtoupper( (string) get_option( 'sixarshidsc_currency', 'USD' ) );
+		$currency = strtoupper( (string) get_option( 'arshid6social_monetization_currency', 'USD' ) );
 
 		$has_iban    = '' !== (string) get_user_meta( $user_id, self::IBAN_META, true );
 		$can_cashout = $available > 0 && $has_iban;
 
-		$cashout_nonce = wp_create_nonce( 'sixarshidsc_request_cashout_' . $user_id );
+		$cashout_nonce = wp_create_nonce( 'arshid6social_monetization_request_cashout_' . $user_id );
 
 		// All transactions visible to this user (as creator or payer).
-		$rows = (array) $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT type, amount, platform_fee, currency, status, created_at
+		$rows = (array) $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT type, amount, platform_fee, currency, status, created_at
 			   FROM {$table}
 			  WHERE creator_id = %d OR payer_id = %d
 			  ORDER BY created_at DESC
 			  LIMIT 50",
-			$user_id,
-			$user_id
-		) );
+				$user_id,
+				$user_id
+			)
+		);
 		?>
-		<div class="arshid6social-card arshid6social-user-settings-card" id="sixarshidsc-earnings-card">
+		<div class="arshid6social-card arshid6social-user-settings-card" id="arshid6social-mon-earnings-card">
 			<div class="arshid6social-card__header"><?php esc_html_e( 'Earnings & Transactions', '6arshid-social-community' ); ?></div>
 			<div class="arshid6social-card__body">
 
@@ -515,7 +523,7 @@ ENDJS;
 				</div>
 
 				<!-- Cashout button -->
-				<div id="sixarshidsc-cashout-wrap" style="margin-block-end:1.5rem;">
+				<div id="arshid6social-mon-cashout-wrap" style="margin-block-end:1.5rem;">
 					<?php if ( $available > 0 && ! $has_iban ) : ?>
 						<p class="arshid6social-settings-desc" style="color:var(--sn-color-warning,#d97706);">
 							<?php esc_html_e( 'Please save your IBAN above before requesting a cashout.', '6arshid-social-community' ); ?>
@@ -531,22 +539,24 @@ ENDJS;
 					<?php else : ?>
 						<button
 							type="button"
-							id="sixarshidsc-cashout-btn"
+							id="arshid6social-mon-cashout-btn"
 							class="arshid6social-btn arshid6social-btn--primary"
 							data-amount="<?php echo esc_attr( number_format( $available, 2 ) ); ?>"
 							data-currency="<?php echo esc_attr( $currency ); ?>"
 							data-nonce="<?php echo esc_attr( $cashout_nonce ); ?>"
 						>
 							<?php
-							echo esc_html( sprintf(
+							echo esc_html(
+								sprintf(
 								/* translators: %1$s = formatted amount, %2$s = currency */
-								__( 'Request Cashout — %1$s %2$s', '6arshid-social-community' ),
-								number_format( $available, 2 ),
-								$currency
-							) );
+									__( 'Request Cashout — %1$s %2$s', '6arshid-social-community' ),
+									number_format( $available, 2 ),
+									$currency
+								)
+							);
 							?>
 						</button>
-						<span id="sixarshidsc-cashout-msg" aria-live="polite" style="margin-inline-start:.75rem;font-size:.875rem;"></span>
+						<span id="arshid6social-mon-cashout-msg" aria-live="polite" style="margin-inline-start:.75rem;font-size:.875rem;"></span>
 					<?php endif; ?>
 				</div>
 
@@ -569,13 +579,14 @@ ENDJS;
 								</tr>
 							</thead>
 							<tbody>
-								<?php foreach ( $rows as $row ) :
+								<?php
+								foreach ( $rows as $row ) :
 									$type_label = $this->type_label( $row->type );
 									$net        = 'payout' === $row->type
 										? -( (float) $row->amount )
 										: (float) $row->amount - (float) $row->platform_fee;
 									$status_css = $this->status_class( $row->status );
-								?>
+									?>
 								<tr style="border-block-end:1px solid var(--sn-border,#e5e7eb);">
 									<td style="padding:.5rem .75rem;white-space:nowrap;">
 										<?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $row->created_at ) ) ); ?>
@@ -608,21 +619,21 @@ ENDJS;
 		<?php
 		// translators: %1$s is the cashout amount formatted as a number, %2$s is the currency code.
 		$cashout_confirm_txt = sprintf( __( 'Request cashout of %1$s %2$s? The admin will transfer it to your IBAN.', '6arshid-social-community' ), number_format( $available, 2 ), $currency );
-		$js_cashout  = '(function(){';
-		$js_cashout .= 'var ajaxUrl=(window.ARSHID6SOCIALConfig&&window.ARSHID6SOCIALConfig.ajaxUrl)||' . wp_json_encode( admin_url( 'admin-ajax.php' ) ) . ';';
-		$js_cashout .= 'var txtConfirm=' . wp_json_encode( $cashout_confirm_txt ) . ';';
-		$js_cashout .= 'var txtSubmitting=' . wp_json_encode( __( 'Submitting…', '6arshid-social-community' ) ) . ';';
-		$js_cashout .= 'var txtSuccess=' . wp_json_encode( __( 'Cashout requested! The admin will process it shortly.', '6arshid-social-community' ) ) . ';';
-		$js_cashout .= 'var txtError=' . wp_json_encode( __( 'Error. Please try again.', '6arshid-social-community' ) ) . ';';
-		$js_cashout .= 'var txtNetError=' . wp_json_encode( __( 'Network error. Please try again.', '6arshid-social-community' ) ) . ';';
-		$js_cashout .= <<<'ENDJS'
-var btn=document.getElementById('sixarshidsc-cashout-btn');if(!btn)return;
-var msgEl=document.getElementById('sixarshidsc-cashout-msg');
+		$js_cashout          = '(function(){';
+		$js_cashout         .= 'var ajaxUrl=(window.ARSHID6SOCIALConfig&&window.ARSHID6SOCIALConfig.ajaxUrl)||' . wp_json_encode( admin_url( 'admin-ajax.php' ) ) . ';';
+		$js_cashout         .= 'var txtConfirm=' . wp_json_encode( $cashout_confirm_txt ) . ';';
+		$js_cashout         .= 'var txtSubmitting=' . wp_json_encode( __( 'Submitting…', '6arshid-social-community' ) ) . ';';
+		$js_cashout         .= 'var txtSuccess=' . wp_json_encode( __( 'Cashout requested! The admin will process it shortly.', '6arshid-social-community' ) ) . ';';
+		$js_cashout         .= 'var txtError=' . wp_json_encode( __( 'Error. Please try again.', '6arshid-social-community' ) ) . ';';
+		$js_cashout         .= 'var txtNetError=' . wp_json_encode( __( 'Network error. Please try again.', '6arshid-social-community' ) ) . ';';
+		$js_cashout         .= <<<'ENDJS'
+var btn=document.getElementById('arshid6social-mon-cashout-btn');if(!btn)return;
+var msgEl=document.getElementById('arshid6social-mon-cashout-msg');
 btn.addEventListener('click',async function(){
 	if(!confirm(txtConfirm))return;
 	btn.disabled=true;if(msgEl)msgEl.textContent=txtSubmitting;
 	try{
-		var fd=new FormData();fd.set('action','sixarshidsc_request_cashout');fd.set('nonce',btn.dataset.nonce);
+		var fd=new FormData();fd.set('action','arshid6social_monetization_request_cashout');fd.set('nonce',btn.dataset.nonce);
 		var resp=await fetch(ajaxUrl,{method:'POST',credentials:'same-origin',body:fd});var json=await resp.json();
 		if(json.success){btn.style.display='none';if(msgEl){msgEl.style.color='var(--sn-color-success,#16a34a)';msgEl.textContent=(json.data&&json.data.message)?json.data.message:txtSuccess;}}
 		else{btn.disabled=false;if(msgEl){msgEl.style.color='var(--sn-color-danger,#dc2626)';msgEl.textContent=(json.data&&json.data.message)?json.data.message:txtError;}}
@@ -653,7 +664,7 @@ ENDJS;
 		$table_exists = $wpdb->get_var( "SHOW TABLES LIKE '{$transactions_table}'" ) === $transactions_table;
 
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
-		$search = isset( $_GET['s'] )     ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
+		$search = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
 		$paged  = max( 1, isset( $_GET['paged'] ) ? (int) $_GET['paged'] : 1 );
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
@@ -670,15 +681,15 @@ ENDJS;
 		$vals      = array();
 
 		if ( '' !== $search ) {
-			$like          = '%' . $wpdb->esc_like( $search ) . '%';
-			$where_sql    .= ' AND ( u.display_name LIKE %s OR u.user_email LIKE %s OR u.user_login LIKE %s )';
+			$like       = '%' . $wpdb->esc_like( $search ) . '%';
+			$where_sql .= ' AND ( u.display_name LIKE %s OR u.user_email LIKE %s OR u.user_login LIKE %s )';
 			array_push( $vals, $like, $like, $like );
 		}
 
 		// Count.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$count_sql = "SELECT COUNT(*) FROM {$wpdb->usermeta} um {$join_sql} WHERE {$where_sql}";
-		$total = (int) ( empty( $vals )
+		$total     = (int) ( empty( $vals )
 			? $wpdb->get_var( $count_sql ) // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
 			: $wpdb->get_var( $wpdb->prepare( $count_sql, ...$vals ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
 
@@ -690,15 +701,17 @@ ENDJS;
 		$iban_users = $wpdb->get_results( $wpdb->prepare( $rows_sql, ...$fetch_vals ) );
 
 		$total_pages = (int) ceil( $total / $per_page );
-		$admin_nonce = wp_create_nonce( 'sixarshidsc_admin_payout' );
-		$currency    = strtoupper( (string) get_option( 'sixarshidsc_currency', 'USD' ) );
+		$admin_nonce = wp_create_nonce( 'arshid6social_monetization_admin_payout' );
+		$currency    = strtoupper( (string) get_option( 'arshid6social_monetization_currency', 'USD' ) );
 
 		$base_url = add_query_arg(
-			array_filter( array(
-				'page'  => 'arshid6social-monetization',
-				'tab'   => 'payouts',
-				's'     => $search ?: null,
-			) ),
+			array_filter(
+				array(
+					'page' => 'arshid6social-monetization',
+					'tab'  => 'payouts',
+					's'    => $search ?: null,
+				)
+			),
 			admin_url( 'admin.php' )
 		);
 		?>
@@ -715,7 +728,19 @@ ENDJS;
 				style="padding:5px 9px;border:1px solid #8c8f94;border-radius:4px;min-width:260px;" />
 			<?php submit_button( __( 'Search', '6arshid-social-community' ), 'secondary', '', false, array( 'style' => 'padding:4px 12px;' ) ); ?>
 			<?php if ( $search ) : ?>
-				<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'arshid6social-monetization', 'tab' => 'payouts' ), admin_url( 'admin.php' ) ) ); ?>" class="button"><?php esc_html_e( 'Clear', '6arshid-social-community' ); ?></a>
+				<a href="
+				<?php
+				echo esc_url(
+					add_query_arg(
+						array(
+							'page' => 'arshid6social-monetization',
+							'tab'  => 'payouts',
+						),
+						admin_url( 'admin.php' )
+					)
+				);
+				?>
+							" class="button"><?php esc_html_e( 'Clear', '6arshid-social-community' ); ?></a>
 			<?php endif; ?>
 		</form>
 
@@ -731,7 +756,7 @@ ENDJS;
 				<?php esc_html_e( 'No creators match the current search.', '6arshid-social-community' ); ?>
 			</p>
 		<?php else : ?>
-			<table class="widefat striped" id="sixarshidsc-payout-table">
+			<table class="widefat striped" id="arshid6social-mon-payout-table">
 				<thead>
 					<tr>
 						<th><?php esc_html_e( 'User', '6arshid-social-community' ); ?></th>
@@ -747,17 +772,20 @@ ENDJS;
 					</tr>
 				</thead>
 				<tbody>
-				<?php foreach ( $iban_users as $row ) :
+				<?php
+				foreach ( $iban_users as $row ) :
 					$uid  = (int) $row->user_id;
 					$user = get_userdata( $uid );
-					if ( ! $user ) continue;
+					if ( ! $user ) {
+						continue;
+					}
 
 					$iban_plain = Monetization_Crypto::decrypt( (string) $row->iban_enc );
 
-					$line1   = (string) get_user_meta( $uid, 'sixarshidsc_address_line1',   true );
-					$city    = (string) get_user_meta( $uid, 'sixarshidsc_address_city',    true );
-					$postal  = (string) get_user_meta( $uid, 'sixarshidsc_address_postal',  true );
-					$country = (string) get_user_meta( $uid, 'sixarshidsc_address_country', true );
+					$line1         = (string) get_user_meta( $uid, 'arshid6social_monetization_address_line1', true );
+					$city          = (string) get_user_meta( $uid, 'arshid6social_monetization_address_city', true );
+					$postal        = (string) get_user_meta( $uid, 'arshid6social_monetization_address_postal', true );
+					$country       = (string) get_user_meta( $uid, 'arshid6social_monetization_address_country', true );
 					$address_parts = array_filter( array( $line1, $city, $postal, $country ) );
 
 					$available       = 0.0;
@@ -765,28 +793,34 @@ ENDJS;
 					$pending_tx_id   = 0;
 
 					if ( $table_exists ) {
-						$income = (float) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-							"SELECT COALESCE( SUM( amount - platform_fee ), 0 ) FROM {$transactions_table}
+						$income          = (float) $wpdb->get_var(
+							$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+								"SELECT COALESCE( SUM( amount - platform_fee ), 0 ) FROM {$transactions_table}
 							  WHERE creator_id = %d AND type IN ('ppv','subscription') AND status = 'completed'",
-							$uid
-						) );
-						$paid_out = (float) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-							"SELECT COALESCE( SUM( amount ), 0 ) FROM {$transactions_table}
+								$uid
+							)
+						);
+						$paid_out        = (float) $wpdb->get_var(
+							$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+								"SELECT COALESCE( SUM( amount ), 0 ) FROM {$transactions_table}
 							  WHERE creator_id = %d AND type = 'payout' AND status = 'completed'",
-							$uid
-						) );
-						$pending_row = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-							"SELECT id, amount FROM {$transactions_table}
+								$uid
+							)
+						);
+						$pending_row     = $wpdb->get_row(
+							$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+								"SELECT id, amount FROM {$transactions_table}
 							  WHERE creator_id = %d AND type = 'payout' AND status = 'pending'
 							  ORDER BY created_at DESC LIMIT 1",
-							$uid
-						) );
+								$uid
+							)
+						);
 						$pending_cashout = $pending_row ? (float) $pending_row->amount : 0.0;
-						$pending_tx_id   = $pending_row ? (int) $pending_row->id      : 0;
+						$pending_tx_id   = $pending_row ? (int) $pending_row->id : 0;
 						$available       = max( 0.0, $income - $paid_out - $pending_cashout );
 					}
-				?>
-				<tr id="sixarshidsc-admin-row-<?php echo (int) $uid; ?>">
+					?>
+				<tr id="arshid6social-mon-admin-row-<?php echo (int) $uid; ?>">
 					<td>
 						<strong><?php echo esc_html( $user->display_name ); ?></strong><br />
 						<span style="color:#666;font-size:.85em;"><?php echo esc_html( $user->user_email ); ?></span><br />
@@ -817,7 +851,7 @@ ENDJS;
 						<?php if ( $pending_tx_id > 0 ) : ?>
 							<button
 								type="button"
-								class="button button-primary sixarshidsc-mark-paid-btn"
+								class="button button-primary arshid6social-mon-mark-paid-btn"
 								data-uid="<?php echo (int) $uid; ?>"
 								data-tx-id="<?php echo (int) $pending_tx_id; ?>"
 								data-nonce="<?php echo esc_attr( $admin_nonce ); ?>"
@@ -838,14 +872,18 @@ ENDJS;
 			<?php if ( $total_pages > 1 ) : ?>
 				<div style="margin-top:16px;">
 					<?php
-					echo paginate_links( array( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						'base'      => add_query_arg( 'paged', '%#%', $base_url ),
-						'format'    => '',
-						'current'   => $paged,
-						'total'     => $total_pages,
-						'prev_text' => '&laquo;',
-						'next_text' => '&raquo;',
-					) );
+					echo wp_kses_post(
+						paginate_links(
+							array(
+								'base'      => add_query_arg( 'paged', '%#%', $base_url ),
+								'format'    => '',
+								'current'   => $paged,
+								'total'     => $total_pages,
+								'prev_text' => '&laquo;',
+								'next_text' => '&raquo;',
+							)
+						)
+					);
 					?>
 				</div>
 			<?php endif; ?>
@@ -854,12 +892,12 @@ ENDJS;
 			$js_paid  = '(function(){';
 			$js_paid .= 'var ajaxUrl=(window.ARSHID6SOCIALConfig&&window.ARSHID6SOCIALConfig.ajaxUrl)||' . wp_json_encode( admin_url( 'admin-ajax.php' ) ) . ';';
 			$js_paid .= <<<'ENDJS'
-document.querySelectorAll('.sixarshidsc-mark-paid-btn').forEach(function(btn){
+document.querySelectorAll('.arshid6social-mon-mark-paid-btn').forEach(function(btn){
 	btn.addEventListener('click',async function(){
 		var uid=btn.dataset.uid;var txId=btn.dataset.txId;var amount=btn.dataset.amount;
 		if(!confirm('Mark cashout of '+amount+' as paid for this creator?'))return;
 		btn.disabled=true;btn.textContent='Processing…';
-		var fd=new FormData();fd.set('action','sixarshidsc_admin_mark_paid');fd.set('nonce',btn.dataset.nonce);fd.set('user_id',uid);fd.set('tx_id',txId);
+		var fd=new FormData();fd.set('action','arshid6social_monetization_admin_mark_paid');fd.set('nonce',btn.dataset.nonce);fd.set('user_id',uid);fd.set('tx_id',txId);
 		try{
 			var resp=await fetch(ajaxUrl,{method:'POST',credentials:'same-origin',body:fd});var json=await resp.json();
 			if(json.success){btn.textContent='✓ Paid';btn.style.background='#16a34a';btn.style.borderColor='#16a34a';}
@@ -886,7 +924,7 @@ ENDJS;
 		}
 
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		if ( ! wp_verify_nonce( $nonce, 'sixarshidsc_save_iban_' . $user_id ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'arshid6social_monetization_save_iban_' . $user_id ) ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
@@ -918,15 +956,15 @@ ENDJS;
 		}
 
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		if ( ! wp_verify_nonce( $nonce, 'sixarshidsc_save_address_' . $user_id ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'arshid6social_monetization_save_address_' . $user_id ) ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
 		$fields = array(
-			'sixarshidsc_address_line1'   => 'line1',
-			'sixarshidsc_address_city'    => 'city',
-			'sixarshidsc_address_postal'  => 'postal',
-			'sixarshidsc_address_country' => 'country',
+			'arshid6social_monetization_address_line1'   => 'line1',
+			'arshid6social_monetization_address_city'    => 'city',
+			'arshid6social_monetization_address_postal'  => 'postal',
+			'arshid6social_monetization_address_country' => 'country',
 		);
 
 		foreach ( $fields as $meta_key => $post_key ) {
@@ -945,7 +983,7 @@ ENDJS;
 		}
 
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		if ( ! wp_verify_nonce( $nonce, 'sixarshidsc_request_cashout_' . $user_id ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'arshid6social_monetization_request_cashout_' . $user_id ) ) {
 			wp_send_json_error( array( 'message' => __( 'Security check failed.', '6arshid-social-community' ) ), 403 );
 		}
 
@@ -958,32 +996,38 @@ ENDJS;
 		$table = $wpdb->prefix . 'sixarshidsc_transactions';
 
 		// Check there's no pending cashout already.
-		$pending = (float) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COALESCE( SUM( amount ), 0 ) FROM {$table} WHERE creator_id = %d AND type = 'payout' AND status = 'pending'",
-			$user_id
-		) );
+		$pending = (float) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COALESCE( SUM( amount ), 0 ) FROM {$table} WHERE creator_id = %d AND type = 'payout' AND status = 'pending'",
+				$user_id
+			)
+		);
 		if ( $pending > 0 ) {
 			wp_send_json_error( array( 'message' => __( 'You already have a pending cashout request.', '6arshid-social-community' ) ) );
 		}
 
 		// Recalculate available balance server-side.
-		$total_income = (float) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COALESCE( SUM( amount - platform_fee ), 0 ) FROM {$table}
+		$total_income = (float) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COALESCE( SUM( amount - platform_fee ), 0 ) FROM {$table}
 			  WHERE creator_id = %d AND type IN ('ppv','subscription') AND status = 'completed'",
-			$user_id
-		) );
-		$paid_out = (float) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COALESCE( SUM( amount ), 0 ) FROM {$table}
+				$user_id
+			)
+		);
+		$paid_out     = (float) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COALESCE( SUM( amount ), 0 ) FROM {$table}
 			  WHERE creator_id = %d AND type = 'payout' AND status = 'completed'",
-			$user_id
-		) );
-		$available = $total_income - $paid_out;
+				$user_id
+			)
+		);
+		$available    = $total_income - $paid_out;
 
 		if ( $available <= 0 ) {
 			wp_send_json_error( array( 'message' => __( 'No balance available for cashout.', '6arshid-social-community' ) ) );
 		}
 
-		$currency = strtoupper( (string) get_option( 'sixarshidsc_currency', 'USD' ) );
+		$currency = strtoupper( (string) get_option( 'arshid6social_monetization_currency', 'USD' ) );
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$table,
@@ -1002,14 +1046,16 @@ ENDJS;
 			array( '%s', '%d', '%d', '%f', '%f', '%s', '%s', '%s', '%s', '%s' )
 		);
 
-		wp_send_json_success( array(
-			'message' => sprintf(
+		wp_send_json_success(
+			array(
+				'message' => sprintf(
 				/* translators: %1$s = amount, %2$s = currency */
-				__( 'Cashout of %1$s %2$s requested! The admin will transfer it to your IBAN.', '6arshid-social-community' ),
-				number_format( $available, 2 ),
-				$currency
-			),
-		) );
+					__( 'Cashout of %1$s %2$s requested! The admin will transfer it to your IBAN.', '6arshid-social-community' ),
+					number_format( $available, 2 ),
+					$currency
+				),
+			)
+		);
 	}
 
 	/** Admin-only: returns decrypted IBAN for a given user (used via AJAX if needed). */
@@ -1017,11 +1063,11 @@ ENDJS;
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( null, 403 );
 		}
-		check_ajax_referer( 'sixarshidsc_admin_payout' );
+		check_ajax_referer( 'arshid6social_monetization_admin_payout' );
 
-		$uid       = absint( $_POST['user_id'] ?? 0 );
-		$enc       = (string) get_user_meta( $uid, self::IBAN_META, true );
-		$plain     = Monetization_Crypto::decrypt( $enc );
+		$uid   = absint( $_POST['user_id'] ?? 0 );
+		$enc   = (string) get_user_meta( $uid, self::IBAN_META, true );
+		$plain = Monetization_Crypto::decrypt( $enc );
 
 		wp_send_json_success( array( 'iban' => $plain ) );
 	}
@@ -1031,11 +1077,11 @@ ENDJS;
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( null, 403 );
 		}
-		check_ajax_referer( 'sixarshidsc_admin_payout' );
+		check_ajax_referer( 'arshid6social_monetization_admin_payout' );
 
 		global $wpdb;
 		$uid   = absint( $_POST['user_id'] ?? 0 );
-		$tx_id = absint( $_POST['tx_id']   ?? 0 );
+		$tx_id = absint( $_POST['tx_id'] ?? 0 );
 
 		if ( ! $uid ) {
 			wp_send_json_error( array( 'message' => 'Invalid user.' ) );
@@ -1048,7 +1094,12 @@ ENDJS;
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$table,
 				array( 'status' => 'completed' ),
-				array( 'id' => $tx_id, 'creator_id' => $uid, 'type' => 'payout', 'status' => 'pending' ),
+				array(
+					'id'         => $tx_id,
+					'creator_id' => $uid,
+					'type'       => 'payout',
+					'status'     => 'pending',
+				),
 				array( '%s' ),
 				array( '%d', '%d', '%s', '%s' )
 			);
@@ -1057,7 +1108,11 @@ ENDJS;
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$table,
 				array( 'status' => 'completed' ),
-				array( 'creator_id' => $uid, 'type' => 'payout', 'status' => 'pending' ),
+				array(
+					'creator_id' => $uid,
+					'type'       => 'payout',
+					'status'     => 'pending',
+				),
 				array( '%s' ),
 				array( '%d', '%s', '%s' )
 			);

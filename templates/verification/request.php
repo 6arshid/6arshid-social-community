@@ -1,6 +1,6 @@
 <?php
 /**
- * Verification request form — shortcode [sn_verification_request].
+ * Verification request form — shortcode [arshid6social_verification_request].
  *
  * @package Arshid6Social
  */
@@ -35,7 +35,7 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 	</div>
 
 	<form class="sn-verification-request__form" id="sn-verification-form"
-	      enctype="multipart/form-data" novalidate data-mode="resubmit">
+			enctype="multipart/form-data" novalidate data-mode="resubmit">
 		<?php wp_nonce_field( 'arshid6social_ajax_nonce', 'nonce' ); ?>
 
 		<?php
@@ -47,9 +47,9 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 				<?php esc_html_e( 'Full Legal Name', '6arshid-social-community' ); ?> <span aria-hidden="true">*</span>
 			</label>
 			<input type="text" id="sn-verify-name" name="full_name"
-			       class="sn-form-field__input"
-			       value="<?php echo esc_attr( $saved_fields['full_name'] ?? '' ); ?>"
-			       maxlength="100" required>
+					class="sn-form-field__input"
+					value="<?php echo esc_attr( $saved_fields['full_name'] ?? '' ); ?>"
+					maxlength="100" required>
 		</div>
 
 		<div class="sn-form-field">
@@ -57,10 +57,10 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 				<?php esc_html_e( 'Category', '6arshid-social-community' ); ?>
 			</label>
 			<input type="text" id="sn-verify-category" name="category"
-			       class="sn-form-field__input"
-			       value="<?php echo esc_attr( $saved_fields['category'] ?? '' ); ?>"
-			       placeholder="<?php esc_attr_e( 'e.g. Journalist, Athlete, Business…', '6arshid-social-community' ); ?>"
-			       maxlength="100">
+					class="sn-form-field__input"
+					value="<?php echo esc_attr( $saved_fields['category'] ?? '' ); ?>"
+					placeholder="<?php esc_attr_e( 'e.g. Journalist, Athlete, Business…', '6arshid-social-community' ); ?>"
+					maxlength="100">
 		</div>
 
 		<div class="sn-form-field">
@@ -68,8 +68,8 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 				<?php esc_html_e( 'Supporting Links', '6arshid-social-community' ); ?>
 			</label>
 			<textarea id="sn-verify-links" name="links" class="sn-form-field__textarea" rows="3"
-			          placeholder="<?php esc_attr_e( 'News articles, official pages, Wikipedia, etc. (one per line)', '6arshid-social-community' ); ?>"
-			          maxlength="1000"><?php echo esc_textarea( $saved_fields['links'] ?? '' ); ?></textarea>
+						placeholder="<?php esc_attr_e( 'News articles, official pages, Wikipedia, etc. (one per line)', '6arshid-social-community' ); ?>"
+						maxlength="1000"><?php echo esc_textarea( $saved_fields['links'] ?? '' ); ?></textarea>
 		</div>
 
 		<div class="sn-form-field">
@@ -85,9 +85,9 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 				</span>
 			</label>
 			<input type="file" id="sn-verify-doc" name="document"
-			       class="sn-form-field__file"
-			       accept="image/jpeg,image/png,application/pdf"
-			       <?php echo $require_doc ? 'required' : ''; ?>>
+					class="sn-form-field__file"
+					accept="image/jpeg,image/png,application/pdf"
+					<?php echo $require_doc ? 'required' : ''; ?>>
 		</div>
 
 		<div class="sn-verification-request__feedback" id="sn-verify-feedback" role="alert" hidden></div>
@@ -103,18 +103,20 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 		<p><?php esc_html_e( 'Your verification request is under review. We\'ll notify you when a decision is made.', '6arshid-social-community' ); ?></p>
 		<p class="sn-verification-request__submitted">
 			<?php
-			echo esc_html( sprintf(
+			echo esc_html(
+				sprintf(
 				/* translators: %s: date */
-				__( 'Submitted: %s', '6arshid-social-community' ),
-				wp_date( get_option( 'date_format' ), strtotime( $pending->created_at ) )
-			) );
+					__( 'Submitted: %s', '6arshid-social-community' ),
+					wp_date( get_option( 'date_format' ), strtotime( $pending->created_at ) )
+				)
+			);
 			?>
 		</p>
 	</div>
 
 	<?php else : ?>
 	<form class="sn-verification-request__form" id="sn-verification-form"
-	      enctype="multipart/form-data" novalidate>
+			enctype="multipart/form-data" novalidate>
 		<?php wp_nonce_field( 'arshid6social_ajax_nonce', 'nonce' ); ?>
 
 		<p class="sn-verification-request__intro">
@@ -128,9 +130,9 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 			</label>
 			<select id="sn-verify-type" name="type" class="sn-form-field__select" required>
 				<option value=""><?php esc_html_e( '— Select —', '6arshid-social-community' ); ?></option>
-				<?php foreach ( $types as $key => $type ) : ?>
+				<?php foreach ( $types as $key => $verify_type ) : ?>
 				<option value="<?php echo esc_attr( $key ); ?>">
-					<?php echo esc_html( $type['label'] ); ?>
+					<?php echo esc_html( $verify_type['label'] ); ?>
 				</option>
 				<?php endforeach; ?>
 			</select>
@@ -142,9 +144,9 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 				<?php esc_html_e( 'Full Legal Name', '6arshid-social-community' ); ?> <span aria-hidden="true">*</span>
 			</label>
 			<input type="text" id="sn-verify-name" name="full_name"
-			       class="sn-form-field__input"
-			       placeholder="<?php esc_attr_e( 'As it appears on your ID', '6arshid-social-community' ); ?>"
-			       maxlength="100" required>
+					class="sn-form-field__input"
+					placeholder="<?php esc_attr_e( 'As it appears on your ID', '6arshid-social-community' ); ?>"
+					maxlength="100" required>
 		</div>
 
 		<!-- Category / niche -->
@@ -153,9 +155,9 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 				<?php esc_html_e( 'Category', '6arshid-social-community' ); ?>
 			</label>
 			<input type="text" id="sn-verify-category" name="category"
-			       class="sn-form-field__input"
-			       placeholder="<?php esc_attr_e( 'e.g. Journalist, Athlete, Business…', '6arshid-social-community' ); ?>"
-			       maxlength="100">
+					class="sn-form-field__input"
+					placeholder="<?php esc_attr_e( 'e.g. Journalist, Athlete, Business…', '6arshid-social-community' ); ?>"
+					maxlength="100">
 		</div>
 
 		<!-- Supporting links -->
@@ -164,8 +166,8 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 				<?php esc_html_e( 'Supporting Links', '6arshid-social-community' ); ?>
 			</label>
 			<textarea id="sn-verify-links" name="links" class="sn-form-field__textarea" rows="3"
-			          placeholder="<?php esc_attr_e( 'News articles, official pages, Wikipedia, etc. (one per line)', '6arshid-social-community' ); ?>"
-			          maxlength="1000"></textarea>
+						placeholder="<?php esc_attr_e( 'News articles, official pages, Wikipedia, etc. (one per line)', '6arshid-social-community' ); ?>"
+						maxlength="1000"></textarea>
 		</div>
 
 		<!-- Document upload -->
@@ -182,9 +184,9 @@ $require_doc  = (bool) get_option( 'arshid6social_verification_require_doc', fal
 				</span>
 			</label>
 			<input type="file" id="sn-verify-doc" name="document"
-			       class="sn-form-field__file"
-			       accept="image/jpeg,image/png,application/pdf"
-			       <?php echo $require_doc ? 'required' : ''; ?>>
+					class="sn-form-field__file"
+					accept="image/jpeg,image/png,application/pdf"
+					<?php echo $require_doc ? 'required' : ''; ?>>
 		</div>
 
 		<!-- Error / success -->

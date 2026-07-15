@@ -16,7 +16,7 @@ class Monetization_DB {
 
 	/** Increment this constant to trigger a schema migration. */
 	const VERSION        = '1.0.1';
-	const VERSION_OPTION = 'sixarshidsc_db_version';
+	const VERSION_OPTION = 'arshid6social_monetization_db_version';
 
 	/**
 	 * Runs on every request: creates or updates tables when the stored schema

@@ -18,10 +18,10 @@ $_att_types   = array();
 if ( function_exists( 'arshid6social_eng' ) ) {
 	$_att_feature = arshid6social_eng()->feature( 'messages_attachments' );
 	if ( $_att_feature ) {
-		$_att_enabled = (bool) get_option( 'arshid6social_eng_messages_attachments', false );
-		$_att_max_mb  = (int) get_option( 'arshid6social_eng_msg_att_max_mb', 10 );
-		$_att_types   = (array) get_option( 'arshid6social_eng_msg_att_types', array( 'image', 'audio' ) );
-		$_mime_map    = array(
+		$_att_enabled  = (bool) get_option( 'arshid6social_eng_messages_attachments', false );
+		$_att_max_mb   = (int) get_option( 'arshid6social_eng_msg_att_max_mb', 10 );
+		$_att_types    = (array) get_option( 'arshid6social_eng_msg_att_types', array( 'image', 'audio' ) );
+		$_mime_map     = array(
 			'image'    => 'image/jpeg,image/png,image/gif,image/webp',
 			'audio'    => 'audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/mp4',
 			'document' => 'application/pdf',
@@ -37,20 +37,20 @@ if ( function_exists( 'arshid6social_eng' ) ) {
 }
 
 $_arshid6social_config = array(
-	'ajaxUrl'  => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
-	'nonce'    => wp_create_nonce( 'arshid6social_ajax_nonce' ),
-	'userId'              => get_current_user_id(),
-	'userName'            => (string) wp_get_current_user()->display_name,
+	'ajaxUrl'               => esc_url_raw( admin_url( 'admin-ajax.php' ) ),
+	'nonce'                 => wp_create_nonce( 'arshid6social_ajax_nonce' ),
+	'userId'                => get_current_user_id(),
+	'userName'              => (string) wp_get_current_user()->display_name,
 	'currentUserProfileUrl' => esc_url( home_url( '/members/' . wp_get_current_user()->user_nicename . '/' ) ),
-	'threadId'            => $thread_id,
-	'composeRecipientId'  => $compose_recipient_id,
-	'attachments'         => array(
+	'threadId'              => $thread_id,
+	'composeRecipientId'    => $compose_recipient_id,
+	'attachments'           => array(
 		'enabled' => $_att_enabled,
 		'maxMb'   => $_att_max_mb,
 		'types'   => $_att_types,
 		'accept'  => $_att_accept,
 	),
-	'l10n'     => array(
+	'l10n'                  => array(
 		'noConversations'   => __( 'No conversations yet. Start one with the + button.', '6arshid-social-community' ),
 		'loading'           => __( 'Loading...', '6arshid-social-community' ),
 		'noUsersFound'      => __( 'No users found.', '6arshid-social-community' ),
@@ -76,7 +76,7 @@ $_arshid6social_config = array(
 <?php
 $_msg_handle = 'arshid6social-messages-layout';
 if ( ! wp_style_is( $_msg_handle, 'registered' ) ) {
-	wp_register_style( $_msg_handle, false, array( 'arshid6social-main' ), null );
+	wp_register_style( $_msg_handle, false, array( 'arshid6social-main' ), ARSHID6SOCIAL_VERSION );
 	wp_enqueue_style( $_msg_handle );
 	wp_style_add_data( $_msg_handle, 'group', 1 );
 }

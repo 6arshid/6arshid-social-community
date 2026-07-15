@@ -119,15 +119,21 @@ class Admin_Verification {
 				break;
 			case 'revoke':
 				global $wpdb;
-				$req = $wpdb->get_row( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					"SELECT user_id FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
-					$request_id
-				) );
+				$req = $wpdb->get_row(
+					$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+						"SELECT user_id FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
+						$request_id
+					)
+				);
 				if ( $req ) {
 					$verification->revoke( (int) $req->user_id );
 					$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 						$wpdb->prefix . 'sn_verification_requests',
-						array( 'status' => 'revoked', 'reviewer_id' => get_current_user_id(), 'decided_at' => current_time( 'mysql' ) ),
+						array(
+							'status'      => 'revoked',
+							'reviewer_id' => get_current_user_id(),
+							'decided_at'  => current_time( 'mysql' ),
+						),
 						array( 'id' => $request_id ),
 						array( '%s', '%d', '%s' ),
 						array( '%d' )
@@ -171,30 +177,38 @@ class Admin_Verification {
 
 		$offset = ( $paged - 1 ) * $per_page;
 
-		$rows = $wpdb->get_results( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT r.*, u.user_login, u.display_name, u.user_email
+		$rows = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT r.*, u.user_login, u.display_name, u.user_email
 			 FROM {$wpdb->prefix}sn_verification_requests r
 			 JOIN {$wpdb->users} u ON u.ID = r.user_id
 			 WHERE r.status = %s
 			 ORDER BY r.created_at DESC
 			 LIMIT %d OFFSET %d",
-			$status, $per_page, $offset
-		) ) ?: array();
+				$status,
+				$per_page,
+				$offset
+			)
+		) ?: array();
 
-		$total = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM {$wpdb->prefix}sn_verification_requests WHERE status = %s",
-			$status
-		) );
+		$total = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_verification_requests WHERE status = %s",
+				$status
+			)
+		);
 
 		$total_pages = (int) ceil( $total / $per_page );
 
 		// ── Tab counts ────────────────────────────────────────────────────────
 		$tab_counts = array();
 		foreach ( array( 'pending', 'approved', 'rejected', 'revoked' ) as $s ) {
-			$tab_counts[ $s ] = (int) $wpdb->get_var( $wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_verification_requests WHERE status = %s",
-				$s
-			) );
+			$tab_counts[ $s ] = (int) $wpdb->get_var(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					"SELECT COUNT(*) FROM {$wpdb->prefix}sn_verification_requests WHERE status = %s",
+					$s
+				)
+			);
 		}
 
 		// ── Flash messages ────────────────────────────────────────────────────
@@ -205,7 +219,7 @@ class Admin_Verification {
 				'more_info' => __( 'More info requested from user.', '6arshid-social-community' ),
 				'revoked'   => __( 'Verification badge revoked.', '6arshid-social-community' ),
 			);
-			$msg_key = sanitize_key( $_GET['arshid6social_msg'] ); // phpcs:ignore WordPress.Security.NonceVerification
+			$msg_key  = sanitize_key( $_GET['arshid6social_msg'] ); // phpcs:ignore WordPress.Security.NonceVerification
 			if ( isset( $messages[ $msg_key ] ) ) {
 				echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $messages[ $msg_key ] ) . '</p></div>';
 			}
@@ -224,11 +238,11 @@ class Admin_Verification {
 					'rejected' => __( 'Rejected', '6arshid-social-community' ),
 					'revoked'  => __( 'Revoked', '6arshid-social-community' ),
 				);
-				$tab_list = array();
+				$tab_list   = array();
 				foreach ( $tab_labels as $key => $label ) {
-					$url      = admin_url( 'admin.php?page=arshid6social-verification&status=' . $key );
-					$is_active = ( $key === $status );
-					$count    = $tab_counts[ $key ] ?? 0;
+					$url        = admin_url( 'admin.php?page=arshid6social-verification&status=' . $key );
+					$is_active  = ( $key === $status );
+					$count      = $tab_counts[ $key ] ?? 0;
 					$tab_list[] = sprintf(
 						'<li><a href="%s"%s>%s <span class="count">(%s)</span></a>',
 						esc_url( $url ),
@@ -257,14 +271,16 @@ class Admin_Verification {
 					</span>
 					<?php if ( $total_pages > 1 ) : ?>
 						<?php
-						echo paginate_links( // phpcs:ignore WordPress.Security.EscapeOutput
-							array(
-								'base'      => add_query_arg( 'paged', '%#%', admin_url( 'admin.php?page=arshid6social-verification&status=' . $status ) ),
-								'format'    => '',
-								'current'   => $paged,
-								'total'     => $total_pages,
-								'prev_text' => '&laquo;',
-								'next_text' => '&raquo;',
+						echo wp_kses_post(
+							paginate_links(
+								array(
+									'base'      => add_query_arg( 'paged', '%#%', admin_url( 'admin.php?page=arshid6social-verification&status=' . $status ) ),
+									'format'    => '',
+									'current'   => $paged,
+									'total'     => $total_pages,
+									'prev_text' => '&laquo;',
+									'next_text' => '&raquo;',
+								)
 							)
 						);
 						?>
@@ -325,7 +341,8 @@ class Admin_Verification {
 											<a href="<?php echo esc_url( admin_url( 'admin-ajax.php?action=arshid6social_serve_verification_doc&request_id=' . $row->id . '&idx=' . $idx . '&nonce=' . wp_create_nonce( 'arshid6social_ajax_nonce' ) ) ); ?>" target="_blank">
 												<?php
 												/* translators: %d: document number */
-												echo esc_html( sprintf( __( 'Doc %d', '6arshid-social-community' ), $idx + 1 ) ); ?>
+												echo esc_html( sprintf( __( 'Doc %d', '6arshid-social-community' ), $idx + 1 ) );
+												?>
 											</a><br>
 										<?php endforeach; ?>
 									<?php else : ?>
@@ -337,25 +354,43 @@ class Admin_Verification {
 								</td>
 								<td class="actions column-actions<?php echo esc_attr( $col_class( 'actions' ) ); ?>">
 									<?php if ( 'pending' === $row->status ) : ?>
-										<a href="<?php echo esc_url( wp_nonce_url(
-											admin_url( 'admin.php?page=arshid6social-verification&arshid6social_verify_action=approve&request_id=' . $row->id . '&type=' . esc_attr( $row->type ) ),
-											'arshid6social_verify_action_' . $row->id
-										) ); ?>" class="button button-primary button-small">
+										<a href="
+										<?php
+										echo esc_url(
+											wp_nonce_url(
+												admin_url( 'admin.php?page=arshid6social-verification&arshid6social_verify_action=approve&request_id=' . $row->id . '&type=' . esc_attr( $row->type ) ),
+												'arshid6social_verify_action_' . $row->id
+											)
+										);
+										?>
+										" class="button button-primary button-small">
 											<?php esc_html_e( 'Approve', '6arshid-social-community' ); ?>
 										</a>
-										<a href="<?php echo esc_url( wp_nonce_url(
-											admin_url( 'admin.php?page=arshid6social-verification&arshid6social_verify_action=reject&request_id=' . $row->id ),
-											'arshid6social_verify_action_' . $row->id
-										) ); ?>" class="button button-small"
+										<a href="
+										<?php
+										echo esc_url(
+											wp_nonce_url(
+												admin_url( 'admin.php?page=arshid6social-verification&arshid6social_verify_action=reject&request_id=' . $row->id ),
+												'arshid6social_verify_action_' . $row->id
+											)
+										);
+										?>
+										" class="button button-small"
 											onclick="return confirm('<?php esc_attr_e( 'Reject this request?', '6arshid-social-community' ); ?>')">
 											<?php esc_html_e( 'Reject', '6arshid-social-community' ); ?>
 										</a>
 									<?php elseif ( 'approved' === $row->status ) : ?>
 										<span class="dashicons dashicons-yes-alt" style="color:#16a34a;vertical-align:middle;"></span>
-										<a href="<?php echo esc_url( wp_nonce_url(
-											admin_url( 'admin.php?page=arshid6social-verification&arshid6social_verify_action=revoke&request_id=' . $row->id ),
-											'arshid6social_verify_action_' . $row->id
-										) ); ?>" class="button button-small" style="color:#b91c1c;border-color:#fca5a5;"
+										<a href="
+										<?php
+										echo esc_url(
+											wp_nonce_url(
+												admin_url( 'admin.php?page=arshid6social-verification&arshid6social_verify_action=revoke&request_id=' . $row->id ),
+												'arshid6social_verify_action_' . $row->id
+											)
+										);
+										?>
+										" class="button button-small" style="color:#b91c1c;border-color:#fca5a5;"
 											onclick="return confirm('<?php esc_attr_e( 'Revoke this verification badge?', '6arshid-social-community' ); ?>')">
 											<?php esc_html_e( 'Revoke Badge', '6arshid-social-community' ); ?>
 										</a>
@@ -389,14 +424,18 @@ class Admin_Verification {
 				<div class="tablenav bottom">
 					<div class="tablenav-pages">
 						<?php
-						echo paginate_links( array( // phpcs:ignore WordPress.Security.EscapeOutput
-							'base'      => add_query_arg( 'paged', '%#%', admin_url( 'admin.php?page=arshid6social-verification&status=' . $status ) ),
-							'format'    => '',
-							'current'   => $paged,
-							'total'     => $total_pages,
-							'prev_text' => '&laquo;',
-							'next_text' => '&raquo;',
-						) );
+						echo wp_kses_post(
+							paginate_links(
+								array(
+									'base'      => add_query_arg( 'paged', '%#%', admin_url( 'admin.php?page=arshid6social-verification&status=' . $status ) ),
+									'format'    => '',
+									'current'   => $paged,
+									'total'     => $total_pages,
+									'prev_text' => '&laquo;',
+									'next_text' => '&raquo;',
+								)
+							)
+						);
 						?>
 					</div>
 				</div>
