@@ -3,7 +3,7 @@ Contributors: 6arshid, hassantafreshi, aminkhadivar
 Tags: community, buddypress, members, groups, messaging
 Requires at least: 6.5
 Tested up to: 7.0
-Stable tag: 1.8.2
+Stable tag: 1.8.3
 Requires PHP: 8.1
 License: MIT
 License URI: https://opensource.org/licenses/MIT
@@ -348,7 +348,7 @@ When Social Embeds are enabled and a user pastes a supported URL into a post, co
 * SoundCloud: https://developers.soundcloud.com/docs/oembed — Privacy Policy: https://soundcloud.com/pages/privacy
 * Pinterest: https://www.pinterest.com/oembed.json — Privacy Policy: https://policy.pinterest.com/en/privacy-policy
 * Reddit: https://www.reddit.com/oembed — Privacy Policy: https://www.reddit.com/policies/privacy-policy
-* Twitch: https://www.twitch.tv — Privacy Policy: https://www.twitch.tv/p/legal/privacy-notice/
+* Twitch: https://www.twitch.tv — Privacy Policy: https://legal.twitch.com/legal/privacy-notice/
 * Dailymotion: https://www.dailymotion.com/services/oembed — Privacy Policy: https://www.dailymotion.com/legal/privacy
 * Apple Music / Podcasts: https://music.apple.com — Privacy Policy: https://www.apple.com/legal/privacy/
 * LinkedIn: https://www.linkedin.com — Privacy Policy: https://www.linkedin.com/legal/privacy-policy
@@ -382,6 +382,10 @@ When Akismet spam checking is enabled (on by default) and the separate Akismet p
 * Terms of Service: https://akismet.com/tos/
 
 == Changelog ==
+
+= 1.8.3 =
+* Final pre-submission audit: re-verified the full WordPress.org review checklist (REST permission callbacks, register_setting sanitizers, output escaping, input sanitization, nonces, prepared SQL, prefixing, text domain, inline asset enqueuing, external-services documentation, ABSPATH guards, and distribution hygiene) against the current code with WPCS and the Plugin Check security sniffs — all clean.
+* Updated the Twitch privacy-policy link in the External Services documentation to its canonical `legal.twitch.com` address (the previous `twitch.tv` link only reached it via redirect).
 
 = 1.8.2 =
 * Plugin Check: resolved the remaining `PluginCheck.Security.DirectDB.UnescapedDBParameter` notices by annotating the safe dynamic table-name/whitelist identifiers (all query values are bound via `$wpdb->prepare()` placeholders — never raw user input) and cleared the last `PreparedSQLPlaceholders` notices.
