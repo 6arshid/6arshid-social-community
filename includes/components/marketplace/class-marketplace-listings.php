@@ -98,10 +98,10 @@ class Marketplace_Listings {
 		$order     = $order_map[ $sort ] ?? 'l.created_at DESC';
 
 		// ── Count (for has_more) ──────────────────────────────────────────────
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 		$total = (int) $wpdb->get_var(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_listings l {$where}",
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_listings l {$where}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders -- placeholders supplied via dynamic {$where} + spread ...$params.
 				...$params
 			)
 		);
@@ -110,9 +110,10 @@ class Marketplace_Listings {
 		$params[] = $per_page;
 		$params[] = $offset;
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- interpolated identifiers are $wpdb->prefix table names / whitelisted clauses; values bound via prepare() placeholders.
 		$rows = $wpdb->get_results(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
 				"SELECT l.id, l.uid, l.title, l.price, l.is_free, l.is_negotiable,
 			 l.item_condition, l.location_city, l.status,
 			 l.created_at, l.seller_id, l.category_id
@@ -123,6 +124,7 @@ class Marketplace_Listings {
 				...$params
 			)
 		) ?: array();
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 		// ── Fetch primary photo per listing in one query ───────────────────────
 		$listing_ids = array_map( static fn( $r ) => (int) $r->id, $rows );
@@ -131,10 +133,10 @@ class Marketplace_Listings {
 		if ( $listing_ids ) {
 			$id_placeholders = implode( ',', array_fill( 0, count( $listing_ids ), '%d' ) );
 			$media_rows      = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
 					"SELECT listing_id, file_url, attachment_id
 					 FROM {$wpdb->prefix}arshid6social_listing_media
-					 WHERE listing_id IN ($id_placeholders) AND is_primary = 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					 WHERE listing_id IN ($id_placeholders) AND is_primary = 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 					...$listing_ids
 				)
 			) ?: array();
@@ -236,7 +238,7 @@ class Marketplace_Listings {
 			wp_send_json_error( array( 'message' => sprintf( __( 'Maximum %d photos allowed.', '6arshid-social-community' ), $max ) ), 400 );
 		}
 
-		if ( empty( $_FILES['photo'] ) || UPLOAD_ERR_OK !== ( $_FILES['photo']['error'] ?? UPLOAD_ERR_NO_FILE ) ) {
+		if ( empty( $_FILES['photo'] ) || UPLOAD_ERR_OK !== absint( $_FILES['photo']['error'] ?? UPLOAD_ERR_NO_FILE ) ) {
 			wp_send_json_error( array( 'message' => __( 'No valid file received.', '6arshid-social-community' ) ), 400 );
 		}
 
@@ -394,7 +396,7 @@ class Marketplace_Listings {
 		$description = wp_kses_post( wp_unslash( $_POST['description'] ?? '' ) );
 		$category_id = absint( $_POST['category_id'] ?? 0 );
 		$is_free     = ! empty( $_POST['is_free'] ) ? 1 : 0;
-		$price       = $is_free ? 0.0 : max( 0.0, (float) wp_unslash( $_POST['price'] ?? 0 ) );
+		$price       = $is_free ? 0.0 : max( 0.0, (float) sanitize_text_field( wp_unslash( $_POST['price'] ?? 0 ) ) );
 		$is_neg      = ( ! $is_free && ! empty( $_POST['is_negotiable'] ) ) ? 1 : 0;
 		$condition   = sanitize_key( wp_unslash( $_POST['item_condition'] ?? 'used' ) );
 		$city        = sanitize_text_field( wp_unslash( $_POST['location_city'] ?? '' ) );
@@ -470,7 +472,7 @@ class Marketplace_Listings {
 			$expires_at
 		);
 
-		$ok = $wpdb->query( $insert_sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared
+		$ok = $wpdb->query( $insert_sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
 		if ( ! $ok ) {
 			wp_send_json_error( array( 'message' => __( 'Failed to save your listing. Please try again.', '6arshid-social-community' ) ), 500 );
 		}
@@ -817,9 +819,10 @@ class Marketplace_Listings {
 	public static function get_listing( int $id, bool $public = true ): ?object {
 		global $wpdb;
 		$where = $public ? "AND status = 'active'" : '';
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- SQL string built from $wpdb->prefix/whitelist identifiers and static clauses; all values bound via $wpdb->prepare() placeholders (never raw user input).
 		return $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}arshid6social_listings WHERE id = %d {$where}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT * FROM {$wpdb->prefix}arshid6social_listings WHERE id = %d {$where}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 				$id
 			)
 		) ?: null;

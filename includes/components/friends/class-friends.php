@@ -48,7 +48,7 @@ class Friends {
 
 		$row = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}sn_friends
+				"SELECT * FROM {$wpdb->prefix}arshid6social_friends
 				 WHERE (initiator_user_id = %d AND friend_user_id = %d)
 				    OR (initiator_user_id = %d AND friend_user_id = %d)",
 				$user_a,
@@ -92,7 +92,7 @@ class Friends {
 
 		global $wpdb;
 		$result = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_friends',
+			$wpdb->prefix . 'arshid6social_friends',
 			array(
 				'initiator_user_id' => $initiator_id,
 				'friend_user_id'    => $friend_id,
@@ -122,7 +122,7 @@ class Friends {
 		global $wpdb;
 
 		$result = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_friends',
+			$wpdb->prefix . 'arshid6social_friends',
 			array( 'is_confirmed' => 1 ),
 			array(
 				'initiator_user_id' => $requester_id,
@@ -154,7 +154,7 @@ class Friends {
 
 		$deleted = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"DELETE FROM {$wpdb->prefix}sn_friends
+				"DELETE FROM {$wpdb->prefix}arshid6social_friends
 				 WHERE ((initiator_user_id = %d AND friend_user_id = %d)
 				     OR (initiator_user_id = %d AND friend_user_id = %d))
 				   AND is_confirmed = 0",
@@ -184,7 +184,7 @@ class Friends {
 
 		$deleted = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"DELETE FROM {$wpdb->prefix}sn_friends
+				"DELETE FROM {$wpdb->prefix}arshid6social_friends
 				 WHERE (initiator_user_id = %d AND friend_user_id = %d)
 				    OR (initiator_user_id = %d AND friend_user_id = %d)",
 				$user_a,
@@ -219,7 +219,7 @@ class Friends {
 
 		global $wpdb;
 		$result = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_follow',
+			$wpdb->prefix . 'arshid6social_follow',
 			array(
 				'follower_id'  => $follower_id,
 				'followee_id'  => $followee_id,
@@ -245,7 +245,7 @@ class Friends {
 	public function unfollow( int $follower_id, int $followee_id ): bool {
 		global $wpdb;
 		$deleted = $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_follow',
+			$wpdb->prefix . 'arshid6social_follow',
 			array(
 				'follower_id' => $follower_id,
 				'followee_id' => $followee_id,
@@ -271,7 +271,7 @@ class Friends {
 		global $wpdb;
 		return (bool) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT id FROM {$wpdb->prefix}sn_follow WHERE follower_id = %d AND followee_id = %d",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_follow WHERE follower_id = %d AND followee_id = %d",
 				$follower_id,
 				$followee_id
 			)
@@ -308,7 +308,7 @@ class Friends {
 		}
 
 		$result = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_blocks',
+			$wpdb->prefix . 'arshid6social_blocks',
 			array(
 				'blocker_id'   => $blocker_id,
 				'blocked_id'   => $blocked_id,
@@ -335,7 +335,7 @@ class Friends {
 	public function unblock( int $blocker_id, int $blocked_id ): bool {
 		global $wpdb;
 		$deleted = (bool) $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_blocks',
+			$wpdb->prefix . 'arshid6social_blocks',
 			array(
 				'blocker_id' => $blocker_id,
 				'blocked_id' => $blocked_id,
@@ -359,7 +359,7 @@ class Friends {
 		global $wpdb;
 		return (bool) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT id FROM {$wpdb->prefix}sn_blocks
+				"SELECT id FROM {$wpdb->prefix}arshid6social_blocks
 				 WHERE (blocker_id = %d AND blocked_id = %d)
 				    OR (blocker_id = %d AND blocked_id = %d)",
 				$user_a,
@@ -383,7 +383,7 @@ class Friends {
 		$offset = ( $page - 1 ) * $per_page;
 		return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}sn_blocks
+				"SELECT * FROM {$wpdb->prefix}arshid6social_blocks
 				 WHERE blocker_id = %d
 				 ORDER BY date_created DESC
 				 LIMIT %d OFFSET %d",
@@ -408,7 +408,7 @@ class Friends {
 		$friends = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
 				"SELECT IF(initiator_user_id = %d, friend_user_id, initiator_user_id) as friend_id
-				 FROM {$wpdb->prefix}sn_friends
+				 FROM {$wpdb->prefix}arshid6social_friends
 				 WHERE (initiator_user_id = %d OR friend_user_id = %d) AND is_confirmed = 1",
 				$user_id,
 				$user_id,
@@ -432,11 +432,12 @@ class Friends {
 		$exclude_placeholder    = implode( ', ', array_fill( 0, count( $exclude ), '%d' ) );
 
 		// Friends-of-friends who aren't already friends.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- interpolated identifiers are $wpdb->prefix table names / whitelisted clauses; values bound via prepare() placeholders.
 		$suggestions = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
 				"SELECT IF(f.initiator_user_id IN ($friend_ids_placeholder), f.friend_user_id, f.initiator_user_id) as suggested_id,
 				        COUNT(*) as mutual_count
-				 FROM {$wpdb->prefix}sn_friends f
+				 FROM {$wpdb->prefix}arshid6social_friends f
 				 WHERE (f.initiator_user_id IN ($friend_ids_placeholder) OR f.friend_user_id IN ($friend_ids_placeholder))
 				   AND f.is_confirmed = 1
 				   AND f.initiator_user_id NOT IN ($exclude_placeholder)
@@ -447,6 +448,7 @@ class Friends {
 				array_merge( $friends, $friends, $friends, $exclude, $exclude, array( $limit ) )
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 		return array_map( 'absint', $suggestions );
 	}
@@ -600,7 +602,7 @@ class Friends {
 		$ids    = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
 				"SELECT IF(initiator_user_id = %d, friend_user_id, initiator_user_id) as friend_id
-				 FROM {$wpdb->prefix}sn_friends
+				 FROM {$wpdb->prefix}arshid6social_friends
 				 WHERE (initiator_user_id = %d OR friend_user_id = %d) AND is_confirmed = 1
 				 ORDER BY date_created DESC LIMIT %d OFFSET %d",
 				$user_id,

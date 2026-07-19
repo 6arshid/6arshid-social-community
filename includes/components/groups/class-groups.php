@@ -185,7 +185,7 @@ class Groups {
 		$unique_slug = $this->generate_unique_slug( sanitize_title( $args['name'] ) );
 
 		$result = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_groups',
+			$wpdb->prefix . 'arshid6social_groups',
 			array(
 				'creator_id'   => absint( $args['creator_id'] ),
 				'name'         => sanitize_text_field( $args['name'] ),
@@ -229,7 +229,7 @@ class Groups {
 	public function get_by_id( int $group_id ): ?object {
 		global $wpdb;
 		return $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}sn_groups WHERE id = %d", $group_id )
+			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}arshid6social_groups WHERE id = %d", $group_id )
 		);
 	}
 
@@ -242,7 +242,7 @@ class Groups {
 	public function get_by_slug( string $slug ): ?object {
 		global $wpdb;
 		return $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}sn_groups WHERE slug = %s", $slug )
+			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}arshid6social_groups WHERE slug = %s", $slug )
 		);
 	}
 
@@ -297,11 +297,11 @@ class Groups {
 		}
 
 		$where_sql = implode( ' AND ', $where );
-		$sql       = "SELECT SQL_CALC_FOUND_ROWS * FROM {$wpdb->prefix}sn_groups WHERE $where_sql ORDER BY $order_by LIMIT %d OFFSET %d";
+		$sql       = "SELECT SQL_CALC_FOUND_ROWS * FROM {$wpdb->prefix}arshid6social_groups WHERE $where_sql ORDER BY $order_by LIMIT %d OFFSET %d";
 		$values[]  = $args['number'];
 		$values[]  = $offset;
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
 		$rows  = $wpdb->get_results( $wpdb->prepare( $sql, $values ) );
 		$total = (int) $wpdb->get_var( 'SELECT FOUND_ROWS()' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
@@ -377,7 +377,7 @@ class Groups {
 			)
 		);
 
-		$result = $wpdb->insert( $wpdb->prefix . 'sn_groups_members', $data, array( '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%s' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$result = $wpdb->insert( $wpdb->prefix . 'arshid6social_groups_members', $data, array( '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d', '%s' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		if ( $result ) {
 			\Arshid6Social\Cache::delete( "group_member_count_{$group_id}" );
@@ -396,7 +396,7 @@ class Groups {
 	public function remove_member( int $group_id, int $user_id ): void {
 		global $wpdb;
 		$wpdb->delete(
-			$wpdb->prefix . 'sn_groups_members',
+			$wpdb->prefix . 'arshid6social_groups_members',
 			array(
 				'group_id' => $group_id,
 				'user_id'  => $user_id,
@@ -418,7 +418,7 @@ class Groups {
 		global $wpdb;
 		return (bool) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT id FROM {$wpdb->prefix}sn_groups_members WHERE group_id = %d AND user_id = %d AND is_confirmed = 1 AND is_banned = 0",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_groups_members WHERE group_id = %d AND user_id = %d AND is_confirmed = 1 AND is_banned = 0",
 				$group_id,
 				$user_id
 			)
@@ -436,7 +436,7 @@ class Groups {
 		global $wpdb;
 		return (bool) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT id FROM {$wpdb->prefix}sn_groups_members WHERE group_id = %d AND user_id = %d AND is_admin = 1",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_groups_members WHERE group_id = %d AND user_id = %d AND is_admin = 1",
 				$group_id,
 				$user_id
 			)
@@ -456,7 +456,7 @@ class Groups {
 				global $wpdb;
 				return (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 					$wpdb->prepare(
-						"SELECT COUNT(*) FROM {$wpdb->prefix}sn_groups_members WHERE group_id = %d AND is_confirmed = 1 AND is_banned = 0",
+						"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_groups_members WHERE group_id = %d AND is_confirmed = 1 AND is_banned = 0",
 						$group_id
 					)
 				);
@@ -477,7 +477,7 @@ class Groups {
 		$slug    = $base;
 		$counter = 1;
 
-		while ( $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_groups WHERE slug = %s", $slug ) ) ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		while ( $wpdb->get_var( $wpdb->prepare( "SELECT id FROM {$wpdb->prefix}arshid6social_groups WHERE slug = %s", $slug ) ) ) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$slug = $base . '-' . $counter;
 			++$counter;
 		}
@@ -603,7 +603,7 @@ class Groups {
 		// Prevent sole admin from leaving.
 		if ( $this->is_admin( $user_id, $group_id ) ) {
 			global $wpdb;
-			$admin_count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}sn_groups_members WHERE group_id = %d AND is_admin = 1", $group_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$admin_count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_groups_members WHERE group_id = %d AND is_admin = 1", $group_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			if ( $admin_count <= 1 ) {
 				wp_send_json_error( array( 'message' => __( 'You are the only admin. Assign another admin before leaving.', '6arshid-social-community' ) ), 422 );
 			}
@@ -711,7 +711,7 @@ class Groups {
 
 		global $wpdb;
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_groups',
+			$wpdb->prefix . 'arshid6social_groups',
 			array(
 				'name'        => $name,
 				'description' => $description,
@@ -740,9 +740,9 @@ class Groups {
 	public function delete( int $group_id ): void {
 		global $wpdb;
 
-		$wpdb->delete( $wpdb->prefix . 'sn_groups_members', array( 'group_id' => $group_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_groups_groupmeta', array( 'group_id' => $group_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_groups', array( 'id' => $group_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_groups_members', array( 'group_id' => $group_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_groups_groupmeta', array( 'group_id' => $group_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_groups', array( 'id' => $group_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		do_action( 'arshid6social_group_deleted', $group_id );
 	}

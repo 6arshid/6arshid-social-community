@@ -470,7 +470,7 @@ final class Sample_Data {
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->insert(
-				$wpdb->prefix . 'sn_activity',
+				$wpdb->prefix . 'arshid6social_activity',
 				array(
 					'user_id'           => $author_id,
 					'component'         => 'activity',
@@ -493,7 +493,7 @@ final class Sample_Data {
 			if ( $activity_id ) {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->insert(
-					$wpdb->prefix . 'sn_activity_meta',
+					$wpdb->prefix . 'arshid6social_activity_meta',
 					array(
 						'activity_id' => $activity_id,
 						'meta_key'    => '_arshid6social_sample',
@@ -540,7 +540,7 @@ final class Sample_Data {
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->insert(
-				$wpdb->prefix . 'sn_notifications',
+				$wpdb->prefix . 'arshid6social_notifications',
 				array(
 					'user_id'           => $admin_id,
 					'item_id'           => $sender_id,       // sender user ID
@@ -616,7 +616,7 @@ final class Sample_Data {
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->insert(
-				$wpdb->prefix . 'sn_groups',
+				$wpdb->prefix . 'arshid6social_groups',
 				array(
 					'creator_id'   => $creator_id,
 					'name'         => $name,
@@ -635,7 +635,7 @@ final class Sample_Data {
 				$ids['groups'][] = $group_id;
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->insert(
-					$wpdb->prefix . 'sn_groups_members',
+					$wpdb->prefix . 'arshid6social_groups_members',
 					array(
 						'group_id'      => $group_id,
 						'user_id'       => $creator_id,
@@ -665,7 +665,7 @@ final class Sample_Data {
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$result = $wpdb->insert(
-				$wpdb->prefix . 'sn_bookmarks',
+				$wpdb->prefix . 'arshid6social_bookmarks',
 				array(
 					'user_id'     => $admin_id,
 					'object_id'   => $activity_id,
@@ -692,7 +692,7 @@ final class Sample_Data {
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->insert(
-				$wpdb->prefix . 'sn_messages_threads',
+				$wpdb->prefix . 'arshid6social_messages_threads',
 				array(
 					'uniqid'       => wp_generate_uuid4(),
 					'subject'      => '',
@@ -708,7 +708,7 @@ final class Sample_Data {
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->insert(
-				$wpdb->prefix . 'sn_messages_recipients',
+				$wpdb->prefix . 'arshid6social_messages_recipients',
 				array(
 					'thread_id'    => $thread_id,
 					'user_id'      => $sender_id,
@@ -721,7 +721,7 @@ final class Sample_Data {
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->insert(
-				$wpdb->prefix . 'sn_messages_recipients',
+				$wpdb->prefix . 'arshid6social_messages_recipients',
 				array(
 					'thread_id'    => $thread_id,
 					'user_id'      => $admin_id,
@@ -734,7 +734,7 @@ final class Sample_Data {
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->insert(
-				$wpdb->prefix . 'sn_messages',
+				$wpdb->prefix . 'arshid6social_messages',
 				array(
 					'thread_id'  => $thread_id,
 					'sender_id'  => $sender_id,
@@ -753,8 +753,8 @@ final class Sample_Data {
 		}
 
 		// ── 30 Stories (text only) ────────────────────────────────────────────
-		$stories_table     = $wpdb->prefix . 'sn_stories';
-		$story_items_table = $wpdb->prefix . 'sn_story_items';
+		$stories_table     = $wpdb->prefix . 'arshid6social_stories';
+		$story_items_table = $wpdb->prefix . 'arshid6social_story_items';
 		$expiry_hours      = (int) get_option( 'arshid6social_stories_expiry_hours', 24 );
 
 		if ( $this->table_exists( $stories_table ) ) {
@@ -807,7 +807,7 @@ final class Sample_Data {
 		}
 
 		// ── 1 Ad ─────────────────────────────────────────────────────────────
-		$ads_table = $wpdb->prefix . 'sn_ads';
+		$ads_table = $wpdb->prefix . 'arshid6social_ads';
 		if ( $this->table_exists( $ads_table ) ) {
 			$date = current_time( 'mysql' );
 
@@ -862,23 +862,25 @@ final class Sample_Data {
 		// Delete sample activities (found via meta).
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$activity_ids = $wpdb->get_col(
-			"SELECT activity_id FROM {$wpdb->prefix}sn_activity_meta WHERE meta_key = '_arshid6social_sample' AND meta_value = '1'"
+			"SELECT activity_id FROM {$wpdb->prefix}arshid6social_activity_meta WHERE meta_key = '_arshid6social_sample' AND meta_value = '1'"
 		);
 		if ( ! empty( $activity_ids ) ) {
 			$activity_ids = array_map( 'intval', $activity_ids );
 			$phs          = implode( ',', array_fill( 0, count( $activity_ids ), '%d' ) );
 			// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQLPlaceholders
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_activity WHERE id IN ($phs)", ...$activity_ids ) );
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_activity_meta WHERE activity_id IN ($phs)", ...$activity_ids ) );
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}arshid6social_activity WHERE id IN ($phs)", ...$activity_ids ) );
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}arshid6social_activity_meta WHERE activity_id IN ($phs)", ...$activity_ids ) );
 			// phpcs:enable
 		}
 
 		// Delete by stored IDs.
 		$stored = (array) get_option( 'arshid6social_sample_data_ids', array() );
 
-		$this->delete_by_ids( $stored['notifications'] ?? array(), $wpdb->prefix . 'sn_notifications' );
-		$this->delete_by_ids( $stored['bookmarks'] ?? array(), $wpdb->prefix . 'sn_bookmarks' );
-		$this->delete_by_ids( $stored['ads'] ?? array(), $wpdb->prefix . 'sn_ads' );
+		$this->delete_by_ids( $stored['notifications'] ?? array(), $wpdb->prefix . 'arshid6social_notifications' );
+		$this->delete_by_ids( $stored['bookmarks'] ?? array(), $wpdb->prefix . 'arshid6social_bookmarks' );
+		$this->delete_by_ids( $stored['ads'] ?? array(), $wpdb->prefix . 'arshid6social_ads' );
 
 		if ( ! empty( $stored['listings'] ) && $this->table_exists( $wpdb->prefix . 'arshid6social_listings' ) ) {
 			$this->delete_by_ids( $stored['listings'], $wpdb->prefix . 'arshid6social_listings' );
@@ -888,8 +890,10 @@ final class Sample_Data {
 			$ids = array_map( 'intval', $stored['groups'] );
 			$phs = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 			// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQLPlaceholders
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_groups WHERE id IN ($phs)", ...$ids ) );
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_groups_members WHERE group_id IN ($phs)", ...$ids ) );
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}arshid6social_groups WHERE id IN ($phs)", ...$ids ) );
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}arshid6social_groups_members WHERE group_id IN ($phs)", ...$ids ) );
 			// phpcs:enable
 		}
 
@@ -897,28 +901,34 @@ final class Sample_Data {
 			$msg_ids = array_map( 'intval', $stored['messages'] );
 			$phs     = implode( ',', array_fill( 0, count( $msg_ids ), '%d' ) );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQLPlaceholders
-			$thread_ids = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT thread_id FROM {$wpdb->prefix}sn_messages WHERE id IN ($phs)", ...$msg_ids ) );
+			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
+			$thread_ids = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT thread_id FROM {$wpdb->prefix}arshid6social_messages WHERE id IN ($phs)", ...$msg_ids ) );
 
 			// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQLPlaceholders
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_messages WHERE id IN ($phs)", ...$msg_ids ) );
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}arshid6social_messages WHERE id IN ($phs)", ...$msg_ids ) );
 			// phpcs:enable
 
 			if ( ! empty( $thread_ids ) ) {
 				$thread_ids = array_map( 'intval', $thread_ids );
 				$tphs       = implode( ',', array_fill( 0, count( $thread_ids ), '%d' ) );
 				// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQLPlaceholders
-				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_messages_threads WHERE id IN ($tphs)", ...$thread_ids ) );
-				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_messages_recipients WHERE thread_id IN ($tphs)", ...$thread_ids ) );
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
+				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}arshid6social_messages_threads WHERE id IN ($tphs)", ...$thread_ids ) );
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
+				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}arshid6social_messages_recipients WHERE thread_id IN ($tphs)", ...$thread_ids ) );
 				// phpcs:enable
 			}
 		}
 
-		if ( ! empty( $stored['stories'] ) && $this->table_exists( $wpdb->prefix . 'sn_stories' ) ) {
+		if ( ! empty( $stored['stories'] ) && $this->table_exists( $wpdb->prefix . 'arshid6social_stories' ) ) {
 			$ids = array_map( 'intval', $stored['stories'] );
 			$phs = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 			// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQLPlaceholders
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_story_items WHERE story_id IN ($phs)", ...$ids ) );
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_stories WHERE id IN ($phs)", ...$ids ) );
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}arshid6social_story_items WHERE story_id IN ($phs)", ...$ids ) );
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}arshid6social_stories WHERE id IN ($phs)", ...$ids ) );
 			// phpcs:enable
 		}
 	}
@@ -931,6 +941,7 @@ final class Sample_Data {
 		$ids = array_map( 'intval', $raw_ids );
 		$phs = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQLPlaceholders
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
 		$wpdb->query( $wpdb->prepare( "DELETE FROM $table WHERE id IN ($phs)", ...$ids ) );
 		// phpcs:enable
 	}

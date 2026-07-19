@@ -43,7 +43,7 @@ class Sticky_Posts {
 		// Site scope: enforce single-sticky rule.
 		if ( 'site' === $scope && ! get_option( 'arshid6social_eng_sticky_multiple', false ) ) {
 			$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_sticky',
+				$wpdb->prefix . 'arshid6social_sticky',
 				array(
 					'scope'       => 'site',
 					'object_type' => 'activity',
@@ -55,7 +55,7 @@ class Sticky_Posts {
 		// Don't duplicate.
 		$exists = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_sticky WHERE object_id = %d AND scope = %s AND scope_id <=> %d",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_sticky WHERE object_id = %d AND scope = %s AND scope_id <=> %d",
 				$object_id,
 				$scope,
 				$scope_id
@@ -66,7 +66,7 @@ class Sticky_Posts {
 		}
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_sticky',
+			$wpdb->prefix . 'arshid6social_sticky',
 			array(
 				'object_id'   => $object_id,
 				'object_type' => 'activity',
@@ -85,7 +85,7 @@ class Sticky_Posts {
 	public function unpin( int $object_id, string $scope, int $scope_id ): bool {
 		global $wpdb;
 		$deleted = $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_sticky',
+			$wpdb->prefix . 'arshid6social_sticky',
 			array(
 				'object_id' => $object_id,
 				'scope'     => $scope,
@@ -100,7 +100,7 @@ class Sticky_Posts {
 		global $wpdb;
 		return (bool) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_sticky
+				"SELECT id FROM {$wpdb->prefix}arshid6social_sticky
 			WHERE object_id = %d AND scope = %s AND scope_id <=> %s
 			AND (expires_at IS NULL OR expires_at > NOW())",
 				$object_id,
@@ -119,7 +119,7 @@ class Sticky_Posts {
 		global $wpdb;
 		$rows = $wpdb->get_col(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT object_id FROM {$wpdb->prefix}sn_sticky
+				"SELECT object_id FROM {$wpdb->prefix}arshid6social_sticky
 			WHERE scope = %s AND scope_id <=> %s AND object_type = 'activity'
 			AND (expires_at IS NULL OR expires_at > NOW())
 			ORDER BY created_at DESC",
@@ -133,7 +133,7 @@ class Sticky_Posts {
 	public function remove_expired(): void {
 		global $wpdb;
 		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"DELETE FROM {$wpdb->prefix}sn_sticky WHERE expires_at IS NOT NULL AND expires_at <= NOW()"
+			"DELETE FROM {$wpdb->prefix}arshid6social_sticky WHERE expires_at IS NOT NULL AND expires_at <= NOW()"
 		);
 	}
 
@@ -150,7 +150,7 @@ class Sticky_Posts {
 		global $wpdb;
 		$role = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT role FROM {$wpdb->prefix}sn_groups_members WHERE group_id = %d AND user_id = %d",
+				"SELECT role FROM {$wpdb->prefix}arshid6social_groups_members WHERE group_id = %d AND user_id = %d",
 				$group_id,
 				get_current_user_id()
 			)
@@ -162,7 +162,7 @@ class Sticky_Posts {
 		global $wpdb;
 		$owner = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d",
 				$activity_id
 			)
 		);

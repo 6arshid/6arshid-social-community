@@ -571,7 +571,7 @@ class Stories_REST extends \WP_REST_Controller {
 		global $wpdb;
 		$owner_id = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_stories WHERE id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_stories WHERE id = %d",
 				absint( $request['id'] )
 			)
 		);
@@ -588,7 +588,7 @@ class Stories_REST extends \WP_REST_Controller {
 		global $wpdb;
 		$owner_id = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_stories WHERE id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_stories WHERE id = %d",
 				absint( $request['id'] )
 			)
 		);
@@ -605,7 +605,7 @@ class Stories_REST extends \WP_REST_Controller {
 		global $wpdb;
 		$owner_id = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_story_highlights WHERE id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_story_highlights WHERE id = %d",
 				absint( $request['id'] )
 			)
 		);

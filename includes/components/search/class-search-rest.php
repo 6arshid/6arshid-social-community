@@ -141,10 +141,10 @@ class Search_REST {
 			$privacy_clause = "AND privacy = 'public'";
 		}
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$total = (int) $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_activity
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_activity
 			 WHERE is_spam = 0 AND item_id = 0 AND type != 'activity_comment' AND content LIKE %s
 			 $privacy_clause",
 				$like
@@ -158,7 +158,7 @@ class Search_REST {
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT id, user_id, content, date_recorded, primary_link
-			 FROM {$wpdb->prefix}sn_activity
+			 FROM {$wpdb->prefix}arshid6social_activity
 			 WHERE is_spam = 0 AND item_id = 0 AND type != 'activity_comment' AND content LIKE %s
 			 $privacy_clause
 			 ORDER BY date_recorded DESC
@@ -250,7 +250,7 @@ class Search_REST {
 		$offset = ( $page - 1 ) * $per_page;
 		$table  = $wpdb->prefix . 'arshid6social_listings';
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$total = (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT COUNT(*) FROM `$table` WHERE status = 'active' AND (title LIKE %s OR description LIKE %s)",

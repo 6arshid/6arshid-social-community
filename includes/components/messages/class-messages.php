@@ -26,14 +26,14 @@ class Messages {
 		global $wpdb;
 		$uid = (string) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT uniqid FROM {$wpdb->prefix}sn_messages_threads WHERE id = %d",
+				"SELECT uniqid FROM {$wpdb->prefix}arshid6social_messages_threads WHERE id = %d",
 				$thread_id
 			)
 		);
 		if ( ! $uid ) {
 			$uid = wp_generate_uuid4();
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_messages_threads',
+				$wpdb->prefix . 'arshid6social_messages_threads',
 				array( 'uniqid' => $uid ),
 				array( 'id' => $thread_id ),
 				array( '%s' ),
@@ -47,7 +47,7 @@ class Messages {
 		global $wpdb;
 		return (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_messages_threads WHERE uniqid = %s",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_messages_threads WHERE uniqid = %s",
 				sanitize_text_field( $uid )
 			)
 		);
@@ -233,7 +233,7 @@ class Messages {
 
 		// Insert thread.
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_messages_threads',
+			$wpdb->prefix . 'arshid6social_messages_threads',
 			array(
 				'subject'      => sanitize_text_field( $subject ),
 				'is_group'     => count( $filtered ) > 1 ? 1 : 0,
@@ -244,7 +244,7 @@ class Messages {
 		$thread_id = (int) $wpdb->insert_id;
 
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_messages_threads',
+			$wpdb->prefix . 'arshid6social_messages_threads',
 			array( 'uniqid' => wp_generate_uuid4() ),
 			array( 'id' => $thread_id ),
 			array( '%s' ),
@@ -255,7 +255,7 @@ class Messages {
 		$all_participants = array_merge( array( $sender_id ), $filtered );
 		foreach ( $all_participants as $participant_id ) {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_messages_recipients',
+				$wpdb->prefix . 'arshid6social_messages_recipients',
 				array(
 					'thread_id'    => $thread_id,
 					'user_id'      => $participant_id,
@@ -289,7 +289,7 @@ class Messages {
 		// Ensure sender is a participant.
 		$is_participant = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT id FROM {$wpdb->prefix}sn_messages_recipients WHERE thread_id = %d AND user_id = %d AND is_deleted = 0",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_messages_recipients WHERE thread_id = %d AND user_id = %d AND is_deleted = 0",
 				$thread_id,
 				$sender_id
 			)
@@ -302,7 +302,7 @@ class Messages {
 		$content = wp_kses_post( $content );
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_messages',
+			$wpdb->prefix . 'arshid6social_messages',
 			array(
 				'thread_id'  => $thread_id,
 				'sender_id'  => $sender_id,
@@ -317,7 +317,7 @@ class Messages {
 		// Increment unread count for all other participants.
 		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"UPDATE {$wpdb->prefix}sn_messages_recipients
+				"UPDATE {$wpdb->prefix}arshid6social_messages_recipients
 				 SET unread_count = unread_count + 1
 				 WHERE thread_id = %d AND user_id != %d AND is_deleted = 0",
 				$thread_id,
@@ -349,17 +349,17 @@ class Messages {
 			$threads = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prepare(
 					"SELECT t.*, r.unread_count
-					 FROM {$wpdb->prefix}sn_messages_threads t
-					 JOIN {$wpdb->prefix}sn_messages_recipients r ON r.thread_id = t.id
+					 FROM {$wpdb->prefix}arshid6social_messages_threads t
+					 JOIN {$wpdb->prefix}arshid6social_messages_recipients r ON r.thread_id = t.id
 					 WHERE r.user_id = %d AND r.is_deleted = 0
 					   AND (
 					       t.subject LIKE %s
 					       OR EXISTS (
-					           SELECT 1 FROM {$wpdb->prefix}sn_messages m2
+					           SELECT 1 FROM {$wpdb->prefix}arshid6social_messages m2
 					           WHERE m2.thread_id = t.id AND m2.message LIKE %s AND m2.is_deleted = 0
 					       )
 					       OR EXISTS (
-					           SELECT 1 FROM {$wpdb->prefix}sn_messages_recipients r2
+					           SELECT 1 FROM {$wpdb->prefix}arshid6social_messages_recipients r2
 					           JOIN {$wpdb->users} u ON u.ID = r2.user_id
 					           WHERE r2.thread_id = t.id AND r2.user_id != %d AND r2.is_deleted = 0
 					             AND u.display_name LIKE %s
@@ -380,17 +380,17 @@ class Messages {
 			$total = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prepare(
 					"SELECT COUNT(*)
-					 FROM {$wpdb->prefix}sn_messages_threads t
-					 JOIN {$wpdb->prefix}sn_messages_recipients r ON r.thread_id = t.id
+					 FROM {$wpdb->prefix}arshid6social_messages_threads t
+					 JOIN {$wpdb->prefix}arshid6social_messages_recipients r ON r.thread_id = t.id
 					 WHERE r.user_id = %d AND r.is_deleted = 0
 					   AND (
 					       t.subject LIKE %s
 					       OR EXISTS (
-					           SELECT 1 FROM {$wpdb->prefix}sn_messages m2
+					           SELECT 1 FROM {$wpdb->prefix}arshid6social_messages m2
 					           WHERE m2.thread_id = t.id AND m2.message LIKE %s AND m2.is_deleted = 0
 					       )
 					       OR EXISTS (
-					           SELECT 1 FROM {$wpdb->prefix}sn_messages_recipients r2
+					           SELECT 1 FROM {$wpdb->prefix}arshid6social_messages_recipients r2
 					           JOIN {$wpdb->users} u ON u.ID = r2.user_id
 					           WHERE r2.thread_id = t.id AND r2.user_id != %d AND r2.is_deleted = 0
 					             AND u.display_name LIKE %s
@@ -407,8 +407,8 @@ class Messages {
 			$threads = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prepare(
 					"SELECT t.*, r.unread_count
-					 FROM {$wpdb->prefix}sn_messages_threads t
-					 JOIN {$wpdb->prefix}sn_messages_recipients r ON r.thread_id = t.id
+					 FROM {$wpdb->prefix}arshid6social_messages_threads t
+					 JOIN {$wpdb->prefix}arshid6social_messages_recipients r ON r.thread_id = t.id
 					 WHERE r.user_id = %d AND r.is_deleted = 0
 					 ORDER BY t.date_created DESC
 					 LIMIT %d OFFSET %d",
@@ -420,7 +420,7 @@ class Messages {
 
 			$total = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prepare(
-					"SELECT COUNT(*) FROM {$wpdb->prefix}sn_messages_recipients WHERE user_id = %d AND is_deleted = 0",
+					"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_messages_recipients WHERE user_id = %d AND is_deleted = 0",
 					$user_id
 				)
 			);
@@ -453,7 +453,7 @@ class Messages {
 		// Access check.
 		$is_participant = (bool) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT id FROM {$wpdb->prefix}sn_messages_recipients WHERE thread_id = %d AND user_id = %d AND is_deleted = 0",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_messages_recipients WHERE thread_id = %d AND user_id = %d AND is_deleted = 0",
 				$thread_id,
 				$user_id
 			)
@@ -468,16 +468,16 @@ class Messages {
 		$per_page = min( 50, max( 1, $per_page ) );
 		$offset   = ( $page - 1 ) * $per_page;
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$messages = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT m.* FROM {$wpdb->prefix}sn_messages m
+				"SELECT m.* FROM {$wpdb->prefix}arshid6social_messages m
 				 WHERE m.thread_id = %d AND m.is_deleted = 0
 				   AND NOT EXISTS (
-				       SELECT 1 FROM {$wpdb->prefix}sn_messages_hidden h
+				       SELECT 1 FROM {$wpdb->prefix}arshid6social_messages_hidden h
 				       WHERE h.message_id = m.id AND h.user_id = %d
 				   )
-				 ORDER BY m.date_sent {$order} LIMIT %d OFFSET %d",
+				 ORDER BY m.date_sent {$order} LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- $wpdb->prefix table names; $order whitelisted ASC/DESC; values bound via prepare().
 				$thread_id,
 				$user_id,
 				$per_page,
@@ -485,13 +485,13 @@ class Messages {
 			)
 		);
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$total = (int) $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_messages m
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_messages m
 				 WHERE m.thread_id = %d AND m.is_deleted = 0
 				   AND NOT EXISTS (
-				       SELECT 1 FROM {$wpdb->prefix}sn_messages_hidden h
+				       SELECT 1 FROM {$wpdb->prefix}arshid6social_messages_hidden h
 				       WHERE h.message_id = m.id AND h.user_id = %d
 				   )",
 				$thread_id,
@@ -524,9 +524,9 @@ class Messages {
 		$thread_id = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
 				"SELECT r1.thread_id
-				 FROM {$wpdb->prefix}sn_messages_recipients r1
-				 JOIN {$wpdb->prefix}sn_messages_recipients r2 ON r1.thread_id = r2.thread_id
-				 JOIN {$wpdb->prefix}sn_messages_threads t ON t.id = r1.thread_id
+				 FROM {$wpdb->prefix}arshid6social_messages_recipients r1
+				 JOIN {$wpdb->prefix}arshid6social_messages_recipients r2 ON r1.thread_id = r2.thread_id
+				 JOIN {$wpdb->prefix}arshid6social_messages_threads t ON t.id = r1.thread_id
 				 WHERE r1.user_id = %d AND r2.user_id = %d
 				   AND r1.is_deleted = 0 AND r2.is_deleted = 0
 				   AND t.is_group = 0
@@ -546,7 +546,7 @@ class Messages {
 		$subject        = $recipient_user ? $recipient_user->display_name : '';
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_messages_threads',
+			$wpdb->prefix . 'arshid6social_messages_threads',
 			array(
 				'subject'      => sanitize_text_field( $subject ),
 				'is_group'     => 0,
@@ -557,7 +557,7 @@ class Messages {
 		$new_thread_id = (int) $wpdb->insert_id;
 
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_messages_threads',
+			$wpdb->prefix . 'arshid6social_messages_threads',
 			array( 'uniqid' => wp_generate_uuid4() ),
 			array( 'id' => $new_thread_id ),
 			array( '%s' ),
@@ -566,7 +566,7 @@ class Messages {
 
 		foreach ( array( $user_id, $recipient_id ) as $participant_id ) {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_messages_recipients',
+				$wpdb->prefix . 'arshid6social_messages_recipients',
 				array(
 					'thread_id'    => $new_thread_id,
 					'user_id'      => $participant_id,
@@ -592,7 +592,7 @@ class Messages {
 	public function mark_thread_read( int $thread_id, int $user_id ): void {
 		global $wpdb;
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_messages_recipients',
+			$wpdb->prefix . 'arshid6social_messages_recipients',
 			array( 'unread_count' => 0 ),
 			array(
 				'thread_id' => $thread_id,
@@ -613,7 +613,7 @@ class Messages {
 		global $wpdb;
 		return (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT SUM(unread_count) FROM {$wpdb->prefix}sn_messages_recipients WHERE user_id = %d AND is_deleted = 0",
+				"SELECT SUM(unread_count) FROM {$wpdb->prefix}arshid6social_messages_recipients WHERE user_id = %d AND is_deleted = 0",
 				$user_id
 			)
 		);
@@ -630,14 +630,14 @@ class Messages {
 
 		$last_message = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}sn_messages WHERE thread_id = %d AND is_deleted = 0 ORDER BY date_sent DESC LIMIT 1",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_messages WHERE thread_id = %d AND is_deleted = 0 ORDER BY date_sent DESC LIMIT 1",
 				$thread->id
 			)
 		);
 
 		$participants = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT user_id FROM {$wpdb->prefix}sn_messages_recipients WHERE thread_id = %d AND is_deleted = 0",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_messages_recipients WHERE thread_id = %d AND is_deleted = 0",
 				$thread->id
 			)
 		);
@@ -723,7 +723,7 @@ class Messages {
 				global $wpdb;
 				$new_messages = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 					$wpdb->prepare(
-						"SELECT * FROM {$wpdb->prefix}sn_messages WHERE thread_id = %d AND id > %d AND is_deleted = 0 ORDER BY date_sent ASC",
+						"SELECT * FROM {$wpdb->prefix}arshid6social_messages WHERE thread_id = %d AND id > %d AND is_deleted = 0 ORDER BY date_sent ASC",
 						$thread_id,
 						$last_id
 					)
@@ -866,7 +866,7 @@ class Messages {
 		// Verify current user is a participant in this thread.
 		$is_participant = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				'SELECT COUNT(*) FROM ' . $wpdb->prefix . 'sn_messages_recipients WHERE thread_id = %d AND user_id = %d',
+				'SELECT COUNT(*) FROM ' . $wpdb->prefix . 'arshid6social_messages_recipients WHERE thread_id = %d AND user_id = %d',
 				$thread_id,
 				$user_id
 			)
@@ -879,7 +879,7 @@ class Messages {
 		if ( $delete_for_both ) {
 			// Soft-delete for all participants.
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_messages_recipients',
+				$wpdb->prefix . 'arshid6social_messages_recipients',
 				array( 'is_deleted' => 1 ),
 				array( 'thread_id' => $thread_id ),
 				array( '%d' ),
@@ -888,7 +888,7 @@ class Messages {
 		} else {
 			// Soft-delete for this user only.
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_messages_recipients',
+				$wpdb->prefix . 'arshid6social_messages_recipients',
 				array( 'is_deleted' => 1 ),
 				array(
 					'thread_id' => $thread_id,
@@ -942,7 +942,7 @@ class Messages {
 
 		$message = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_messages WHERE id = %d AND is_deleted = 0",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_messages WHERE id = %d AND is_deleted = 0",
 				$message_id
 			)
 		);
@@ -952,7 +952,7 @@ class Messages {
 		}
 
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_messages',
+			$wpdb->prefix . 'arshid6social_messages',
 			array(
 				'message'   => $content,
 				'is_edited' => 1,
@@ -986,8 +986,8 @@ class Messages {
 		$message = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT m.*, r.thread_id as r_thread_id
-			 FROM {$wpdb->prefix}sn_messages m
-			 JOIN {$wpdb->prefix}sn_messages_recipients r ON r.thread_id = m.thread_id AND r.user_id = %d AND r.is_deleted = 0
+			 FROM {$wpdb->prefix}arshid6social_messages m
+			 JOIN {$wpdb->prefix}arshid6social_messages_recipients r ON r.thread_id = m.thread_id AND r.user_id = %d AND r.is_deleted = 0
 			 WHERE m.id = %d AND m.is_deleted = 0",
 				$user_id,
 				$message_id
@@ -1002,7 +1002,7 @@ class Messages {
 
 		if ( $for_both && $is_sender ) {
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_messages',
+				$wpdb->prefix . 'arshid6social_messages',
 				array( 'is_deleted' => 1 ),
 				array( 'id' => $message_id ),
 				array( '%d' ),
@@ -1010,7 +1010,7 @@ class Messages {
 			);
 		} else {
 			$wpdb->replace( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_messages_hidden',
+				$wpdb->prefix . 'arshid6social_messages_hidden',
 				array(
 					'message_id' => $message_id,
 					'user_id'    => $user_id,
@@ -1042,7 +1042,7 @@ class Messages {
 
 		$is_participant = (bool) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_messages_recipients WHERE thread_id = %d AND user_id = %d AND is_deleted = 0",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_messages_recipients WHERE thread_id = %d AND user_id = %d AND is_deleted = 0",
 				$thread_id,
 				$user_id
 			)
@@ -1054,7 +1054,7 @@ class Messages {
 
 		$new_messages = $wpdb->get_results(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_messages WHERE thread_id = %d AND id > %d AND is_deleted = 0 ORDER BY date_sent ASC",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_messages WHERE thread_id = %d AND id > %d AND is_deleted = 0 ORDER BY date_sent ASC",
 				$thread_id,
 				$last_id
 			)

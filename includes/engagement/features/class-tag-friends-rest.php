@@ -88,7 +88,7 @@ class Tag_Friends_REST {
 		global $wpdb;
 		$activity = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d",
 				$activity_id
 			)
 		);
@@ -108,7 +108,7 @@ class Tag_Friends_REST {
 		// Using reflection to call the private method isn't ideal; we expose it via tag_photo.
 		// Instead, directly do the insert here.
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_post_tags',
+			$wpdb->prefix . 'arshid6social_post_tags',
 			array(
 				'object_id'      => $activity_id,
 				'object_type'    => 'activity',
@@ -124,7 +124,7 @@ class Tag_Friends_REST {
 
 		if ( $tag_id && ( $x || $y ) ) {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_post_tag_coords',
+				$wpdb->prefix . 'arshid6social_post_tag_coords',
 				array(
 					'tag_id'    => $tag_id,
 					'x_percent' => max( 0.0, min( 100.0, $x ) ),
@@ -150,7 +150,7 @@ class Tag_Friends_REST {
 
 		$tag = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_post_tags WHERE id = %d",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_post_tags WHERE id = %d",
 				$tag_id
 			)
 		);
@@ -163,8 +163,8 @@ class Tag_Friends_REST {
 			return new \WP_REST_Response( null, 403 );
 		}
 
-		$wpdb->delete( $wpdb->prefix . 'sn_post_tag_coords', array( 'tag_id' => $tag_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_post_tags', array( 'id' => $tag_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_post_tag_coords', array( 'tag_id' => $tag_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_post_tags', array( 'id' => $tag_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		return new \WP_REST_Response( null, 204 );
 	}

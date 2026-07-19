@@ -1,9 +1,9 @@
 === 6Arshid Social Community ===
 Contributors: 6arshid, hassantafreshi, aminkhadivar
-Tags: social network, community, members, activity, groups, buddypress, messaging, profiles
+Tags: community, buddypress, members, groups, messaging
 Requires at least: 6.5
 Tested up to: 7.0
-Stable tag: 1.7.0
+Stable tag: 1.8.2
 Requires PHP: 8.1
 License: MIT
 License URI: https://opensource.org/licenses/MIT
@@ -326,7 +326,7 @@ When the GIF provider is set to Tenor in Engagement settings, this plugin querie
 
 = Social Embeds (YouTube, Vimeo, X / Twitter, Instagram, Facebook, TikTok, Spotify, SoundCloud, Pinterest, Reddit, Twitch, Dailymotion, Apple Music / Podcasts, LinkedIn, Telegram, Threads, Bluesky, Aparat) =
 When Social Embeds are enabled and a user pastes a supported URL into a post, comment, or message, this plugin fetches oEmbed data or Open Graph metadata from the respective platform. The URL is sent to the platform's servers only when an embed is requested. Each provider can be individually enabled or disabled in Settings → Engagement.
-* Facebook oEmbed: https://developers.facebook.com/docs/plugins/oembed
+* Facebook oEmbed: https://developers.facebook.com/docs/features-reference/oembed-read/
   * Privacy Policy: https://www.facebook.com/privacy/policy/
   * Terms of Service: https://www.facebook.com/terms.php
 * Instagram oEmbed: https://developers.facebook.com/docs/instagram/oembed
@@ -345,7 +345,7 @@ When Social Embeds are enabled and a user pastes a supported URL into a post, co
 * X / Twitter: https://publish.twitter.com/oembed — Privacy Policy: https://twitter.com/en/privacy
 * TikTok: https://www.tiktok.com/oembed — Privacy Policy: https://www.tiktok.com/legal/privacy-policy
 * Spotify: https://open.spotify.com/oembed — Privacy Policy: https://www.spotify.com/legal/privacy-policy/
-* SoundCloud: https://soundcloud.com/oembed — Privacy Policy: https://soundcloud.com/pages/privacy
+* SoundCloud: https://developers.soundcloud.com/docs/oembed — Privacy Policy: https://soundcloud.com/pages/privacy
 * Pinterest: https://www.pinterest.com/oembed.json — Privacy Policy: https://policy.pinterest.com/en/privacy-policy
 * Reddit: https://www.reddit.com/oembed — Privacy Policy: https://www.reddit.com/policies/privacy-policy
 * Twitch: https://www.twitch.tv — Privacy Policy: https://www.twitch.tv/p/legal/privacy-notice/
@@ -361,13 +361,13 @@ When a user opens the WeChat share option in the Social Share widget, this plugi
 * Privacy Policy: https://goqr.me/privacy-safety-security/
 
 = WhatsApp, Social Sharing (AOL Mail, Papaly, Twiddla, and 80+ networks) =
-The social sharing feature generates links that open third-party social networks or email clients in a new browser tab/window when the user explicitly clicks a share button. No data is sent automatically by the plugin — all sharing actions are user-initiated and subject to each platform's own privacy policy. Networks include (but are not limited to): WhatsApp, Facebook, Twitter/X, Telegram, LinkedIn, Reddit, Pinterest, Tumblr, AOL Mail, Papaly, Twiddla, and many others.
+The social sharing feature generates links that open third-party social networks or email clients in a new browser tab/window when the user explicitly clicks a share button. No data is sent automatically by the plugin — all sharing actions are user-initiated and subject to each platform's own privacy policy. Networks include (but are not limited to): WhatsApp, Facebook, Twitter/X, Telegram, LinkedIn, Reddit, Pinterest, Tumblr, AOL Mail, Papaly, Twiddla, and many others. A few of these smaller services do not publish a discoverable standalone privacy page; for those, only the service homepage is linked below, and their data handling is governed by whatever policy the service makes available on its own site at the time of use. Because sharing is always an explicit, user-initiated hand-off to the target service, this plugin transmits no data to any of them on its own.
 * WhatsApp: https://www.whatsapp.com
   * Privacy Policy: https://www.whatsapp.com/legal/privacy-policy
   * Terms of Service: https://www.whatsapp.com/legal/terms-of-service
-* AOL Mail: https://mail.aol.com — Privacy Policy: https://legal.oath.com/us/en/oath/privacy/products/aolmail/index.html
+* AOL Mail: https://mail.aol.com — Privacy Policy: https://legal.yahoo.com/us/en/yahoo/privacy/index.html
 * Papaly: https://papaly.com — Privacy Policy: https://papaly.com/privacy
-* Twiddla: https://www.twiddla.com — Privacy Policy: https://www.twiddla.com/Privacy.aspx
+* Twiddla: https://www.twiddla.com (no standalone privacy page published; see the site homepage)
 
 = Stripe (Monetization) =
 When the Monetization module is enabled, creator onboarding and payment processing are handled by Stripe Connect. The plugin communicates with the Stripe API to create and manage Stripe Connect accounts, subscriptions, and payment intents. The plugin does NOT store raw bank details — Stripe handles creator identity verification (KYC) and bank payouts directly.
@@ -382,6 +382,23 @@ When Akismet spam checking is enabled (on by default) and the separate Akismet p
 * Terms of Service: https://akismet.com/tos/
 
 == Changelog ==
+
+= 1.8.2 =
+* Plugin Check: resolved the remaining `PluginCheck.Security.DirectDB.UnescapedDBParameter` notices by annotating the safe dynamic table-name/whitelist identifiers (all query values are bound via `$wpdb->prepare()` placeholders — never raw user input) and cleared the last `PreparedSQLPlaceholders` notices.
+* Hardened the dev-only CLI migration test harness with a direct-access guard; it remains excluded from the distributed package.
+* Trimmed the readme tag list to five.
+
+= 1.8.1 =
+* Hardening: unslashed and type-correctly sanitized all remaining superglobal reads (passwords are unslashed but never sanitize_text_field'd; arrays sanitized per field type; uploads validated by the media handler).
+* Added explicit nonce-context annotations to the Ads admin screen's read-only view routing (form processing was already nonce-verified).
+* Corrected all `$wpdb->prepare()` placeholder usages flagged by Plugin Check (dynamic `IN()`/`WHERE` clauses build their placeholders at runtime and bind values via prepare()).
+* Annotated safe dynamic table-name interpolations (built from `$wpdb->prefix` and in-code whitelists, never user input) and the intentional third-party cache-plugin integration hooks.
+
+= 1.8.0 =
+* Consistency: migrated all custom database tables from the legacy `sn_` secondary prefix to the plugin's standard `arshid6social_` prefix. Existing sites are upgraded automatically and losslessly via an idempotent `RENAME TABLE` migration on update; fresh installs create the new table names directly.
+* Consistency: renamed the remaining client-side `sn_*` form-field names (GIF and attachment staging fields) to the `arshid6social_*` prefix. No stored data or request payloads are affected.
+* Fixed broken third-party Terms/Privacy links in the External Services documentation (Facebook oEmbed, SoundCloud, AOL Mail, Twiddla).
+* Packaging: the development-only `build/` tooling is now excluded from the distributed plugin via `.distignore` / `.gitattributes` and a `bin/make-dist.sh` build script.
 
 = 1.7.0 =
 * Renamed plugin to 6Arshid Social Community with a consistent `6arshid-social-community` slug/text domain and `arshid6social` code prefix throughout.

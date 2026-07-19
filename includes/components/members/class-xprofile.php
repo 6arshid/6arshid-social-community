@@ -34,7 +34,7 @@ class XProfile {
 		}
 
 		$groups = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_xprofile_groups ORDER BY group_order ASC",
+			"SELECT * FROM {$wpdb->prefix}arshid6social_xprofile_groups ORDER BY group_order ASC",
 			ARRAY_A
 		);
 
@@ -58,7 +58,7 @@ class XProfile {
 
 		$results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}sn_xprofile_fields WHERE group_id = %d AND parent_id = 0 ORDER BY field_order ASC",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_xprofile_fields WHERE group_id = %d AND parent_id = 0 ORDER BY field_order ASC",
 				$group_id
 			),
 			ARRAY_A
@@ -80,7 +80,7 @@ class XProfile {
 		if ( is_string( $field ) ) {
 			$field_id = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prepare(
-					"SELECT id FROM {$wpdb->prefix}sn_xprofile_fields WHERE name = %s LIMIT 1",
+					"SELECT id FROM {$wpdb->prefix}arshid6social_xprofile_fields WHERE name = %s LIMIT 1",
 					$field
 				)
 			);
@@ -94,7 +94,7 @@ class XProfile {
 
 		$value = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT value FROM {$wpdb->prefix}sn_xprofile_data WHERE field_id = %d AND user_id = %d",
+				"SELECT value FROM {$wpdb->prefix}arshid6social_xprofile_data WHERE field_id = %d AND user_id = %d",
 				$field_id,
 				$user_id
 			)
@@ -123,8 +123,8 @@ class XProfile {
 		$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
 				"SELECT f.name, d.value
-				 FROM {$wpdb->prefix}sn_xprofile_data d
-				 JOIN {$wpdb->prefix}sn_xprofile_fields f ON f.id = d.field_id
+				 FROM {$wpdb->prefix}arshid6social_xprofile_data d
+				 JOIN {$wpdb->prefix}arshid6social_xprofile_fields f ON f.id = d.field_id
 				 WHERE d.user_id = %d",
 				$user_id
 			),
@@ -151,13 +151,13 @@ class XProfile {
 	public function save_field_value( int $user_id, int $field_id, string $value ): void {
 		global $wpdb;
 
-		$table = $wpdb->prefix . 'sn_xprofile_fields';
-		if ( $wpdb->get_var( "SHOW TABLES LIKE '$table'" ) !== $table ) { // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
+		$table = $wpdb->prefix . 'arshid6social_xprofile_fields';
+		if ( $wpdb->get_var( "SHOW TABLES LIKE '$table'" ) !== $table ) { // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 			return;
 		}
 
 		$field = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}sn_xprofile_fields WHERE id = %d", $field_id ),
+			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}arshid6social_xprofile_fields WHERE id = %d", $field_id ),
 			ARRAY_A
 		);
 
@@ -169,7 +169,7 @@ class XProfile {
 
 		$existing = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT id FROM {$wpdb->prefix}sn_xprofile_data WHERE field_id = %d AND user_id = %d",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_xprofile_data WHERE field_id = %d AND user_id = %d",
 				$field_id,
 				$user_id
 			)
@@ -177,7 +177,7 @@ class XProfile {
 
 		if ( $existing ) {
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_xprofile_data',
+				$wpdb->prefix . 'arshid6social_xprofile_data',
 				array(
 					'value'        => $value,
 					'last_updated' => current_time( 'mysql' ),
@@ -191,7 +191,7 @@ class XProfile {
 			);
 		} else {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_xprofile_data',
+				$wpdb->prefix . 'arshid6social_xprofile_data',
 				array(
 					'field_id'     => $field_id,
 					'user_id'      => $user_id,
@@ -224,7 +224,7 @@ class XProfile {
 			}
 
 			$field = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}sn_xprofile_fields WHERE id = %d", $field_id ),
+				$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}arshid6social_xprofile_fields WHERE id = %d", $field_id ),
 				ARRAY_A
 			);
 
@@ -348,7 +348,7 @@ class XProfile {
 		global $wpdb;
 
 		$deleted = $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_xprofile_data',
+			$wpdb->prefix . 'arshid6social_xprofile_data',
 			array( 'user_id' => $user->ID ),
 			array( '%d' )
 		);

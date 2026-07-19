@@ -55,7 +55,7 @@ class Comments_Attachments_REST {
 		global $wpdb;
 		$parent_activity_id = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT item_id FROM {$wpdb->prefix}sn_activity WHERE id = %d LIMIT 1",
+				"SELECT item_id FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d LIMIT 1",
 				$comment_id
 			)
 		);

@@ -205,8 +205,8 @@ class Polls_REST {
 			$votes = $wpdb->get_results(
 				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 					"SELECT v.user_id, v.voted_at, o.option_text
-				FROM {$wpdb->prefix}sn_poll_votes v
-				JOIN {$wpdb->prefix}sn_poll_options o ON o.id = v.option_id
+				FROM {$wpdb->prefix}arshid6social_poll_votes v
+				JOIN {$wpdb->prefix}arshid6social_poll_options o ON o.id = v.option_id
 				WHERE v.poll_id = %d ORDER BY v.voted_at ASC",
 					$poll_id
 				),

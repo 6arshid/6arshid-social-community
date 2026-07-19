@@ -657,8 +657,10 @@ class Marketplace_Settings {
 		$slug = $slug_input ?: sanitize_title( $name );
 
 		// Ensure slug uniqueness (exclude current row on edit).
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- SQL string built from $wpdb->prefix/whitelist identifiers and static clauses; all values bound via $wpdb->prepare() placeholders (never raw user input).
 		$slug_exists = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
 				"SELECT id FROM `{$table}` WHERE slug = %s AND id != %d",
 				$slug,
 				$id

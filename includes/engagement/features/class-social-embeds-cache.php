@@ -35,7 +35,7 @@ class Social_Embeds_Cache {
 		$hash = self::hash( $url );
 		$tbl  = self::table();
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT html, data_json FROM $tbl WHERE url_hash = %s AND expires_at > %s LIMIT 1",
@@ -91,7 +91,7 @@ class Social_Embeds_Cache {
 	public static function prune(): void {
 		global $wpdb;
 		$tbl = self::table();
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$wpdb->query(
 			$wpdb->prepare( "DELETE FROM $tbl WHERE expires_at < %s", current_time( 'mysql' ) )
 		);
@@ -103,6 +103,7 @@ class Social_Embeds_Cache {
 		global $wpdb;
 		$tbl = self::table();
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
 		$wpdb->query( "TRUNCATE TABLE $tbl" );
 		// phpcs:enable
 	}

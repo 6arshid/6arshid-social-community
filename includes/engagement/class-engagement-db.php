@@ -57,7 +57,7 @@ class Engagement_DB {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		dbDelta(
-			"CREATE TABLE {$wpdb->prefix}sn_polls (
+			"CREATE TABLE {$wpdb->prefix}arshid6social_polls (
 			id                   BIGINT UNSIGNED  NOT NULL AUTO_INCREMENT,
 			activity_id          BIGINT UNSIGNED  NOT NULL DEFAULT 0,
 			user_id              BIGINT UNSIGNED  NOT NULL,
@@ -79,7 +79,7 @@ class Engagement_DB {
 		);
 
 		dbDelta(
-			"CREATE TABLE {$wpdb->prefix}sn_poll_options (
+			"CREATE TABLE {$wpdb->prefix}arshid6social_poll_options (
 			id           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			poll_id      BIGINT UNSIGNED NOT NULL,
 			option_text  VARCHAR(500)    NOT NULL,
@@ -93,7 +93,7 @@ class Engagement_DB {
 		);
 
 		dbDelta(
-			"CREATE TABLE {$wpdb->prefix}sn_poll_votes (
+			"CREATE TABLE {$wpdb->prefix}arshid6social_poll_votes (
 			id        BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			poll_id   BIGINT UNSIGNED NOT NULL,
 			option_id BIGINT UNSIGNED NOT NULL,
@@ -108,7 +108,7 @@ class Engagement_DB {
 		);
 
 		dbDelta(
-			"CREATE TABLE {$wpdb->prefix}sn_hashtags (
+			"CREATE TABLE {$wpdb->prefix}arshid6social_hashtags (
 			id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			hashtag    VARCHAR(191)    NOT NULL,
 			slug       VARCHAR(191)    NOT NULL,
@@ -119,7 +119,7 @@ class Engagement_DB {
 		);
 
 		dbDelta(
-			"CREATE TABLE {$wpdb->prefix}sn_hashtag_relations (
+			"CREATE TABLE {$wpdb->prefix}arshid6social_hashtag_relations (
 			id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			hashtag_id  BIGINT UNSIGNED NOT NULL,
 			object_id   BIGINT UNSIGNED NOT NULL,
@@ -132,7 +132,7 @@ class Engagement_DB {
 		);
 
 		dbDelta(
-			"CREATE TABLE {$wpdb->prefix}sn_hashtag_follows (
+			"CREATE TABLE {$wpdb->prefix}arshid6social_hashtag_follows (
 			id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			hashtag_id BIGINT UNSIGNED NOT NULL,
 			user_id    BIGINT UNSIGNED NOT NULL,
@@ -143,7 +143,7 @@ class Engagement_DB {
 		);
 
 		dbDelta(
-			"CREATE TABLE {$wpdb->prefix}sn_bookmarks (
+			"CREATE TABLE {$wpdb->prefix}arshid6social_bookmarks (
 			id            BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			user_id       BIGINT UNSIGNED NOT NULL,
 			object_id     BIGINT UNSIGNED NOT NULL,
@@ -158,7 +158,7 @@ class Engagement_DB {
 		);
 
 		dbDelta(
-			"CREATE TABLE {$wpdb->prefix}sn_bookmark_collections (
+			"CREATE TABLE {$wpdb->prefix}arshid6social_bookmark_collections (
 			id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			user_id    BIGINT UNSIGNED NOT NULL,
 			name       VARCHAR(191)    NOT NULL,
@@ -169,7 +169,7 @@ class Engagement_DB {
 		);
 
 		dbDelta(
-			"CREATE TABLE {$wpdb->prefix}sn_shares (
+			"CREATE TABLE {$wpdb->prefix}arshid6social_shares (
 			id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			user_id     BIGINT UNSIGNED NOT NULL,
 			original_id BIGINT UNSIGNED NOT NULL,
@@ -186,7 +186,7 @@ class Engagement_DB {
 		);
 
 		dbDelta(
-			"CREATE TABLE {$wpdb->prefix}sn_post_tags (
+			"CREATE TABLE {$wpdb->prefix}arshid6social_post_tags (
 			id             BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			object_id      BIGINT UNSIGNED NOT NULL,
 			object_type    VARCHAR(50)     NOT NULL DEFAULT 'activity',
@@ -201,7 +201,7 @@ class Engagement_DB {
 		);
 
 		dbDelta(
-			"CREATE TABLE {$wpdb->prefix}sn_post_tag_coords (
+			"CREATE TABLE {$wpdb->prefix}arshid6social_post_tag_coords (
 			id        BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			tag_id    BIGINT UNSIGNED NOT NULL,
 			x_percent DECIMAL(5,2)    NOT NULL DEFAULT 0.00,
@@ -212,7 +212,7 @@ class Engagement_DB {
 		);
 
 		dbDelta(
-			"CREATE TABLE {$wpdb->prefix}sn_sticky (
+			"CREATE TABLE {$wpdb->prefix}arshid6social_sticky (
 			id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 			object_id   BIGINT UNSIGNED NOT NULL,
 			object_type VARCHAR(50)     NOT NULL DEFAULT 'activity',
@@ -251,18 +251,18 @@ class Engagement_DB {
 	public static function drop_all(): void {
 		global $wpdb;
 		$tables = array(
-			'sn_polls',
-			'sn_poll_options',
-			'sn_poll_votes',
-			'sn_hashtags',
-			'sn_hashtag_relations',
-			'sn_hashtag_follows',
-			'sn_bookmarks',
-			'sn_bookmark_collections',
-			'sn_shares',
-			'sn_post_tags',
-			'sn_post_tag_coords',
-			'sn_sticky',
+			'arshid6social_polls',
+			'arshid6social_poll_options',
+			'arshid6social_poll_votes',
+			'arshid6social_hashtags',
+			'arshid6social_hashtag_relations',
+			'arshid6social_hashtag_follows',
+			'arshid6social_bookmarks',
+			'arshid6social_bookmark_collections',
+			'arshid6social_shares',
+			'arshid6social_post_tags',
+			'arshid6social_post_tag_coords',
+			'arshid6social_sticky',
 			'arshid6social_attachments',
 		);
 		foreach ( $tables as $table ) {

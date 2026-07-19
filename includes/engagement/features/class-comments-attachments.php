@@ -162,7 +162,7 @@ class Comments_Attachments {
 		global $wpdb;
 		$comment = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id, item_id FROM {$wpdb->prefix}sn_activity WHERE id = %d AND type = 'activity_comment'",
+				"SELECT user_id, item_id FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d AND type = 'activity_comment'",
 				$comment_id
 			)
 		);
@@ -320,7 +320,7 @@ class Comments_Attachments {
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT a.*, act.privacy, act.user_id AS post_owner
 			FROM {$wpdb->prefix}arshid6social_attachments a
-			JOIN {$wpdb->prefix}sn_activity act ON act.id = a.parent_id
+			JOIN {$wpdb->prefix}arshid6social_activity act ON act.id = a.parent_id
 			WHERE a.id = %d AND a.parent_type = 'comment'",
 				$att_id
 			)

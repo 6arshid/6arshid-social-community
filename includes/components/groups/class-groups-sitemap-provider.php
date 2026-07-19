@@ -35,7 +35,7 @@ class Groups_Sitemap_Provider extends \WP_Sitemaps_Provider {
 
 		$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT slug, date_created FROM {$wpdb->prefix}sn_groups
+				"SELECT slug, date_created FROM {$wpdb->prefix}arshid6social_groups
 				 WHERE status = 'public' AND is_suspended = 0
 				 ORDER BY date_created DESC
 				 LIMIT %d OFFSET %d",
@@ -67,7 +67,7 @@ class Groups_Sitemap_Provider extends \WP_Sitemaps_Provider {
 		global $wpdb;
 
 		$total = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM {$wpdb->prefix}sn_groups WHERE status = 'public' AND is_suspended = 0"
+			"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_groups WHERE status = 'public' AND is_suspended = 0"
 		);
 
 		return (int) ceil( $total / $this->get_max_num_urls() );

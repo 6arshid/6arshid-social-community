@@ -128,13 +128,13 @@ window.ARSHID6SOCIALCommentAtt = ( function () {
 		// Store ID for submission.
 		const hidden = document.createElement( 'input' );
 		hidden.type  = 'hidden';
-		hidden.name  = 'sn_comment_attachments[]';
+		hidden.name  = 'arshid6social_comment_attachments[]';
 		hidden.value = att.attachment_id;
 		form.appendChild( hidden );
 	}
 
 	function removeHidden( form, attId ) {
-		form?.querySelectorAll( 'input[name="sn_comment_attachments[]"]' ).forEach( function ( el ) {
+		form?.querySelectorAll( 'input[name="arshid6social_comment_attachments[]"]' ).forEach( function ( el ) {
 			if ( el.value == attId ) el.remove(); // eslint-disable-line eqeqeq
 		} );
 	}

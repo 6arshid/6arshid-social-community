@@ -250,21 +250,21 @@ class Activity_REST extends \WP_REST_Controller {
 
 		$existing = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT id, reaction_type FROM {$wpdb->prefix}sn_activity_reactions WHERE activity_id = %d AND user_id = %d",
+				"SELECT id, reaction_type FROM {$wpdb->prefix}arshid6social_activity_reactions WHERE activity_id = %d AND user_id = %d",
 				$activity_id,
 				$user_id
 			)
 		);
 
 		if ( $existing && $existing->reaction_type === $reaction_type ) {
-			$wpdb->delete( $wpdb->prefix . 'sn_activity_reactions', array( 'id' => $existing->id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->delete( $wpdb->prefix . 'arshid6social_activity_reactions', array( 'id' => $existing->id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$reacted = false;
 		} else {
 			if ( $existing ) {
-				$wpdb->update( $wpdb->prefix . 'sn_activity_reactions', array( 'reaction_type' => $reaction_type ), array( 'id' => $existing->id ), array( '%s' ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$wpdb->update( $wpdb->prefix . 'arshid6social_activity_reactions', array( 'reaction_type' => $reaction_type ), array( 'id' => $existing->id ), array( '%s' ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			} else {
 				$wpdb->insert(
-					$wpdb->prefix . 'sn_activity_reactions',
+					$wpdb->prefix . 'arshid6social_activity_reactions',
 					array(
 						'activity_id'   => $activity_id,
 						'user_id'       => $user_id,
@@ -277,7 +277,7 @@ class Activity_REST extends \WP_REST_Controller {
 			$reacted = true;
 		}
 
-		$count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}sn_activity_reactions WHERE activity_id = %d AND reaction_type = %s", $activity_id, $reaction_type ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$count = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_activity_reactions WHERE activity_id = %d AND reaction_type = %s", $activity_id, $reaction_type ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		return rest_ensure_response(
 			array(
@@ -307,7 +307,7 @@ class Activity_REST extends \WP_REST_Controller {
 
 		$existing = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT id FROM {$wpdb->prefix}sn_activity_meta WHERE activity_id = %d AND meta_key = '_view_count' LIMIT 1",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_activity_meta WHERE activity_id = %d AND meta_key = '_view_count' LIMIT 1",
 				$activity_id
 			)
 		);
@@ -315,13 +315,13 @@ class Activity_REST extends \WP_REST_Controller {
 		if ( $existing ) {
 			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prepare(
-					"UPDATE {$wpdb->prefix}sn_activity_meta SET meta_value = meta_value + 1 WHERE activity_id = %d AND meta_key = '_view_count'",
+					"UPDATE {$wpdb->prefix}arshid6social_activity_meta SET meta_value = meta_value + 1 WHERE activity_id = %d AND meta_key = '_view_count'",
 					$activity_id
 				)
 			);
 		} else {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_activity_meta',
+				$wpdb->prefix . 'arshid6social_activity_meta',
 				array(
 					'activity_id' => $activity_id,
 					'meta_key'    => '_view_count',

@@ -94,7 +94,7 @@ class Share_Posts {
 
 		// Record the share.
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_shares',
+			$wpdb->prefix . 'arshid6social_shares',
 			array(
 				'user_id'     => $user_id,
 				'original_id' => $original_id,
@@ -132,7 +132,7 @@ class Share_Posts {
 		global $wpdb;
 		$row = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT root_id FROM {$wpdb->prefix}sn_shares WHERE original_id = %d LIMIT 1",
+				"SELECT root_id FROM {$wpdb->prefix}arshid6social_shares WHERE original_id = %d LIMIT 1",
 				$activity_id
 			)
 		);
@@ -143,7 +143,7 @@ class Share_Posts {
 		global $wpdb;
 		return (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_shares WHERE root_id = %d",
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_shares WHERE root_id = %d",
 				$root_id
 			)
 		);
@@ -151,7 +151,7 @@ class Share_Posts {
 
 	public function on_activity_deleted( int $activity_id ): void {
 		global $wpdb;
-		$wpdb->delete( $wpdb->prefix . 'sn_shares', array( 'original_id' => $activity_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_shares', array( 'original_id' => $activity_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	}
 
 	// ── AJAX ──────────────────────────────────────────────────────────────────

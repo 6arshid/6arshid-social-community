@@ -235,7 +235,7 @@ class Verification_REST extends \WP_REST_Controller {
 		$rows = $wpdb->get_results(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT r.*, u.user_login, u.display_name, u.user_email
-			 FROM {$wpdb->prefix}sn_verification_requests r
+			 FROM {$wpdb->prefix}arshid6social_verification_requests r
 			 JOIN {$wpdb->users} u ON u.ID = r.user_id
 			 WHERE r.status = %s
 			 ORDER BY r.created_at DESC

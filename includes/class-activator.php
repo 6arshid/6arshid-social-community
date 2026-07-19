@@ -24,6 +24,9 @@ class Activator {
 	public static function maybe_upgrade(): void {
 		$stored = get_option( 'arshid6social_db_version', '0.0.0' );
 		if ( version_compare( $stored, ARSHID6SOCIAL_DB_VERSION, '<' ) ) {
+			// Must run FIRST: renames legacy wp_sn_* tables to wp_arshid6social_*
+			// so every later migration and create_tables() acts on the new names.
+			self::rename_legacy_tables();
 			self::migrate_blocks_table();
 			self::migrate_activity_uid_column();
 			self::migrate_reports_attachment_column();
@@ -47,9 +50,10 @@ class Activator {
 	 */
 	public static function deduplicate_notifications(): void {
 		global $wpdb;
-		$table = $wpdb->prefix . 'sn_notifications';
+		$table = $wpdb->prefix . 'arshid6social_notifications';
 
 		// Keep the row with the highest id (most recent insert) for each unique group.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- interpolated identifiers are $wpdb->prefix table names / whitelisted clauses; values bound via prepare() placeholders.
 		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			"DELETE n FROM {$table} n
 			 INNER JOIN {$table} keep_row
@@ -60,14 +64,116 @@ class Activator {
 			   AND keep_row.component_action  = n.component_action
 			   AND keep_row.id > n.id"
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 	}
 
 	/**
-	 * Adds the `attachment_url` column to sn_reports if it does not exist yet.
+	 * Returns the legacy → current table-name map (suffixes, without $wpdb->prefix).
+	 *
+	 * These are the tables that historically shipped with the 2-char `sn_`
+	 * secondary prefix and are migrated to the distinctive `arshid6social_`
+	 * prefix used everywhere else in the plugin.
+	 *
+	 * @return array<string, string> old suffix => new suffix.
+	 */
+	private static function legacy_table_map(): array {
+		return array(
+			'sn_activity'              => 'arshid6social_activity',
+			'sn_activity_media'        => 'arshid6social_activity_media',
+			'sn_activity_meta'         => 'arshid6social_activity_meta',
+			'sn_activity_reactions'    => 'arshid6social_activity_reactions',
+			'sn_ads'                   => 'arshid6social_ads',
+			'sn_audit_log'             => 'arshid6social_audit_log',
+			'sn_blocks'                => 'arshid6social_blocks',
+			'sn_bookmark_collections'  => 'arshid6social_bookmark_collections',
+			'sn_bookmarks'             => 'arshid6social_bookmarks',
+			'sn_close_friends'         => 'arshid6social_close_friends',
+			'sn_follow'                => 'arshid6social_follow',
+			'sn_friends'               => 'arshid6social_friends',
+			'sn_groups'                => 'arshid6social_groups',
+			'sn_groups_groupmeta'      => 'arshid6social_groups_groupmeta',
+			'sn_groups_members'        => 'arshid6social_groups_members',
+			'sn_hashtag_follows'       => 'arshid6social_hashtag_follows',
+			'sn_hashtag_relations'     => 'arshid6social_hashtag_relations',
+			'sn_hashtags'              => 'arshid6social_hashtags',
+			'sn_invitations'           => 'arshid6social_invitations',
+			'sn_messages'              => 'arshid6social_messages',
+			'sn_messages_hidden'       => 'arshid6social_messages_hidden',
+			'sn_messages_meta'         => 'arshid6social_messages_meta',
+			'sn_messages_recipients'   => 'arshid6social_messages_recipients',
+			'sn_messages_threads'      => 'arshid6social_messages_threads',
+			'sn_muted_stories'         => 'arshid6social_muted_stories',
+			'sn_notifications'         => 'arshid6social_notifications',
+			'sn_poll_options'          => 'arshid6social_poll_options',
+			'sn_poll_votes'            => 'arshid6social_poll_votes',
+			'sn_polls'                 => 'arshid6social_polls',
+			'sn_post_tag_coords'       => 'arshid6social_post_tag_coords',
+			'sn_post_tags'             => 'arshid6social_post_tags',
+			'sn_reports'               => 'arshid6social_reports',
+			'sn_shares'                => 'arshid6social_shares',
+			'sn_sticky'                => 'arshid6social_sticky',
+			'sn_stories'               => 'arshid6social_stories',
+			'sn_story_highlights'      => 'arshid6social_story_highlights',
+			'sn_story_items'           => 'arshid6social_story_items',
+			'sn_story_reactions'       => 'arshid6social_story_reactions',
+			'sn_story_views'           => 'arshid6social_story_views',
+			'sn_verification_requests' => 'arshid6social_verification_requests',
+			'sn_verifications'         => 'arshid6social_verifications',
+			'sn_xprofile_data'         => 'arshid6social_xprofile_data',
+			'sn_xprofile_fields'       => 'arshid6social_xprofile_fields',
+			'sn_xprofile_groups'       => 'arshid6social_xprofile_groups',
+		);
+	}
+
+	/**
+	 * Renames legacy `{$wpdb->prefix}sn_*` tables to `{$wpdb->prefix}arshid6social_*`.
+	 *
+	 * Idempotent and safe to re-run: a table is only renamed when the old table
+	 * exists AND the new table does not, so partially-migrated installs finish
+	 * cleanly and fully-migrated / fresh installs are a no-op. Table identifiers
+	 * cannot be bound as SQL parameters, so each name is built from a fixed
+	 * in-code whitelist plus $wpdb->prefix — never from user input.
+	 */
+	public static function rename_legacy_tables(): void {
+		global $wpdb;
+
+		foreach ( self::legacy_table_map() as $old_suffix => $new_suffix ) {
+			$old = $wpdb->prefix . $old_suffix;
+			$new = $wpdb->prefix . $new_suffix;
+
+			$old_exists = (int) $wpdb->get_var(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					'SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s',
+					DB_NAME,
+					$old
+				)
+			);
+			if ( ! $old_exists ) {
+				continue; // Nothing to migrate (fresh install or already renamed).
+			}
+
+			$new_exists = (int) $wpdb->get_var(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					'SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = %s AND TABLE_NAME = %s',
+					DB_NAME,
+					$new
+				)
+			);
+			if ( $new_exists ) {
+				continue; // Target already present; do not clobber it.
+			}
+
+			// $old/$new are whitelisted identifiers built from $wpdb->prefix.
+			$wpdb->query( "RENAME TABLE `{$old}` TO `{$new}`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+		}
+	}
+
+	/**
+	 * Adds the `attachment_url` column to arshid6social_reports if it does not exist yet.
 	 */
 	public static function migrate_reports_attachment_column(): void {
 		global $wpdb;
-		$table = $wpdb->prefix . 'sn_reports';
+		$table = $wpdb->prefix . 'arshid6social_reports';
 
 		$has_col = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -79,16 +185,16 @@ class Activator {
 		);
 
 		if ( ! $has_col ) {
-			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `attachment_url` varchar(500) NOT NULL DEFAULT '' AFTER `notes`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `attachment_url` varchar(500) NOT NULL DEFAULT '' AFTER `notes`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 		}
 	}
 
 	/**
-	 * Adds the `is_suspended` and `suspend_reason` columns to sn_groups if they do not exist yet.
+	 * Adds the `is_suspended` and `suspend_reason` columns to arshid6social_groups if they do not exist yet.
 	 */
 	public static function migrate_groups_suspension_columns(): void {
 		global $wpdb;
-		$table = $wpdb->prefix . 'sn_groups';
+		$table = $wpdb->prefix . 'arshid6social_groups';
 
 		$has_suspended = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -100,16 +206,16 @@ class Activator {
 		);
 
 		if ( ! $has_suspended ) {
-			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `is_suspended` tinyint(1) NOT NULL DEFAULT 0, ADD COLUMN `suspend_reason` varchar(300) NOT NULL DEFAULT '', ADD KEY `is_suspended` (`is_suspended`)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `is_suspended` tinyint(1) NOT NULL DEFAULT 0, ADD COLUMN `suspend_reason` varchar(300) NOT NULL DEFAULT '', ADD KEY `is_suspended` (`is_suspended`)" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 		}
 	}
 
 	/**
-	 * Adds is_edited/edited_at columns to sn_messages and creates sn_messages_hidden table.
+	 * Adds is_edited/edited_at columns to arshid6social_messages and creates arshid6social_messages_hidden table.
 	 */
 	public static function migrate_messages_edit_columns(): void {
 		global $wpdb;
-		$table = $wpdb->prefix . 'sn_messages';
+		$table = $wpdb->prefix . 'arshid6social_messages';
 
 		$has_edited = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -121,11 +227,12 @@ class Activator {
 		);
 
 		if ( ! $has_edited ) {
-			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `is_edited` tinyint(1) NOT NULL DEFAULT 0 AFTER `is_deleted`, ADD COLUMN `edited_at` datetime DEFAULT NULL AFTER `is_edited`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `is_edited` tinyint(1) NOT NULL DEFAULT 0 AFTER `is_deleted`, ADD COLUMN `edited_at` datetime DEFAULT NULL AFTER `is_edited`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 		}
 
-		$hidden_table    = $wpdb->prefix . 'sn_messages_hidden';
+		$hidden_table    = $wpdb->prefix . 'arshid6social_messages_hidden';
 		$charset_collate = $wpdb->get_charset_collate();
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- interpolated identifiers are $wpdb->prefix table names / whitelisted clauses; values bound via prepare() placeholders.
 		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			"CREATE TABLE IF NOT EXISTS `{$hidden_table}` (
 				id         bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -133,17 +240,18 @@ class Activator {
 				user_id    bigint(20) unsigned NOT NULL,
 				PRIMARY KEY (id),
 				UNIQUE KEY message_user (message_id, user_id)
-			) {$charset_collate}"
+			) {$charset_collate}" // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table name from $wpdb->prefix + $wpdb->get_charset_collate(), not user input.
 		);
 	}
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 	/**
-	 * Adds the `uid` column to sn_activity if it does not exist yet.
+	 * Adds the `uid` column to arshid6social_activity if it does not exist yet.
 	 * Existing rows get a blank uid; they are backfilled lazily on first permalink access.
 	 */
 	public static function migrate_activity_uid_column(): void {
 		global $wpdb;
-		$table = $wpdb->prefix . 'sn_activity';
+		$table = $wpdb->prefix . 'arshid6social_activity';
 
 		$has_col = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -155,17 +263,17 @@ class Activator {
 		);
 
 		if ( ! $has_col ) {
-			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `uid` varchar(23) NOT NULL DEFAULT '' AFTER `privacy`, ADD KEY `uid` (`uid`)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `uid` varchar(23) NOT NULL DEFAULT '' AFTER `privacy`, ADD KEY `uid` (`uid`)" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 		}
 	}
 
 	/**
-	 * Migrates the sn_blocks table from old column names (user_id/blocked_user_id)
+	 * Migrates the arshid6social_blocks table from old column names (user_id/blocked_user_id)
 	 * to new names (blocker_id/blocked_id) and adds reason column.
 	 */
 	public static function migrate_blocks_table(): void {
 		global $wpdb;
-		$table = $wpdb->prefix . 'sn_blocks';
+		$table = $wpdb->prefix . 'arshid6social_blocks';
 
 		// Check whether old column name still exists.
 		$has_old = $wpdb->get_var(
@@ -182,7 +290,7 @@ class Activator {
 		}
 
 		// Rename user_id → blocker_id, blocked_user_id → blocked_id.
-		$wpdb->query( "ALTER TABLE `{$table}` CHANGE COLUMN `user_id` `blocker_id` bigint(20) unsigned NOT NULL, CHANGE COLUMN `blocked_user_id` `blocked_id` bigint(20) unsigned NOT NULL" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->query( "ALTER TABLE `{$table}` CHANGE COLUMN `user_id` `blocker_id` bigint(20) unsigned NOT NULL, CHANGE COLUMN `blocked_user_id` `blocked_id` bigint(20) unsigned NOT NULL" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 
 		// Add reason column if absent.
 		$has_reason = $wpdb->get_var(
@@ -194,7 +302,7 @@ class Activator {
 			)
 		);
 		if ( ! $has_reason ) {
-			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `reason` text NULL AFTER `blocked_id`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query( "ALTER TABLE `{$table}` ADD COLUMN `reason` text NULL AFTER `blocked_id`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 		}
 
 		// Rebuild indexes.
@@ -207,7 +315,7 @@ class Activator {
 			)
 		);
 		if ( $has_old_idx ) {
-			$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `user_blocked`, ADD UNIQUE KEY `blocker_blocked` (`blocker_id`, `blocked_id`)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `user_blocked`, ADD UNIQUE KEY `blocker_blocked` (`blocker_id`, `blocked_id`)" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 		}
 		$has_uid_idx = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -218,7 +326,7 @@ class Activator {
 			)
 		);
 		if ( $has_uid_idx ) {
-			$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `user_id`, ADD KEY `blocker_id` (`blocker_id`)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `user_id`, ADD KEY `blocker_id` (`blocker_id`)" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 		}
 		$has_buid_idx = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -229,7 +337,7 @@ class Activator {
 			)
 		);
 		if ( $has_buid_idx ) {
-			$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `blocked_user_id`, ADD KEY `blocked_id` (`blocked_id`)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query( "ALTER TABLE `{$table}` DROP INDEX `blocked_user_id`, ADD KEY `blocked_id` (`blocked_id`)" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 		}
 	}
 
@@ -238,6 +346,10 @@ class Activator {
 	 */
 	public static function activate(): void {
 		self::check_requirements();
+		// Rename any legacy wp_sn_* tables before create_tables() so an existing
+		// site that deactivates/reactivates after upgrading keeps all its data
+		// instead of getting a fresh empty set of wp_arshid6social_* tables.
+		self::rename_legacy_tables();
 		self::create_tables();
 		self::seed_default_options();
 		self::create_pages();
@@ -446,7 +558,7 @@ class Activator {
 		$tables = array();
 
 		// ── xProfile field groups ───────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_xprofile_groups (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_xprofile_groups (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			name            varchar(150)        NOT NULL DEFAULT '',
 			description     longtext,
@@ -456,7 +568,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── xProfile fields ─────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_xprofile_fields (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_xprofile_fields (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			group_id        bigint(20) unsigned NOT NULL,
 			parent_id       bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -474,7 +586,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── xProfile field data (user values) ───────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_xprofile_data (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_xprofile_data (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			field_id        bigint(20) unsigned NOT NULL,
 			user_id         bigint(20) unsigned NOT NULL,
@@ -486,7 +598,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Activity items ───────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_activity (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_activity (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			user_id         bigint(20) unsigned NOT NULL DEFAULT 0,
 			component       varchar(75)         NOT NULL,
@@ -515,7 +627,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Activity meta ────────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_activity_meta (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_activity_meta (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			activity_id     bigint(20) unsigned NOT NULL,
 			meta_key        varchar(255)        DEFAULT NULL,
@@ -526,7 +638,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Reactions / Likes ────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_activity_reactions (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_activity_reactions (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			activity_id     bigint(20) unsigned NOT NULL,
 			user_id         bigint(20) unsigned NOT NULL,
@@ -538,7 +650,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Groups ───────────────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_groups (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_groups (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			creator_id      bigint(20) unsigned NOT NULL,
 			name            varchar(200)        NOT NULL,
@@ -558,7 +670,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Group members ────────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_groups_members (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_groups_members (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			group_id        bigint(20) unsigned NOT NULL,
 			user_id         bigint(20) unsigned NOT NULL,
@@ -580,7 +692,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Group meta ───────────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_groups_groupmeta (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_groups_groupmeta (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			group_id        bigint(20) unsigned NOT NULL,
 			meta_key        varchar(255)        DEFAULT NULL,
@@ -591,7 +703,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Friends / connections ────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_friends (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_friends (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			initiator_user_id bigint(20) unsigned NOT NULL,
 			friend_user_id  bigint(20) unsigned NOT NULL,
@@ -604,7 +716,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Follow relationships ─────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_follow (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_follow (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			follower_id     bigint(20) unsigned NOT NULL,
 			followee_id     bigint(20) unsigned NOT NULL,
@@ -616,7 +728,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Blocks ───────────────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_blocks (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_blocks (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			blocker_id      bigint(20) unsigned NOT NULL,
 			blocked_id      bigint(20) unsigned NOT NULL,
@@ -629,7 +741,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Private messages (threads) ───────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_messages_threads (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_messages_threads (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			uniqid          varchar(36)         NOT NULL DEFAULT '',
 			subject         varchar(200)        NOT NULL DEFAULT '',
@@ -640,7 +752,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Message recipients / inbox view ──────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_messages_recipients (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_messages_recipients (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			thread_id       bigint(20) unsigned NOT NULL,
 			user_id         bigint(20) unsigned NOT NULL,
@@ -654,7 +766,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Messages ─────────────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_messages (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_messages (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			thread_id       bigint(20) unsigned NOT NULL,
 			sender_id       bigint(20) unsigned NOT NULL,
@@ -669,7 +781,7 @@ class Activator {
 			KEY date_sent (date_sent)
 		) $charset_collate;";
 
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_messages_hidden (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_messages_hidden (
 			id         bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			message_id bigint(20) unsigned NOT NULL,
 			user_id    bigint(20) unsigned NOT NULL,
@@ -678,7 +790,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Message meta ─────────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_messages_meta (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_messages_meta (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			message_id      bigint(20) unsigned NOT NULL,
 			meta_key        varchar(255)        DEFAULT NULL,
@@ -689,7 +801,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Notifications ────────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_notifications (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_notifications (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			user_id         bigint(20) unsigned NOT NULL,
 			item_id         bigint(20) unsigned NOT NULL DEFAULT 0,
@@ -706,7 +818,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Site invitations ─────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_invitations (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_invitations (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			inviter_id      bigint(20) unsigned NOT NULL,
 			email           varchar(100)        NOT NULL DEFAULT '',
@@ -722,7 +834,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Activity media attachments ───────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_activity_media (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_activity_media (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			activity_id     bigint(20) unsigned NOT NULL,
 			media_type      varchar(32)         NOT NULL DEFAULT 'image',
@@ -738,7 +850,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Reports / moderation ─────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_reports (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_reports (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			reporter_id     bigint(20) unsigned NOT NULL,
 			item_id         bigint(20) unsigned NOT NULL,
@@ -758,7 +870,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Stories ──────────────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_stories (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_stories (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			user_id         bigint(20) unsigned NOT NULL,
 			privacy         varchar(32)         NOT NULL DEFAULT 'public',
@@ -772,7 +884,7 @@ class Activator {
 			KEY highlight_id (highlight_id)
 		) $charset_collate;";
 
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_story_items (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_story_items (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			story_id        bigint(20) unsigned NOT NULL,
 			media_type      varchar(32)         NOT NULL DEFAULT 'text',
@@ -789,7 +901,7 @@ class Activator {
 			KEY sort_order (sort_order)
 		) $charset_collate;";
 
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_story_views (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_story_views (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			story_item_id   bigint(20) unsigned NOT NULL,
 			viewer_id       bigint(20) unsigned NOT NULL,
@@ -800,7 +912,7 @@ class Activator {
 			KEY viewer_id (viewer_id)
 		) $charset_collate;";
 
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_story_reactions (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_story_reactions (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			story_item_id   bigint(20) unsigned NOT NULL,
 			user_id         bigint(20) unsigned NOT NULL,
@@ -812,7 +924,7 @@ class Activator {
 			KEY user_id (user_id)
 		) $charset_collate;";
 
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_story_highlights (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_story_highlights (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			user_id         bigint(20) unsigned NOT NULL,
 			title           varchar(150)        NOT NULL DEFAULT '',
@@ -822,7 +934,7 @@ class Activator {
 			KEY user_id (user_id)
 		) $charset_collate;";
 
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_close_friends (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_close_friends (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			user_id         bigint(20) unsigned NOT NULL,
 			friend_id       bigint(20) unsigned NOT NULL,
@@ -832,7 +944,7 @@ class Activator {
 			KEY user_id (user_id)
 		) $charset_collate;";
 
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_muted_stories (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_muted_stories (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			user_id         bigint(20) unsigned NOT NULL,
 			muted_user_id   bigint(20) unsigned NOT NULL,
@@ -843,7 +955,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Verification ─────────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_verification_requests (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_verification_requests (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			user_id         bigint(20) unsigned NOT NULL,
 			type            varchar(64)         NOT NULL DEFAULT '',
@@ -860,7 +972,7 @@ class Activator {
 			KEY created_at (created_at)
 		) $charset_collate;";
 
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_verifications (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_verifications (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			user_id         bigint(20) unsigned NOT NULL,
 			type            varchar(64)         NOT NULL DEFAULT 'general',
@@ -875,7 +987,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Ads ──────────────────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_ads (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_ads (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			title           varchar(255)        NOT NULL DEFAULT '',
 			ad_type         varchar(20)         NOT NULL DEFAULT 'image',
@@ -896,7 +1008,7 @@ class Activator {
 		) $charset_collate;";
 
 		// ── Audit log ────────────────────────────────────────────────────────────
-		$tables[] = "CREATE TABLE {$wpdb->prefix}sn_audit_log (
+		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_audit_log (
 			id              bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			user_id         bigint(20) unsigned NOT NULL DEFAULT 0,
 			action          varchar(100)        NOT NULL,
@@ -942,7 +1054,7 @@ class Activator {
 		global $wpdb;
 
 		$group_exists = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_xprofile_groups WHERE id = %d", 1 )
+			$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}arshid6social_xprofile_groups WHERE id = %d", 1 )
 		);
 
 		if ( $group_exists ) {
@@ -950,7 +1062,7 @@ class Activator {
 		}
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_xprofile_groups',
+			$wpdb->prefix . 'arshid6social_xprofile_groups',
 			array(
 				'name'        => 'Base',
 				'description' => '',
@@ -962,7 +1074,7 @@ class Activator {
 		$group_id = (int) $wpdb->insert_id;
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_xprofile_fields',
+			$wpdb->prefix . 'arshid6social_xprofile_fields',
 			array(
 				'group_id'    => $group_id,
 				'parent_id'   => 0,
@@ -978,7 +1090,7 @@ class Activator {
 		);
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_xprofile_fields',
+			$wpdb->prefix . 'arshid6social_xprofile_fields',
 			array(
 				'group_id'    => $group_id,
 				'parent_id'   => 0,
@@ -1240,7 +1352,7 @@ class Activator {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$group_ids = $wpdb->get_col( "SELECT id FROM {$wpdb->prefix}sn_groups ORDER BY id" );
+		$group_ids = $wpdb->get_col( "SELECT id FROM {$wpdb->prefix}arshid6social_groups ORDER BY id" );
 		if ( ! $group_ids ) {
 			return;
 		}

@@ -50,7 +50,7 @@ class Paid_Activity {
 		// Owner always sees their own post.
 		$owner = (int) $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d",
 				$activity_id
 			)
 		); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -105,7 +105,7 @@ class Paid_Activity {
 
 		$price_cents = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT meta_value FROM {$wpdb->prefix}sn_activity_meta
+				"SELECT meta_value FROM {$wpdb->prefix}arshid6social_activity_meta
 			  WHERE activity_id = %d AND meta_key = '_arshid6social_monetization_ppv_price' LIMIT 1",
 				(int) $activity->id
 			)
@@ -172,7 +172,7 @@ class Paid_Activity {
 
 		$activity = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id, user_id, privacy FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				"SELECT id, user_id, privacy FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d",
 				$activity_id
 			)
 		);
@@ -192,7 +192,7 @@ class Paid_Activity {
 
 		$price_cents = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT meta_value FROM {$wpdb->prefix}sn_activity_meta
+				"SELECT meta_value FROM {$wpdb->prefix}arshid6social_activity_meta
 			  WHERE activity_id = %d AND meta_key = '_arshid6social_monetization_ppv_price' LIMIT 1",
 				$activity_id
 			)

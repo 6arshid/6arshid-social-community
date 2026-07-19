@@ -61,8 +61,8 @@ class Messages_Attachments {
 		global $wpdb;
 		$is_participant = (bool) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_messages m
-			JOIN {$wpdb->prefix}sn_messages_recipients r ON r.thread_id = m.thread_id
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_messages m
+			JOIN {$wpdb->prefix}arshid6social_messages_recipients r ON r.thread_id = m.thread_id
 			WHERE m.id = %d AND r.user_id = %d AND r.is_deleted = 0",
 				$message_id,
 				$user_id
@@ -242,8 +242,8 @@ class Messages_Attachments {
 
 		$is_participant = (bool) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_messages m
-			JOIN {$wpdb->prefix}sn_messages_recipients r ON r.thread_id = m.thread_id
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_messages m
+			JOIN {$wpdb->prefix}arshid6social_messages_recipients r ON r.thread_id = m.thread_id
 			WHERE m.id = %d AND r.user_id = %d",
 				(int) $att->parent_id,
 				$user_id
@@ -311,7 +311,7 @@ class Messages_Attachments {
 
 		$message_ids = $wpdb->get_col(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_messages WHERE thread_id = %d",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_messages WHERE thread_id = %d",
 				$thread_id
 			)
 		);
@@ -370,8 +370,8 @@ class Messages_Attachments {
 		// IDOR: only participants can list attachments.
 		$is_participant = (bool) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_messages m
-			JOIN {$wpdb->prefix}sn_messages_recipients r ON r.thread_id = m.thread_id
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_messages m
+			JOIN {$wpdb->prefix}arshid6social_messages_recipients r ON r.thread_id = m.thread_id
 			WHERE m.id = %d AND r.user_id = %d",
 				$message_id,
 				$viewer_id

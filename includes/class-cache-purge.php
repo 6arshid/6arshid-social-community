@@ -126,9 +126,9 @@ class Cache_Purge {
 
 		// 13. Generic action hook so any other cache plugin can listen.
 		do_action( 'arshid6social_cache_purged' );
-		do_action( 'cachify_flush_cache' );       // Cachify.
-		do_action( 'comet_cache_wipe_cache' );    // Comet Cache.
-		do_action( 'swift_performance_cache_purge_all' ); // Swift Performance.
+		do_action( 'cachify_flush_cache' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party cache plugin hook (Cachify), intentionally fired for integration.
+		do_action( 'comet_cache_wipe_cache' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party cache plugin hook (Comet Cache), intentionally fired for integration.
+		do_action( 'swift_performance_cache_purge_all' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party cache plugin hook (Swift Performance), intentionally fired for integration.
 
 		// 14. Touch plugin asset files so filemtime-based version strings update.
 		self::touch_assets();

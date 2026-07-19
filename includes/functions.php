@@ -27,7 +27,7 @@ function arshid6social_is_blocked( int $user_a, int $user_b ): bool {
 	global $wpdb;
 	return (bool) $wpdb->get_var(
 		$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_blocks
+			"SELECT id FROM {$wpdb->prefix}arshid6social_blocks
 		 WHERE (blocker_id = %d AND blocked_id = %d)
 		    OR (blocker_id = %d AND blocked_id = %d)",
 			$user_a,
@@ -166,7 +166,7 @@ function arshid6social_current_user_can_view_activity( int $activity_id ): bool 
 		global $wpdb;
 		$activity = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id, user_id, privacy FROM {$wpdb->prefix}sn_activity WHERE id = %d LIMIT 1",
+				"SELECT id, user_id, privacy FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d LIMIT 1",
 				$activity_id
 			)
 		);

@@ -32,7 +32,7 @@ class Ads {
 		global $wpdb;
 		$wpdb->query(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"UPDATE {$wpdb->prefix}sn_ads SET clicks = clicks + 1 WHERE id = %d",
+				"UPDATE {$wpdb->prefix}arshid6social_ads SET clicks = clicks + 1 WHERE id = %d",
 				$ad_id
 			)
 		);
@@ -79,7 +79,7 @@ class Ads {
 	 */
 	public static function get_ads( string $placement ): array {
 		global $wpdb;
-		$table = $wpdb->prefix . 'sn_ads';
+		$table = $wpdb->prefix . 'arshid6social_ads';
 		$today = current_time( 'Y-m-d' );
 
 		// A 'both'-placement ad is shown everywhere; a placement-specific ad only
@@ -92,8 +92,9 @@ class Ads {
 
 		$args = array_merge( $slots, array( $today, $today ) );
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- interpolated identifiers are $wpdb->prefix table names / whitelisted clauses; values bound via prepare() placeholders.
 		$results = $wpdb->get_results(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQLPlaceholders
 				"SELECT * FROM {$table}
 			 WHERE status = 'active'
 			   AND placement IN ($placeholders)
@@ -104,6 +105,7 @@ class Ads {
 			),
 			ARRAY_A
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 		return $results ?: array();
 	}
@@ -148,7 +150,7 @@ class Ads {
 	/**
 	 * Renders a single ad card as HTML string.
 	 *
-	 * @param array<string, mixed> $ad Row from sn_ads.
+	 * @param array<string, mixed> $ad Row from arshid6social_ads.
 	 */
 	public static function render_ad( array $ad ): string {
 		$ad_id     = (int) $ad['id'];

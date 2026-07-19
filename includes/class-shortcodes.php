@@ -732,7 +732,7 @@ class Shortcodes {
 			} else {
 				$username = sanitize_user( wp_unslash( $_POST['username'] ?? '' ) );
 				$email    = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
-				$password = wp_unslash( $_POST['password'] ?? '' ); // Passwords are NOT sanitized.
+				$password = wp_unslash( $_POST['password'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- password intentionally not sanitized; passed as-is to wp_create_user()/registration.
 
 				$errors = new \WP_Error();
 				if ( ! $username ) {
@@ -1280,8 +1280,8 @@ ENDJS;
 			if ( ! check_ajax_referer( 'arshid6social_reset_password', 'arshid6social_reset_nonce', false ) ) {
 				$error = __( 'Security check failed.', '6arshid-social-community' );
 			} else {
-				$pass1 = wp_unslash( $_POST['password1'] ?? '' );
-				$pass2 = wp_unslash( $_POST['password2'] ?? '' );
+				$pass1 = wp_unslash( $_POST['password1'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- password intentionally not sanitized; passed as-is to reset_password().
+				$pass2 = wp_unslash( $_POST['password2'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- password confirmation, only compared to $pass1.
 
 				if ( strlen( $pass1 ) < 8 ) {
 					$error = __( 'Password must be at least 8 characters.', '6arshid-social-community' );

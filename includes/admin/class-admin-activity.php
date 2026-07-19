@@ -170,18 +170,18 @@ final class Admin_Activity {
 
 		// ── Count per tab ─────────────────────────────────────────────────────
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$all_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}sn_activity WHERE is_spam = 0" );
+		$all_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_activity WHERE is_spam = 0" );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$spam_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}sn_activity WHERE is_spam = 1" );
+		$spam_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_activity WHERE is_spam = 1" );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$hidden_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}sn_activity WHERE hide_sitewide = 1 AND is_spam = 0" );
+		$hidden_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_activity WHERE hide_sitewide = 1 AND is_spam = 0" );
 
 		// ── Total for pagination ──────────────────────────────────────────────
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 		$total       = (int) $wpdb->get_var(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_activity a
-			 LEFT JOIN {$wpdb->users} u ON u.ID = a.user_id $where",
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_activity a
+			 LEFT JOIN {$wpdb->users} u ON u.ID = a.user_id $where", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders -- placeholders supplied via dynamic $where + spread $params.
 				...$params
 			)
 		);
@@ -192,14 +192,14 @@ final class Admin_Activity {
 		$select = "SELECT a.id, a.user_id, a.component, a.type, a.content, a.action,
 		                  a.date_recorded, a.hide_sitewide, a.is_spam, a.privacy,
 		                  u.display_name AS author_name, u.user_email AS author_email
-		           FROM {$wpdb->prefix}sn_activity a
+		           FROM {$wpdb->prefix}arshid6social_activity a
 		           LEFT JOIN {$wpdb->users} u ON u.ID = a.user_id
 		           $where
 		           ORDER BY a.date_recorded DESC
 		           LIMIT %d OFFSET %d";
 
 		$row_params = array_merge( $params, array( $per_page, $offset ) );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 		$items = $wpdb->get_results( $wpdb->prepare( $select, ...$row_params ) );
 
 		$current_url = admin_url( 'admin.php?page=arshid6social-activity' );
@@ -509,13 +509,13 @@ ENDJS;
 
 		if ( 'delete' === $action ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->delete( "{$wpdb->prefix}sn_activity_meta", array( 'activity_id' => $activity_id ), array( '%d' ) );
+			$wpdb->delete( "{$wpdb->prefix}arshid6social_activity_meta", array( 'activity_id' => $activity_id ), array( '%d' ) );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->delete( "{$wpdb->prefix}sn_activity_reactions", array( 'activity_id' => $activity_id ), array( '%d' ) );
+			$wpdb->delete( "{$wpdb->prefix}arshid6social_activity_reactions", array( 'activity_id' => $activity_id ), array( '%d' ) );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->delete( "{$wpdb->prefix}sn_activity_media", array( 'activity_id' => $activity_id ), array( '%d' ) );
+			$wpdb->delete( "{$wpdb->prefix}arshid6social_activity_media", array( 'activity_id' => $activity_id ), array( '%d' ) );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->delete( "{$wpdb->prefix}sn_activity", array( 'id' => $activity_id ), array( '%d' ) );
+			$wpdb->delete( "{$wpdb->prefix}arshid6social_activity", array( 'id' => $activity_id ), array( '%d' ) );
 			return;
 		}
 
@@ -530,7 +530,7 @@ ENDJS;
 		if ( $updates ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->update(
-				"{$wpdb->prefix}sn_activity",
+				"{$wpdb->prefix}arshid6social_activity",
 				$updates,
 				array( 'id' => $activity_id ),
 				array( '%d' ),

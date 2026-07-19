@@ -1,0 +1,20 @@
+# Files excluded from `git archive` exports (used by bin/make-dist.sh to build the
+# distributed plugin zip). These are dev-only and must never ship to WordPress.org.
+
+/.git*           export-ignore
+/.github/        export-ignore
+/.distignore     export-ignore
+/build/          export-ignore
+/bin/            export-ignore
+/node_modules/   export-ignore
+/vendor/         export-ignore
+/tests/          export-ignore
+/phpcs.xml       export-ignore
+/phpunit.xml     export-ignore
+/composer.json   export-ignore
+/composer.lock   export-ignore
+/package.json    export-ignore
+/package-lock.json export-ignore
+/README.md       export-ignore
+/.vscode/        export-ignore
+/.idea/          export-ignore

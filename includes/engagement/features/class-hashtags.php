@@ -133,7 +133,7 @@ class Hashtags {
 
 		$ids = $wpdb->get_col(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT object_id FROM {$wpdb->prefix}sn_hashtag_relations
+				"SELECT object_id FROM {$wpdb->prefix}arshid6social_hashtag_relations
 			WHERE hashtag_id = %d AND object_type = 'activity'
 			ORDER BY created_at DESC LIMIT %d",
 				$hashtag->id,
@@ -149,7 +149,8 @@ class Hashtags {
 		return $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
 				// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders
-				"SELECT * FROM {$wpdb->prefix}sn_activity WHERE id IN ($placeholders) AND is_spam = 0 ORDER BY date_recorded DESC",
+				// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
+				"SELECT * FROM {$wpdb->prefix}arshid6social_activity WHERE id IN ($placeholders) AND is_spam = 0 ORDER BY date_recorded DESC",
 				...$ids
 			)
 		) ?: array();
@@ -181,7 +182,7 @@ class Hashtags {
 
 		// Remove stale relations for this object first.
 		$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_hashtag_relations',
+			$wpdb->prefix . 'arshid6social_hashtag_relations',
 			array(
 				'object_id'   => $object_id,
 				'object_type' => $object_type,
@@ -203,7 +204,7 @@ class Hashtags {
 			// Avoid duplicate relations.
 			$exists = (int) $wpdb->get_var(
 				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					"SELECT COUNT(*) FROM {$wpdb->prefix}sn_hashtag_relations WHERE hashtag_id = %d AND object_id = %d AND object_type = %s",
+					"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_hashtag_relations WHERE hashtag_id = %d AND object_id = %d AND object_type = %s",
 					$hashtag_id,
 					$object_id,
 					$object_type
@@ -212,7 +213,7 @@ class Hashtags {
 
 			if ( ! $exists ) {
 				$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					$wpdb->prefix . 'sn_hashtag_relations',
+					$wpdb->prefix . 'arshid6social_hashtag_relations',
 					array(
 						'hashtag_id'  => $hashtag_id,
 						'object_id'   => $object_id,
@@ -256,7 +257,7 @@ class Hashtags {
 
 		$row = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_hashtags WHERE slug = %s",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_hashtags WHERE slug = %s",
 				$slug
 			)
 		);
@@ -266,7 +267,7 @@ class Hashtags {
 		}
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_hashtags',
+			$wpdb->prefix . 'arshid6social_hashtags',
 			array(
 				'hashtag'    => '#' . $slug,
 				'slug'       => $slug,
@@ -283,9 +284,9 @@ class Hashtags {
 		return $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT h.*,
-				( SELECT COUNT(*) FROM {$wpdb->prefix}sn_hashtag_relations r
+				( SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_hashtag_relations r
 				  WHERE r.hashtag_id = h.id AND r.object_type = 'activity' ) AS post_count
-			FROM {$wpdb->prefix}sn_hashtags h
+			FROM {$wpdb->prefix}arshid6social_hashtags h
 			WHERE h.slug = %s",
 				$slug
 			)
@@ -298,7 +299,7 @@ class Hashtags {
 	public function delete_relations( int $activity_id ): void {
 		global $wpdb;
 		$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_hashtag_relations',
+			$wpdb->prefix . 'arshid6social_hashtag_relations',
 			array(
 				'object_id'   => $activity_id,
 				'object_type' => 'activity',
@@ -325,11 +326,12 @@ class Hashtags {
 
 		global $wpdb;
 		$interval = '24h' === $period ? '1 DAY' : '7 DAY';
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- interpolated identifiers are $wpdb->prefix table names / whitelisted clauses; values bound via prepare() placeholders.
 		$rows     = $wpdb->get_results(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT h.slug, h.hashtag, COUNT(r.id) AS use_count
-			FROM {$wpdb->prefix}sn_hashtag_relations r
-			JOIN {$wpdb->prefix}sn_hashtags h ON h.id = r.hashtag_id
+			FROM {$wpdb->prefix}arshid6social_hashtag_relations r
+			JOIN {$wpdb->prefix}arshid6social_hashtags h ON h.id = r.hashtag_id
 			WHERE r.created_at >= NOW() - INTERVAL {$interval}
 			GROUP BY h.id
 			ORDER BY use_count DESC
@@ -338,6 +340,7 @@ class Hashtags {
 			),
 			ARRAY_A
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 		$rows = $rows ?: array();
 		set_transient( $cache_key, $rows, HOUR_IN_SECONDS );
@@ -385,7 +388,7 @@ class Hashtags {
 
 		global $wpdb;
 		$wpdb->replace( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_hashtag_follows',
+			$wpdb->prefix . 'arshid6social_hashtag_follows',
 			array(
 				'hashtag_id' => $hashtag_id,
 				'user_id'    => get_current_user_id(),
@@ -408,7 +411,7 @@ class Hashtags {
 
 		global $wpdb;
 		$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_hashtag_follows',
+			$wpdb->prefix . 'arshid6social_hashtag_follows',
 			array(
 				'hashtag_id' => $hashtag_id,
 				'user_id'    => get_current_user_id(),
@@ -426,7 +429,7 @@ class Hashtags {
 		global $wpdb;
 		return (bool) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_hashtag_follows WHERE hashtag_id = %d AND user_id = %d",
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_hashtag_follows WHERE hashtag_id = %d AND user_id = %d",
 				$hashtag_id,
 				$user_id
 			)
@@ -450,8 +453,8 @@ class Hashtags {
 		$rows = $wpdb->get_results(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT h.slug, h.hashtag, COUNT(r.id) AS use_count
-			FROM {$wpdb->prefix}sn_hashtags h
-			LEFT JOIN {$wpdb->prefix}sn_hashtag_relations r ON r.hashtag_id = h.id
+			FROM {$wpdb->prefix}arshid6social_hashtags h
+			LEFT JOIN {$wpdb->prefix}arshid6social_hashtag_relations r ON r.hashtag_id = h.id
 			WHERE h.slug LIKE %s
 			GROUP BY h.id
 			ORDER BY use_count DESC
@@ -474,7 +477,7 @@ class Hashtags {
 		global $wpdb;
 		$followers = $wpdb->get_col(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_hashtag_follows WHERE hashtag_id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_hashtag_follows WHERE hashtag_id = %d",
 				$hashtag_id
 			)
 		);
@@ -486,7 +489,7 @@ class Hashtags {
 
 		$row       = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d",
 				$object_id
 			)
 		);
@@ -555,14 +558,14 @@ class Hashtags {
 		$offset = ( $page - 1 ) * $per_page;
 		$total  = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_hashtag_relations WHERE hashtag_id = %d AND object_type = 'activity'",
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_hashtag_relations WHERE hashtag_id = %d AND object_type = 'activity'",
 				$hashtag->id
 			)
 		);
 
 		$ids = $wpdb->get_col(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT object_id FROM {$wpdb->prefix}sn_hashtag_relations
+				"SELECT object_id FROM {$wpdb->prefix}arshid6social_hashtag_relations
 			WHERE hashtag_id = %d AND object_type = 'activity'
 			ORDER BY created_at DESC LIMIT %d OFFSET %d",
 				$hashtag->id,

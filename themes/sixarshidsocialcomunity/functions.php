@@ -1199,7 +1199,55 @@ add_shortcode(
 			)
 		);
 		if ( $search ) {
-			$search = '<div class="a6sc-search-wrap">' . $search . '</div>';
+			// get_search_form() returns trusted WP core markup, but we still pass
+			// it through wp_kses with an explicit allow-list of the form elements
+			// it may contain, per WordPress.org output-escaping guidelines.
+			$allowed_search_form = array(
+				'form'   => array(
+					'role'       => true,
+					'method'     => true,
+					'class'      => true,
+					'action'     => true,
+					'aria-label' => true,
+				),
+				'label'  => array(
+					'for'   => true,
+					'class' => true,
+				),
+				'input'  => array(
+					'type'         => true,
+					'name'         => true,
+					'id'           => true,
+					'class'        => true,
+					'value'        => true,
+					'placeholder'  => true,
+					'required'     => true,
+					'aria-label'   => true,
+					'autocomplete' => true,
+				),
+				'button' => array(
+					'type'       => true,
+					'class'      => true,
+					'aria-label' => true,
+				),
+				'span'   => array( 'class' => true ),
+				'div'    => array( 'class' => true ),
+				'svg'    => array(
+					'class'       => true,
+					'aria-hidden' => true,
+					'role'        => true,
+					'width'       => true,
+					'height'      => true,
+					'viewbox'     => true,
+					'xmlns'       => true,
+					'fill'        => true,
+				),
+				'path'   => array(
+					'd'    => true,
+					'fill' => true,
+				),
+			);
+			$search = '<div class="a6sc-search-wrap">' . wp_kses( $search, $allowed_search_form ) . '</div>';
 		}
 
 		$who_to_follow = shortcode_exists( 'arshid6social_who_to_follow' )
@@ -1227,8 +1275,9 @@ add_shortcode(
 		. ' &middot; <a href="' . esc_url( home_url( '/terms/' ) ) . '">Terms</a>'
 		. '</p>';
 
-		// Not using wp_kses_post here — $search contains trusted WP core form HTML
-		// that kses would strip (<form>, <input>, <button>, <label>).
+		// Every fragment above is escaped at build time: $search via wp_kses with
+		// a form allow-list, $who_to_follow and $ads via wp_kses_post, and
+		// $panel / $footer_links via esc_url + esc_html__.
 		return '<aside class="socialnetworksix-right">'
 		. '<div class="socialnetworksix-right-inner">'
 		. $search

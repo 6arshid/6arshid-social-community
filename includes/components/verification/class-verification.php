@@ -66,7 +66,7 @@ class Verification {
 		global $wpdb;
 		return $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT v.* FROM {$wpdb->prefix}sn_verifications v
+				"SELECT v.* FROM {$wpdb->prefix}arshid6social_verifications v
 			 WHERE v.user_id = %d
 			   AND (v.expires_at IS NULL OR v.expires_at > NOW())",
 				$user_id
@@ -167,14 +167,14 @@ class Verification {
 		// Upsert.
 		$existing = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_verifications WHERE user_id = %d",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_verifications WHERE user_id = %d",
 				$user_id
 			)
 		);
 
 		if ( $existing ) {
 			$result = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_verifications',
+				$wpdb->prefix . 'arshid6social_verifications',
 				array(
 					'type'       => $type,
 					'badge'      => $badge,
@@ -188,7 +188,7 @@ class Verification {
 			);
 		} else {
 			$result = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_verifications',
+				$wpdb->prefix . 'arshid6social_verifications',
 				array(
 					'user_id'    => $user_id,
 					'type'       => $type,
@@ -222,7 +222,7 @@ class Verification {
 	public function revoke( int $user_id ): bool {
 		global $wpdb;
 		$deleted = (bool) $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_verifications',
+			$wpdb->prefix . 'arshid6social_verifications',
 			array( 'user_id' => $user_id ),
 			array( '%d' )
 		);
@@ -249,7 +249,7 @@ class Verification {
 		global $wpdb;
 		return $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_verification_requests
+				"SELECT * FROM {$wpdb->prefix}arshid6social_verification_requests
 			 WHERE user_id = %d AND status IN ('pending','more_info')
 			 ORDER BY created_at DESC LIMIT 1",
 				$user_id
@@ -275,7 +275,7 @@ class Verification {
 		}
 
 		$result = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_verification_requests',
+			$wpdb->prefix . 'arshid6social_verification_requests',
 			array(
 				'user_id'        => $user_id,
 				'type'           => sanitize_key( $type ),
@@ -298,7 +298,7 @@ class Verification {
 
 		$request = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_verification_requests WHERE id = %d",
 				$request_id
 			)
 		);
@@ -307,7 +307,7 @@ class Verification {
 		}
 
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_verification_requests',
+			$wpdb->prefix . 'arshid6social_verification_requests',
 			array(
 				'status'      => 'approved',
 				'reviewer_id' => get_current_user_id(),
@@ -333,7 +333,7 @@ class Verification {
 
 		$request = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_verification_requests WHERE id = %d",
 				$request_id
 			)
 		);
@@ -342,7 +342,7 @@ class Verification {
 		}
 
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_verification_requests',
+			$wpdb->prefix . 'arshid6social_verification_requests',
 			array(
 				'status'      => 'rejected',
 				'reviewer_id' => get_current_user_id(),
@@ -368,7 +368,7 @@ class Verification {
 
 		$request = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_verification_requests WHERE id = %d",
 				$request_id
 			)
 		);
@@ -377,7 +377,7 @@ class Verification {
 		}
 
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_verification_requests',
+			$wpdb->prefix . 'arshid6social_verification_requests',
 			array(
 				'status'      => 'more_info',
 				'reviewer_id' => get_current_user_id(),
@@ -418,7 +418,7 @@ class Verification {
 	public function expire_badges(): void {
 		global $wpdb;
 		$expired = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT user_id FROM {$wpdb->prefix}sn_verifications
+			"SELECT user_id FROM {$wpdb->prefix}arshid6social_verifications
 			 WHERE expires_at IS NOT NULL AND expires_at <= NOW()"
 		);
 		foreach ( $expired as $uid ) {
@@ -489,7 +489,7 @@ class Verification {
 		$require   = get_option( 'arshid6social_verification_require_doc', false );
 
 		if ( ! empty( $_FILES['document']['tmp_name'] ) ) {
-			$result = \Arshid6Social\Media_Handler::handle( $_FILES['document'], 'verification_doc', $user_id );
+			$result = \Arshid6Social\Media_Handler::handle( $_FILES['document'], 'verification_doc', $user_id ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- $_FILES array validated/sanitized by Media_Handler::handle() (MIME, size, re-encode).
 			if ( is_wp_error( $result ) ) {
 				wp_send_json_error( array( 'message' => $result->get_error_message() ) );
 			}
@@ -598,7 +598,7 @@ class Verification {
 		$doc_paths = json_decode( $pending->document_paths ?? '[]', true );
 
 		if ( ! empty( $_FILES['document']['tmp_name'] ) ) {
-			$result = \Arshid6Social\Media_Handler::handle( $_FILES['document'], 'verification_doc', $user_id );
+			$result = \Arshid6Social\Media_Handler::handle( $_FILES['document'], 'verification_doc', $user_id ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- $_FILES array validated/sanitized by Media_Handler::handle() (MIME, size, re-encode).
 			if ( is_wp_error( $result ) ) {
 				wp_send_json_error( array( 'message' => $result->get_error_message() ) );
 			}
@@ -608,7 +608,7 @@ class Verification {
 
 		global $wpdb;
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_verification_requests',
+			$wpdb->prefix . 'arshid6social_verification_requests',
 			array(
 				'fields_json'    => wp_json_encode( $fields ),
 				'document_paths' => wp_json_encode( $doc_paths ),
@@ -639,7 +639,7 @@ class Verification {
 		global $wpdb;
 		$request = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT document_paths FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
+				"SELECT document_paths FROM {$wpdb->prefix}arshid6social_verification_requests WHERE id = %d",
 				$req_id
 			)
 		);

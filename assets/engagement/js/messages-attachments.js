@@ -118,7 +118,7 @@ window.ARSHID6SOCIALMsgAtt = ( function () {
 		if ( form ) {
 			const hidden = document.createElement( 'input' );
 			hidden.type  = 'hidden';
-			hidden.name  = 'sn_msg_attachments[]';
+			hidden.name  = 'arshid6social_msg_attachments[]';
 			hidden.value = att.attachment_id;
 			form.appendChild( hidden );
 		}

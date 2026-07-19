@@ -77,7 +77,7 @@ class Polls {
 		}
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_polls',
+			$wpdb->prefix . 'arshid6social_polls',
 			array(
 				'activity_id'         => absint( $args['activity_id'] ?? 0 ),
 				'user_id'             => absint( $args['user_id'] ?? get_current_user_id() ),
@@ -106,7 +106,7 @@ class Polls {
 			$is_correct = is_array( $opt ) ? (int) ! empty( $opt['is_correct'] ) : 0;
 
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_poll_options',
+				$wpdb->prefix . 'arshid6social_poll_options',
 				array(
 					'poll_id'      => $poll_id,
 					'option_text'  => $text,
@@ -166,7 +166,7 @@ class Polls {
 		// Verify options belong to this poll.
 		$valid_ids  = $wpdb->get_col(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_poll_options WHERE poll_id = %d",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_poll_options WHERE poll_id = %d",
 				$poll_id
 			)
 		);
@@ -189,7 +189,7 @@ class Polls {
 		// Remove previous votes (change-vote).
 		if ( $has_voted ) {
 			$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_poll_votes',
+				$wpdb->prefix . 'arshid6social_poll_votes',
 				array(
 					'poll_id' => $poll_id,
 					'user_id' => $user_id,
@@ -200,7 +200,7 @@ class Polls {
 
 		foreach ( $option_ids as $rank => $opt_id ) {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_poll_votes',
+				$wpdb->prefix . 'arshid6social_poll_votes',
 				array(
 					'poll_id'   => $poll_id,
 					'option_id' => $opt_id,
@@ -223,7 +223,7 @@ class Polls {
 		global $wpdb;
 		return $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_polls WHERE id = %d",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_polls WHERE id = %d",
 				$poll_id
 			)
 		);
@@ -233,7 +233,7 @@ class Polls {
 		global $wpdb;
 		return $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_polls WHERE activity_id = %d",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_polls WHERE activity_id = %d",
 				$activity_id
 			)
 		);
@@ -243,7 +243,7 @@ class Polls {
 		global $wpdb;
 		return (bool) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_poll_votes WHERE poll_id = %d AND user_id = %d",
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_poll_votes WHERE poll_id = %d AND user_id = %d",
 				$poll_id,
 				$user_id
 			)
@@ -266,8 +266,8 @@ class Polls {
 		$options = $wpdb->get_results(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT o.*, COUNT(v.id) AS vote_count
-			FROM {$wpdb->prefix}sn_poll_options o
-			LEFT JOIN {$wpdb->prefix}sn_poll_votes v ON v.option_id = o.id
+			FROM {$wpdb->prefix}arshid6social_poll_options o
+			LEFT JOIN {$wpdb->prefix}arshid6social_poll_votes v ON v.option_id = o.id
 			WHERE o.poll_id = %d
 			GROUP BY o.id ORDER BY o.sort_order ASC",
 				$poll_id
@@ -292,7 +292,7 @@ class Polls {
 				'intval',
 				$wpdb->get_col(
 					$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-						"SELECT option_id FROM {$wpdb->prefix}sn_poll_votes WHERE poll_id = %d AND user_id = %d",
+						"SELECT option_id FROM {$wpdb->prefix}arshid6social_poll_votes WHERE poll_id = %d AND user_id = %d",
 						$poll_id,
 						$viewer_id
 					)
@@ -337,7 +337,7 @@ class Polls {
 	public function close_expired(): void {
 		global $wpdb;
 		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"UPDATE {$wpdb->prefix}sn_polls SET status = 'closed' WHERE status = 'open' AND end_date IS NOT NULL AND end_date <= NOW()"
+			"UPDATE {$wpdb->prefix}arshid6social_polls SET status = 'closed' WHERE status = 'open' AND end_date IS NOT NULL AND end_date <= NOW()"
 		);
 	}
 
@@ -348,9 +348,9 @@ class Polls {
 			return;
 		}
 		$poll_id = (int) $poll->id;
-		$wpdb->delete( $wpdb->prefix . 'sn_poll_votes', array( 'poll_id' => $poll_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_poll_options', array( 'poll_id' => $poll_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_polls', array( 'id' => $poll_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_poll_votes', array( 'poll_id' => $poll_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_poll_options', array( 'poll_id' => $poll_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_polls', array( 'id' => $poll_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	}
 
 	// ── AJAX ──────────────────────────────────────────────────────────────────
@@ -380,7 +380,7 @@ class Polls {
 		global $wpdb;
 		$owner = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d",
 				$activity_id
 			)
 		);
@@ -429,7 +429,7 @@ class Polls {
 
 		$options = $wpdb->get_results(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id, option_text FROM {$wpdb->prefix}sn_poll_options WHERE poll_id = %d ORDER BY sort_order ASC",
+				"SELECT id, option_text FROM {$wpdb->prefix}arshid6social_poll_options WHERE poll_id = %d ORDER BY sort_order ASC",
 				$poll_id
 			),
 			ARRAY_A

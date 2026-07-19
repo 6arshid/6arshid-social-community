@@ -69,7 +69,7 @@ final class Admin_Ads {
 		$end_date   = sanitize_text_field( wp_unslash( $_POST['ad_end_date'] ?? '' ) ) ?: null;
 
 		global $wpdb;
-		$table = $wpdb->prefix . 'sn_ads';
+		$table = $wpdb->prefix . 'arshid6social_ads';
 		$data  = array(
 			'title'         => $title,
 			'ad_type'       => $ad_type,
@@ -111,7 +111,7 @@ final class Admin_Ads {
 		}
 		$ad_id = absint( $_POST['ad_id'] ?? 0 );
 		global $wpdb;
-		$wpdb->delete( $wpdb->prefix . 'sn_ads', array( 'id' => $ad_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_ads', array( 'id' => $ad_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		wp_send_json_success();
 	}
 
@@ -126,12 +126,12 @@ final class Admin_Ads {
 		global $wpdb;
 		$current    = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT status FROM {$wpdb->prefix}sn_ads WHERE id = %d",
+				"SELECT status FROM {$wpdb->prefix}arshid6social_ads WHERE id = %d",
 				$ad_id
 			)
 		);
 		$new_status = ( 'active' === $current ) ? 'inactive' : 'active';
-		$wpdb->update( $wpdb->prefix . 'sn_ads', array( 'status' => $new_status ), array( 'id' => $ad_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->update( $wpdb->prefix . 'arshid6social_ads', array( 'status' => $new_status ), array( 'id' => $ad_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		wp_send_json_success(
 			array(
 				'status'       => $new_status,
@@ -148,8 +148,8 @@ final class Admin_Ads {
 			wp_die( esc_html__( 'You do not have permission to access this page.', '6arshid-social-community' ) );
 		}
 
-		$action = sanitize_key( $_GET['action'] ?? 'list' );
-		$ad_id  = absint( $_GET['ad_id'] ?? 0 );
+		$action = sanitize_key( $_GET['action'] ?? 'list' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only admin view routing from a GET nav link; no state change (saves go through nonce-verified handle_save()).
+		$ad_id  = absint( $_GET['ad_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only: pre-fills the edit view from a GET nav link, no state change.
 
 		if ( 'add' === $action || 'edit' === $action ) {
 			$this->render_form( $ad_id );
@@ -163,10 +163,10 @@ final class Admin_Ads {
 	private function render_list(): void {
 		global $wpdb;
 		$ads     = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT * FROM {$wpdb->prefix}sn_ads ORDER BY id DESC",
+			"SELECT * FROM {$wpdb->prefix}arshid6social_ads ORDER BY id DESC",
 			ARRAY_A
 		) ?: array();
-		$saved   = ! empty( $_GET['saved'] );
+		$saved   = ! empty( $_GET['saved'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only success-notice flag set by our own post-save redirect.
 		$add_url = add_query_arg(
 			array(
 				'page'   => 'arshid6social-ads',
@@ -321,7 +321,7 @@ ENDJS;
 		if ( $ad_id ) {
 			$row = $wpdb->get_row(
 				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					"SELECT * FROM {$wpdb->prefix}sn_ads WHERE id = %d",
+					"SELECT * FROM {$wpdb->prefix}arshid6social_ads WHERE id = %d",
 					$ad_id
 				),
 				ARRAY_A

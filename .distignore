@@ -1,0 +1,45 @@
+# Files and directories that must NOT ship in the distributed plugin zip.
+# Consumed by the WordPress.org deploy tooling (e.g. 10up/action-wordpress-plugin-deploy)
+# and by bin/make-dist.sh. Syntax is gitignore-style.
+
+# Version control / CI
+/.git
+/.github
+/.gitignore
+/.gitattributes
+/.distignore
+
+# Dev-only build tooling (fetches Bootstrap Icons from GitHub during development;
+# its committed output assets/icons/bootstrap-icons.json is what actually ships).
+/build
+
+# Dev-only scripts (packaging + migration test harness)
+/bin
+
+# Dependency / package manager artifacts
+/node_modules
+/vendor
+/composer.json
+/composer.lock
+/package.json
+/package-lock.json
+
+# Tests & coding-standards config
+/tests
+/phpunit.xml
+/phpunit.xml.dist
+/phpcs.xml
+/phpcs.xml.dist
+/.phpcs.xml.dist
+
+# Dev documentation (WordPress.org uses readme.txt, not README.md)
+/README.md
+
+# Local editor / OS cruft
+/.vscode
+/.idea
+.DS_Store
+Thumbs.db
+
+# Any previously built zips
+*.zip

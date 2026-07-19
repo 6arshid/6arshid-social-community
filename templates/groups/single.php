@@ -259,10 +259,11 @@ if ( ! array_key_exists( $current_tab, $group_tabs ) ) {
 				<div class="arshid6social-group-members-grid">
 					<?php
 					global $wpdb;
-					$table = $wpdb->prefix . 'sn_groups_members';
-					// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					$table = $wpdb->prefix . 'arshid6social_groups_members';
+					// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 					$rows = $wpdb->get_results(
 						$wpdb->prepare(
+							// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
 							"SELECT user_id, is_admin FROM `{$table}` WHERE group_id = %d AND is_confirmed = 1 AND is_banned = 0 ORDER BY is_admin DESC, date_modified ASC LIMIT 100",
 							$group_id
 						)

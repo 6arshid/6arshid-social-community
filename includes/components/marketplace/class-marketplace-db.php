@@ -182,7 +182,7 @@ class Marketplace_DB {
 
 		// ── Offers ────────────────────────────────────────────────────────────
 		// Optional haggling record; money never flows through the plugin.
-		// message_thread_id links to wp_sn_messages_threads for context.
+		// message_thread_id links to {prefix}arshid6social_messages_threads for context.
 		$tables[] = "CREATE TABLE {$wpdb->prefix}arshid6social_offers (
 			id                bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			listing_id        bigint(20) unsigned NOT NULL,
@@ -222,13 +222,13 @@ class Marketplace_DB {
 	// ── Migrations on shared tables ──────────────────────────────────────────
 
 	/**
-	 * Adds a `type` column to wp_sn_messages_threads so marketplace
+	 * Adds a `type` column to {prefix}arshid6social_messages_threads so marketplace
 	 * conversations can be differentiated from regular DMs.
 	 * Default value 'default' leaves all existing rows unaffected.
 	 */
 	private static function migrate_thread_type_column(): void {
 		global $wpdb;
-		$table = $wpdb->prefix . 'sn_messages_threads';
+		$table = $wpdb->prefix . 'arshid6social_messages_threads';
 
 		$has_col = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -240,11 +240,13 @@ class Marketplace_DB {
 		);
 
 		if ( ! $has_col ) {
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- interpolated identifiers are $wpdb->prefix table names / whitelisted clauses; values bound via prepare() placeholders.
 			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"ALTER TABLE `{$table}`
 				 ADD COLUMN `type` varchar(30) NOT NULL DEFAULT 'default' AFTER `is_group`,
 				 ADD KEY `type` (`type`)"
 			);
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		}
 	}
 
@@ -257,7 +259,7 @@ class Marketplace_DB {
 		global $wpdb;
 		$table = $wpdb->prefix . 'arshid6social_categories';
 
-		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$table}`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$table}`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 		if ( $count > 0 ) {
 			return;
 		}
@@ -373,7 +375,7 @@ class Marketplace_DB {
 	 * Drops all Marketplace tables and removes options.
 	 * Called by uninstall.php when 'delete data on uninstall' is enabled.
 	 *
-	 * Also removes the `type` column added to sn_messages_threads, restoring
+	 * Also removes the `type` column added to arshid6social_messages_threads, restoring
 	 * the core table to its original schema.
 	 *
 	 * @param bool $delete_data Whether to delete user data (from plugin setting).
@@ -396,11 +398,11 @@ class Marketplace_DB {
 		);
 
 		foreach ( $marketplace_tables as $table ) {
-			$wpdb->query( "DROP TABLE IF EXISTS `{$table}`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query( "DROP TABLE IF EXISTS `{$table}`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 		}
 
 		// Remove the type column from the shared messages table.
-		$threads_table = $wpdb->prefix . 'sn_messages_threads';
+		$threads_table = $wpdb->prefix . 'arshid6social_messages_threads';
 		$has_col       = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS
@@ -410,7 +412,7 @@ class Marketplace_DB {
 			)
 		);
 		if ( $has_col ) {
-			$wpdb->query( "ALTER TABLE `{$threads_table}` DROP COLUMN `type`, DROP KEY `type`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query( "ALTER TABLE `{$threads_table}` DROP COLUMN `type`, DROP KEY `type`" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 		}
 
 		// Remove all marketplace options.

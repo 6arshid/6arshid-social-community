@@ -158,7 +158,7 @@ class Notifications {
 		// Dedup: one notification per (recipient, sender, object, action).
 		$existing_id = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_notifications
+				"SELECT id FROM {$wpdb->prefix}arshid6social_notifications
 			 WHERE user_id = %d AND item_id = %d AND secondary_item_id = %d
 			   AND component_name = %s AND component_action = %s
 			 LIMIT 1",
@@ -172,7 +172,7 @@ class Notifications {
 
 		if ( $existing_id ) {
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_notifications',
+				$wpdb->prefix . 'arshid6social_notifications',
 				array(
 					'date_notified' => $args['date_notified'],
 					'is_new'        => 1,
@@ -185,7 +185,7 @@ class Notifications {
 		}
 
 		$result = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_notifications',
+			$wpdb->prefix . 'arshid6social_notifications',
 			array(
 				'user_id'           => $user_id,
 				'item_id'           => $item_id,
@@ -232,9 +232,9 @@ class Notifications {
 			$where .= ' AND is_new = 1';
 		}
 
-		$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$rows = $wpdb->get_results( // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}sn_notifications WHERE $where ORDER BY date_notified DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT * FROM {$wpdb->prefix}arshid6social_notifications WHERE $where ORDER BY date_notified DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 				$limit,
 				$offset
 			)
@@ -253,7 +253,7 @@ class Notifications {
 			$where .= ' AND is_new = 1';
 		}
 		return (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM {$wpdb->prefix}sn_notifications WHERE $where" // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_notifications WHERE $where" // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQL.NotPrepared
 		);
 	}
 
@@ -291,13 +291,13 @@ class Notifications {
 			$ids_placeholder = implode( ', ', array_fill( 0, count( $notification_ids ), '%d' ) );
 			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prepare(
-					"UPDATE {$wpdb->prefix}sn_notifications SET is_new = 0 WHERE user_id = %d AND id IN ($ids_placeholder)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					"UPDATE {$wpdb->prefix}arshid6social_notifications SET is_new = 0 WHERE user_id = %d AND id IN ($ids_placeholder)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 					array_merge( array( $user_id ), array_map( 'absint', $notification_ids ) )
 				)
 			);
 		} else {
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_notifications',
+				$wpdb->prefix . 'arshid6social_notifications',
 				array( 'is_new' => 0 ),
 				array( 'user_id' => $user_id ),
 				array( '%d' ),
@@ -312,7 +312,7 @@ class Notifications {
 	public function delete_notification( int $notification_id, int $user_id ): bool {
 		global $wpdb;
 		$deleted = $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_notifications',
+			$wpdb->prefix . 'arshid6social_notifications',
 			array(
 				'id'      => $notification_id,
 				'user_id' => $user_id,
@@ -351,7 +351,7 @@ class Notifications {
 		global $wpdb;
 		$notif = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_notifications WHERE id = %d",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_notifications WHERE id = %d",
 				$notification_id
 			)
 		);
@@ -485,7 +485,7 @@ class Notifications {
 				if ( $secondary ) {
 					$parent_activity_id = (int) $wpdb->get_var(
 						$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-							"SELECT item_id FROM {$wpdb->prefix}sn_activity WHERE id = %d AND type = 'activity_comment'",
+							"SELECT item_id FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d AND type = 'activity_comment'",
 							$secondary
 						)
 					);
@@ -505,7 +505,7 @@ class Notifications {
 				if ( $secondary ) {
 					$slug = (string) $wpdb->get_var(
 						$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-							"SELECT slug FROM {$wpdb->prefix}sn_groups WHERE id = %d",
+							"SELECT slug FROM {$wpdb->prefix}arshid6social_groups WHERE id = %d",
 							$secondary
 						)
 					);
@@ -640,7 +640,7 @@ class Notifications {
 
 		$recipients = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT user_id FROM {$wpdb->prefix}sn_messages_recipients WHERE thread_id = %d AND user_id != %d AND is_deleted = 0",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_messages_recipients WHERE thread_id = %d AND user_id != %d AND is_deleted = 0",
 				$thread_id,
 				$sender_id
 			)
@@ -668,7 +668,7 @@ class Notifications {
 		global $wpdb;
 		$owner = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d",
 				$activity_id
 			)
 		);
@@ -693,7 +693,7 @@ class Notifications {
 		// Notify the post owner.
 		$owner = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d",
 				$activity_id
 			)
 		);
@@ -715,7 +715,7 @@ class Notifications {
 		if ( $parent_comment_id ) {
 			$comment_author = (int) $wpdb->get_var(
 				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d AND type = 'activity_comment'",
+					"SELECT user_id FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d AND type = 'activity_comment'",
 					$parent_comment_id
 				)
 			);
@@ -879,7 +879,7 @@ class Notifications {
 		$user_ids = array_map(
 			'intval',
 			(array) $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT DISTINCT user_id FROM {$wpdb->prefix}sn_notifications WHERE is_new = 1"
+				"SELECT DISTINCT user_id FROM {$wpdb->prefix}arshid6social_notifications WHERE is_new = 1"
 			)
 		);
 

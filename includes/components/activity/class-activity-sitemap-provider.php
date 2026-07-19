@@ -37,7 +37,7 @@ class Activity_Sitemap_Provider extends \WP_Sitemaps_Provider {
 
 		$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT id, date_recorded FROM {$wpdb->prefix}sn_activity
+				"SELECT id, date_recorded FROM {$wpdb->prefix}arshid6social_activity
 				 WHERE privacy = 'public' AND is_spam = 0 AND hide_sitewide = 0
 				 ORDER BY date_recorded DESC
 				 LIMIT %d OFFSET %d",
@@ -71,7 +71,7 @@ class Activity_Sitemap_Provider extends \WP_Sitemaps_Provider {
 		global $wpdb;
 
 		$total = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT COUNT(*) FROM {$wpdb->prefix}sn_activity WHERE privacy = 'public' AND is_spam = 0 AND hide_sitewide = 0"
+			"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_activity WHERE privacy = 'public' AND is_spam = 0 AND hide_sitewide = 0"
 		);
 
 		return (int) ceil( $total / $this->get_max_num_urls() );

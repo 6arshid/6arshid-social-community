@@ -44,7 +44,7 @@ class Tag_Friends {
 		global $wpdb;
 		$row = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT content FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				"SELECT content FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d",
 				$comment_id
 			)
 		);
@@ -111,7 +111,7 @@ class Tag_Friends {
 
 		$exists = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_post_tags
+				"SELECT id FROM {$wpdb->prefix}arshid6social_post_tags
 			WHERE object_id = %d AND object_type = %s AND tagged_user_id = %d",
 				$object_id,
 				$object_type,
@@ -124,7 +124,7 @@ class Tag_Friends {
 		}
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_post_tags',
+			$wpdb->prefix . 'arshid6social_post_tags',
 			array(
 				'object_id'      => $object_id,
 				'object_type'    => $object_type,
@@ -174,8 +174,8 @@ class Tag_Friends {
 		// phpcs:disable WordPress.Security.NonceVerification
 		$activity_id    = absint( $_POST['activity_id'] ?? 0 );
 		$tagged_user_id = absint( $_POST['user_id'] ?? 0 );
-		$x              = (float) wp_unslash( $_POST['x'] ?? 0 );
-		$y              = (float) wp_unslash( $_POST['y'] ?? 0 );
+		$x              = (float) sanitize_text_field( wp_unslash( $_POST['x'] ?? 0 ) );
+		$y              = (float) sanitize_text_field( wp_unslash( $_POST['y'] ?? 0 ) );
 		// phpcs:enable
 
 		if ( ! $activity_id || ! $tagged_user_id ) {
@@ -187,7 +187,7 @@ class Tag_Friends {
 		// Verify the activity belongs to the current user.
 		$activity = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d",
 				$activity_id
 			)
 		);
@@ -209,7 +209,7 @@ class Tag_Friends {
 			$x = max( 0.0, min( 100.0, $x ) );
 			$y = max( 0.0, min( 100.0, $y ) );
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_post_tag_coords',
+				$wpdb->prefix . 'arshid6social_post_tag_coords',
 				array(
 					'tag_id'    => $tag_id,
 					'x_percent' => $x,
@@ -255,7 +255,7 @@ class Tag_Friends {
 		global $wpdb;
 		$tag = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_post_tags WHERE id = %d",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_post_tags WHERE id = %d",
 				$tag_id
 			)
 		);
@@ -269,8 +269,8 @@ class Tag_Friends {
 			wp_send_json_error( null, 403 );
 		}
 
-		$wpdb->delete( $wpdb->prefix . 'sn_post_tag_coords', array( 'tag_id' => $tag_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_post_tags', array( 'id' => $tag_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_post_tag_coords', array( 'tag_id' => $tag_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_post_tags', array( 'id' => $tag_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		wp_send_json_success();
 	}
@@ -297,7 +297,7 @@ class Tag_Friends {
 		global $wpdb;
 		$tag = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_post_tags WHERE id = %d",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_post_tags WHERE id = %d",
 				$tag_id
 			)
 		);
@@ -307,7 +307,7 @@ class Tag_Friends {
 		}
 
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_post_tags',
+			$wpdb->prefix . 'arshid6social_post_tags',
 			array( 'status' => $status ),
 			array( 'id' => $tag_id ),
 			array( '%s' ),
@@ -361,7 +361,7 @@ class Tag_Friends {
 					$friends_first = $wpdb->get_results(
 						$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 							"SELECT ID, user_login, display_name FROM {$wpdb->users}
-						WHERE ID IN ($in) AND (user_login LIKE %s OR display_name LIKE %s) LIMIT 5", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+						WHERE ID IN ($in) AND (user_login LIKE %s OR display_name LIKE %s) LIMIT 5", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 							'%' . $wpdb->esc_like( $q ) . '%',
 							'%' . $wpdb->esc_like( $q ) . '%'
 						),
@@ -385,13 +385,13 @@ class Tag_Friends {
 
 		if ( $exclude ) {
 			$placeholders  = implode( ', ', array_fill( 0, count( $exclude ), '%d' ) );
-			$others_sql   .= " AND ID NOT IN ($placeholders)"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$others_sql   .= " AND ID NOT IN ($placeholders)"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 			$others_params = array_merge( $others_params, $exclude );
 		}
 
 		$others_sql .= ' LIMIT 5';
 
-		$others = $wpdb->get_results( $wpdb->prepare( $others_sql, ...$others_params ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$others = $wpdb->get_results( $wpdb->prepare( $others_sql, ...$others_params ), ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 		$all = array_merge( $friends_first, $others );
 
@@ -423,8 +423,8 @@ class Tag_Friends {
 		return $wpdb->get_results(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT t.*, c.x_percent, c.y_percent
-			FROM {$wpdb->prefix}sn_post_tags t
-			LEFT JOIN {$wpdb->prefix}sn_post_tag_coords c ON c.tag_id = t.id
+			FROM {$wpdb->prefix}arshid6social_post_tags t
+			LEFT JOIN {$wpdb->prefix}arshid6social_post_tag_coords c ON c.tag_id = t.id
 			WHERE t.object_id = %d AND t.object_type = %s AND t.status = 'approved'",
 				$object_id,
 				$object_type

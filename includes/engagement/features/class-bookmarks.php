@@ -132,14 +132,14 @@ class Bookmarks {
 			$fmt[]                 = '%d';
 		}
 
-		$wpdb->replace( $wpdb->prefix . 'sn_bookmarks', $data, $fmt ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->replace( $wpdb->prefix . 'arshid6social_bookmarks', $data, $fmt ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		return (bool) $wpdb->rows_affected;
 	}
 
 	public function remove( int $user_id, int $object_id, string $object_type = 'activity' ): bool {
 		global $wpdb;
 		$deleted = $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_bookmarks',
+			$wpdb->prefix . 'arshid6social_bookmarks',
 			array(
 				'user_id'     => $user_id,
 				'object_id'   => $object_id,
@@ -154,7 +154,7 @@ class Bookmarks {
 		global $wpdb;
 		return (bool) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_bookmarks WHERE user_id = %d AND object_id = %d AND object_type = %s",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_bookmarks WHERE user_id = %d AND object_id = %d AND object_type = %s",
 				$user_id,
 				$object_id,
 				$object_type
@@ -187,11 +187,12 @@ class Bookmarks {
 			$values[] = '%' . $wpdb->esc_like( sanitize_text_field( $search ) ) . '%';
 		}
 
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- SQL string built from $wpdb->prefix/whitelist identifiers and static clauses; all values bound via $wpdb->prepare() placeholders (never raw user input).
 		$total = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_bookmarks b
-			LEFT JOIN {$wpdb->prefix}sn_activity a ON a.id = b.object_id
-			WHERE $where", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_bookmarks b
+			LEFT JOIN {$wpdb->prefix}arshid6social_activity a ON a.id = b.object_id
+			WHERE $where", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 				$values
 			)
 		);
@@ -199,17 +200,19 @@ class Bookmarks {
 		$values[] = $per_page;
 		$values[] = $offset;
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- interpolated identifiers are $wpdb->prefix table names / whitelisted clauses; values bound via prepare() placeholders.
 		$rows = $wpdb->get_results(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQLPlaceholders
 				"SELECT b.*, a.content, a.date_recorded, a.user_id AS author_id
-			FROM {$wpdb->prefix}sn_bookmarks b
-			LEFT JOIN {$wpdb->prefix}sn_activity a ON a.id = b.object_id
+			FROM {$wpdb->prefix}arshid6social_bookmarks b
+			LEFT JOIN {$wpdb->prefix}arshid6social_activity a ON a.id = b.object_id
 			WHERE $where
-			ORDER BY b.created_at DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			ORDER BY b.created_at DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 				$values
 			),
 			ARRAY_A
 		) ?: array();
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 		return array(
 			'items'       => $rows,
@@ -226,8 +229,8 @@ class Bookmarks {
 		return $wpdb->get_results(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT c.*, COUNT(b.id) AS bookmark_count
-			FROM {$wpdb->prefix}sn_bookmark_collections c
-			LEFT JOIN {$wpdb->prefix}sn_bookmarks b ON b.collection_id = c.id
+			FROM {$wpdb->prefix}arshid6social_bookmark_collections c
+			LEFT JOIN {$wpdb->prefix}arshid6social_bookmarks b ON b.collection_id = c.id
 			WHERE c.user_id = %d
 			GROUP BY c.id ORDER BY c.created_at DESC",
 				$user_id
@@ -243,7 +246,7 @@ class Bookmarks {
 
 		global $wpdb;
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_bookmark_collections',
+			$wpdb->prefix . 'arshid6social_bookmark_collections',
 			array(
 				'user_id'    => $user_id,
 				'name'       => sanitize_text_field( $name ),
@@ -262,7 +265,7 @@ class Bookmarks {
 		global $wpdb;
 		// Unset collection_id on bookmarks within it (don't delete the bookmarks).
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_bookmarks',
+			$wpdb->prefix . 'arshid6social_bookmarks',
 			array( 'collection_id' => null ),
 			array(
 				'user_id'       => $user_id,
@@ -273,7 +276,7 @@ class Bookmarks {
 		);
 
 		$deleted = $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_bookmark_collections',
+			$wpdb->prefix . 'arshid6social_bookmark_collections',
 			array(
 				'id'      => $collection_id,
 				'user_id' => $user_id,
@@ -288,7 +291,7 @@ class Bookmarks {
 		global $wpdb;
 		return (bool) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_bookmark_collections WHERE id = %d AND user_id = %d",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_bookmark_collections WHERE id = %d AND user_id = %d",
 				$collection_id,
 				$user_id
 			)
@@ -390,7 +393,7 @@ class Bookmarks {
 	public function on_activity_deleted( int $activity_id ): void {
 		global $wpdb;
 		$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_bookmarks',
+			$wpdb->prefix . 'arshid6social_bookmarks',
 			array(
 				'object_id'   => $activity_id,
 				'object_type' => 'activity',
@@ -449,8 +452,8 @@ class Bookmarks {
 
 				$placeholders = implode( ',', array_fill( 0, count( $saved_ids ), '%d' ) );
 				$listing_rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-						"SELECT * FROM {$wpdb->prefix}arshid6social_listings WHERE id IN ($placeholders)",
+					$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
+						"SELECT * FROM {$wpdb->prefix}arshid6social_listings WHERE id IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders -- IN() placeholders built dynamically, matched by spread ...$placeholders args.
 						...$saved_ids
 					)
 				) ?: array();

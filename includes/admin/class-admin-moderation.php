@@ -93,7 +93,7 @@ final class Admin_Moderation {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$groups = $wpdb->get_results(
 			"SELECT id, name, slug, is_suspended, suspend_reason, creator_id, date_created
-			 FROM {$wpdb->prefix}sn_groups
+			 FROM {$wpdb->prefix}arshid6social_groups
 			 ORDER BY is_suspended DESC, date_created DESC
 			 LIMIT 100"
 		);
@@ -224,7 +224,7 @@ final class Admin_Moderation {
 
 		$reports = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}sn_reports WHERE status = %s ORDER BY date_reported DESC LIMIT %d OFFSET %d",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_reports WHERE status = %s ORDER BY date_reported DESC LIMIT %d OFFSET %d",
 				$status,
 				$per_page,
 				$offset
@@ -233,7 +233,7 @@ final class Admin_Moderation {
 
 		$counts = array();
 		foreach ( $allowed_statuses as $s ) {
-			$counts[ $s ] = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}sn_reports WHERE status = %s", $s ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$counts[ $s ] = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_reports WHERE status = %s", $s ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		}
 
 		$total       = $counts[ $status ];
@@ -507,8 +507,8 @@ final class Admin_Moderation {
 
 			case 'group':
 				global $wpdb;
-				$slug = $wpdb->get_var( $wpdb->prepare( "SELECT slug FROM {$wpdb->prefix}sn_groups WHERE id = %d", $item_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$name = $wpdb->get_var( $wpdb->prepare( "SELECT name FROM {$wpdb->prefix}sn_groups WHERE id = %d", $item_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$slug = $wpdb->get_var( $wpdb->prepare( "SELECT slug FROM {$wpdb->prefix}arshid6social_groups WHERE id = %d", $item_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$name = $wpdb->get_var( $wpdb->prepare( "SELECT name FROM {$wpdb->prefix}arshid6social_groups WHERE id = %d", $item_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				if ( ! $slug ) {
 					return null;
 				}
@@ -562,7 +562,7 @@ final class Admin_Moderation {
 
 		global $wpdb;
 		$updated = $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_reports',
+			$wpdb->prefix . 'arshid6social_reports',
 			array(
 				'status'        => $action_type,
 				'date_resolved' => current_time( 'mysql' ),

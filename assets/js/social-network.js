@@ -949,7 +949,7 @@
 				const replyToId     = form.dataset.replyToId || '';
 				const textarea      = form.querySelector( '.arshid6social-comment-input' );
 				const content       = textarea ? textarea.value.trim() : '';
-				const gifInput      = form.querySelector( 'input[name="sn_gif_url"]' );
+				const gifInput      = form.querySelector( 'input[name="arshid6social_gif_url"]' );
 				const gifUrl        = gifInput ? gifInput.value.trim() : '';
 				if ( ! content && ! gifUrl ) return;
 

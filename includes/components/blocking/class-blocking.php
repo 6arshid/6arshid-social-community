@@ -76,7 +76,7 @@ class Blocking {
 			return '';
 		}
 
-		$page   = max( 1, (int) wp_unslash( $_GET['block_page'] ?? 1 ) ); // phpcs:ignore WordPress.Security.NonceVerification -- read-only own-list pagination, no state change.
+		$page   = max( 1, absint( wp_unslash( $_GET['block_page'] ?? 1 ) ) ); // phpcs:ignore WordPress.Security.NonceVerification -- read-only own-list pagination, no state change.
 		$blocks = $friends->get_block_list( $user_id, $page );
 		$loader = \Arshid6Social\Template_Loader::instance();
 
@@ -107,9 +107,9 @@ class Blocking {
 		global $wpdb;
 		$blocked_ids = $wpdb->get_col(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT blocked_id FROM {$wpdb->prefix}sn_blocks WHERE blocker_id = %d
+				"SELECT blocked_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocker_id = %d
 			 UNION
-			 SELECT blocker_id FROM {$wpdb->prefix}sn_blocks WHERE blocked_id = %d",
+			 SELECT blocker_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocked_id = %d",
 				$current_user_id,
 				$current_user_id
 			)
@@ -136,9 +136,9 @@ class Blocking {
 		global $wpdb;
 		$blocked_ids = $wpdb->get_col(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT blocked_id FROM {$wpdb->prefix}sn_blocks WHERE blocker_id = %d
+				"SELECT blocked_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocker_id = %d
 			 UNION
-			 SELECT blocker_id FROM {$wpdb->prefix}sn_blocks WHERE blocked_id = %d",
+			 SELECT blocker_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocked_id = %d",
 				$current,
 				$current
 			)
@@ -167,9 +167,9 @@ class Blocking {
 		global $wpdb;
 		$blocked = $wpdb->get_col(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT blocked_id FROM {$wpdb->prefix}sn_blocks WHERE blocker_id = %d
+				"SELECT blocked_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocker_id = %d
 			 UNION
-			 SELECT blocker_id FROM {$wpdb->prefix}sn_blocks WHERE blocked_id = %d",
+			 SELECT blocker_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocked_id = %d",
 				$current,
 				$current
 			)

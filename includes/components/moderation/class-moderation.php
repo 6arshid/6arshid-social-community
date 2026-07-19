@@ -119,7 +119,7 @@ class Moderation {
 		$activity_ids = array_map(
 			'intval',
 			$wpdb->get_col(
-				$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_activity WHERE user_id = %d", $user_id )
+				$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}arshid6social_activity WHERE user_id = %d", $user_id )
 			) ?: array()
 		);
 
@@ -127,7 +127,7 @@ class Moderation {
 		$story_ids = array_map(
 			'intval',
 			$wpdb->get_col(
-				$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_stories WHERE user_id = %d", $user_id )
+				$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}arshid6social_stories WHERE user_id = %d", $user_id )
 			) ?: array()
 		);
 
@@ -136,8 +136,8 @@ class Moderation {
 			$ph = implode( ',', array_fill( 0, count( $activity_ids ), '%d' ) );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$media_paths = $wpdb->get_col(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$wpdb->prepare( "SELECT file_path FROM {$wpdb->prefix}sn_activity_media WHERE activity_id IN ($ph)", ...$activity_ids )
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
+				$wpdb->prepare( "SELECT file_path FROM {$wpdb->prefix}arshid6social_activity_media WHERE activity_id IN ($ph)", ...$activity_ids )
 			) ?: array();
 			foreach ( $media_paths as $path ) {
 				\Arshid6Social\Media_Handler::delete_file( $path );
@@ -149,8 +149,8 @@ class Moderation {
 			$ph = implode( ',', array_fill( 0, count( $story_ids ), '%d' ) );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$story_paths = $wpdb->get_col(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$wpdb->prepare( "SELECT file_path FROM {$wpdb->prefix}sn_story_items WHERE story_id IN ($ph) AND file_path != ''", ...$story_ids )
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
+				$wpdb->prepare( "SELECT file_path FROM {$wpdb->prefix}arshid6social_story_items WHERE story_id IN ($ph) AND file_path != ''", ...$story_ids )
 			) ?: array();
 			foreach ( $story_paths as $path ) {
 				\Arshid6Social\Media_Handler::delete_file( $path );
@@ -168,7 +168,7 @@ class Moderation {
 		$created_group_ids = array_map(
 			'intval',
 			$wpdb->get_col(
-				$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_groups WHERE creator_id = %d", $user_id )
+				$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}arshid6social_groups WHERE creator_id = %d", $user_id )
 			) ?: array()
 		);
 		foreach ( $created_group_ids as $gid ) {
@@ -198,16 +198,16 @@ class Moderation {
 		// Activity-related (delete child rows before parent).
 		if ( $activity_ids ) {
 			$ph = implode( ',', array_fill( 0, count( $activity_ids ), '%d' ) );
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_activity_media WHERE activity_id IN ($ph)", ...$activity_ids ) );
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_activity_reactions WHERE activity_id IN ($ph)", ...$activity_ids ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}arshid6social_activity_media WHERE activity_id IN ($ph)", ...$activity_ids ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}arshid6social_activity_reactions WHERE activity_id IN ($ph)", ...$activity_ids ) );
 		}
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_activity', array( 'user_id' => $user_id ), array( '%d' ) );
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_activity', array( 'user_id' => $user_id ), array( '%d' ) );
 		// Reactions this user made on other posts.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_activity_reactions', array( 'user_id' => $user_id ), array( '%d' ) );
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_activity_reactions', array( 'user_id' => $user_id ), array( '%d' ) );
 
 		// Story-related.
 		if ( $story_ids ) {
@@ -217,36 +217,36 @@ class Moderation {
 			$item_ids = array_map(
 				'intval',
 				$wpdb->get_col(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-					$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_story_items WHERE story_id IN ($ph)", ...$story_ids )
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
+					$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}arshid6social_story_items WHERE story_id IN ($ph)", ...$story_ids )
 				) ?: array()
 			);
 			if ( $item_ids ) {
 				$iph = implode( ',', array_fill( 0, count( $item_ids ), '%d' ) );
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_story_views WHERE story_item_id IN ($iph)", ...$item_ids ) );
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_story_reactions WHERE story_item_id IN ($iph)", ...$item_ids ) );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
+				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}arshid6social_story_views WHERE story_item_id IN ($iph)", ...$item_ids ) );
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
+				$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}arshid6social_story_reactions WHERE story_item_id IN ($iph)", ...$item_ids ) );
 			}
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}sn_story_items WHERE story_id IN ($ph)", ...$story_ids ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
+			$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}arshid6social_story_items WHERE story_id IN ($ph)", ...$story_ids ) );
 		}
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_stories', array( 'user_id' => $user_id ), array( '%d' ) );
-		$wpdb->delete( $wpdb->prefix . 'sn_story_highlights', array( 'user_id' => $user_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_stories', array( 'user_id' => $user_id ), array( '%d' ) );
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_story_highlights', array( 'user_id' => $user_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		// Views + reactions this user left on other users' stories.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_story_views', array( 'viewer_id' => $user_id ), array( '%d' ) );
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_story_views', array( 'viewer_id' => $user_id ), array( '%d' ) );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_story_reactions', array( 'user_id' => $user_id ), array( '%d' ) );
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_story_reactions', array( 'user_id' => $user_id ), array( '%d' ) );
 
 		// Bidirectional relationship tables.
 		$bidirectional = array(
-			$wpdb->prefix . 'sn_friends'       => array( 'initiator_user_id', 'friend_user_id' ),
-			$wpdb->prefix . 'sn_follow'        => array( 'follower_id', 'followee_id' ),
-			$wpdb->prefix . 'sn_blocks'        => array( 'blocker_id', 'blocked_id' ),
-			$wpdb->prefix . 'sn_close_friends' => array( 'user_id', 'friend_id' ),
-			$wpdb->prefix . 'sn_muted_stories' => array( 'user_id', 'muted_user_id' ),
+			$wpdb->prefix . 'arshid6social_friends'       => array( 'initiator_user_id', 'friend_user_id' ),
+			$wpdb->prefix . 'arshid6social_follow'        => array( 'follower_id', 'followee_id' ),
+			$wpdb->prefix . 'arshid6social_blocks'        => array( 'blocker_id', 'blocked_id' ),
+			$wpdb->prefix . 'arshid6social_close_friends' => array( 'user_id', 'friend_id' ),
+			$wpdb->prefix . 'arshid6social_muted_stories' => array( 'user_id', 'muted_user_id' ),
 		);
 		foreach ( $bidirectional as $table => $columns ) {
 			foreach ( $columns as $col ) {
@@ -257,15 +257,15 @@ class Moderation {
 
 		// Other single-column tables.
 		$simple = array(
-			$wpdb->prefix . 'sn_xprofile_data'         => 'user_id',
-			$wpdb->prefix . 'sn_groups_members'        => 'user_id',
-			$wpdb->prefix . 'sn_messages_recipients'   => 'user_id',
-			$wpdb->prefix . 'sn_messages'              => 'sender_id',
-			$wpdb->prefix . 'sn_notifications'         => 'user_id',
-			$wpdb->prefix . 'sn_reports'               => 'reporter_id',
-			$wpdb->prefix . 'sn_invitations'           => 'inviter_id',
-			$wpdb->prefix . 'sn_verification_requests' => 'user_id',
-			$wpdb->prefix . 'sn_verifications'         => 'user_id',
+			$wpdb->prefix . 'arshid6social_xprofile_data'         => 'user_id',
+			$wpdb->prefix . 'arshid6social_groups_members'        => 'user_id',
+			$wpdb->prefix . 'arshid6social_messages_recipients'   => 'user_id',
+			$wpdb->prefix . 'arshid6social_messages'              => 'sender_id',
+			$wpdb->prefix . 'arshid6social_notifications'         => 'user_id',
+			$wpdb->prefix . 'arshid6social_reports'               => 'reporter_id',
+			$wpdb->prefix . 'arshid6social_invitations'           => 'inviter_id',
+			$wpdb->prefix . 'arshid6social_verification_requests' => 'user_id',
+			$wpdb->prefix . 'arshid6social_verifications'         => 'user_id',
 		);
 		foreach ( $simple as $table => $col ) {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -275,7 +275,7 @@ class Moderation {
 		// Nullify creator_id on groups this user created (orphan rather than cascade-delete).
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->update(
-			$wpdb->prefix . 'sn_groups',
+			$wpdb->prefix . 'arshid6social_groups',
 			array( 'creator_id' => 0 ),
 			array( 'creator_id' => $user_id ),
 			array( '%d' ),
@@ -346,7 +346,7 @@ class Moderation {
 		// Prevent duplicate reports from the same user on the same item.
 		$existing = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT id FROM {$wpdb->prefix}sn_reports WHERE reporter_id = %d AND item_id = %d AND item_type = %s AND status = 'pending'",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_reports WHERE reporter_id = %d AND item_id = %d AND item_type = %s AND status = 'pending'",
 				$reporter_id,
 				$item_id,
 				$item_type
@@ -358,7 +358,7 @@ class Moderation {
 		}
 
 		$result = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_reports',
+			$wpdb->prefix . 'arshid6social_reports',
 			array(
 				'reporter_id'    => $reporter_id,
 				'item_id'        => $item_id,
@@ -431,7 +431,7 @@ class Moderation {
 			}
 
 			$max_size = (int) get_option( 'arshid6social_max_upload_size_mb', 5 ) * 1024 * 1024;
-			if ( (int) ( wp_unslash( $_FILES['attachment']['size'] ?? 0 ) ) > $max_size ) {
+			if ( absint( $_FILES['attachment']['size'] ?? 0 ) > $max_size ) {
 				wp_send_json_error( array( 'message' => __( 'Attachment file is too large.', '6arshid-social-community' ) ), 400 );
 			}
 
@@ -501,7 +501,7 @@ class Moderation {
 
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$rows  = $wpdb->get_col( "SELECT id FROM {$wpdb->prefix}sn_groups WHERE is_suspended = 1" );
+		$rows  = $wpdb->get_col( "SELECT id FROM {$wpdb->prefix}arshid6social_groups WHERE is_suspended = 1" );
 		$cache = array_map( 'intval', $rows ?: array() );
 		return $cache;
 	}
@@ -558,8 +558,8 @@ class Moderation {
 		$row = $wpdb->get_row(
 			$wpdb->prepare(
 				"SELECT a.user_id, med.file_path, med.mime_type
-				 FROM {$wpdb->prefix}sn_activity a
-				 JOIN {$wpdb->prefix}sn_activity_media med ON med.activity_id = a.id
+				 FROM {$wpdb->prefix}arshid6social_activity a
+				 JOIN {$wpdb->prefix}arshid6social_activity_media med ON med.activity_id = a.id
 				 WHERE a.id = %d
 				   AND med.file_path LIKE %s
 				 LIMIT 1",
@@ -611,7 +611,7 @@ class Moderation {
 			global $wpdb;
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$group_row = $wpdb->get_row(
-				$wpdb->prepare( "SELECT is_suspended, creator_id FROM {$wpdb->prefix}sn_groups WHERE id = %d LIMIT 1", (int) $m[1] )
+				$wpdb->prepare( "SELECT is_suspended, creator_id FROM {$wpdb->prefix}arshid6social_groups WHERE id = %d LIMIT 1", (int) $m[1] )
 			);
 			if (
 				$group_row && (
@@ -707,7 +707,7 @@ class Moderation {
 
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$group = $wpdb->get_row( $wpdb->prepare( "SELECT id, name, is_suspended FROM {$wpdb->prefix}sn_groups WHERE id = %d", $group_id ) );
+		$group = $wpdb->get_row( $wpdb->prepare( "SELECT id, name, is_suspended FROM {$wpdb->prefix}arshid6social_groups WHERE id = %d", $group_id ) );
 
 		if ( ! $group ) {
 			wp_send_json_error( array( 'message' => __( 'Group not found.', '6arshid-social-community' ) ), 404 );
@@ -717,7 +717,7 @@ class Moderation {
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->update(
-			$wpdb->prefix . 'sn_groups',
+			$wpdb->prefix . 'arshid6social_groups',
 			array(
 				'is_suspended'   => (int) $new_state,
 				'suspend_reason' => $new_state ? $reason : '',
@@ -758,7 +758,7 @@ class Moderation {
 
 		global $wpdb;
 
-		$report = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}sn_reports WHERE id = %d", $report_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$report = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}arshid6social_reports WHERE id = %d", $report_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		if ( ! $report || 'profile' !== $report->item_type ) {
 			// For now, auto-suspend is based on profile reports (reports of the user themselves).
 			return;
@@ -766,7 +766,7 @@ class Moderation {
 
 		$report_count = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_reports WHERE item_id = %d AND item_type = 'profile' AND status = 'pending'",
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_reports WHERE item_id = %d AND item_type = 'profile' AND status = 'pending'",
 				$report->item_id
 			)
 		);
@@ -835,7 +835,7 @@ class Moderation {
 		global $wpdb;
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_audit_log',
+			$wpdb->prefix . 'arshid6social_audit_log',
 			array(
 				'user_id'      => $user_id,
 				'action'       => sanitize_key( $action ),

@@ -231,7 +231,10 @@ class Members {
 		}
 
 		$user_id = get_current_user_id();
-		$fields  = isset( $_POST['fields'] ) && is_array( $_POST['fields'] ) ? wp_unslash( $_POST['fields'] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification -- nonce already verified above via check_ajax_referer().
+		// Each value is sanitized per field type inside save_profile_data() → sanitize_field_value()
+		// (textarea → wp_kses_post, url → esc_url_raw, email → sanitize_email, etc.), so pre-sanitizing
+		// here would corrupt multi-line/URL fields.
+		$fields  = isset( $_POST['fields'] ) && is_array( $_POST['fields'] ) ? wp_unslash( $_POST['fields'] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce verified above via check_ajax_referer(); values sanitized per-field-type in save_profile_data().
 
 		$errors = $this->xprofile->save_profile_data( $user_id, $fields );
 
@@ -261,26 +264,26 @@ class Members {
 
 		$field_id = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT id FROM {$wpdb->prefix}sn_xprofile_fields WHERE name = %s LIMIT 1",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_xprofile_fields WHERE name = %s LIMIT 1",
 				'bio'
 			)
 		);
 
 		if ( ! $field_id ) {
 			$group_id = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_xprofile_groups ORDER BY group_order ASC LIMIT 1"
+				"SELECT id FROM {$wpdb->prefix}arshid6social_xprofile_groups ORDER BY group_order ASC LIMIT 1"
 			);
 			if ( ! $group_id ) {
 				wp_send_json_error( array( 'message' => __( 'Profile field group not found.', '6arshid-social-community' ) ), 500 );
 			}
 			$max_order = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prepare(
-					"SELECT MAX(field_order) FROM {$wpdb->prefix}sn_xprofile_fields WHERE group_id = %d",
+					"SELECT MAX(field_order) FROM {$wpdb->prefix}arshid6social_xprofile_fields WHERE group_id = %d",
 					$group_id
 				)
 			);
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_xprofile_fields',
+				$wpdb->prefix . 'arshid6social_xprofile_fields',
 				array(
 					'group_id'    => $group_id,
 					'parent_id'   => 0,
@@ -350,7 +353,9 @@ class Members {
 			wp_send_json_error( array( 'message' => __( 'You must be logged in.', '6arshid-social-community' ) ), 401 );
 		}
 
-		// phpcs:disable WordPress.Security.NonceVerification
+		// Passwords are intentionally NOT sanitized (sanitizing corrupts valid passwords); they are
+		// only compared and passed to wp_check_password()/wp_set_password(). Nonce verified above.
+		// phpcs:disable WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$current = isset( $_POST['current_password'] ) ? wp_unslash( $_POST['current_password'] ) : '';
 		$new     = isset( $_POST['new_password'] ) ? wp_unslash( $_POST['new_password'] ) : '';
 		$confirm = isset( $_POST['confirm_password'] ) ? wp_unslash( $_POST['confirm_password'] ) : '';
@@ -634,19 +639,19 @@ class Members {
 
 		// Sync to every xProfile "Name" field so the profile-edit form stays in sync.
 		$name_field_id = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_xprofile_fields WHERE LOWER(name) = 'name' LIMIT 1"
+			"SELECT id FROM {$wpdb->prefix}arshid6social_xprofile_fields WHERE LOWER(name) = 'name' LIMIT 1"
 		);
 		if ( $name_field_id ) {
 			$existing = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prepare(
-					"SELECT id FROM {$wpdb->prefix}sn_xprofile_data WHERE field_id = %d AND user_id = %d",
+					"SELECT id FROM {$wpdb->prefix}arshid6social_xprofile_data WHERE field_id = %d AND user_id = %d",
 					$name_field_id,
 					$user_id
 				)
 			);
 			if ( $existing ) {
 				$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					$wpdb->prefix . 'sn_xprofile_data',
+					$wpdb->prefix . 'arshid6social_xprofile_data',
 					array(
 						'value'        => $display_name,
 						'last_updated' => current_time( 'mysql' ),
@@ -660,7 +665,7 @@ class Members {
 				);
 			} else {
 				$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					$wpdb->prefix . 'sn_xprofile_data',
+					$wpdb->prefix . 'arshid6social_xprofile_data',
 					array(
 						'field_id'     => $name_field_id,
 						'user_id'      => $user_id,
@@ -828,7 +833,7 @@ class Members {
 				global $wpdb;
 				return (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 					$wpdb->prepare(
-						"SELECT COUNT(*) FROM {$wpdb->prefix}sn_friends
+						"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_friends
 						 WHERE (initiator_user_id = %d OR friend_user_id = %d) AND is_confirmed = 1",
 						$user_id,
 						$user_id

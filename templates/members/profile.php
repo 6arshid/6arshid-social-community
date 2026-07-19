@@ -218,7 +218,7 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 							global $wpdb;
 							$current_blocked = (bool) $wpdb->get_var(
 								$wpdb->prepare(
-									"SELECT id FROM {$wpdb->prefix}sn_blocks WHERE blocker_id = %d AND blocked_id = %d",
+									"SELECT id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocker_id = %d AND blocked_id = %d",
 									get_current_user_id(),
 									$profile_user->ID
 								)

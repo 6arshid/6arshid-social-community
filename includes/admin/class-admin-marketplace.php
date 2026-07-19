@@ -205,12 +205,12 @@ final class Admin_Marketplace {
 		}
 
 		// ── Total for pagination ──────────────────────────────────────────────
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 		$total       = (int) $wpdb->get_var(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
 				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_listings l
 			 LEFT JOIN {$wpdb->users} u ON u.ID = l.seller_id
-			 $where",
+			 $where", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders -- placeholders supplied via dynamic $where + spread $params.
 				...$params
 			)
 		);
@@ -230,7 +230,7 @@ final class Admin_Marketplace {
 		           LIMIT %d OFFSET %d";
 
 		$row_params = array_merge( $params, array( $per_page, $offset ) );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 		$listings = $wpdb->get_results( $wpdb->prepare( $select, ...$row_params ) );
 
 		// ── Helpers ───────────────────────────────────────────────────────────

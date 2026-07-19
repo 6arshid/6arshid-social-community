@@ -435,12 +435,13 @@ ENDJS;
 
 		$table = $wpdb->prefix . 'sixarshidsc_transactions';
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		if ( $wpdb->get_var( "SHOW TABLES LIKE '{$table}'" ) !== $table ) {
 			return;
 		}
 
 		// Total income: completed PPV + subscription receipts where user is creator.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- interpolated identifiers are $wpdb->prefix table names / whitelisted clauses; values bound via prepare() placeholders.
 		$total_income = (float) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT COALESCE( SUM( amount - platform_fee ), 0 )
@@ -497,6 +498,7 @@ ENDJS;
 				$user_id
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		?>
 		<div class="arshid6social-card arshid6social-user-settings-card" id="arshid6social-mon-earnings-card">
 			<div class="arshid6social-card__header"><?php esc_html_e( 'Earnings & Transactions', '6arshid-social-community' ); ?></div>
@@ -660,7 +662,7 @@ ENDJS;
 		global $wpdb;
 
 		$transactions_table = $wpdb->prefix . 'sixarshidsc_transactions';
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$table_exists = $wpdb->get_var( "SHOW TABLES LIKE '{$transactions_table}'" ) === $transactions_table;
 
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
@@ -687,17 +689,17 @@ ENDJS;
 		}
 
 		// Count.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$count_sql = "SELECT COUNT(*) FROM {$wpdb->usermeta} um {$join_sql} WHERE {$where_sql}";
 		$total     = (int) ( empty( $vals )
-			? $wpdb->get_var( $count_sql ) // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
-			: $wpdb->get_var( $wpdb->prepare( $count_sql, ...$vals ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+			? $wpdb->get_var( $count_sql ) // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+			: $wpdb->get_var( $wpdb->prepare( $count_sql, ...$vals ) ) ); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
 
 		// Fetch page.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$rows_sql   = "SELECT um.user_id, um.meta_value AS iban_enc FROM {$wpdb->usermeta} um {$join_sql} WHERE {$where_sql} ORDER BY um.user_id ASC LIMIT %d OFFSET %d";
 		$fetch_vals = array_merge( $vals, array( $per_page, $offset ) );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
 		$iban_users = $wpdb->get_results( $wpdb->prepare( $rows_sql, ...$fetch_vals ) );
 
 		$total_pages = (int) ceil( $total / $per_page );
@@ -793,6 +795,7 @@ ENDJS;
 					$pending_tx_id   = 0;
 
 					if ( $table_exists ) {
+						// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- interpolated identifiers are $wpdb->prefix table names / whitelisted clauses; values bound via prepare() placeholders.
 						$income          = (float) $wpdb->get_var(
 							$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 								"SELECT COALESCE( SUM( amount - platform_fee ), 0 ) FROM {$transactions_table}
@@ -815,6 +818,7 @@ ENDJS;
 								$uid
 							)
 						);
+						// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 						$pending_cashout = $pending_row ? (float) $pending_row->amount : 0.0;
 						$pending_tx_id   = $pending_row ? (int) $pending_row->id : 0;
 						$available       = max( 0.0, $income - $paid_out - $pending_cashout );
@@ -996,8 +1000,10 @@ ENDJS;
 		$table = $wpdb->prefix . 'sixarshidsc_transactions';
 
 		// Check there's no pending cashout already.
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- SQL string built from $wpdb->prefix/whitelist identifiers and static clauses; all values bound via $wpdb->prepare() placeholders (never raw user input).
 		$pending = (float) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- table/identifier from $wpdb->prefix or in-code whitelist (never user input); dynamic clauses use bound %d/%s placeholders.
 				"SELECT COALESCE( SUM( amount ), 0 ) FROM {$table} WHERE creator_id = %d AND type = 'payout' AND status = 'pending'",
 				$user_id
 			)
@@ -1007,6 +1013,7 @@ ENDJS;
 		}
 
 		// Recalculate available balance server-side.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- interpolated identifiers are $wpdb->prefix table names / whitelisted clauses; values bound via prepare() placeholders.
 		$total_income = (float) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT COALESCE( SUM( amount - platform_fee ), 0 ) FROM {$table}
@@ -1021,6 +1028,7 @@ ENDJS;
 				$user_id
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$available    = $total_income - $paid_out;
 
 		if ( $available <= 0 ) {

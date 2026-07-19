@@ -95,16 +95,16 @@ class Stories {
 
 		// Basic privacy: guests see only public stories. One bubble per user.
 		if ( ! $viewer_id ) {
-			// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 			$rows = $wpdb->get_results(
 				$wpdb->prepare(
 					"SELECT MIN(s.id) AS id, s.user_id, u.display_name, u.user_login,
 				        MAX(s.expires_at) AS expires_at, MAX(s.created_at) AS created_at,
 				        COUNT(DISTINCT si.id) AS total_items,
 				        COUNT(DISTINCT si.id) AS unseen_count
-				 FROM {$wpdb->prefix}sn_stories s
+				 FROM {$wpdb->prefix}arshid6social_stories s
 				 JOIN {$wpdb->users} u ON u.ID = s.user_id
-				 JOIN {$wpdb->prefix}sn_story_items si ON si.story_id = s.id
+				 JOIN {$wpdb->prefix}arshid6social_story_items si ON si.story_id = s.id
 				 WHERE s.privacy = 'public'
 				   AND s.expires_at > %s
 				   AND s.highlight_id IS NULL
@@ -119,29 +119,29 @@ class Stories {
 		}
 
 		// For logged-in viewers: exclude muted, blocked, suspended, apply privacy rules.
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT MIN(s.id) AS id, s.user_id, u.display_name, u.user_login,
 			        MAX(s.expires_at) AS expires_at, MAX(s.created_at) AS created_at,
 			        COUNT(DISTINCT si.id) AS total_items,
 			        SUM(CASE WHEN sv.viewer_id IS NULL THEN 1 ELSE 0 END) AS unseen_count
-			 FROM {$wpdb->prefix}sn_stories s
+			 FROM {$wpdb->prefix}arshid6social_stories s
 			 JOIN {$wpdb->users} u ON u.ID = s.user_id
-			 JOIN {$wpdb->prefix}sn_story_items si ON si.story_id = s.id
-			 LEFT JOIN {$wpdb->prefix}sn_story_views sv
+			 JOIN {$wpdb->prefix}arshid6social_story_items si ON si.story_id = s.id
+			 LEFT JOIN {$wpdb->prefix}arshid6social_story_views sv
 			       ON sv.story_item_id = si.id AND sv.viewer_id = %d
 			 WHERE s.expires_at > %s
 			   AND s.highlight_id IS NULL
 			   -- exclude blocked users (both directions)
 			   AND s.user_id NOT IN (
-			       SELECT blocked_id FROM {$wpdb->prefix}sn_blocks WHERE blocker_id = %d
+			       SELECT blocked_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocker_id = %d
 			       UNION
-			       SELECT blocker_id FROM {$wpdb->prefix}sn_blocks WHERE blocked_id = %d
+			       SELECT blocker_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocked_id = %d
 			   )
 			   -- exclude muted users
 			   AND s.user_id NOT IN (
-			       SELECT muted_user_id FROM {$wpdb->prefix}sn_muted_stories WHERE user_id = %d
+			       SELECT muted_user_id FROM {$wpdb->prefix}arshid6social_muted_stories WHERE user_id = %d
 			   )
 			   -- exclude suspended users
 			   $suspend_sql
@@ -151,18 +151,18 @@ class Stories {
 			    OR s.user_id = %d
 			    OR (s.privacy = 'close_friends' AND s.close_friends = 1
 			        AND s.user_id IN (
-			            SELECT user_id FROM {$wpdb->prefix}sn_close_friends WHERE friend_id = %d
+			            SELECT user_id FROM {$wpdb->prefix}arshid6social_close_friends WHERE friend_id = %d
 			        ))
 			    OR (s.privacy = 'friends'
 			        AND s.user_id IN (
 			            SELECT IF(initiator_user_id = %d, friend_user_id, initiator_user_id)
-			            FROM {$wpdb->prefix}sn_friends
+			            FROM {$wpdb->prefix}arshid6social_friends
 			            WHERE (initiator_user_id = %d OR friend_user_id = %d)
 			              AND is_confirmed = 1
 			        ))
 			    OR (s.privacy = 'followers'
 			        AND s.user_id IN (
-			            SELECT followee_id FROM {$wpdb->prefix}sn_follow WHERE follower_id = %d
+			            SELECT followee_id FROM {$wpdb->prefix}arshid6social_follow WHERE follower_id = %d
 			        ))
 			   )
 			 GROUP BY s.user_id
@@ -206,7 +206,7 @@ class Stories {
 		global $wpdb;
 		return $wpdb->get_results(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_story_items WHERE story_id = %d ORDER BY sort_order ASC",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_story_items WHERE story_id = %d ORDER BY sort_order ASC",
 				$story_id
 			)
 		) ?: array();
@@ -221,10 +221,10 @@ class Stories {
 		$now = current_time( 'mysql' );
 		return $wpdb->get_results(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT si.* FROM {$wpdb->prefix}sn_story_items si
-			 JOIN {$wpdb->prefix}sn_stories s ON s.id = si.story_id
+				"SELECT si.* FROM {$wpdb->prefix}arshid6social_story_items si
+			 JOIN {$wpdb->prefix}arshid6social_stories s ON s.id = si.story_id
 			 WHERE s.user_id = (
-			     SELECT user_id FROM {$wpdb->prefix}sn_stories WHERE id = %d LIMIT 1
+			     SELECT user_id FROM {$wpdb->prefix}arshid6social_stories WHERE id = %d LIMIT 1
 			 )
 			 AND s.expires_at > %s
 			 AND s.highlight_id IS NULL
@@ -246,7 +246,7 @@ class Stories {
 		return $wpdb->get_results(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT sv.viewer_id, sv.viewed_at, u.display_name, u.user_login
-			 FROM {$wpdb->prefix}sn_story_views sv
+			 FROM {$wpdb->prefix}arshid6social_story_views sv
 			 JOIN {$wpdb->users} u ON u.ID = sv.viewer_id
 			 WHERE sv.story_item_id = %d
 			 ORDER BY sv.viewed_at DESC",
@@ -277,7 +277,7 @@ class Stories {
 		$close        = 'close_friends' === $privacy ? 1 : 0;
 
 		$result = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_stories',
+			$wpdb->prefix . 'arshid6social_stories',
 			array(
 				'user_id'       => $user_id,
 				'privacy'       => in_array( $privacy, array( 'public', 'friends', 'followers', 'close_friends' ), true ) ? $privacy : 'public',
@@ -296,7 +296,7 @@ class Stories {
 
 		foreach ( $items as $order => $item ) {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_story_items',
+				$wpdb->prefix . 'arshid6social_story_items',
 				array(
 					'story_id'      => $story_id,
 					'media_type'    => sanitize_key( $item['media_type'] ?? 'text' ),
@@ -325,7 +325,7 @@ class Stories {
 
 		$story = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_stories WHERE id = %d",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_stories WHERE id = %d",
 				$story_id
 			)
 		);
@@ -347,10 +347,10 @@ class Stories {
 			}
 		}
 
-		$wpdb->delete( $wpdb->prefix . 'sn_story_views', array( 'story_item_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_story_reactions', array( 'story_item_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_story_items', array( 'story_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_stories', array( 'id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_story_views', array( 'story_item_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_story_reactions', array( 'story_item_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_story_items', array( 'story_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_stories', array( 'id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		do_action( 'arshid6social_story_deleted', $story_id, $user_id );
 		return true;
@@ -362,7 +362,7 @@ class Stories {
 		global $wpdb;
 		$wpdb->query(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"INSERT IGNORE INTO {$wpdb->prefix}sn_story_views (story_item_id, viewer_id, viewed_at)
+				"INSERT IGNORE INTO {$wpdb->prefix}arshid6social_story_views (story_item_id, viewer_id, viewed_at)
 			 VALUES (%d, %d, %s)",
 				$story_item_id,
 				$viewer_id,
@@ -381,7 +381,7 @@ class Stories {
 
 		$existing = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_story_reactions WHERE story_item_id = %d AND user_id = %d",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_story_reactions WHERE story_item_id = %d AND user_id = %d",
 				$story_item_id,
 				$user_id
 			)
@@ -389,7 +389,7 @@ class Stories {
 
 		if ( $existing ) {
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_story_reactions',
+				$wpdb->prefix . 'arshid6social_story_reactions',
 				array( 'reaction' => $reaction ),
 				array( 'id' => $existing ),
 				array( '%s' ),
@@ -397,7 +397,7 @@ class Stories {
 			);
 		} else {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_story_reactions',
+				$wpdb->prefix . 'arshid6social_story_reactions',
 				array(
 					'story_item_id' => $story_item_id,
 					'user_id'       => $user_id,
@@ -457,7 +457,7 @@ class Stories {
 		global $wpdb;
 		return (bool) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_close_friends WHERE user_id = %d AND friend_id = %d",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_close_friends WHERE user_id = %d AND friend_id = %d",
 				$user_id,
 				$friend_id
 			)
@@ -470,7 +470,7 @@ class Stories {
 			return true;
 		}
 		return (bool) $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_close_friends',
+			$wpdb->prefix . 'arshid6social_close_friends',
 			array(
 				'user_id'    => $user_id,
 				'friend_id'  => $friend_id,
@@ -483,7 +483,7 @@ class Stories {
 	public function remove_close_friend( int $user_id, int $friend_id ): bool {
 		global $wpdb;
 		return (bool) $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_close_friends',
+			$wpdb->prefix . 'arshid6social_close_friends',
 			array(
 				'user_id'   => $user_id,
 				'friend_id' => $friend_id,
@@ -496,7 +496,7 @@ class Stories {
 		global $wpdb;
 		return $wpdb->get_col(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT friend_id FROM {$wpdb->prefix}sn_close_friends WHERE user_id = %d ORDER BY created_at DESC",
+				"SELECT friend_id FROM {$wpdb->prefix}arshid6social_close_friends WHERE user_id = %d ORDER BY created_at DESC",
 				$user_id
 			)
 		) ?: array();
@@ -508,7 +508,7 @@ class Stories {
 		global $wpdb;
 		return (bool) $wpdb->query(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"INSERT IGNORE INTO {$wpdb->prefix}sn_muted_stories (user_id, muted_user_id, created_at)
+				"INSERT IGNORE INTO {$wpdb->prefix}arshid6social_muted_stories (user_id, muted_user_id, created_at)
 			 VALUES (%d, %d, %s)",
 				$user_id,
 				$muted_user_id,
@@ -520,7 +520,7 @@ class Stories {
 	public function unmute( int $user_id, int $muted_user_id ): bool {
 		global $wpdb;
 		return (bool) $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_muted_stories',
+			$wpdb->prefix . 'arshid6social_muted_stories',
 			array(
 				'user_id'       => $user_id,
 				'muted_user_id' => $muted_user_id,
@@ -534,7 +534,7 @@ class Stories {
 	public function create_highlight( int $user_id, string $title, string $cover_url ): int|false {
 		global $wpdb;
 		$result = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_story_highlights',
+			$wpdb->prefix . 'arshid6social_story_highlights',
 			array(
 				'user_id'    => $user_id,
 				'title'      => sanitize_text_field( $title ),
@@ -551,13 +551,13 @@ class Stories {
 		// Verify ownership of both.
 		$story_owner     = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_stories WHERE id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_stories WHERE id = %d",
 				$story_id
 			)
 		);
 		$highlight_owner = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_story_highlights WHERE id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_story_highlights WHERE id = %d",
 				$highlight_id
 			)
 		);
@@ -565,7 +565,7 @@ class Stories {
 			return false;
 		}
 		return (bool) $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_stories',
+			$wpdb->prefix . 'arshid6social_stories',
 			array( 'highlight_id' => $highlight_id ),
 			array( 'id' => $story_id ),
 			array( '%d' ),
@@ -578,9 +578,9 @@ class Stories {
 		return $wpdb->get_results(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT h.*, COUNT(si.id) AS story_count
-			 FROM {$wpdb->prefix}sn_story_highlights h
-			 LEFT JOIN {$wpdb->prefix}sn_stories s ON s.highlight_id = h.id
-			 LEFT JOIN {$wpdb->prefix}sn_story_items si ON si.story_id = s.id
+			 FROM {$wpdb->prefix}arshid6social_story_highlights h
+			 LEFT JOIN {$wpdb->prefix}arshid6social_stories s ON s.highlight_id = h.id
+			 LEFT JOIN {$wpdb->prefix}arshid6social_story_items si ON si.story_id = s.id
 			 WHERE h.user_id = %d
 			 GROUP BY h.id
 			 ORDER BY h.created_at DESC",
@@ -593,7 +593,7 @@ class Stories {
 		global $wpdb;
 		$owner = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}sn_story_highlights WHERE id = %d",
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_story_highlights WHERE id = %d",
 				$highlight_id
 			)
 		);
@@ -602,14 +602,14 @@ class Stories {
 		}
 		// Detach stories from this highlight.
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_stories',
+			$wpdb->prefix . 'arshid6social_stories',
 			array( 'highlight_id' => null ),
 			array( 'highlight_id' => $highlight_id ),
 			array( '%d' ),
 			array( '%d' )
 		);
 		return (bool) $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_story_highlights',
+			$wpdb->prefix . 'arshid6social_story_highlights',
 			array( 'id' => $highlight_id ),
 			array( '%d' )
 		);
@@ -622,7 +622,7 @@ class Stories {
 
 		// Get expired stories not attached to a highlight.
 		$expired = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			"SELECT id FROM {$wpdb->prefix}sn_stories
+			"SELECT id FROM {$wpdb->prefix}arshid6social_stories
 			 WHERE expires_at <= NOW() AND highlight_id IS NULL"
 		);
 
@@ -637,10 +637,10 @@ class Stories {
 				}
 			}
 
-			$wpdb->delete( $wpdb->prefix . 'sn_story_views', array( 'story_item_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->delete( $wpdb->prefix . 'sn_story_reactions', array( 'story_item_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->delete( $wpdb->prefix . 'sn_story_items', array( 'story_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->delete( $wpdb->prefix . 'sn_stories', array( 'id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->delete( $wpdb->prefix . 'arshid6social_story_views', array( 'story_item_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->delete( $wpdb->prefix . 'arshid6social_story_reactions', array( 'story_item_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->delete( $wpdb->prefix . 'arshid6social_story_items', array( 'story_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->delete( $wpdb->prefix . 'arshid6social_stories', array( 'id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		}
 	}
 
@@ -758,7 +758,7 @@ class Stories {
 		$media_type = sanitize_key( wp_unslash( $_POST['media_type'] ?? 'text' ) );
 		$text       = sanitize_textarea_field( wp_unslash( $_POST['text_content'] ?? '' ) );
 		$bg_color   = sanitize_hex_color( wp_unslash( $_POST['bg_color'] ?? '#2563eb' ) ) ?? '#2563eb';
-		$overlays   = self::sanitize_array_recursive( json_decode( wp_unslash( $_POST['overlays_json'] ?? '[]' ), true ) ?? array() );
+		$overlays   = self::sanitize_array_recursive( json_decode( wp_unslash( $_POST['overlays_json'] ?? '[]' ), true ) ?? array() ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON decoded then fully sanitized by sanitize_array_recursive().
 		$duration   = max( 1, min( 30, absint( $_POST['duration'] ?? 5 ) ) );
 		// phpcs:enable
 
@@ -780,7 +780,7 @@ class Stories {
 				wp_send_json_error( array( 'message' => __( 'Video stories are disabled.', '6arshid-social-community' ) ) );
 			}
 
-			$upload = \Arshid6Social\Media_Handler::handle( $_FILES['media'], $context, $user_id );
+			$upload = \Arshid6Social\Media_Handler::handle( $_FILES['media'], $context, $user_id ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- $_FILES array validated/sanitized by Media_Handler::handle() (MIME, size, re-encode).
 			if ( is_wp_error( $upload ) ) {
 				wp_send_json_error( array( 'message' => $upload->get_error_message() ) );
 			}
@@ -977,7 +977,7 @@ class Stories {
 		global $wpdb;
 		$row = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_stories WHERE id = %d",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_stories WHERE id = %d",
 				$story_id
 			)
 		);
@@ -991,8 +991,8 @@ class Stories {
 		global $wpdb;
 		$row = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT s.* FROM {$wpdb->prefix}sn_stories s
-			 JOIN {$wpdb->prefix}sn_story_items si ON si.story_id = s.id
+				"SELECT s.* FROM {$wpdb->prefix}arshid6social_stories s
+			 JOIN {$wpdb->prefix}arshid6social_story_items si ON si.story_id = s.id
 			 WHERE si.id = %d",
 				$story_item_id
 			)
@@ -1058,8 +1058,8 @@ class Stories {
 		global $wpdb;
 		$result = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT s.user_id FROM {$wpdb->prefix}sn_story_items si
-			 JOIN {$wpdb->prefix}sn_stories s ON s.id = si.story_id
+				"SELECT s.user_id FROM {$wpdb->prefix}arshid6social_story_items si
+			 JOIN {$wpdb->prefix}arshid6social_stories s ON s.id = si.story_id
 			 WHERE si.id = %d",
 				$story_item_id
 			)

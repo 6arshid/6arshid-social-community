@@ -283,16 +283,16 @@ final class Admin {
 
 		$stats = array(
 			'members'  => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->users}" ), // phpcs:ignore WordPress.DB
-			'activity' => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}sn_activity WHERE is_spam = 0" ), // phpcs:ignore WordPress.DB
-			'groups'   => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}sn_groups" ), // phpcs:ignore WordPress.DB
-			'reports'  => (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}sn_reports WHERE status = %s", 'pending' ) ), // phpcs:ignore WordPress.DB
+			'activity' => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_activity WHERE is_spam = 0" ), // phpcs:ignore WordPress.DB
+			'groups'   => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_groups" ), // phpcs:ignore WordPress.DB
+			'reports'  => (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_reports WHERE status = %s", 'pending' ) ), // phpcs:ignore WordPress.DB
 			'products' => (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_listings" ), // phpcs:ignore WordPress.DB
 		);
 
 		if ( get_option( 'arshid6social_verification_enabled', false ) ) {
 			$stats['verifications'] = (int) $wpdb->get_var(
 				$wpdb->prepare( // phpcs:ignore WordPress.DB
-					"SELECT COUNT(*) FROM {$wpdb->prefix}sn_verification_requests WHERE status = %s",
+					"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_verification_requests WHERE status = %s",
 					'pending'
 				)
 			);
@@ -480,7 +480,7 @@ final class Admin {
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'sixarshidsc_transactions';
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		if ( $wpdb->get_var( "SHOW TABLES LIKE '{$table}'" ) !== $table ) {
 			echo '<p class="description">' . esc_html__( 'Transactions table does not exist yet. Enable Monetization and save settings first.', '6arshid-social-community' ) . '</p>';
 			return;
@@ -521,17 +521,17 @@ final class Admin {
 		$join_sql  = "LEFT JOIN {$wpdb->users} pu ON pu.ID = t.payer_id LEFT JOIN {$wpdb->users} cu ON cu.ID = t.creator_id";
 
 		// Count total matching rows.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$count_sql = "SELECT COUNT(*) FROM {$table} t {$join_sql} WHERE {$where_sql}";
 		$total     = (int) ( empty( $where_vals )
-			? $wpdb->get_var( $count_sql ) // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
-			: $wpdb->get_var( $wpdb->prepare( $count_sql, ...$where_vals ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+			? $wpdb->get_var( $count_sql ) // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+			: $wpdb->get_var( $wpdb->prepare( $count_sql, ...$where_vals ) ) ); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
 
 		// Fetch page rows.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$rows_sql   = "SELECT t.*, pu.display_name AS payer_name, pu.user_email AS payer_email, cu.display_name AS creator_name, cu.user_email AS creator_email FROM {$table} t {$join_sql} WHERE {$where_sql} ORDER BY t.id DESC LIMIT %d OFFSET %d";
 		$fetch_vals = array_merge( $where_vals, array( $per_page, $offset ) );
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
 		$rows = $wpdb->get_results( $wpdb->prepare( $rows_sql, ...$fetch_vals ) );
 
 		$total_pages = (int) ceil( $total / $per_page );

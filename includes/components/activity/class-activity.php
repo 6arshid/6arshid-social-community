@@ -88,14 +88,14 @@ class Activity {
 		global $wpdb;
 		$uid = (string) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT uid FROM {$wpdb->prefix}sn_activity WHERE id = %d",
+				"SELECT uid FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d",
 				$activity_id
 			)
 		);
 		if ( '' === $uid ) {
 			$uid = uniqid();
 			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_activity',
+				$wpdb->prefix . 'arshid6social_activity',
 				array( 'uid' => $uid ),
 				array( 'id' => $activity_id ),
 				array( '%s' ),
@@ -113,7 +113,7 @@ class Activity {
 		global $wpdb;
 		return $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT * FROM {$wpdb->prefix}sn_activity WHERE uid = %s",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_activity WHERE uid = %s",
 				$uid
 			)
 		);
@@ -393,7 +393,7 @@ class Activity {
 		// primary_link is set after insert once we have the ID.
 
 		$result = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_activity',
+			$wpdb->prefix . 'arshid6social_activity',
 			array(
 				'user_id'           => absint( $args['user_id'] ),
 				'component'         => sanitize_key( $args['component'] ),
@@ -420,7 +420,7 @@ class Activity {
 
 		// Now that we have the ID, set the canonical permalink as primary_link.
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_activity',
+			$wpdb->prefix . 'arshid6social_activity',
 			array( 'primary_link' => self::get_permalink( $activity_id ) ),
 			array( 'id' => $activity_id ),
 			array( '%s' ),
@@ -431,7 +431,7 @@ class Activity {
 		$ppv_price = (int) ( $args['ppv_price'] ?? 0 );
 		if ( 'paid' === $args['privacy'] && $ppv_price > 0 ) {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_activity_meta',
+				$wpdb->prefix . 'arshid6social_activity_meta',
 				array(
 					'activity_id' => $activity_id,
 					'meta_key'    => '_arshid6social_monetization_ppv_price',
@@ -465,7 +465,7 @@ class Activity {
 
 		global $wpdb;
 		$row = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}sn_activity WHERE id = %d", $activity_id )
+			$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d", $activity_id )
 		);
 		// Store null as false so we can distinguish "not cached" from "not found".
 		\Arshid6Social\Cache::set( $cache_key, $row ?: false, 300 );
@@ -491,7 +491,7 @@ class Activity {
 	 * this collects all IDs up-front and fetches reactions, media, comment counts,
 	 * and view counts with one query each — regardless of page size.
 	 *
-	 * @param object[] $rows Raw DB rows from sn_activity.
+	 * @param object[] $rows Raw DB rows from arshid6social_activity.
 	 * @return array<int, array<string, mixed>>
 	 */
 	private function format_activities_batch( array $rows ): array {
@@ -513,10 +513,10 @@ class Activity {
 		}
 
 		// Batch: reactions grouped by (activity_id, reaction_type).
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
 		$raw_reactions   = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT activity_id, reaction_type, COUNT(*) AS count FROM {$wpdb->prefix}sn_activity_reactions WHERE activity_id IN ($ids_ph) GROUP BY activity_id, reaction_type", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT activity_id, reaction_type, COUNT(*) AS count FROM {$wpdb->prefix}arshid6social_activity_reactions WHERE activity_id IN ($ids_ph) GROUP BY activity_id, reaction_type", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 				...$ids
 			),
 			ARRAY_A
@@ -533,10 +533,10 @@ class Activity {
 		$user_reactions_map = array();
 		if ( is_user_logged_in() ) {
 			$current_user_id = get_current_user_id();
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
 			$own_reactions = $wpdb->get_results(
 				$wpdb->prepare(
-					"SELECT activity_id, reaction_type FROM {$wpdb->prefix}sn_activity_reactions WHERE activity_id IN ($ids_ph) AND user_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					"SELECT activity_id, reaction_type FROM {$wpdb->prefix}arshid6social_activity_reactions WHERE activity_id IN ($ids_ph) AND user_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 					...array_merge( $ids, array( $current_user_id ) )
 				),
 				ARRAY_A
@@ -547,10 +547,10 @@ class Activity {
 		}
 
 		// Batch: media attachments.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
 		$raw_media = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT id, activity_id, media_type, file_url, file_name, mime_type FROM {$wpdb->prefix}sn_activity_media WHERE activity_id IN ($ids_ph) ORDER BY id ASC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT id, activity_id, media_type, file_url, file_name, mime_type FROM {$wpdb->prefix}arshid6social_activity_media WHERE activity_id IN ($ids_ph) ORDER BY id ASC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 				...$ids
 			),
 			ARRAY_A
@@ -567,10 +567,10 @@ class Activity {
 		}
 
 		// Batch: top-level comment counts.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
 		$raw_counts     = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT item_id, COUNT(*) AS cnt FROM {$wpdb->prefix}sn_activity WHERE item_id IN ($ids_ph) AND type = 'activity_comment' AND secondary_item_id = 0 AND is_spam = 0 GROUP BY item_id", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT item_id, COUNT(*) AS cnt FROM {$wpdb->prefix}arshid6social_activity WHERE item_id IN ($ids_ph) AND type = 'activity_comment' AND secondary_item_id = 0 AND is_spam = 0 GROUP BY item_id", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 				...$ids
 			),
 			ARRAY_A
@@ -581,10 +581,10 @@ class Activity {
 		}
 
 		// Batch: view counts from activity_meta.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
 		$raw_views   = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT activity_id, meta_value FROM {$wpdb->prefix}sn_activity_meta WHERE activity_id IN ($ids_ph) AND meta_key = '_view_count'", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT activity_id, meta_value FROM {$wpdb->prefix}arshid6social_activity_meta WHERE activity_id IN ($ids_ph) AND meta_key = '_view_count'", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 				...$ids
 			),
 			ARRAY_A
@@ -712,7 +712,7 @@ class Activity {
 			$slug        = mb_strtolower( $args['hashtag_slug'], 'UTF-8' );
 			$hashtag_row = $wpdb->get_row(
 				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					"SELECT id FROM {$wpdb->prefix}sn_hashtags WHERE slug = %s",
+					"SELECT id FROM {$wpdb->prefix}arshid6social_hashtags WHERE slug = %s",
 					$slug
 				)
 			);
@@ -722,7 +722,7 @@ class Activity {
 					'intval',
 					(array) $wpdb->get_col(
 						$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-							"SELECT object_id FROM {$wpdb->prefix}sn_hashtag_relations WHERE hashtag_id = %d AND object_type = 'activity'",
+							"SELECT object_id FROM {$wpdb->prefix}arshid6social_hashtag_relations WHERE hashtag_id = %d AND object_type = 'activity'",
 							$hashtag_row->id
 						)
 					)
@@ -732,7 +732,7 @@ class Activity {
 					$where[] = '1=0';
 				} else {
 					$ph      = implode( ',', array_fill( 0, count( $hashtag_activity_ids ), '%d' ) );
-					$where[] = "a.id IN ($ph)"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					$where[] = "a.id IN ($ph)"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 					foreach ( $hashtag_activity_ids as $haid ) {
 						$values[] = $haid;
 					}
@@ -750,7 +750,7 @@ class Activity {
 		// Exclude sticky IDs from the regular feed to avoid duplicates.
 		if ( $sticky_ids ) {
 			$ph      = implode( ',', array_fill( 0, count( $sticky_ids ), '%d' ) );
-			$where[] = "a.id NOT IN ($ph)"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$where[] = "a.id NOT IN ($ph)"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 			foreach ( $sticky_ids as $sid ) {
 				$values[] = $sid;
 			}
@@ -760,7 +760,7 @@ class Activity {
 		$exclude_user_ids = array_filter( array_map( 'absint', (array) ( $args['exclude_user_ids'] ?? array() ) ) );
 		if ( $exclude_user_ids ) {
 			$ph      = implode( ',', array_fill( 0, count( $exclude_user_ids ), '%d' ) );
-			$where[] = "a.user_id NOT IN ($ph)"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$where[] = "a.user_id NOT IN ($ph)"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 			foreach ( $exclude_user_ids as $uid ) {
 				$values[] = $uid;
 			}
@@ -770,7 +770,7 @@ class Activity {
 		$exclude_group_ids = array_filter( array_map( 'absint', (array) ( $args['exclude_group_ids'] ?? array() ) ) );
 		if ( $exclude_group_ids ) {
 			$ph      = implode( ',', array_fill( 0, count( $exclude_group_ids ), '%d' ) );
-			$where[] = "NOT (a.component = 'groups' AND a.item_id IN ($ph))"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$where[] = "NOT (a.component = 'groups' AND a.item_id IN ($ph))"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 			foreach ( $exclude_group_ids as $gid ) {
 				$values[] = $gid;
 			}
@@ -786,7 +786,7 @@ class Activity {
 				$followed_user_ids = array_map(
 					'intval',
 					(array) $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-						$wpdb->prepare( "SELECT followee_id FROM {$wpdb->prefix}sn_follow WHERE follower_id = %d", $viewer_id )
+						$wpdb->prepare( "SELECT followee_id FROM {$wpdb->prefix}arshid6social_follow WHERE follower_id = %d", $viewer_id )
 					)
 				);
 
@@ -795,8 +795,8 @@ class Activity {
 					(array) $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 						$wpdb->prepare(
 							"SELECT DISTINCT hr.object_id
-						 FROM {$wpdb->prefix}sn_hashtag_follows hf
-						 INNER JOIN {$wpdb->prefix}sn_hashtag_relations hr ON hr.hashtag_id = hf.hashtag_id AND hr.object_type = 'activity'
+						 FROM {$wpdb->prefix}arshid6social_hashtag_follows hf
+						 INNER JOIN {$wpdb->prefix}arshid6social_hashtag_relations hr ON hr.hashtag_id = hf.hashtag_id AND hr.object_type = 'activity'
 						 WHERE hf.user_id = %d",
 							$viewer_id
 						)
@@ -809,19 +809,19 @@ class Activity {
 					$or_conds = array();
 					if ( $followed_user_ids ) {
 						$ph         = implode( ',', array_fill( 0, count( $followed_user_ids ), '%d' ) );
-						$or_conds[] = "a.user_id IN ($ph)"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+						$or_conds[] = "a.user_id IN ($ph)"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 						foreach ( $followed_user_ids as $fuid ) {
 							$values[] = $fuid;
 						}
 					}
 					if ( $hashtag_activity_ids ) {
 						$ph         = implode( ',', array_fill( 0, count( $hashtag_activity_ids ), '%d' ) );
-						$or_conds[] = "a.id IN ($ph)"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+						$or_conds[] = "a.id IN ($ph)"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 						foreach ( $hashtag_activity_ids as $haid ) {
 							$values[] = $haid;
 						}
 					}
-					$where[] = '(' . implode( ' OR ', $or_conds ) . ')'; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+					$where[] = '(' . implode( ' OR ', $or_conds ) . ')'; // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
 				}
 			}
 		}
@@ -840,12 +840,12 @@ class Activity {
 		$where_sql = implode( ' AND ', $where );
 		$offset    = ( $args['page'] - 1 ) * $args['per_page'];
 
-		$sql = "SELECT SQL_CALC_FOUND_ROWS a.* FROM {$wpdb->prefix}sn_activity a WHERE {$where_sql} ORDER BY a.date_recorded DESC LIMIT %d OFFSET %d";
+		$sql = "SELECT SQL_CALC_FOUND_ROWS a.* FROM {$wpdb->prefix}arshid6social_activity a WHERE {$where_sql} ORDER BY a.date_recorded DESC LIMIT %d OFFSET %d";
 
 		$values[] = $args['per_page'];
 		$values[] = $offset;
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
 		$rows  = $wpdb->get_results( $wpdb->prepare( $sql, $values ) );
 		$total = (int) $wpdb->get_var( 'SELECT FOUND_ROWS()' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
@@ -855,8 +855,8 @@ class Activity {
 		// Prepend sticky posts on the first page — also batch-loaded.
 		if ( $sticky_ids && 1 === (int) $args['page'] ) {
 			$sph          = implode( ',', array_fill( 0, count( $sticky_ids ), '%d' ) );
-			$sticky_rows  = (array) $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
-				$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}sn_activity WHERE id IN ($sph) AND is_spam = 0", ...$sticky_ids ) // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$sticky_rows  = (array) $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
+				$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}arshid6social_activity WHERE id IN ($sph) AND is_spam = 0", ...$sticky_ids ) // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 			);
 			$sticky_items = $this->format_activities_batch( $sticky_rows );
 			foreach ( $sticky_items as &$item ) {
@@ -892,7 +892,7 @@ class Activity {
 
 		$reactions = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT reaction_type, COUNT(*) as count FROM {$wpdb->prefix}sn_activity_reactions WHERE activity_id = %d GROUP BY reaction_type",
+				"SELECT reaction_type, COUNT(*) as count FROM {$wpdb->prefix}arshid6social_activity_reactions WHERE activity_id = %d GROUP BY reaction_type",
 				$activity->id
 			),
 			ARRAY_A
@@ -902,7 +902,7 @@ class Activity {
 		if ( is_user_logged_in() ) {
 			$current_user_reaction = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prepare(
-					"SELECT reaction_type FROM {$wpdb->prefix}sn_activity_reactions WHERE activity_id = %d AND user_id = %d",
+					"SELECT reaction_type FROM {$wpdb->prefix}arshid6social_activity_reactions WHERE activity_id = %d AND user_id = %d",
 					$activity->id,
 					get_current_user_id()
 				)
@@ -911,7 +911,7 @@ class Activity {
 
 		$media_rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT id, media_type, file_url, file_name, mime_type FROM {$wpdb->prefix}sn_activity_media WHERE activity_id = %d ORDER BY id ASC",
+				"SELECT id, media_type, file_url, file_name, mime_type FROM {$wpdb->prefix}arshid6social_activity_media WHERE activity_id = %d ORDER BY id ASC",
 				$activity->id
 			),
 			ARRAY_A
@@ -963,7 +963,7 @@ class Activity {
 
 		$view_count = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT meta_value FROM {$wpdb->prefix}sn_activity_meta WHERE activity_id = %d AND meta_key = '_view_count' LIMIT 1",
+				"SELECT meta_value FROM {$wpdb->prefix}arshid6social_activity_meta WHERE activity_id = %d AND meta_key = '_view_count' LIMIT 1",
 				$activity->id
 			)
 		);
@@ -1024,7 +1024,7 @@ class Activity {
 				global $wpdb;
 				return (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 					$wpdb->prepare(
-						"SELECT COUNT(*) FROM {$wpdb->prefix}sn_activity WHERE item_id = %d AND type = 'activity_comment' AND secondary_item_id = 0 AND is_spam = 0",
+						"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_activity WHERE item_id = %d AND type = 'activity_comment' AND secondary_item_id = 0 AND is_spam = 0",
 						$activity_id
 					)
 				);
@@ -1127,13 +1127,13 @@ class Activity {
 		$delete_ids = array_filter( array_map( 'absint', (array) ( $_POST['delete_media_ids'] ?? array() ) ) ); // phpcs:ignore WordPress.Security.NonceVerification
 		foreach ( $delete_ids as $media_id ) {
 			$media_row = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}sn_activity_media WHERE id = %d AND activity_id = %d", $media_id, $activity_id )
+				$wpdb->prepare( "SELECT * FROM {$wpdb->prefix}arshid6social_activity_media WHERE id = %d AND activity_id = %d", $media_id, $activity_id )
 			);
 			if ( $media_row ) {
 				if ( ! empty( $media_row->file_path ) ) {
 					wp_delete_file( $media_row->file_path );
 				}
-				$wpdb->delete( $wpdb->prefix . 'sn_activity_media', array( 'id' => $media_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$wpdb->delete( $wpdb->prefix . 'arshid6social_activity_media', array( 'id' => $media_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			}
 		}
 
@@ -1144,7 +1144,7 @@ class Activity {
 		}
 
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_activity',
+			$wpdb->prefix . 'arshid6social_activity',
 			array(
 				'content' => $content,
 				'privacy' => $privacy,
@@ -1181,7 +1181,7 @@ class Activity {
 		$media_id = absint( $_POST['media_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 
 		$row = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( "SELECT m.*, a.user_id FROM {$wpdb->prefix}sn_activity_media m JOIN {$wpdb->prefix}sn_activity a ON a.id = m.activity_id WHERE m.id = %d", $media_id )
+			$wpdb->prepare( "SELECT m.*, a.user_id FROM {$wpdb->prefix}arshid6social_activity_media m JOIN {$wpdb->prefix}arshid6social_activity a ON a.id = m.activity_id WHERE m.id = %d", $media_id )
 		);
 
 		if ( ! $row || (int) $row->user_id !== get_current_user_id() ) {
@@ -1193,7 +1193,7 @@ class Activity {
 			// Remove the upload directory if now empty.
 			$this->remove_dir_if_empty( dirname( $row->file_path ) );
 		}
-		$wpdb->delete( $wpdb->prefix . 'sn_activity_media', array( 'id' => $media_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_activity_media', array( 'id' => $media_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		wp_send_json_success( array( 'message' => __( 'Media deleted.', '6arshid-social-community' ) ) );
 	}
@@ -1228,7 +1228,7 @@ class Activity {
 
 		// Delete comments/children first.
 		$children = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}sn_activity WHERE item_id = %d AND type = 'activity_comment'", $activity_id )
+			$wpdb->prepare( "SELECT id FROM {$wpdb->prefix}arshid6social_activity WHERE item_id = %d AND type = 'activity_comment'", $activity_id )
 		);
 		foreach ( $children as $child_id ) {
 			$this->delete( (int) $child_id );
@@ -1236,7 +1236,7 @@ class Activity {
 
 		// Delete media files from disk and table.
 		$media_items   = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( "SELECT file_path FROM {$wpdb->prefix}sn_activity_media WHERE activity_id = %d", $activity_id )
+			$wpdb->prepare( "SELECT file_path FROM {$wpdb->prefix}arshid6social_activity_media WHERE activity_id = %d", $activity_id )
 		);
 		$dir_to_remove = null;
 		foreach ( $media_items as $media ) {
@@ -1251,11 +1251,11 @@ class Activity {
 		if ( $dir_to_remove ) {
 			$this->remove_dir_if_empty( $dir_to_remove );
 		}
-		$wpdb->delete( $wpdb->prefix . 'sn_activity_media', array( 'activity_id' => $activity_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_activity_media', array( 'activity_id' => $activity_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
-		$wpdb->delete( $wpdb->prefix . 'sn_activity_reactions', array( 'activity_id' => $activity_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_activity_meta', array( 'activity_id' => $activity_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$wpdb->delete( $wpdb->prefix . 'sn_activity', array( 'id' => $activity_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_activity_reactions', array( 'activity_id' => $activity_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_activity_meta', array( 'activity_id' => $activity_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->delete( $wpdb->prefix . 'arshid6social_activity', array( 'id' => $activity_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 		$this->invalidate_cache( $activity_id );
 
@@ -1282,7 +1282,7 @@ class Activity {
 
 		$existing = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT id, reaction_type FROM {$wpdb->prefix}sn_activity_reactions WHERE activity_id = %d AND user_id = %d",
+				"SELECT id, reaction_type FROM {$wpdb->prefix}arshid6social_activity_reactions WHERE activity_id = %d AND user_id = %d",
 				$activity_id,
 				$user_id
 			)
@@ -1291,15 +1291,15 @@ class Activity {
 		if ( $existing ) {
 			// Toggle off (or switch type).
 			if ( $existing->reaction_type === $reaction_type ) {
-				$wpdb->delete( $wpdb->prefix . 'sn_activity_reactions', array( 'id' => $existing->id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$wpdb->delete( $wpdb->prefix . 'arshid6social_activity_reactions', array( 'id' => $existing->id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$reacted = false;
 			} else {
-				$wpdb->update( $wpdb->prefix . 'sn_activity_reactions', array( 'reaction_type' => $reaction_type ), array( 'id' => $existing->id ), array( '%s' ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$wpdb->update( $wpdb->prefix . 'arshid6social_activity_reactions', array( 'reaction_type' => $reaction_type ), array( 'id' => $existing->id ), array( '%s' ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$reacted = true;
 			}
 		} else {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_activity_reactions',
+				$wpdb->prefix . 'arshid6social_activity_reactions',
 				array(
 					'activity_id'   => $activity_id,
 					'user_id'       => $user_id,
@@ -1312,7 +1312,7 @@ class Activity {
 		}
 
 		$count = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}sn_activity_reactions WHERE activity_id = %d AND reaction_type = %s", $activity_id, $reaction_type )
+			$wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_activity_reactions WHERE activity_id = %d AND reaction_type = %s", $activity_id, $reaction_type )
 		);
 
 		do_action( 'arshid6social_activity_reacted', $activity_id, $user_id, $reaction_type, $reacted );
@@ -1468,14 +1468,14 @@ class Activity {
 		// Paginate only top-level comments; replies are loaded alongside their parent.
 		$total = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_activity WHERE item_id = %d AND type = 'activity_comment' AND secondary_item_id = 0 AND is_spam = 0",
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_activity WHERE item_id = %d AND type = 'activity_comment' AND secondary_item_id = 0 AND is_spam = 0",
 				$activity_id
 			)
 		);
 
 		$rows = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}sn_activity WHERE item_id = %d AND type = 'activity_comment' AND secondary_item_id = 0 AND is_spam = 0 ORDER BY date_recorded DESC LIMIT %d OFFSET %d",
+				"SELECT * FROM {$wpdb->prefix}arshid6social_activity WHERE item_id = %d AND type = 'activity_comment' AND secondary_item_id = 0 AND is_spam = 0 ORDER BY date_recorded DESC LIMIT %d OFFSET %d",
 				$activity_id,
 				$per_page,
 				$offset
@@ -1489,9 +1489,9 @@ class Activity {
 			// Batch-load ALL replies for these comments in one query.
 			$top_ids    = array_map( static fn( $r ) => (int) $r->id, $rows );
 			$top_ph     = implode( ',', array_fill( 0, count( $top_ids ), '%d' ) );
-			$reply_rows = (array) $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared
+			$reply_rows = (array) $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQLPlaceholders
 				$wpdb->prepare(
-					"SELECT * FROM {$wpdb->prefix}sn_activity WHERE secondary_item_id IN ($top_ph) AND type = 'activity_comment' AND is_spam = 0 ORDER BY date_recorded DESC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					"SELECT * FROM {$wpdb->prefix}arshid6social_activity WHERE secondary_item_id IN ($top_ph) AND type = 'activity_comment' AND is_spam = 0 ORDER BY date_recorded DESC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQLPlaceholders
 					...$top_ids
 				)
 			);
@@ -1600,7 +1600,7 @@ class Activity {
 
 			if ( isset( $moved['file'] ) && ! isset( $moved['error'] ) ) {
 				$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					$wpdb->prefix . 'sn_activity_media',
+					$wpdb->prefix . 'arshid6social_activity_media',
 					array(
 						'activity_id'  => $activity_id,
 						'media_type'   => $media_type,
@@ -1670,7 +1670,7 @@ class Activity {
 		global $wpdb;
 		foreach ( array_unique( $matches[1] ) as $tag ) {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sn_activity_meta',
+				$wpdb->prefix . 'arshid6social_activity_meta',
 				array(
 					'activity_id' => $activity_id,
 					'meta_key'    => 'hashtag',

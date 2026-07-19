@@ -44,13 +44,13 @@ class Admin_Notifications {
 		global $wpdb;
 
 		// Statistics.
-		$total_notifs  = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}sn_notifications" ); // phpcs:ignore
-		$unread_notifs = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}sn_notifications WHERE is_new = 1" ); // phpcs:ignore
-		$users_count   = (int) $wpdb->get_var( "SELECT COUNT(DISTINCT user_id) FROM {$wpdb->prefix}sn_notifications WHERE is_new = 1" ); // phpcs:ignore
+		$total_notifs  = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_notifications" ); // phpcs:ignore
+		$unread_notifs = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_notifications WHERE is_new = 1" ); // phpcs:ignore
+		$users_count   = (int) $wpdb->get_var( "SELECT COUNT(DISTINCT user_id) FROM {$wpdb->prefix}arshid6social_notifications WHERE is_new = 1" ); // phpcs:ignore
 
 		// Per-type counts.
 		$type_counts = $wpdb->get_results( // phpcs:ignore
-			"SELECT component_action, COUNT(*) as cnt FROM {$wpdb->prefix}sn_notifications GROUP BY component_action ORDER BY cnt DESC",
+			"SELECT component_action, COUNT(*) as cnt FROM {$wpdb->prefix}arshid6social_notifications GROUP BY component_action ORDER BY cnt DESC",
 			ARRAY_A
 		) ?: array();
 
@@ -65,7 +65,7 @@ class Admin_Notifications {
 		// Recent 50 notifications for the log.
 		$recent = $wpdb->get_results( // phpcs:ignore
 			"SELECT n.*, u.display_name as recipient_name, s.display_name as sender_name
-			 FROM {$wpdb->prefix}sn_notifications n
+			 FROM {$wpdb->prefix}arshid6social_notifications n
 			 LEFT JOIN {$wpdb->users} u ON u.ID = n.user_id
 			 LEFT JOIN {$wpdb->users} s ON s.ID = n.item_id
 			 ORDER BY n.date_notified DESC
@@ -372,13 +372,13 @@ class Admin_Notifications {
 		global $wpdb;
 
 		if ( ! empty( $_POST['delete_all'] ) ) {
-			$wpdb->query( "DELETE FROM {$wpdb->prefix}sn_notifications" ); // phpcs:ignore
+			$wpdb->query( "DELETE FROM {$wpdb->prefix}arshid6social_notifications" ); // phpcs:ignore
 		} else {
 			$ids = array_map( 'absint', (array) ( $_POST['ids'] ?? array() ) ); // phpcs:ignore
 			if ( $ids ) {
 				$placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
 				$wpdb->query( $wpdb->prepare( // phpcs:ignore
-					"DELETE FROM {$wpdb->prefix}sn_notifications WHERE id IN ($placeholders)", // phpcs:ignore
+					"DELETE FROM {$wpdb->prefix}arshid6social_notifications WHERE id IN ($placeholders)", // phpcs:ignore
 					$ids
 				) );
 			}

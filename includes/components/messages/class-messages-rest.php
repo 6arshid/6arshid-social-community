@@ -109,7 +109,7 @@ class Messages_REST extends \WP_REST_Controller {
 		global $wpdb;
 		return (bool) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sn_messages_recipients WHERE thread_id = %d AND user_id = %d AND is_deleted = 0",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_messages_recipients WHERE thread_id = %d AND user_id = %d AND is_deleted = 0",
 				absint( $request['id'] ),
 				get_current_user_id()
 			)

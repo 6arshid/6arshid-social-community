@@ -143,7 +143,7 @@ class Hashtags_REST {
 		global $wpdb;
 		$hashtag_id = absint( $req['id'] );
 		$wpdb->replace( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_hashtag_follows',
+			$wpdb->prefix . 'arshid6social_hashtag_follows',
 			array(
 				'hashtag_id' => $hashtag_id,
 				'user_id'    => get_current_user_id(),
@@ -157,7 +157,7 @@ class Hashtags_REST {
 	public function unfollow( \WP_REST_Request $req ): \WP_REST_Response {
 		global $wpdb;
 		$wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sn_hashtag_follows',
+			$wpdb->prefix . 'arshid6social_hashtag_follows',
 			array(
 				'hashtag_id' => absint( $req['id'] ),
 				'user_id'    => get_current_user_id(),

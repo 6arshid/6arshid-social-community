@@ -133,11 +133,11 @@ window.ARSHID6SOCIALGifs = ( function () {
 
 		function insertGif( gif ) {
 			// Store chosen GIF data on the form for submission.
-			let input = form.querySelector( 'input[name="sn_gif_url"]' );
+			let input = form.querySelector( 'input[name="arshid6social_gif_url"]' );
 			if ( ! input ) {
 				input = document.createElement( 'input' );
 				input.type = 'hidden';
-				input.name = 'sn_gif_url';
+				input.name = 'arshid6social_gif_url';
 				form.appendChild( input );
 			}
 			input.value = gif.url;

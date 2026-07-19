@@ -121,14 +121,14 @@ class Admin_Verification {
 				global $wpdb;
 				$req = $wpdb->get_row(
 					$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-						"SELECT user_id FROM {$wpdb->prefix}sn_verification_requests WHERE id = %d",
+						"SELECT user_id FROM {$wpdb->prefix}arshid6social_verification_requests WHERE id = %d",
 						$request_id
 					)
 				);
 				if ( $req ) {
 					$verification->revoke( (int) $req->user_id );
 					$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-						$wpdb->prefix . 'sn_verification_requests',
+						$wpdb->prefix . 'arshid6social_verification_requests',
 						array(
 							'status'      => 'revoked',
 							'reviewer_id' => get_current_user_id(),
@@ -180,7 +180,7 @@ class Admin_Verification {
 		$rows = $wpdb->get_results(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT r.*, u.user_login, u.display_name, u.user_email
-			 FROM {$wpdb->prefix}sn_verification_requests r
+			 FROM {$wpdb->prefix}arshid6social_verification_requests r
 			 JOIN {$wpdb->users} u ON u.ID = r.user_id
 			 WHERE r.status = %s
 			 ORDER BY r.created_at DESC
@@ -193,7 +193,7 @@ class Admin_Verification {
 
 		$total = (int) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT COUNT(*) FROM {$wpdb->prefix}sn_verification_requests WHERE status = %s",
+				"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_verification_requests WHERE status = %s",
 				$status
 			)
 		);
@@ -205,7 +205,7 @@ class Admin_Verification {
 		foreach ( array( 'pending', 'approved', 'rejected', 'revoked' ) as $s ) {
 			$tab_counts[ $s ] = (int) $wpdb->get_var(
 				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-					"SELECT COUNT(*) FROM {$wpdb->prefix}sn_verification_requests WHERE status = %s",
+					"SELECT COUNT(*) FROM {$wpdb->prefix}arshid6social_verification_requests WHERE status = %s",
 					$s
 				)
 			);
