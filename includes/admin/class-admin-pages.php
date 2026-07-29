@@ -232,30 +232,6 @@ ENDJS;
 				'example' => '[arshid6social_profile id="5"]',
 			),
 			array(
-				'code'    => '[arshid6social_login_form]',
-				'attrs'   => 'redirect=""',
-				'desc'    => __( 'Displays a styled login form. Hidden when the user is already logged in.', '6arshid-social-community' ),
-				'example' => '[arshid6social_login_form redirect="/members/"]',
-			),
-			array(
-				'code'    => '[arshid6social_register_form]',
-				'attrs'   => '—',
-				'desc'    => __( 'Displays a registration form. Respects the "Allow Registration" setting.', '6arshid-social-community' ),
-				'example' => '[arshid6social_register_form]',
-			),
-			array(
-				'code'    => '[arshid6social_forgot_password]',
-				'attrs'   => '—',
-				'desc'    => __( 'Custom forgot-password form. Sends a reset email linking to the Reset Password page — no wp-login.php.', '6arshid-social-community' ),
-				'example' => '[arshid6social_forgot_password]',
-			),
-			array(
-				'code'    => '[arshid6social_reset_password]',
-				'attrs'   => '—',
-				'desc'    => __( 'Custom reset-password form. Reads the key and login from the email link and sets a new password — no wp-login.php.', '6arshid-social-community' ),
-				'example' => '[arshid6social_reset_password]',
-			),
-			array(
 				'code'    => '[arshid6social_bookmarks]',
 				'attrs'   => 'per_page="20"',
 				'desc'    => __( 'Displays the current user\'s saved posts and bookmarked marketplace listings.', '6arshid-social-community' ),
@@ -410,34 +386,6 @@ ENDJS;
 				'shortcode'   => '[arshid6social_notifications]',
 				'option'      => 'arshid6social_page_notifications',
 				'description' => __( 'Personal notifications feed with customize options', '6arshid-social-community' ),
-			),
-			'register'        => array(
-				'title'       => __( 'Register', '6arshid-social-community' ),
-				'slug'        => 'register',
-				'shortcode'   => '[arshid6social_register_form]',
-				'option'      => 'arshid6social_page_register',
-				'description' => __( 'Member registration form', '6arshid-social-community' ),
-			),
-			'login'           => array(
-				'title'       => __( 'Login', '6arshid-social-community' ),
-				'slug'        => 'login',
-				'shortcode'   => '[arshid6social_login_form]',
-				'option'      => 'arshid6social_page_login',
-				'description' => __( 'Member login form', '6arshid-social-community' ),
-			),
-			'forgot-password' => array(
-				'title'       => __( 'Forgot Password', '6arshid-social-community' ),
-				'slug'        => 'forgot-password',
-				'shortcode'   => '[arshid6social_forgot_password]',
-				'option'      => 'arshid6social_page_forgot_password',
-				'description' => __( 'Password reset request form (no wp-login.php)', '6arshid-social-community' ),
-			),
-			'reset-password'  => array(
-				'title'       => __( 'Reset Password', '6arshid-social-community' ),
-				'slug'        => 'reset-password',
-				'shortcode'   => '[arshid6social_reset_password]',
-				'option'      => 'arshid6social_page_reset_password',
-				'description' => __( 'Set new password via email link (no wp-login.php)', '6arshid-social-community' ),
 			),
 		);
 

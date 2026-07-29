@@ -208,7 +208,7 @@ A complete, secure, responsive, multilingual social network plugin for WordPress
 * Component-based architecture — enable or disable each feature independently
 * Template override support — copy any template to `{theme}/social-network/`
 * Gutenberg blocks — Activity Feed, Member Directory, Group List
-* Shortcodes — `[arshid6social_activity]`, `[arshid6social_members]`, `[arshid6social_groups]`, `[arshid6social_messages]`, `[arshid6social_notifications]`, `[arshid6social_profile]`, `[arshid6social_login_form]`, `[arshid6social_register_form]`, `[arshid6social_bookmarks]`, `[arshid6social_trending_hashtags]`, `[arshid6social_stories_tray]`, `[arshid6social_verification_request]`, `[arshid6social_block_list]`
+* Shortcodes — `[arshid6social_activity]`, `[arshid6social_members]`, `[arshid6social_groups]`, `[arshid6social_messages]`, `[arshid6social_notifications]`, `[arshid6social_profile]`, `[arshid6social_bookmarks]`, `[arshid6social_trending_hashtags]`, `[arshid6social_stories_tray]`, `[arshid6social_verification_request]`, `[arshid6social_block_list]`
 
 = Multilingual =
 
@@ -283,7 +283,7 @@ Developers can use the `arshid6social_xprofile_groups` and `arshid6social_xprofi
 Yes. Hook into `arshid6social_loaded` to register custom components, and use `arshid6social_settings_tabs` to add your own settings tab.
 
 = What shortcodes are available? =
-`[arshid6social_activity]`, `[arshid6social_members]`, `[arshid6social_groups]`, `[arshid6social_messages]`, `[arshid6social_notifications]`, `[arshid6social_profile]`, `[arshid6social_login_form]`, `[arshid6social_register_form]`, `[arshid6social_bookmarks]`, `[arshid6social_trending_hashtags]`, `[arshid6social_stories_tray]`, `[arshid6social_verification_request]`, `[arshid6social_block_list]`
+`[arshid6social_activity]`, `[arshid6social_members]`, `[arshid6social_groups]`, `[arshid6social_messages]`, `[arshid6social_notifications]`, `[arshid6social_profile]`, `[arshid6social_bookmarks]`, `[arshid6social_trending_hashtags]`, `[arshid6social_stories_tray]`, `[arshid6social_verification_request]`, `[arshid6social_block_list]`
 
 = Is the REST API available to external apps? =
 Yes. The REST API at `/wp-json/arshid6social/v1/` covers activity, members, friends, groups, messages, notifications, bookmarks, hashtags, polls, tags, sharing, sticky posts, and attachments.

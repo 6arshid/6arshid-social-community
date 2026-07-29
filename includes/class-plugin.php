@@ -59,7 +59,7 @@ final class Plugin {
 		$this->load_blocks_and_shortcodes();
 		$this->maybe_flush_rewrite_rules();
 		$this->load_nav_hooks();
-		$this->ensure_auth_page_templates();
+		$this->ensure_home_page_template();
 
 		do_action( 'arshid6social_loaded', $this );
 	}
@@ -191,8 +191,6 @@ final class Plugin {
 	 * Fires REST route registration on each active component.
 	 */
 	public function register_rest_routes(): void {
-		( new REST\Auth_Controller() )->register_routes();
-
 		foreach ( $this->components as $component ) {
 			if ( method_exists( $component, 'register_rest_routes' ) ) {
 				$component->register_rest_routes();
@@ -300,12 +298,8 @@ final class Plugin {
 		// Block-editor navigation (Gutenberg core/navigation-link blocks).
 		add_filter( 'render_block', array( $this, 'filter_block_nav_by_auth' ), 10, 2 );
 
-		// Redirect dashboard page → user profile (logged in) or login page (guest).
-		// Redirect login page → user profile when already logged in.
+		// Redirect dashboard page to the right WordPress destination.
 		add_action( 'template_redirect', array( $this, 'handle_auth_page_redirects' ) );
-
-		// After login, redirect to the activity page.
-		add_filter( 'login_redirect', array( $this, 'redirect_after_login' ), 10, 3 );
 
 		// Add body class on the home splash page so CSS can target it.
 		add_filter( 'body_class', array( $this, 'home_splash_body_class' ) );
@@ -330,10 +324,6 @@ final class Plugin {
 					array_map(
 						'intval',
 						array(
-							get_option( 'arshid6social_page_login', 0 ),
-							get_option( 'arshid6social_page_register', 0 ),
-							get_option( 'arshid6social_page_forgot_password', 0 ),
-							get_option( 'arshid6social_page_reset_password', 0 ),
 							get_option( 'arshid6social_page_home', 0 ),
 						)
 					)
@@ -372,8 +362,8 @@ final class Plugin {
 	public function filter_nav_by_auth( array $items, $args ): array {
 		$logged_in = is_user_logged_in();
 
-		// Slugs that are guest-only (Login, Register, Forgot/Reset Password, Home splash).
-		$guest_slugs = array( 'login', 'register', 'forgot-password', 'reset-password', 'home' );
+		// Slugs that are guest-only.
+		$guest_slugs = array( 'home' );
 
 		// Slugs that are member-only.
 		$member_slugs = array( 'activity', 'dashboard', 'groups', 'messages', 'notifications', 'saved-posts' );
@@ -494,7 +484,7 @@ final class Plugin {
 		$segments = array_filter( explode( '/', $path ) );
 		$slug     = strtolower( (string) ( end( $segments ) ?: '' ) );
 
-		$guest_slugs  = array( 'login', 'register' );
+		$guest_slugs  = array( 'home' );
 		$member_slugs = array( 'activity', 'dashboard', 'groups', 'messages', 'notifications', 'saved-posts' );
 
 		$page_id    = (int) ( $block['attrs']['id'] ?? 0 );
@@ -521,21 +511,16 @@ final class Plugin {
 	}
 
 	/**
-	 * Writes _wp_page_template = 'no-sidebars' directly to the DB for all auth
-	 * pages so the block theme uses the full-width template — same as login.
+	 * Writes _wp_page_template for the plugin home splash page.
 	 * Runs once per plugin version change.
 	 */
-	private function ensure_auth_page_templates(): void {
+	private function ensure_home_page_template(): void {
 		if ( get_option( 'arshid6social_auth_tpl_ver' ) === ARSHID6SOCIAL_VERSION ) {
 			return;
 		}
 
 		$options = array(
-			'arshid6social_page_login'           => 'no-sidebars',
-			'arshid6social_page_register'        => 'no-sidebars',
-			'arshid6social_page_forgot_password' => 'no-sidebars',
-			'arshid6social_page_reset_password'  => 'no-sidebars',
-			'arshid6social_page_home'            => 'home-splash',
+			'arshid6social_page_home' => 'home-splash',
 		);
 
 		foreach ( $options as $opt => $tpl ) {
@@ -552,8 +537,6 @@ final class Plugin {
 	 * Redirects auth-aware pages at the right time (before output).
 	 */
 	public function handle_auth_page_redirects(): void {
-		$page_ids     = self::get_auth_page_ids();
-		$login_id     = (int) get_option( 'arshid6social_page_login', 0 );
 		$dashboard_id = (int) get_option( 'arshid6social_page_dashboard', 0 );
 		$home_id      = (int) get_option( 'arshid6social_page_home', 0 );
 
@@ -571,51 +554,14 @@ final class Plugin {
 				$user = wp_get_current_user();
 				wp_safe_redirect( home_url( '/members/' . $user->user_nicename . '/' ) );
 			} else {
-				$url = $login_id ? get_permalink( $login_id ) : wp_login_url( get_permalink() );
-				wp_safe_redirect( $url );
+				wp_safe_redirect( wp_login_url( get_permalink() ) );
 			}
 			exit;
 		}
-
-		// Login page: send already-logged-in users to their profile.
-		if ( $login_id && is_page( $login_id ) && is_user_logged_in() ) {
-			$user = wp_get_current_user();
-			wp_safe_redirect( add_query_arg( 'arshid6social_notice', 'logout_first', home_url( '/members/' . $user->user_nicename . '/' ) ) );
-			exit;
-		}
-
-		// Register, forgot-password, reset-password: redirect logged-in users away with a notice.
-		if ( is_user_logged_in() ) {
-			$register_id = (int) get_option( 'arshid6social_page_register', 0 );
-			$forgot_id   = (int) get_option( 'arshid6social_page_forgot_password', 0 );
-			$reset_id    = (int) get_option( 'arshid6social_page_reset_password', 0 );
-
-			$guest_only_pages = array_filter( array( $register_id, $forgot_id, $reset_id ) );
-
-			if ( $guest_only_pages && is_page( $guest_only_pages ) ) {
-				$activity_id = (int) get_option( 'arshid6social_page_activity', 0 );
-				$url         = $activity_id ? get_permalink( $activity_id ) : home_url( '/' );
-				wp_safe_redirect( add_query_arg( 'arshid6social_notice', 'logout_first', $url ) );
-				exit;
-			}
-		}
-	}
-
-	public function redirect_after_login( string $redirect_to, string $requested_redirect_to, $user ): string {
-		if ( ! ( $user instanceof \WP_User ) ) {
-			return $redirect_to;
-		}
-
-		$activity_id = (int) get_option( 'arshid6social_page_activity', 0 );
-		if ( $activity_id ) {
-			return get_permalink( $activity_id );
-		}
-
-		return $redirect_to;
 	}
 
 	/**
-	 * Adds body classes for the cinematic splash pages (home, login, register, etc.)
+	 * Adds body classes for the cinematic home splash page
 	 * so CSS can hide the sidebar and strip theme chrome.
 	 *
 	 * @param string[] $classes
@@ -624,10 +570,6 @@ final class Plugin {
 	public function home_splash_body_class( array $classes ): array {
 		$splash_options = array(
 			'arshid6social_page_home',
-			'arshid6social_page_login',
-			'arshid6social_page_register',
-			'arshid6social_page_forgot_password',
-			'arshid6social_page_reset_password',
 		);
 
 		foreach ( $splash_options as $opt ) {

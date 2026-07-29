@@ -193,9 +193,8 @@ ENDJS;
 
 		return array(
 			'arshid6social_general'       => array(
-				'arshid6social_allow_registration' => $bool,
-				'arshid6social_date_format'        => $this->enum_schema( array( 'relative', 'absolute', 'jalali' ), 'relative' ),
-				'arshid6social_invitation_limit'   => $int,
+				'arshid6social_date_format'      => $this->enum_schema( array( 'relative', 'absolute', 'jalali' ), 'relative' ),
+				'arshid6social_invitation_limit' => $int,
 			),
 			'arshid6social_components'    => array(
 				'arshid6social_enabled_components'   => $this->choices_schema( array( 'activity', 'groups', 'friends', 'messages', 'notifications', 'moderation' ) ),
@@ -579,16 +578,6 @@ ENDJS;
 	private function render_general_tab(): void {
 		?>
 		<table class="form-table" role="presentation">
-			<tr>
-				<th scope="row"><?php esc_html_e( 'Allow Registration', '6arshid-social-community' ); ?></th>
-				<td>
-					<label>
-						<input type="checkbox" name="arshid6social_allow_registration" value="1"
-							<?php checked( get_option( 'arshid6social_allow_registration', true ) ); ?> />
-						<?php esc_html_e( 'Allow new users to register on the social network.', '6arshid-social-community' ); ?>
-					</label>
-				</td>
-			</tr>
 			<tr>
 				<th scope="row"><?php esc_html_e( 'Date Format', '6arshid-social-community' ); ?></th>
 				<td>
