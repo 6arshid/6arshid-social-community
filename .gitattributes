@@ -1,5 +1,5 @@
-# Files excluded from `git archive` exports (used by bin/make-dist.sh to build the
-# distributed plugin zip). These are dev-only and must never ship to WordPress.org.
+# Files excluded from `git archive` exports. These are dev-only and must never
+# ship to WordPress.org.
 
 /.git*           export-ignore
 /.github/        export-ignore

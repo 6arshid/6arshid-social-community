@@ -1,6 +1,6 @@
 # Files and directories that must NOT ship in the distributed plugin zip.
-# Consumed by the WordPress.org deploy tooling (e.g. 10up/action-wordpress-plugin-deploy)
-# and by bin/make-dist.sh. Syntax is gitignore-style.
+# Consumed by the WordPress.org deploy tooling (e.g. 10up/action-wordpress-plugin-deploy).
+# Syntax is gitignore-style.
 
 # Version control / CI
 /.git

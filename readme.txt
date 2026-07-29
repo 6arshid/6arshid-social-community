@@ -471,7 +471,7 @@ The development-only Bootstrap Icons download helper in the build directory down
 * Consistency: migrated all custom database tables from the legacy `sn_` secondary prefix to the plugin's standard `arshid6social_` prefix. Existing sites are upgraded automatically and losslessly via an idempotent `RENAME TABLE` migration on update; fresh installs create the new table names directly.
 * Consistency: renamed the remaining client-side `sn_*` form-field names (GIF and attachment staging fields) to the `arshid6social_*` prefix. No stored data or request payloads are affected.
 * Fixed broken third-party Terms/Privacy links in the External Services documentation.
-* Packaging: the development-only `build/` tooling is now excluded from the distributed plugin via `.distignore` / `.gitattributes` and a `bin/make-dist.sh` build script.
+* Packaging: the development-only `build/` tooling is excluded from the distributed plugin via `.distignore` / `.gitattributes`.
 
 = 1.7.0 =
 * Renamed plugin to 6Arshid Social Community with a consistent `6arshid-social-community` slug/text domain and `arshid6social` code prefix throughout.
