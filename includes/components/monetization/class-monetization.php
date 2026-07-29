@@ -36,9 +36,7 @@ class Monetization {
 		try {
 			Monetization_DB::maybe_upgrade();
 		} catch ( \Throwable $e ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[ARSHID6SOCIAL Monetization] DB upgrade failed: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			}
+			arshid6social_debug_log( 'Monetization database upgrade failed.' );
 		}
 
 		// Creator payout settings section + transaction list on member settings page.

@@ -116,9 +116,7 @@ class Search_REST {
 					return self::EMPTY;
 			}
 		} catch ( \Throwable $e ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[arshid6social-search] ' . $section . ': ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			}
+			arshid6social_debug_log( 'Search request failed for section: ' . sanitize_key( (string) $section ) );
 			return self::EMPTY;
 		}
 	}

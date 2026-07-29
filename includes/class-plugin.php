@@ -52,8 +52,6 @@ final class Plugin {
 	 */
 	private function init(): void {
 		require_once ARSHID6SOCIAL_INCLUDES_DIR . 'functions.php';
-		$this->load_i18n();
-		add_action( 'init', array( $this, 'load_i18n' ), 1 );
 		$this->load_services();
 		$this->load_components();
 		$this->load_admin();
@@ -104,17 +102,6 @@ final class Plugin {
 			static function () {
 				flush_rewrite_rules( false );
 			}
-		);
-	}
-
-	/**
-	 * Loads the plugin text domain for translations.
-	 */
-	public function load_i18n(): void {
-		load_plugin_textdomain(
-			ARSHID6SOCIAL_TEXT_DOMAIN,
-			false,
-			dirname( ARSHID6SOCIAL_PLUGIN_BASENAME ) . '/languages'
 		);
 	}
 

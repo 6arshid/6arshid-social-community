@@ -644,9 +644,7 @@ class Activity {
 			try {
 				$formatted = (array) apply_filters( 'arshid6social_format_activity', $formatted, $activity );
 			} catch ( \Throwable $e ) {
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					error_log( '[WPSN] arshid6social_format_activity filter error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-				}
+				arshid6social_debug_log( 'Activity format filter failed.' );
 			}
 
 			$results[] = $formatted;
@@ -1001,9 +999,7 @@ class Activity {
 		try {
 			$formatted = (array) apply_filters( 'arshid6social_format_activity', $formatted, $activity );
 		} catch ( \Throwable $e ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[WPSN] arshid6social_format_activity filter error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			}
+			arshid6social_debug_log( 'Activity format filter failed.' );
 		}
 		return $formatted;
 	}

@@ -186,14 +186,7 @@ class Members {
 							true
 						);
 					} catch ( \Throwable $e ) {
-						$log = sprintf(
-							"[WPSN Profile Error] %s in %s on line %d\nTrace: %s\n",
-							$e->getMessage(),
-							$e->getFile(),
-							$e->getLine(),
-							$e->getTraceAsString()
-						);
-						error_log( $log ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
+						arshid6social_debug_log( 'Profile template render failed.' );
 						if ( current_user_can( 'manage_options' ) ) {
 							return '<div style="background:#fee2e2;border:1px solid #fca5a5;color:#991b1b;padding:1rem;border-radius:8px;margin:1rem;font-family:monospace;white-space:pre-wrap;">'
 								. '<strong>Profile Error (admin only):</strong>' . "\n"

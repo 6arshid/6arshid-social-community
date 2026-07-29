@@ -7,6 +7,26 @@
 
 defined( 'ABSPATH' ) || exit;
 
+if ( ! function_exists( 'arshid6social_debug_log' ) ) {
+	/**
+	 * Writes plugin diagnostics only when explicitly enabled by an administrator.
+	 *
+	 * @param string $message Non-sensitive diagnostic message.
+	 */
+	function arshid6social_debug_log( string $message ): void {
+		if ( ! get_option( 'arshid6social_enable_debug_log', false ) ) {
+			return;
+		}
+
+		$message = sanitize_text_field( $message );
+		if ( '' === $message ) {
+			return;
+		}
+
+		do_action( 'arshid6social_debug_log', $message );
+	}
+}
+
 /**
  * Returns true if either user has blocked the other (bidirectional).
  * Single source of truth — used everywhere: activity queries, REST callbacks, messaging.

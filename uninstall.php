@@ -14,7 +14,8 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-global $wpdb;
+( static function (): void {
+	global $wpdb;
 
 // ── Drop core tables ───────────────────────────────────────────────────────
 $core_tables = array(
@@ -315,3 +316,4 @@ if ( is_dir( $sn_dir ) ) {
 
 // ── Flush rewrite rules ────────────────────────────────────────────────────
 flush_rewrite_rules();
+} )();

@@ -653,11 +653,13 @@ class Stories {
 			}
 
 			$placeholders = implode( ', ', array_fill( 0, count( $visible_story_ids ), '%d' ) );
+			$count_sql = "SELECT COUNT(id) FROM {$wpdb->prefix}arshid6social_story_items WHERE story_id IN ($placeholders)";
+			$count_args = array_map( 'intval', $visible_story_ids );
 			// phpcs:disable WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 			$visible_count = (int) $wpdb->get_var(
 				$wpdb->prepare(
-					"SELECT COUNT(id) FROM {$wpdb->prefix}arshid6social_story_items WHERE story_id IN ($placeholders)",
-					...$visible_story_ids
+					$count_sql,
+					$count_args
 				)
 			);
 			// phpcs:enable

@@ -59,10 +59,7 @@ class Engagement {
 			try {
 				$this->features[ $key ] = new $class();
 			} catch ( \Throwable $e ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					error_log( '[WPSN Engagement] Failed to load feature "' . $key . '": ' . $e->getMessage() );
-				}
+				arshid6social_debug_log( 'Engagement feature load failed: ' . sanitize_key( $key ) );
 			}
 		}
 
@@ -73,9 +70,7 @@ class Engagement {
 					$this->features['advanced_polls'] = new Features\Advanced_Polls();
 				}
 			} catch ( \Throwable $e ) {
-				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					error_log( '[WPSN Engagement] Failed to load advanced_polls: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-				}
+				arshid6social_debug_log( 'Engagement advanced polls load failed.' );
 			}
 		}
 	}

@@ -40,9 +40,7 @@ class Polls {
 				$formatted['poll'] = $this->get_results( (int) $poll->id, get_current_user_id() );
 			}
 		} catch ( \Throwable $e ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[WPSN Polls] add_poll_to_activity error: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			}
+			arshid6social_debug_log( 'Poll data could not be added to an activity response.' );
 		}
 		return $formatted;
 	}

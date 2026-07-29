@@ -95,8 +95,7 @@ class Share_Posts_REST {
 				201
 			);
 		} catch ( \Throwable $e ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			error_log( '[WPSN Share] ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() );
+			arshid6social_debug_log( 'REST share request failed.' );
 			return new \WP_REST_Response(
 				array( 'message' => __( 'Could not share this post.', '6arshid-social-community' ) ),
 				500

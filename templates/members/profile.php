@@ -15,6 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
+( static function () use ( $component, $profile_user, $active_tab ): void {
 $xprofile   = $component->xprofile;
 $avatar     = $component->avatar;
 $cover_url  = $avatar->get_cover_url( $profile_user->ID );
@@ -441,3 +442,4 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 <?php if ( is_user_logged_in() && ! $is_self ) : ?>
 	<?php arshid6social_report_modal(); ?>
 <?php endif; ?>
+<?php } )(); ?>

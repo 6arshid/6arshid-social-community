@@ -535,7 +535,7 @@ class Moderation {
 	 * path resolution and object-level visibility checks.
 	 */
 	public function serve_media_file(): void {
-		$raw_uri  = isset( $_GET['arshid6social_uri'] ) ? (string) wp_unslash( $_GET['arshid6social_uri'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+		$raw_uri  = isset( $_GET['arshid6social_uri'] ) ? sanitize_text_field( wp_unslash( $_GET['arshid6social_uri'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
 		$resolved = $this->resolve_social_media_request( $raw_uri );
 
 		if ( ! $resolved ) {
@@ -590,39 +590,35 @@ class Moderation {
 		if ( str_contains( $decoded, "\0" ) ) {
 			return null;
 		}
+		if ( function_exists( 'mb_check_encoding' ) && ! mb_check_encoding( $decoded, 'UTF-8' ) ) {
+			return null;
+		}
+		if ( preg_match( '#(?:^[a-z][a-z0-9+.-]*:|^//|^[a-z]:)#i', $decoded ) ) {
+			return null;
+		}
+		if ( str_contains( $decoded, '\\' ) || str_contains( $decoded, '//' ) ) {
+			return null;
+		}
 
 		$url_parts = wp_parse_url( $decoded );
-		if ( false === $url_parts ) {
+		if ( false === $url_parts || ! empty( $url_parts['scheme'] ) || ! empty( $url_parts['host'] ) ) {
 			return null;
 		}
 
 		$upload_dir = wp_upload_dir();
-		if ( ! empty( $url_parts['host'] ) ) {
-			$allowed_hosts = array_filter(
-				array(
-					wp_parse_url( home_url( '/' ), PHP_URL_HOST ),
-					wp_parse_url( $upload_dir['baseurl'], PHP_URL_HOST ),
-				)
-			);
-			if ( ! in_array( strtolower( $url_parts['host'] ), array_map( 'strtolower', $allowed_hosts ), true ) ) {
-				return null;
-			}
-		}
-
 		$path = isset( $url_parts['path'] ) ? (string) $url_parts['path'] : $decoded;
 		$path = wp_normalize_path( $path );
-		if ( str_contains( $path, '\\' ) || preg_match( '#(?:^|/)\.\.(?:/|$)#', $path ) ) {
+		if ( str_contains( $path, '\\' ) || str_contains( $path, '//' ) || preg_match( '#(?:^|/)\.\.?(?:/|$)#', $path ) ) {
 			return null;
 		}
 
 		$needle = '/social-network/';
 		$pos    = strpos( $path, $needle );
-		if ( false === $pos ) {
+		$rel_path = false === $pos ? ltrim( $path, '/' ) : ltrim( substr( $path, $pos + strlen( $needle ) ), '/' );
+		if ( '' === $rel_path || str_contains( $rel_path, '//' ) || preg_match( '#(?:^|/)\.\.?(?:/|$)#', $rel_path ) ) {
 			return null;
 		}
-
-		$rel_path = ltrim( substr( $path, $pos + strlen( $needle ) ), '/' );
-		if ( '' === $rel_path || preg_match( '#(?:^|/)\.\.(?:/|$)#', $rel_path ) ) {
+		if ( ! preg_match( '#^(?:activity|stories|verification-docs|users|groups)/[A-Za-z0-9._/-]+$#', $rel_path ) ) {
 			return null;
 		}
 

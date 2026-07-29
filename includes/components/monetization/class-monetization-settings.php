@@ -27,9 +27,7 @@ class Monetization_Settings {
 		try {
 			Monetization_DB::maybe_upgrade();
 		} catch ( \Throwable $e ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[ARSHID6SOCIAL Monetization] DB upgrade failed: ' . $e->getMessage() );
-			}
+			arshid6social_debug_log( 'Monetization database upgrade failed.' );
 		}
 
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
@@ -138,9 +136,7 @@ class Monetization_Settings {
 							// If encryption returned empty (failure), keep existing value.
 							return ( '' !== $encrypted ) ? $encrypted : (string) get_option( $opt, '' );
 						} catch ( \Throwable $e ) {
-							if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-								error_log( '[ARSHID6SOCIAL Monetization] Key save failed for ' . $opt . ': ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-							}
+							arshid6social_debug_log( 'Monetization key save failed for option: ' . sanitize_key( $opt ) );
 							return (string) get_option( $opt, '' );
 						}
 					},

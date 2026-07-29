@@ -72,9 +72,7 @@ class Monetization_Crypto {
 				}
 			}
 		} catch ( \Throwable $e ) {
-			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				error_log( '[ARSHID6SOCIAL Monetization] Encryption failed: ' . $e->getMessage() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
-			}
+			arshid6social_debug_log( 'Monetization encryption failed.' );
 		}
 
 		return '';
