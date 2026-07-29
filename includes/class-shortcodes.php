@@ -662,22 +662,22 @@ class Shortcodes {
 		ob_start();
 		$this->splash_wrap_start( __( 'Sign in', '6arshid-social-community' ) );
 		?>
-		<?php
-		wp_login_form(
-			array(
-				'redirect'       => $redirect,
-				'label_username' => __( 'Username or Email', '6arshid-social-community' ),
-				'label_password' => __( 'Password', '6arshid-social-community' ),
-				'label_remember' => __( 'Remember Me', '6arshid-social-community' ),
-				'label_log_in'   => __( 'Log In', '6arshid-social-community' ),
-				'id_username'    => 'arshid6social-login-username',
-				'id_password'    => 'arshid6social-login-password',
-				'id_remember'    => 'arshid6social-login-remember',
-				'id_submit'      => 'arshid6social-login-submit',
-				'form_id'        => 'arshid6social-login-form',
-			)
-		);
-		?>
+		<div id="arshid6social-login-message" class="arshid6social-notice" hidden></div>
+		<form id="arshid6social-login-form" class="a6scsplash__inner-form" method="post" novalidate data-redirect="<?php echo esc_attr( $redirect ); ?>">
+			<div class="a6scsplash__field">
+				<label for="arshid6social-login-username"><?php esc_html_e( 'Username or Email', '6arshid-social-community' ); ?></label>
+				<input type="text" id="arshid6social-login-username" name="username" required autocomplete="username">
+			</div>
+			<div class="a6scsplash__field">
+				<label for="arshid6social-login-password"><?php esc_html_e( 'Password', '6arshid-social-community' ); ?></label>
+				<input type="password" id="arshid6social-login-password" name="password" required autocomplete="current-password">
+			</div>
+			<label class="a6scsplash__remember" for="arshid6social-login-remember">
+				<input type="checkbox" id="arshid6social-login-remember" name="remember" value="1">
+				<span><?php esc_html_e( 'Remember Me', '6arshid-social-community' ); ?></span>
+			</label>
+			<button type="submit" id="arshid6social-login-submit" class="a6scsplash__submit-btn"><?php esc_html_e( 'Log In', '6arshid-social-community' ); ?></button>
+		</form>
 		<p class="a6scsplash__forgot">
 			<a href="<?php echo esc_url( $forgot_url ); ?>"><?php esc_html_e( 'Forgot password?', '6arshid-social-community' ); ?></a>
 		</p>
@@ -690,6 +690,12 @@ class Shortcodes {
 			</div>
 		<?php endif; ?>
 		<?php
+		$this->print_auth_script(
+			'arshid6social-login-form',
+			'arshid6social-login-message',
+			'auth/login',
+			array( 'successRedirect' => true )
+		);
 		$this->splash_wrap_end();
 		return ob_get_clean();
 	}
@@ -719,85 +725,24 @@ class Shortcodes {
 		$login_id  = (int) get_option( 'arshid6social_page_login', 0 );
 		$login_url = $login_id ? get_permalink( $login_id ) : wp_login_url();
 
-		$nonce    = wp_create_nonce( 'arshid6social_register' );
 		$messages = array();
-
-		// Process form submission.
-		if ( isset( $_POST['arshid6social_register_nonce'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
-			if ( ! check_ajax_referer( 'arshid6social_register', 'arshid6social_register_nonce', false ) ) {
-				$messages[] = array(
-					'type' => 'error',
-					'text' => __( 'Security check failed.', '6arshid-social-community' ),
-				);
-			} else {
-				$username = sanitize_user( wp_unslash( $_POST['username'] ?? '' ) );
-				$email    = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
-				$password = wp_unslash( $_POST['password'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- password intentionally not sanitized; passed as-is to wp_create_user()/registration.
-
-				$errors = new \WP_Error();
-				if ( ! $username ) {
-					$errors->add( 'empty_username', __( 'Please enter a username.', '6arshid-social-community' ) );
-				} else {
-					$restriction_errors = \Arshid6Social\Components\Members\Members::validate_username_restrictions( $username );
-					if ( $restriction_errors->has_errors() ) {
-						foreach ( $restriction_errors->get_error_codes() as $code ) {
-							$errors->add( $code, $restriction_errors->get_error_message( $code ) );
-						}
-					} elseif ( username_exists( $username ) ) {
-						$errors->add( 'username_exists', __( 'That username is already taken.', '6arshid-social-community' ) );
-					}
-				}
-				if ( ! $email ) {
-					$errors->add( 'empty_email', __( 'Please enter your email address.', '6arshid-social-community' ) );
-				} elseif ( email_exists( $email ) ) {
-					$errors->add( 'email_exists', __( 'That email is already registered.', '6arshid-social-community' ) );
-				}
-				if ( strlen( $password ) < 8 ) {
-					$errors->add( 'weak_password', __( 'Password must be at least 8 characters.', '6arshid-social-community' ) );
-				}
-
-				if ( ! $errors->has_errors() ) {
-					$user_id = wp_create_user( $username, $password, $email );
-					if ( is_wp_error( $user_id ) ) {
-						$messages[] = array(
-							'type' => 'error',
-							'text' => $user_id->get_error_message(),
-						);
-					} else {
-						wp_set_current_user( $user_id );
-						wp_set_auth_cookie( $user_id );
-						do_action( 'arshid6social_user_registered', $user_id );
-						wp_safe_redirect( home_url( '/members/' . get_userdata( $user_id )->user_nicename . '/' ) );
-						exit;
-					}
-				} else {
-					foreach ( $errors->get_error_messages() as $msg ) {
-						$messages[] = array(
-							'type' => 'error',
-							'text' => $msg,
-						);
-					}
-				}
-			}
-		}
 
 		ob_start();
 		$this->splash_wrap_start( __( 'Create your account', '6arshid-social-community' ) );
 		?>
+		<div id="arshid6social-register-message" class="arshid6social-notice" hidden></div>
 		<?php foreach ( $messages as $msg ) : ?>
 			<div class="arshid6social-notice arshid6social-notice-<?php echo esc_attr( $msg['type'] ); ?>">
 				<?php echo esc_html( $msg['text'] ); ?>
 			</div>
 		<?php endforeach; ?>
 
-		<form class="a6scsplash__inner-form" method="post" novalidate>
-			<?php wp_nonce_field( 'arshid6social_register', 'arshid6social_register_nonce' ); ?>
-
+		<form id="arshid6social-register-form" class="a6scsplash__inner-form" method="post" novalidate>
 			<div class="a6scsplash__field">
 				<label for="arshid6social-reg-username"><?php esc_html_e( 'Username', '6arshid-social-community' ); ?> <span aria-hidden="true">*</span></label>
 				<input type="text" id="arshid6social-reg-username" name="username"
 					required autocomplete="username" maxlength="60"
-					value="<?php echo isset( $_POST['username'] ) ? esc_attr( sanitize_user( wp_unslash( $_POST['username'] ) ) ) : ''; ?>" /> <?php // phpcs:ignore WordPress.Security.NonceVerification ?>
+					value="" />
 				<span id="arshid6social-username-feedback" class="a6scsplash__field-hint"></span>
 			</div>
 
@@ -805,7 +750,7 @@ class Shortcodes {
 				<label for="arshid6social-reg-email"><?php esc_html_e( 'Email address', '6arshid-social-community' ); ?> <span aria-hidden="true">*</span></label>
 				<input type="email" id="arshid6social-reg-email" name="email"
 					required autocomplete="email"
-					value="<?php echo isset( $_POST['email'] ) ? esc_attr( sanitize_email( wp_unslash( $_POST['email'] ) ) ) : ''; ?>" /> <?php // phpcs:ignore WordPress.Security.NonceVerification ?>
+					value="" />
 			</div>
 
 			<div class="a6scsplash__field">
@@ -850,11 +795,17 @@ input.addEventListener('input',function(){
 			.then(function(r){return r.json();})
 			.then(function(res){feedback.style.display='block';if(res.success){feedback.style.color='#15803d';feedback.textContent=res.data.message;}else{feedback.style.color='#b91c1c';feedback.textContent=res.data.message;}})
 			.catch(function(){feedback.style.display='none';});
-	},500);
+		},500);
 });
 })();
 ENDJS;
 		wp_add_inline_script( 'arshid6social-main', $js_reg );
+		$this->print_auth_script(
+			'arshid6social-register-form',
+			'arshid6social-register-message',
+			'auth/register',
+			array( 'successRedirect' => true )
+		);
 		$this->splash_wrap_end();
 		return ob_get_clean();
 	}
@@ -1147,6 +1098,33 @@ ENDJS;
 		$login_id  = (int) get_option( 'arshid6social_page_login', 0 );
 		$login_url = $login_id ? get_permalink( $login_id ) : wp_login_url();
 
+		ob_start();
+		$this->splash_wrap_start(
+			__( 'Forgot password?', '6arshid-social-community' ),
+			__( 'Enter your email or username and we\'ll send you a reset link.', '6arshid-social-community' )
+		);
+		?>
+		<div id="arshid6social-forgot-message" class="arshid6social-notice" hidden></div>
+		<form id="arshid6social-forgot-form" class="a6scsplash__inner-form" method="post">
+			<div class="a6scsplash__field">
+				<label for="arshid6social-forgot-login"><?php esc_html_e( 'Email or Username', '6arshid-social-community' ); ?></label>
+				<input type="text" id="arshid6social-forgot-login" name="user_login" autocomplete="username" value="">
+			</div>
+			<button type="submit" class="a6scsplash__submit-btn"><?php esc_html_e( 'Send Reset Link', '6arshid-social-community' ); ?></button>
+		</form>
+		<p class="a6scsplash__forgot" style="text-align:center;margin-top:1rem;">
+			<a href="<?php echo esc_url( $login_url ); ?>"><?php esc_html_e( 'Back to Sign in', '6arshid-social-community' ); ?></a>
+		</p>
+		<?php
+		$this->print_auth_script(
+			'arshid6social-forgot-form',
+			'arshid6social-forgot-message',
+			'auth/forgot-password',
+			array( 'hideFormOnSuccess' => true )
+		);
+		$this->splash_wrap_end();
+		return ob_get_clean();
+
 		$message = '';
 		$error   = '';
 
@@ -1275,6 +1253,45 @@ ENDJS;
 		} else {
 			$error = __( 'Invalid password reset link.', '6arshid-social-community' );
 		}
+
+		ob_start();
+		$this->splash_wrap_start( __( 'Set new password', '6arshid-social-community' ) );
+		?>
+		<div id="arshid6social-reset-message" class="arshid6social-notice" hidden></div>
+		<?php if ( $error && ! $user ) : ?>
+			<div class="arshid6social-notice arshid6social-notice-error"><?php echo esc_html( $error ); ?></div>
+			<?php if ( $forgot_url ) : ?>
+				<p class="a6scsplash__forgot" style="text-align:center;margin-top:1rem;">
+					<a href="<?php echo esc_url( $forgot_url ); ?>"><?php esc_html_e( 'Request a new reset link', '6arshid-social-community' ); ?></a>
+				</p>
+			<?php endif; ?>
+		<?php elseif ( $user ) : ?>
+			<form id="arshid6social-reset-form" class="a6scsplash__inner-form" method="post">
+				<input type="hidden" name="key" value="<?php echo esc_attr( $key ); ?>">
+				<input type="hidden" name="login" value="<?php echo esc_attr( $login ); ?>">
+				<div class="a6scsplash__field">
+					<label for="arshid6social-reset-pass1"><?php esc_html_e( 'New Password', '6arshid-social-community' ); ?></label>
+					<input type="password" id="arshid6social-reset-pass1" name="password1" autocomplete="new-password" minlength="8">
+				</div>
+				<div class="a6scsplash__field">
+					<label for="arshid6social-reset-pass2"><?php esc_html_e( 'Confirm Password', '6arshid-social-community' ); ?></label>
+					<input type="password" id="arshid6social-reset-pass2" name="password2" autocomplete="new-password" minlength="8">
+				</div>
+				<button type="submit" class="a6scsplash__submit-btn"><?php esc_html_e( 'Set New Password', '6arshid-social-community' ); ?></button>
+			</form>
+			<p class="a6scsplash__forgot" style="text-align:center;margin-top:1rem;" hidden>
+				<a id="arshid6social-reset-login-link" href="<?php echo esc_url( $login_url ); ?>"><?php esc_html_e( 'Sign in', '6arshid-social-community' ); ?></a>
+			</p>
+		<?php endif; ?>
+		<?php
+		$this->print_auth_script(
+			'arshid6social-reset-form',
+			'arshid6social-reset-message',
+			'auth/reset-password',
+			array( 'hideFormOnSuccess' => true )
+		);
+		$this->splash_wrap_end();
+		return ob_get_clean();
 
 		if ( $user && isset( $_POST['arshid6social_reset_nonce'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
 			if ( ! check_ajax_referer( 'arshid6social_reset_password', 'arshid6social_reset_nonce', false ) ) {
@@ -1414,22 +1431,22 @@ ENDJS;
 
 				<!-- Login card -->
 				<div class="a6scsplash__card a6scsplash-glass animate-fade-rise-delay-2">
-					<?php
-					wp_login_form(
-						array(
-							'redirect'       => $redirect,
-							'label_username' => __( 'Username or Email', '6arshid-social-community' ),
-							'label_password' => __( 'Password', '6arshid-social-community' ),
-							'label_remember' => __( 'Remember Me', '6arshid-social-community' ),
-							'label_log_in'   => __( 'Log In', '6arshid-social-community' ),
-							'id_username'    => 'arshid6social-home-username',
-							'id_password'    => 'arshid6social-home-password',
-							'id_remember'    => 'arshid6social-home-remember',
-							'id_submit'      => 'arshid6social-home-submit',
-							'form_id'        => 'arshid6social-home-form',
-						)
-					);
-					?>
+					<div id="arshid6social-home-message" class="arshid6social-notice" hidden></div>
+					<form id="arshid6social-home-form" class="a6scsplash__inner-form" method="post" novalidate data-redirect="<?php echo esc_attr( $redirect ); ?>">
+						<div class="a6scsplash__field">
+							<label for="arshid6social-home-username"><?php esc_html_e( 'Username or Email', '6arshid-social-community' ); ?></label>
+							<input type="text" id="arshid6social-home-username" name="username" required autocomplete="username">
+						</div>
+						<div class="a6scsplash__field">
+							<label for="arshid6social-home-password"><?php esc_html_e( 'Password', '6arshid-social-community' ); ?></label>
+							<input type="password" id="arshid6social-home-password" name="password" required autocomplete="current-password">
+						</div>
+						<label class="a6scsplash__remember" for="arshid6social-home-remember">
+							<input type="checkbox" id="arshid6social-home-remember" name="remember" value="1">
+							<span><?php esc_html_e( 'Remember Me', '6arshid-social-community' ); ?></span>
+						</label>
+						<button type="submit" id="arshid6social-home-submit" class="a6scsplash__submit-btn"><?php esc_html_e( 'Log In', '6arshid-social-community' ); ?></button>
+					</form>
 					<p class="a6scsplash__forgot">
 						<a href="<?php echo esc_url( $forgot_url ); ?>"><?php esc_html_e( 'Forgot password?', '6arshid-social-community' ); ?></a>
 					</p>
@@ -1441,11 +1458,86 @@ ENDJS;
 							</a>
 						</div>
 					<?php endif; ?>
+					<?php
+					$this->print_auth_script(
+						'arshid6social-home-form',
+						'arshid6social-home-message',
+						'auth/login',
+						array( 'successRedirect' => true )
+					);
+					?>
 				</div>
 
 			</div>
 		</div>
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * Adds a small REST submit handler for auth splash forms.
+	 *
+	 * @param string              $form_id    Form element ID.
+	 * @param string              $message_id Message element ID.
+	 * @param string              $route      Route below arshid6social/v1.
+	 * @param array<string, bool> $options    Script options.
+	 */
+	private function print_auth_script( string $form_id, string $message_id, string $route, array $options = array() ): void {
+		$config = array(
+			'formId'            => $form_id,
+			'messageId'         => $message_id,
+			'endpoint'          => esc_url_raw( rest_url( 'arshid6social/v1/' . ltrim( $route, '/' ) ) ),
+			'nonce'             => wp_create_nonce( 'wp_rest' ),
+			'successRedirect'   => ! empty( $options['successRedirect'] ),
+			'hideFormOnSuccess' => ! empty( $options['hideFormOnSuccess'] ),
+			'sendingText'       => __( 'Please wait...', '6arshid-social-community' ),
+			'errorText'         => __( 'Something went wrong. Please try again.', '6arshid-social-community' ),
+		);
+		?>
+		<script>
+		(function(config){
+			var form=document.getElementById(config.formId);
+			var message=document.getElementById(config.messageId);
+			if(!form||!message){return;}
+			var submit=form.querySelector('[type="submit"]');
+			function show(type,text){
+				message.hidden=false;
+				message.className='arshid6social-notice arshid6social-notice-'+type;
+				message.textContent=text||config.errorText;
+			}
+			form.addEventListener('submit',function(event){
+				event.preventDefault();
+				var original=submit?submit.textContent:'';
+				if(submit){submit.disabled=true;submit.textContent=config.sendingText;}
+				message.hidden=true;
+				var payload={};
+				new FormData(form).forEach(function(value,key){
+					if(key==='remember'){payload[key]=!!value;}else{payload[key]=value;}
+				});
+				fetch(config.endpoint,{
+					method:'POST',
+					credentials:'same-origin',
+					headers:{'Content-Type':'application/json','X-WP-Nonce':config.nonce},
+					body:JSON.stringify(payload)
+				}).then(function(response){
+					return response.json().catch(function(){return {};}).then(function(body){
+						if(!response.ok){throw body;}
+						return body;
+					});
+				}).then(function(body){
+					show('success',body.message||'Success.');
+					if(config.hideFormOnSuccess){form.hidden=true;}
+					if(config.successRedirect){
+						window.location.href=body.redirect||form.getAttribute('data-redirect')||window.location.href;
+					}
+				}).catch(function(error){
+					show('error',(error&&error.message)||config.errorText);
+				}).finally(function(){
+					if(submit&&!form.hidden){submit.disabled=false;submit.textContent=original;}
+				});
+			});
+		})(<?php echo wp_json_encode( $config ); ?>);
+		</script>
+		<?php
 	}
 }

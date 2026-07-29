@@ -23,6 +23,7 @@ defined( 'ABSPATH' ) || exit;
  *   - 50 message threads to admin
  *   - 30 stories (text only)
  *   - 1 ad
+ *   - no auth pages and no login-capable sample users
  */
 final class Sample_Data {
 
@@ -809,19 +810,6 @@ final class Sample_Data {
 
 	private function delete(): void {
 		global $wpdb;
-
-		// Delete sample users.
-		$sample_users = get_users(
-			array(
-				'meta_key'   => '_arshid6social_sample',
-				'meta_value' => '1',
-				'fields'     => 'ids',
-				'number'     => -1,
-			)
-		);
-		foreach ( $sample_users as $uid ) {
-			wp_delete_user( (int) $uid );
-		}
 
 		// Delete sample activities (found via meta).
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery

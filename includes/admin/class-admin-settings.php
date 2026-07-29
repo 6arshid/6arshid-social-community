@@ -509,7 +509,7 @@ ENDJS;
 
 			<h2 style="margin-top:0;"><?php esc_html_e( 'Sample Data', '6arshid-social-community' ); ?></h2>
 			<p style="color:#64748b;">
-				<?php esc_html_e( 'Use the tools below to import or remove demo content from your social network.', '6arshid-social-community' ); ?>
+				<?php esc_html_e( 'Use the tools below to import or remove demo content from your social network. This does not create login, register, forgot-password, or reset-password pages.', '6arshid-social-community' ); ?>
 			</p>
 
 			<table class="form-table" role="presentation">
@@ -1683,4 +1683,3 @@ ENDJS;
 		<?php
 	}
 }
-

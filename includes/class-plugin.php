@@ -191,6 +191,8 @@ final class Plugin {
 	 * Fires REST route registration on each active component.
 	 */
 	public function register_rest_routes(): void {
+		( new REST\Auth_Controller() )->register_routes();
+
 		foreach ( $this->components as $component ) {
 			if ( method_exists( $component, 'register_rest_routes' ) ) {
 				$component->register_rest_routes();
