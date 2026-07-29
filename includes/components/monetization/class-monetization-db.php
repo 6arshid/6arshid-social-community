@@ -4,7 +4,7 @@ namespace Arshid6Social\Components\Monetization;
 /**
  * Database schema and incremental migrations for the Monetization component.
  *
- * All tables use the 'sixarshidsc_' prefix. No raw bank/IBAN data is stored here —
+ * All current tables use the 'arshid6social_monetization_' prefix. No raw bank/IBAN data is stored here —
  * only Stripe Connect account references; bank details live with Stripe.
  *
  * @package Arshid6Social\Components\Monetization
@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit;
 class Monetization_DB {
 
 	/** Increment this constant to trigger a schema migration. */
-	const VERSION        = '1.0.1';
+	const VERSION        = '1.0.2';
 	const VERSION_OPTION = 'arshid6social_monetization_db_version';
 
 	/**
@@ -27,8 +27,43 @@ class Monetization_DB {
 		if ( version_compare( (string) get_option( self::VERSION_OPTION, '0' ), self::VERSION, '>=' ) ) {
 			return;
 		}
+		self::rename_legacy_tables();
 		self::create_tables();
 		update_option( self::VERSION_OPTION, self::VERSION );
+	}
+
+	/**
+	 * Renames the pre-1.0.2 monetization table family to the plugin prefix.
+	 */
+	private static function rename_legacy_tables(): void {
+		global $wpdb;
+
+		foreach ( self::legacy_table_map() as $legacy_suffix => $new_suffix ) {
+			$legacy_table = $wpdb->prefix . $legacy_suffix;
+			$new_table    = $wpdb->prefix . $new_suffix;
+
+			$legacy_exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $legacy_table ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$new_exists    = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $new_table ) ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+
+			if ( $legacy_exists && ! $new_exists ) {
+				$wpdb->query( "RENAME TABLE `{$legacy_table}` TO `{$new_table}`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+			}
+		}
+	}
+
+	/**
+	 * @return array<string,string> Legacy suffix => current suffix.
+	 */
+	private static function legacy_table_map(): array {
+		return array(
+			'sixarshidsc_creator_accounts' => 'arshid6social_monetization_creator_accounts',
+			'sixarshidsc_sub_plans'        => 'arshid6social_monetization_sub_plans',
+			'sixarshidsc_subscriptions'    => 'arshid6social_monetization_subscriptions',
+			'sixarshidsc_purchases'        => 'arshid6social_monetization_purchases',
+			'sixarshidsc_entitlements'     => 'arshid6social_monetization_entitlements',
+			'sixarshidsc_transactions'     => 'arshid6social_monetization_transactions',
+			'sixarshidsc_webhook_events'   => 'arshid6social_monetization_webhook_events',
+		);
 	}
 
 	/**
@@ -46,7 +81,7 @@ class Monetization_DB {
 		 * No raw IBAN or bank details are ever written here; those live with Stripe.
 		 */
 		dbDelta(
-			"CREATE TABLE {$p}sixarshidsc_creator_accounts (
+			"CREATE TABLE {$p}arshid6social_monetization_creator_accounts (
 				id                 bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 				user_id            bigint(20) UNSIGNED NOT NULL,
 				gateway            varchar(64)  NOT NULL DEFAULT 'stripe_connect',
@@ -67,7 +102,7 @@ class Monetization_DB {
 		 * Subscription plans created by creators (monthly recurring).
 		 */
 		dbDelta(
-			"CREATE TABLE {$p}sixarshidsc_sub_plans (
+			"CREATE TABLE {$p}arshid6social_monetization_sub_plans (
 				id              bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 				creator_id      bigint(20) UNSIGNED NOT NULL,
 				name            varchar(128) NOT NULL DEFAULT '',
@@ -90,7 +125,7 @@ class Monetization_DB {
 		 * Index on (creator_id, status) powers the creator dashboard query.
 		 */
 		dbDelta(
-			"CREATE TABLE {$p}sixarshidsc_subscriptions (
+			"CREATE TABLE {$p}arshid6social_monetization_subscriptions (
 				id                   bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 				subscriber_id        bigint(20) UNSIGNED NOT NULL,
 				creator_id           bigint(20) UNSIGNED NOT NULL,
@@ -112,7 +147,7 @@ class Monetization_DB {
 		 * Pay-per-view purchases. UNIQUE (buyer_id, activity_id) prevents double-purchase.
 		 */
 		dbDelta(
-			"CREATE TABLE {$p}sixarshidsc_purchases (
+			"CREATE TABLE {$p}arshid6social_monetization_purchases (
 				id                 bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 				buyer_id           bigint(20) UNSIGNED NOT NULL,
 				activity_id        bigint(20) UNSIGNED NOT NULL,
@@ -140,7 +175,7 @@ class Monetization_DB {
 		 * UNIQUE (user_id, object_type, object_id) so upserts are safe.
 		 */
 		dbDelta(
-			"CREATE TABLE {$p}sixarshidsc_entitlements (
+			"CREATE TABLE {$p}arshid6social_monetization_entitlements (
 				id          bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 				user_id     bigint(20) UNSIGNED NOT NULL,
 				object_type varchar(32) NOT NULL DEFAULT 'creator_sub',
@@ -159,7 +194,7 @@ class Monetization_DB {
 		 * Client-side success redirects never write here.
 		 */
 		dbDelta(
-			"CREATE TABLE {$p}sixarshidsc_transactions (
+			"CREATE TABLE {$p}arshid6social_monetization_transactions (
 				id           bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 				type         varchar(32)  NOT NULL DEFAULT 'subscription',
 				payer_id     bigint(20) UNSIGNED NOT NULL DEFAULT 0,
@@ -185,7 +220,7 @@ class Monetization_DB {
 		 * UNIQUE (gateway, event_id) prevents double-processing the same event.
 		 */
 		dbDelta(
-			"CREATE TABLE {$p}sixarshidsc_webhook_events (
+			"CREATE TABLE {$p}arshid6social_monetization_webhook_events (
 				id           bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 				gateway      varchar(64)  NOT NULL DEFAULT 'stripe_connect',
 				event_id     varchar(128) NOT NULL DEFAULT '',
@@ -206,14 +241,15 @@ class Monetization_DB {
 		global $wpdb;
 
 		$tables = array(
-			'sixarshidsc_webhook_events',
-			'sixarshidsc_transactions',
-			'sixarshidsc_entitlements',
-			'sixarshidsc_purchases',
-			'sixarshidsc_subscriptions',
-			'sixarshidsc_sub_plans',
-			'sixarshidsc_creator_accounts',
+			'arshid6social_monetization_webhook_events',
+			'arshid6social_monetization_transactions',
+			'arshid6social_monetization_entitlements',
+			'arshid6social_monetization_purchases',
+			'arshid6social_monetization_subscriptions',
+			'arshid6social_monetization_sub_plans',
+			'arshid6social_monetization_creator_accounts',
 		);
+		$tables = array_merge( $tables, array_keys( self::legacy_table_map() ) );
 
 		foreach ( $tables as $table ) {
 			$wpdb->query( "DROP TABLE IF EXISTS `{$wpdb->prefix}{$table}`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter

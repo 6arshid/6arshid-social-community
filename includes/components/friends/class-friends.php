@@ -488,7 +488,21 @@ class Friends {
 	public function ajax_accept_friend_request(): void {
 		$this->nonce_check_and_auth();
 		$requester = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
-		$this->accept_request( get_current_user_id(), $requester );
+
+		$current = get_current_user_id();
+		if ( ! $requester || ! get_userdata( $requester ) || $requester === $current ) {
+			wp_send_json_error( array( 'message' => __( 'User not found.', '6arshid-social-community' ) ), 404 );
+		}
+		if ( $this->is_blocked( $current, $requester ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
+		}
+		if ( 'pending_received' !== $this->get_friendship_status( $current, $requester ) ) {
+			wp_send_json_error( array( 'message' => __( 'No pending friend request from this user.', '6arshid-social-community' ) ), 409 );
+		}
+		if ( ! $this->accept_request( $current, $requester ) ) {
+			wp_send_json_error( array( 'message' => __( 'No pending friend request from this user.', '6arshid-social-community' ) ), 409 );
+		}
+
 		wp_send_json_success(
 			array(
 				'status'  => 'friends',

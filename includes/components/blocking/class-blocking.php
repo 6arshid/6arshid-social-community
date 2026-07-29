@@ -31,7 +31,6 @@ class Blocking {
 	private function hooks(): void {
 		// Shortcode (primary name + legacy alias for existing post content).
 		add_shortcode( 'arshid6social_block_list', array( $this, 'shortcode_block_list' ) );
-		add_shortcode( 'sn_block_list', array( $this, 'shortcode_block_list' ) );
 
 		// Wire block enforcement into activity query args.
 		add_filter( 'arshid6social_get_activity_args', array( $this, 'filter_activity_args' ) );

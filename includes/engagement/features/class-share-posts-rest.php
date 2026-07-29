@@ -20,7 +20,7 @@ class Share_Posts_REST {
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'share' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'require_login' ),
 				'args'                => array(
 					'comment'     => array(
 						'sanitize_callback' => 'sanitize_textarea_field',
@@ -53,6 +53,13 @@ class Share_Posts_REST {
 	private function feature(): ?Share_Posts {
 		/** @var Share_Posts|null $f */
 		return arshid6social_eng()->feature( 'share_posts' );
+	}
+
+	public function require_login( \WP_REST_Request $req ): bool|\WP_Error {
+		if ( is_user_logged_in() ) {
+			return true;
+		}
+		return new \WP_Error( 'rest_forbidden', __( 'Authentication required.', '6arshid-social-community' ), array( 'status' => 401 ) );
 	}
 
 	public function share( \WP_REST_Request $req ): \WP_REST_Response {

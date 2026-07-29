@@ -6,7 +6,7 @@ namespace Arshid6Social\Components\Monetization;
  *
  * Security model:
  *  – Signature verified via HMAC-SHA256 before any processing.
- *  – Every event is written to sixarshidsc_webhook_events FIRST (idempotency guard).
+ *  – Every event is written to arshid6social_monetization_webhook_events FIRST (idempotency guard).
  *  – Entitlements are ONLY granted here — never from client-side redirects.
  *
  * Endpoint: POST /wp-json/arshid6social/v1/webhook
@@ -63,7 +63,7 @@ class Monetization_Webhook {
 		// Idempotency — record event before processing to prevent double-grants.
 		$already = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sixarshidsc_webhook_events WHERE gateway = 'stripe_connect' AND event_id = %s",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_monetization_webhook_events WHERE gateway = 'stripe_connect' AND event_id = %s",
 				$event['id']
 			)
 		);
@@ -78,7 +78,7 @@ class Monetization_Webhook {
 		}
 
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sixarshidsc_webhook_events',
+			$wpdb->prefix . 'arshid6social_monetization_webhook_events',
 			array(
 				'gateway'      => 'stripe_connect',
 				'event_id'     => $event['id'],

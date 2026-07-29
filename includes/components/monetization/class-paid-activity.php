@@ -34,7 +34,7 @@ class Paid_Activity {
 	 * Returns true if $user_id may view a paid activity.
 	 *
 	 * Owners and admins always pass. Everyone else needs a row in
-	 * sixarshidsc_entitlements with object_type = 'activity'.
+	 * arshid6social_monetization_entitlements with object_type = 'activity'.
 	 *
 	 * @param int $user_id     WordPress user ID (0 = guest).
 	 * @param int $activity_id Activity table ID.
@@ -66,7 +66,7 @@ class Paid_Activity {
 		// Entitlement lookup.
 		$has = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sixarshidsc_entitlements
+				"SELECT id FROM {$wpdb->prefix}arshid6social_monetization_entitlements
 			  WHERE user_id    = %d
 			    AND object_type = 'activity'
 			    AND object_id   = %d
@@ -327,13 +327,13 @@ class Paid_Activity {
 		// (verify endpoint and webhook may both call this; gateway_ref is not UNIQUE).
 		$exists = $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT id FROM {$wpdb->prefix}sixarshidsc_transactions WHERE gateway_ref = %s LIMIT 1",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_monetization_transactions WHERE gateway_ref = %s LIMIT 1",
 				$gateway_ref
 			)
 		);
 		if ( ! $exists ) {
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				$wpdb->prefix . 'sixarshidsc_transactions',
+				$wpdb->prefix . 'arshid6social_monetization_transactions',
 				array(
 					'type'         => 'ppv',
 					'payer_id'     => $buyer_id,
@@ -353,7 +353,7 @@ class Paid_Activity {
 		// Purchase row — idempotent.
 		$wpdb->query(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"INSERT INTO {$wpdb->prefix}sixarshidsc_purchases
+				"INSERT INTO {$wpdb->prefix}arshid6social_monetization_purchases
 				(buyer_id, activity_id, creator_id, gateway_payment_id, amount, fee, currency, status, created_at)
 			 VALUES (%d, %d, %d, %s, %f, %f, %s, 'completed', %s)
 			 ON DUPLICATE KEY UPDATE status = 'completed', gateway_payment_id = VALUES(gateway_payment_id)",
@@ -371,7 +371,7 @@ class Paid_Activity {
 		// Permanent entitlement — idempotent.
 		$wpdb->query(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"INSERT INTO {$wpdb->prefix}sixarshidsc_entitlements
+				"INSERT INTO {$wpdb->prefix}arshid6social_monetization_entitlements
 				(user_id, object_type, object_id, source, expires_at, created_at)
 			 VALUES (%d, 'activity', %d, 'ppv', NULL, %s)
 			 ON DUPLICATE KEY UPDATE source = source",
@@ -395,7 +395,7 @@ class Paid_Activity {
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'rest_checkout' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'require_login' ),
 				'args'                => array(
 					'id' => array(
 						'type'     => 'integer',
@@ -429,7 +429,7 @@ class Paid_Activity {
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'rest_verify_payment' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'require_login' ),
 				'args'                => array(
 					'id'             => array(
 						'type'     => 'integer',
@@ -443,6 +443,13 @@ class Paid_Activity {
 				),
 			)
 		);
+	}
+
+	public function require_login( \WP_REST_Request $request ): bool|\WP_Error {
+		if ( is_user_logged_in() ) {
+			return true;
+		}
+		return new \WP_Error( 'rest_forbidden', __( 'Authentication required.', '6arshid-social-community' ), array( 'status' => 401 ) );
 	}
 }
 

@@ -49,7 +49,7 @@ class Groups_REST extends \WP_REST_Controller {
 				array(
 					'methods'             => \WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'create_item' ),
-					'permission_callback' => 'is_user_logged_in',
+					'permission_callback' => array( $this, 'require_login' ),
 					'args'                => array(
 						'name'        => array(
 							'required'          => true,
@@ -103,9 +103,16 @@ class Groups_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'leave' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'require_login' ),
 			)
 		);
+	}
+
+	public function require_login( \WP_REST_Request $request ): bool|\WP_Error {
+		if ( is_user_logged_in() ) {
+			return true;
+		}
+		return new \WP_Error( 'rest_forbidden', __( 'Authentication required.', '6arshid-social-community' ), array( 'status' => 401 ) );
 	}
 
 	/**

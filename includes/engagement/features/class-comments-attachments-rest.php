@@ -33,7 +33,7 @@ class Comments_Attachments_REST {
 			array(
 				'methods'             => \WP_REST_Server::DELETABLE,
 				'callback'            => array( $this, 'delete_attachment' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'require_login' ),
 			)
 		);
 	}
@@ -41,6 +41,18 @@ class Comments_Attachments_REST {
 	private function feature(): ?Comments_Attachments {
 		/** @var Comments_Attachments|null $f */
 		return arshid6social_eng()->feature( 'comments_attachments' );
+	}
+
+	public function require_login( \WP_REST_Request $request ): true|\WP_Error {
+		if ( is_user_logged_in() ) {
+			return true;
+		}
+
+		return new \WP_Error(
+			'arshid6social_login_required',
+			__( 'You must be logged in to perform this action.', '6arshid-social-community' ),
+			array( 'status' => 401 )
+		);
 	}
 
 	public function get_attachments( \WP_REST_Request $req ): \WP_REST_Response {

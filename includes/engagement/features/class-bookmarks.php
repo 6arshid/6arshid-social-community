@@ -25,9 +25,8 @@ class Bookmarks {
 		// Register Saved Posts page in the admin Pages & Shortcodes screen.
 		add_filter( 'arshid6social_page_definitions', array( $this, 'add_page_definition' ) );
 
-		// Shortcode (primary name + legacy alias).
+		// Shortcode.
 		add_shortcode( 'arshid6social_bookmarks', array( $this, 'shortcode' ) );
-		add_shortcode( 'sn_bookmarks', array( $this, 'shortcode' ) );
 
 		// One-time migration: update existing Saved Posts page content + author via direct DB.
 		add_action( 'admin_init', array( $this, 'migrate_saved_posts_page' ) );

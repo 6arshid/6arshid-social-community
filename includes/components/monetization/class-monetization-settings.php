@@ -61,8 +61,7 @@ class Monetization_Settings {
 			array(
 				'type'              => 'boolean',
 				'default'           => false,
-				'sanitize_callback' => static function ( $v ) {
-					return (bool) $v; },
+				'sanitize_callback' => 'rest_sanitize_boolean',
 			)
 		);
 
@@ -84,8 +83,7 @@ class Monetization_Settings {
 			array(
 				'type'              => 'boolean',
 				'default'           => true,
-				'sanitize_callback' => static function ( $v ) {
-					return (bool) $v; },
+				'sanitize_callback' => 'rest_sanitize_boolean',
 			)
 		);
 

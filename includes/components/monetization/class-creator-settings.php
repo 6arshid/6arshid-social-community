@@ -433,7 +433,7 @@ ENDJS;
 	private function render_earnings_card( int $user_id ): void {
 		global $wpdb;
 
-		$table = $wpdb->prefix . 'sixarshidsc_transactions';
+		$table = $wpdb->prefix . 'arshid6social_monetization_transactions';
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		if ( $wpdb->get_var( "SHOW TABLES LIKE '{$table}'" ) !== $table ) {
@@ -661,7 +661,7 @@ ENDJS;
 
 		global $wpdb;
 
-		$transactions_table = $wpdb->prefix . 'sixarshidsc_transactions';
+		$transactions_table = $wpdb->prefix . 'arshid6social_monetization_transactions';
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$table_exists = $wpdb->get_var( "SHOW TABLES LIKE '{$transactions_table}'" ) === $transactions_table;
 
@@ -997,7 +997,7 @@ ENDJS;
 		}
 
 		global $wpdb;
-		$table = $wpdb->prefix . 'sixarshidsc_transactions';
+		$table = $wpdb->prefix . 'arshid6social_monetization_transactions';
 
 		// Check there's no pending cashout already.
 		// phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter -- SQL string built from $wpdb->prefix/whitelist identifiers and static clauses; all values bound via $wpdb->prepare() placeholders (never raw user input).
@@ -1095,7 +1095,7 @@ ENDJS;
 			wp_send_json_error( array( 'message' => 'Invalid user.' ) );
 		}
 
-		$table = $wpdb->prefix . 'sixarshidsc_transactions';
+		$table = $wpdb->prefix . 'arshid6social_monetization_transactions';
 
 		if ( $tx_id ) {
 			// Mark specific payout transaction as completed.

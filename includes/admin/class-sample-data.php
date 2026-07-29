@@ -15,7 +15,6 @@ defined( 'ABSPATH' ) || exit;
  * Bulk-inserts demo content and removes it cleanly.
  *
  * Import counts:
- *   - 50 users
  *   - 50 activity posts
  *   - 100 notifications for admin
  *   - 50 marketplace listings
@@ -64,8 +63,7 @@ final class Sample_Data {
 			array(
 				'message' => sprintf(
 				/* translators: counts */
-					__( 'Imported: %1$d users, %2$d activities, %3$d notifications, %4$d listings, %5$d groups, %6$d bookmarks, %7$d messages, %8$d stories, %9$d ad.', '6arshid-social-community' ),
-					count( $ids['users'] ),
+					__( 'Imported: %1$d activities, %2$d notifications, %3$d listings, %4$d groups, %5$d bookmarks, %6$d messages, %7$d stories, %8$d ad. No sample users were created.', '6arshid-social-community' ),
 					count( $ids['activities'] ),
 					count( $ids['notifications'] ),
 					count( $ids['listings'] ),
@@ -416,46 +414,12 @@ final class Sample_Data {
 			'ads'           => array(),
 		);
 
-		$admin_id    = get_current_user_id();
-		$first_names = $this->first_names();
-		$last_names  = $this->last_names();
+		$admin_id = get_current_user_id();
 
-		// ── 50 Users ──────────────────────────────────────────────────────────
-		$user_ids = array();
-
-		for ( $i = 1; $i <= 50; $i++ ) {
-			$fn    = $first_names[ ( $i - 1 ) % count( $first_names ) ];
-			$ln    = $last_names[ ( $i - 1 ) % count( $last_names ) ];
-			$login = 'sample_user_' . str_pad( (string) $i, 2, '0', STR_PAD_LEFT );
-			$email = 'sample_user_' . $i . '@ARSHID6SOCIAL.example';
-
-			if ( username_exists( $login ) ) {
-				$existing = get_user_by( 'login', $login );
-				if ( $existing ) {
-					$user_ids[]     = $existing->ID;
-					$ids['users'][] = $existing->ID;
-				}
-				continue;
-			}
-
-			$uid = wp_create_user( $login, 'SampleUser@123', $email );
-			if ( is_wp_error( $uid ) ) {
-				continue;
-			}
-
-			wp_update_user(
-				array(
-					'ID'           => $uid,
-					'display_name' => $fn . ' ' . $ln,
-					'first_name'   => $fn,
-					'last_name'    => $ln,
-				)
-			);
-			add_user_meta( $uid, '_arshid6social_sample', '1' );
-
-			$user_ids[]     = $uid;
-			$ids['users'][] = $uid;
-		}
+		// Use the importing administrator as the demo author. Creating demo WP
+		// users would create real login-capable accounts, so sample data does
+		// not create or tag users for deletion.
+		$user_ids = array( $admin_id );
 
 		// ── 50 Activities ─────────────────────────────────────────────────────
 		$contents      = $this->activity_contents();

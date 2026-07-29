@@ -302,90 +302,159 @@ Yes. The REST API at `/wp-json/arshid6social/v1/` covers activity, members, frie
 10. Admin settings panel (tabbed)
 11. Admin moderation queue
 
-== External Services ==
+== External services ==
 
-This plugin connects to the following third-party services:
+This plugin can contact the following third-party services. Calls are feature-gated and happen only when the matching feature is enabled, configured, or triggered by a user or administrator action.
 
 = Gravatar =
-Member profile photos fall back to Gravatar (gravatar.com) when no custom avatar has been uploaded. The user's email hash is sent to Gravatar's servers. This happens when viewing a member profile.
+Member profile photos fall back to Gravatar when no custom avatar has been uploaded. The request sends the MD5 hash of the user's email address to Gravatar when an avatar is displayed.
 * Service: https://gravatar.com
 * Privacy Policy: https://automattic.com/privacy/
-* Terms of Service: https://gravatar.com/site/terms-of-service
+* Terms of Service: https://wordpress.com/tos/
 
-= GIPHY =
-When GIF comments are enabled, this plugin queries the GIPHY API to display trending and searchable GIFs. The user's search query is sent to GIPHY's servers. This happens when a user opens the GIF picker in comments.
-* Service: https://giphy.com
-* Privacy Policy: https://support.giphy.com/hc/en-us/articles/360032872931
-* Terms of Service: https://support.giphy.com/hc/en-us/articles/360020027752
+= GIF search APIs: GIPHY and Tenor =
+When GIF comments are enabled and an API key is configured, the GIF picker requests trending GIFs or search results from the selected provider. Search requests send the user's search term, the configured API key, and normal HTTP request metadata such as IP address and user agent.
+* GIPHY API: https://api.giphy.com/v1/gifs/
+  * Privacy Policy: https://support.giphy.com/hc/en-us/articles/360032872931-GIPHY-Privacy-Policy
+  * Terms of Service: https://support.giphy.com/hc/en-us/articles/360020027752-GIPHY-User-Terms-of-Service
+* Tenor API: https://tenor.googleapis.com/v2/
+  * Privacy Policy: https://policies.google.com/privacy
+  * Terms of Service: https://policies.google.com/terms
 
-= Tenor =
-When the GIF provider is set to Tenor in Engagement settings, this plugin queries the Tenor API (tenor.googleapis.com) to display trending and searchable GIFs. The user's search query and a generated anonymous client ID are sent to Tenor's servers. This happens when a user opens the GIF picker in comments.
-* Service: https://tenor.com
-* Privacy Policy: https://policies.google.com/privacy
-* Terms of Service: https://policies.google.com/terms
-
-= Social Embeds (YouTube, Vimeo, X / Twitter, Instagram, Facebook, TikTok, Spotify, SoundCloud, Pinterest, Reddit, Twitch, Dailymotion, Apple Music / Podcasts, LinkedIn, Telegram, Threads, Bluesky, Aparat) =
-When Social Embeds are enabled and a user pastes a supported URL into a post, comment, or message, this plugin fetches oEmbed data or Open Graph metadata from the respective platform. The URL is sent to the platform's servers only when an embed is requested. Each provider can be individually enabled or disabled in Settings → Engagement.
-* Facebook oEmbed: https://developers.facebook.com/docs/features-reference/oembed-read/
-  * Privacy Policy: https://www.facebook.com/privacy/policy/
-  * Terms of Service: https://www.facebook.com/terms.php
-* Instagram oEmbed: https://developers.facebook.com/docs/instagram/oembed
-  * Privacy Policy: https://privacycenter.instagram.com/policy/
-  * Terms of Service: https://help.instagram.com/581066165581870
-* Vimeo oEmbed: https://developer.vimeo.com/api/oembed/videos
+= Social embeds and link previews =
+When Social Embeds are enabled and a user pastes a supported URL into social content, the plugin fetches oEmbed data, iframe metadata, or Open Graph metadata for that URL. The requested URL, site server request metadata, and any administrator-configured provider token are sent to the matched provider. Rendered embeds or iframes may also cause the visitor's browser to contact the provider when the embedded content is displayed. Each provider can be disabled in Settings > Engagement.
+* YouTube / Google: https://www.youtube.com/oembed
+  * Privacy Policy: https://policies.google.com/privacy
+  * Terms of Service: https://policies.google.com/terms
+* Vimeo: https://vimeo.com/api/oembed.json
   * Privacy Policy: https://vimeo.com/privacy
   * Terms of Service: https://vimeo.com/terms
-* Telegram Embeds: https://core.telegram.org/widgets/post
+* X / Twitter: https://publish.twitter.com/oembed
+  * Privacy Policy: https://x.com/en/privacy
+  * Terms of Service: https://x.com/en/tos
+* Instagram / Meta: https://graph.facebook.com/v18.0/instagram_oembed
+  * Privacy Policy: https://privacycenter.instagram.com/policy/
+  * Terms of Service: https://help.instagram.com/581066165581870
+* Facebook / Meta: https://graph.facebook.com/v18.0/oembed_post
+  * Privacy Policy: https://www.facebook.com/privacy/policy/
+  * Terms of Service: https://www.facebook.com/terms.php
+* TikTok: https://www.tiktok.com/oembed
+  * Privacy Policy: https://www.tiktok.com/legal/page/us/privacy-policy/en
+  * Terms of Service: https://www.tiktok.com/legal/page/us/terms-of-service/en
+* Spotify: https://open.spotify.com/oembed
+  * Privacy Policy: https://www.spotify.com/legal/privacy-policy/
+  * Terms of Service: https://www.spotify.com/legal/end-user-agreement/
+* SoundCloud: https://soundcloud.com/oembed
+  * Privacy Policy: https://soundcloud.com/pages/privacy
+  * Terms of Service: https://soundcloud.com/terms-of-use
+* Pinterest: https://www.pinterest.com/oembed.json
+  * Privacy Policy: https://policy.pinterest.com/en/privacy-policy
+  * Terms of Service: https://policy.pinterest.com/en/terms-of-service
+* Reddit: https://www.reddit.com/oembed
+  * Privacy Policy: https://www.reddit.com/policies/privacy-policy
+  * Terms of Service: https://redditinc.com/policies/user-agreement
+* Twitch: https://clips.twitch.tv/embed and https://player.twitch.tv/
+  * Privacy Policy: https://legal.twitch.com/en/legal/privacy-notice/
+  * Terms of Service: https://legal.twitch.com/en/legal/terms-of-service/
+* Dailymotion: https://www.dailymotion.com/services/oembed
+  * Privacy Policy: https://legal.dailymotion.com/en/privacy-policy/
+  * Terms of Service: https://legal.dailymotion.com/en/terms-of-use/
+* Apple Music / Podcasts: https://music.apple.com and https://podcasts.apple.com
+  * Privacy Policy: https://www.apple.com/legal/privacy/
+  * Terms of Service: https://www.apple.com/legal/internet-services/itunes/
+* LinkedIn: https://www.linkedin.com
+  * Privacy Policy: https://www.linkedin.com/legal/privacy-policy
+  * Terms of Service: https://www.linkedin.com/legal/user-agreement
+* Telegram: https://t.me/
   * Privacy Policy: https://telegram.org/privacy
   * Terms of Service: https://telegram.org/tos
-* Aparat oEmbed: https://www.aparat.com
-  * Privacy Policy: https://www.aparat.com/
-  * Terms of Service: https://www.aparat.com/
-* YouTube: https://www.youtube.com — Privacy Policy: https://policies.google.com/privacy
-* X / Twitter: https://publish.twitter.com/oembed — Privacy Policy: https://twitter.com/en/privacy
-* TikTok: https://www.tiktok.com/oembed — Privacy Policy: https://www.tiktok.com/legal/privacy-policy
-* Spotify: https://open.spotify.com/oembed — Privacy Policy: https://www.spotify.com/legal/privacy-policy/
-* SoundCloud: https://developers.soundcloud.com/docs/oembed — Privacy Policy: https://soundcloud.com/pages/privacy
-* Pinterest: https://www.pinterest.com/oembed.json — Privacy Policy: https://policy.pinterest.com/en/privacy-policy
-* Reddit: https://www.reddit.com/oembed — Privacy Policy: https://www.reddit.com/policies/privacy-policy
-* Twitch: https://www.twitch.tv — Privacy Policy: https://legal.twitch.com/legal/privacy-notice/
-* Dailymotion: https://www.dailymotion.com/services/oembed — Privacy Policy: https://www.dailymotion.com/legal/privacy
-* Apple Music / Podcasts: https://music.apple.com — Privacy Policy: https://www.apple.com/legal/privacy/
-* LinkedIn: https://www.linkedin.com — Privacy Policy: https://www.linkedin.com/legal/privacy-policy
-* Threads: https://www.threads.net/oembed/ — Privacy Policy: https://privacycenter.instagram.com/policy/ — Terms of Service: https://help.instagram.com/581066165581870
-* Bluesky: https://bsky.app — Privacy Policy: https://bsky.social/about/support/privacy-policy — Terms of Service: https://bsky.social/about/support/tos
+* Threads / Meta: https://www.threads.net/oembed/
+  * Privacy Policy: https://help.instagram.com/515230437301944/
+  * Terms of Service: https://help.instagram.com/769983657850450
+* Bluesky: https://bsky.app
+  * Privacy Policy: https://bsky.social/about/support/privacy-policy
+  * Terms of Service: https://bsky.social/about/support/tos
+* Aparat: https://www.aparat.com/oembed.json
+  * Privacy Policy: https://www.aparat.com/privacy
+  * Terms of Service: https://www.aparat.com/terms
+* Generic Open Graph previews: when no named provider matches and generic previews are enabled, the plugin fetches the user-submitted target URL to read metadata. The external service is the target site chosen by the user; that site's own privacy policy and terms apply.
 
-= QR Code Generation (WeChat Sharing) =
-When a user opens the WeChat share option in the Social Share widget, this plugin fetches a QR code image from the QRServer API. The shared page URL is sent to QRServer's servers at that moment to generate the QR code image. No personal user data is sent — only the public page URL.
-* Service: https://goqr.me/
-* Privacy Policy: https://goqr.me/privacy-safety-security/
-
-= WhatsApp, Social Sharing (AOL Mail, Papaly, Twiddla, and 80+ networks) =
-The social sharing feature generates links that open third-party social networks or email clients in a new browser tab/window when the user explicitly clicks a share button. No data is sent automatically by the plugin — all sharing actions are user-initiated and subject to each platform's own privacy policy. Networks include (but are not limited to): WhatsApp, Facebook, Twitter/X, Telegram, LinkedIn, Reddit, Pinterest, Tumblr, AOL Mail, Papaly, Twiddla, and many others. A few of these smaller services do not publish a discoverable standalone privacy page; for those, only the service homepage is linked below, and their data handling is governed by whatever policy the service makes available on its own site at the time of use. Because sharing is always an explicit, user-initiated hand-off to the target service, this plugin transmits no data to any of them on its own.
-* WhatsApp: https://www.whatsapp.com
+= Social sharing links =
+The social sharing feature builds share links in the browser. No request is sent to these services until the user explicitly clicks a share button or opens a local share handler. The shared page URL and title are passed to the selected service or app.
+* Facebook / Meta: https://www.facebook.com/sharer/sharer.php
+  * Privacy Policy: https://www.facebook.com/privacy/policy/
+  * Terms of Service: https://www.facebook.com/terms.php
+* X / Twitter: https://twitter.com/intent/tweet
+  * Privacy Policy: https://x.com/en/privacy
+  * Terms of Service: https://x.com/en/tos
+* WhatsApp: https://api.whatsapp.com/send
   * Privacy Policy: https://www.whatsapp.com/legal/privacy-policy
   * Terms of Service: https://www.whatsapp.com/legal/terms-of-service
-* AOL Mail: https://mail.aol.com — Privacy Policy: https://legal.yahoo.com/us/en/yahoo/privacy/index.html
-* Papaly: https://papaly.com — Privacy Policy: https://papaly.com/privacy
-* Twiddla: https://www.twiddla.com (no standalone privacy page published; see the site homepage)
+* Telegram: https://t.me/share/url
+  * Privacy Policy: https://telegram.org/privacy
+  * Terms of Service: https://telegram.org/tos
+* LinkedIn: https://www.linkedin.com/sharing/share-offsite/
+  * Privacy Policy: https://www.linkedin.com/legal/privacy-policy
+  * Terms of Service: https://www.linkedin.com/legal/user-agreement
+* Reddit: https://reddit.com/submit
+  * Privacy Policy: https://www.reddit.com/policies/privacy-policy
+  * Terms of Service: https://redditinc.com/policies/user-agreement
+* Threads / Meta: https://www.threads.net/intent/post
+  * Privacy Policy: https://help.instagram.com/515230437301944/
+  * Terms of Service: https://help.instagram.com/769983657850450
+* Bluesky: https://bsky.app/intent/compose
+  * Privacy Policy: https://bsky.social/about/support/privacy-policy
+  * Terms of Service: https://bsky.social/about/support/tos
+* Pinterest: https://pinterest.com/pin/create/button/
+  * Privacy Policy: https://policy.pinterest.com/en/privacy-policy
+  * Terms of Service: https://policy.pinterest.com/en/terms-of-service
+* LINE: https://social-plugins.line.me/lineit/share
+  * Privacy Policy: https://www.lycorp.co.jp/en/company/privacypolicy/
+  * Terms of Service: https://terms.line.me/line_terms
+* Gmail / Google: https://mail.google.com/mail/
+  * Privacy Policy: https://policies.google.com/privacy
+  * Terms of Service: https://policies.google.com/terms
+* Yahoo Mail and AOL Mail: https://compose.mail.yahoo.com/ and https://mail.aol.com/
+  * Privacy Policy: https://legal.yahoo.com/us/en/yahoo/privacy/index.html
+  * Terms of Service: https://legal.yahoo.com/us/en/yahoo/terms/otos/index.html
+* Outlook.com / Microsoft: https://outlook.live.com/owa/
+  * Privacy Policy: https://privacy.microsoft.com/privacystatement
+  * Terms of Service: https://www.microsoft.com/servicesagreement
+* Viber local app handler: viber://forward
+  * Privacy Policy: https://www.viber.com/en/terms/viber-privacy-policy/
+  * Terms of Service: https://www.viber.com/en/terms/viber-terms-use/
+* Email, SMS, copy-link, and send-as-message actions are local browser/site actions. The plugin does not make a third-party HTTP request for those actions.
 
-= Stripe (Monetization) =
-When the Monetization module is enabled, creator onboarding and payment processing are handled by Stripe Connect. The plugin communicates with the Stripe API to create and manage Stripe Connect accounts, subscriptions, and payment intents. The plugin does NOT store raw bank details — Stripe handles creator identity verification (KYC) and bank payouts directly.
-* Service: https://stripe.com
+= Stripe =
+When the Monetization module is enabled and Stripe keys are configured, the checkout UI loads Stripe.js from Stripe and server-side monetization requests call the Stripe API to create or retrieve payment intents and process webhook events. Data sent can include amount, currency, payment intent identifiers, Stripe keys, purchaser and creator user IDs, activity IDs, and Stripe metadata required to complete the payment. The plugin does not store raw card or bank details.
+* Stripe.js: https://js.stripe.com/v3/
+* Stripe API: https://api.stripe.com/v1/
 * Privacy Policy: https://stripe.com/privacy
 * Terms of Service: https://stripe.com/legal
 
 = Akismet =
-When Akismet spam checking is enabled (on by default) and the separate Akismet plugin is installed and active on the site, activity posts and private messages are sent to Akismet's spam-checking API before being published. Data sent includes the post/message content, the author's IP address, and user agent. This feature is a no-op if the Akismet plugin is not installed.
+When Akismet spam checking is enabled and the separate Akismet plugin is installed and active, activity content is sent to Akismet's spam-checking API before publication. Data sent includes the submitted content, author information, IP address, user agent, referrer, permalink, and site URL.
 * Service: https://akismet.com
 * Privacy Policy: https://automattic.com/privacy/
 * Terms of Service: https://akismet.com/tos/
 
+= WordPress.org theme downloads =
+The setup wizard can download a WordPress.org theme ZIP when an administrator explicitly chooses to install a theme from the wizard. The requested theme slug and normal server request metadata are sent to WordPress.org.
+* Service: https://downloads.wordpress.org/theme/
+* Privacy Policy: https://wordpress.org/about/privacy/
+* Project License and Policies: https://wordpress.org/about/license/
+
+= Developer build helper =
+The development-only Bootstrap Icons download helper in the build directory downloads the Bootstrap Icons release ZIP from GitHub only when a maintainer runs that script manually. This is not executed during normal plugin runtime.
+* GitHub: https://github.com/twbs/icons/
+  * Privacy Policy: https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
+  * Terms of Service: https://docs.github.com/site-policy/github-terms/github-terms-of-service
+
 == Changelog ==
 
 = 1.8.3 =
-* Final pre-submission audit: re-verified the full WordPress.org review checklist (REST permission callbacks, register_setting sanitizers, output escaping, input sanitization, nonces, prepared SQL, prefixing, text domain, inline asset enqueuing, external-services documentation, ABSPATH guards, and distribution hygiene) against the current code with WPCS and the Plugin Check security sniffs — all clean.
-* Updated the Twitch privacy-policy link in the External Services documentation to its canonical `legal.twitch.com` address (the previous `twitch.tv` link only reached it via redirect).
+* Security hardening: tightened REST permission callbacks, social media file serving, story visibility checks, friend-request acceptance, monetization setting sanitization, and remote GIF API requests.
+* External services documentation: rebuilt the section to match the currently supported services and removed obsolete sharing-provider disclosures.
 
 = 1.8.2 =
 * Plugin Check: resolved the remaining `PluginCheck.Security.DirectDB.UnescapedDBParameter` notices by annotating the safe dynamic table-name/whitelist identifiers (all query values are bound via `$wpdb->prepare()` placeholders — never raw user input) and cleared the last `PreparedSQLPlaceholders` notices.
@@ -401,7 +470,7 @@ When Akismet spam checking is enabled (on by default) and the separate Akismet p
 = 1.8.0 =
 * Consistency: migrated all custom database tables from the legacy `sn_` secondary prefix to the plugin's standard `arshid6social_` prefix. Existing sites are upgraded automatically and losslessly via an idempotent `RENAME TABLE` migration on update; fresh installs create the new table names directly.
 * Consistency: renamed the remaining client-side `sn_*` form-field names (GIF and attachment staging fields) to the `arshid6social_*` prefix. No stored data or request payloads are affected.
-* Fixed broken third-party Terms/Privacy links in the External Services documentation (Facebook oEmbed, SoundCloud, AOL Mail, Twiddla).
+* Fixed broken third-party Terms/Privacy links in the External Services documentation.
 * Packaging: the development-only `build/` tooling is now excluded from the distributed plugin via `.distignore` / `.gitattributes` and a `bin/make-dist.sh` build script.
 
 = 1.7.0 =

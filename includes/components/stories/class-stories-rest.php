@@ -43,7 +43,7 @@ class Stories_REST extends \WP_REST_Controller {
 				array(
 					'methods'             => \WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'create_story' ),
-					'permission_callback' => 'is_user_logged_in',
+					'permission_callback' => array( $this, 'require_login' ),
 					'args'                => array(
 						'privacy'      => array(
 							'default'           => 'public',
@@ -224,18 +224,21 @@ class Stories_REST extends \WP_REST_Controller {
 				array(
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_close_friends' ),
-					'permission_callback' => 'is_user_logged_in',
+					'permission_callback' => array( $this, 'require_login' ),
 				),
 				array(
 					'methods'             => \WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'toggle_close_friend' ),
-					'permission_callback' => 'is_user_logged_in',
+					'permission_callback' => array( $this, 'can_manage_close_friend' ),
 					'args'                => array(
 						'friend_id' => array(
 							'required'          => true,
 							'sanitize_callback' => 'absint',
 						),
-						'add'       => array( 'default' => true ),
+						'add'       => array(
+							'default'           => true,
+							'sanitize_callback' => 'rest_sanitize_boolean',
+						),
 					),
 				),
 			)
@@ -249,7 +252,7 @@ class Stories_REST extends \WP_REST_Controller {
 				array(
 					'methods'             => \WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'mute' ),
-					'permission_callback' => 'is_user_logged_in',
+					'permission_callback' => array( $this, 'can_mute_user' ),
 					'args'                => array(
 						'user_id' => array(
 							'required'          => true,
@@ -260,7 +263,7 @@ class Stories_REST extends \WP_REST_Controller {
 				array(
 					'methods'             => \WP_REST_Server::DELETABLE,
 					'callback'            => array( $this, 'unmute' ),
-					'permission_callback' => 'is_user_logged_in',
+					'permission_callback' => array( $this, 'can_mute_user' ),
 					'args'                => array(
 						'user_id' => array(
 							'required'          => true,
@@ -279,8 +282,7 @@ class Stories_REST extends \WP_REST_Controller {
 				array(
 					'methods'             => \WP_REST_Server::READABLE,
 					'callback'            => array( $this, 'get_highlights' ),
-					// Public highlights: only public story data is exposed; no private content returned for guests.
-					'permission_callback' => '__return_true',
+					'permission_callback' => array( $this, 'can_view_highlights' ),
 					'args'                => array(
 						'user_id' => array(
 							'default'           => 0,
@@ -291,7 +293,7 @@ class Stories_REST extends \WP_REST_Controller {
 				array(
 					'methods'             => \WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'create_highlight' ),
-					'permission_callback' => 'is_user_logged_in',
+					'permission_callback' => array( $this, 'require_login' ),
 					'args'                => array(
 						'title'     => array(
 							'required'          => true,
@@ -333,7 +335,7 @@ class Stories_REST extends \WP_REST_Controller {
 				array(
 					'methods'             => \WP_REST_Server::CREATABLE,
 					'callback'            => array( $this, 'add_to_highlight' ),
-					'permission_callback' => 'is_user_logged_in',
+					'permission_callback' => array( $this, 'can_add_to_highlight' ),
 					'args'                => array(
 						'id'       => array(
 							'required'          => true,
@@ -472,11 +474,12 @@ class Stories_REST extends \WP_REST_Controller {
 
 		// Verify the target is an actual friend of the current user before modifying close-friends.
 		$friends_comp = ARSHID6SOCIAL()->component( 'friends' );
-		if ( $friends_comp ) {
-			$status = $friends_comp->get_friendship_status( $user_id, $friend_id );
-			if ( 'friends' !== $status ) {
-				return new \WP_Error( 'arshid6social_not_friends', __( 'You can only add friends to your close-friends list.', '6arshid-social-community' ), array( 'status' => 403 ) );
-			}
+		if ( ! $friends_comp || ! get_userdata( $friend_id ) || $friend_id === $user_id ) {
+			return new \WP_Error( 'arshid6social_not_found', __( 'User not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
+		}
+		$status = $friends_comp->get_friendship_status( $user_id, $friend_id );
+		if ( 'friends' !== $status ) {
+			return new \WP_Error( 'arshid6social_not_friends', __( 'You can only add friends to your close-friends list.', '6arshid-social-community' ), array( 'status' => 403 ) );
 		}
 
 		if ( $add ) {
@@ -498,9 +501,15 @@ class Stories_REST extends \WP_REST_Controller {
 		return rest_ensure_response( array( 'muted' => false ) );
 	}
 
-	public function get_highlights( \WP_REST_Request $request ): \WP_REST_Response {
-		$user_id = $request->get_param( 'user_id' ) ?: get_current_user_id();
-		return rest_ensure_response( array( 'highlights' => $this->stories->get_highlights( $user_id ) ) );
+	public function get_highlights( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
+		$user_id = absint( $request->get_param( 'user_id' ) );
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+		if ( ! $user_id || ! get_userdata( $user_id ) ) {
+			return new \WP_Error( 'arshid6social_not_found', __( 'User not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
+		}
+		return rest_ensure_response( array( 'highlights' => $this->stories->get_visible_highlights( $user_id, get_current_user_id() ) ) );
 	}
 
 	public function create_highlight( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
@@ -533,6 +542,89 @@ class Stories_REST extends \WP_REST_Controller {
 	}
 
 	// ── Permission callbacks ──────────────────────────────────────────────────
+
+	public function require_login( \WP_REST_Request $request ): bool|\WP_Error {
+		if ( is_user_logged_in() ) {
+			return true;
+		}
+		return new \WP_Error( 'rest_forbidden', __( 'Authentication required.', '6arshid-social-community' ), array( 'status' => 401 ) );
+	}
+
+	public function can_manage_close_friend( \WP_REST_Request $request ): bool|\WP_Error {
+		$login = $this->require_login( $request );
+		if ( true !== $login ) {
+			return $login;
+		}
+
+		$user_id      = get_current_user_id();
+		$friend_id    = absint( $request->get_param( 'friend_id' ) );
+		$friends_comp = ARSHID6SOCIAL()->component( 'friends' );
+
+		if ( ! $friend_id || ! get_userdata( $friend_id ) || $friend_id === $user_id ) {
+			return new \WP_Error( 'arshid6social_not_found', __( 'User not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
+		}
+		if ( ! $friends_comp ) {
+			return new \WP_Error( 'arshid6social_disabled', __( 'Friends component is not active.', '6arshid-social-community' ), array( 'status' => 503 ) );
+		}
+		if ( 'friends' !== $friends_comp->get_friendship_status( $user_id, $friend_id ) ) {
+			return new \WP_Error( 'arshid6social_not_friends', __( 'You can only add friends to your close-friends list.', '6arshid-social-community' ), array( 'status' => 403 ) );
+		}
+
+		return true;
+	}
+
+	public function can_mute_user( \WP_REST_Request $request ): bool|\WP_Error {
+		$login = $this->require_login( $request );
+		if ( true !== $login ) {
+			return $login;
+		}
+
+		$user_id = absint( $request->get_param( 'user_id' ) );
+		if ( ! $user_id || ! get_userdata( $user_id ) || $user_id === get_current_user_id() ) {
+			return new \WP_Error( 'arshid6social_not_found', __( 'User not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
+		}
+
+		return true;
+	}
+
+	public function can_view_highlights( \WP_REST_Request $request ): bool|\WP_Error {
+		$user_id = absint( $request->get_param( 'user_id' ) );
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+		if ( ! $user_id || ! get_userdata( $user_id ) ) {
+			return new \WP_Error( 'arshid6social_not_found', __( 'User not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
+		}
+
+		return true;
+	}
+
+	public function can_add_to_highlight( \WP_REST_Request $request ): bool|\WP_Error {
+		$login = $this->require_login( $request );
+		if ( true !== $login ) {
+			return $login;
+		}
+
+		global $wpdb;
+		$highlight_owner = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_story_highlights WHERE id = %d",
+				absint( $request['id'] )
+			)
+		);
+		$story_owner     = (int) $wpdb->get_var(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_stories WHERE id = %d",
+				absint( $request->get_param( 'story_id' ) )
+			)
+		);
+
+		if ( ! $highlight_owner || ! $story_owner ) {
+			return true; // Let the callback return a resource-specific 400.
+		}
+
+		return $highlight_owner === get_current_user_id() && $story_owner === get_current_user_id();
+	}
 
 	/**
 	 * Object-level check for routes addressing a story item (/view, /react,

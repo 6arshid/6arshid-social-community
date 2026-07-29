@@ -37,13 +37,20 @@ class Tag_Friends_REST {
 			array(
 				'methods'             => \WP_REST_Server::DELETABLE,
 				'callback'            => array( $this, 'remove_tag' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'require_login' ),
 			)
 		);
 	}
 
-	public function can_tag(): bool {
-		return is_user_logged_in();
+	public function require_login( \WP_REST_Request $req ): bool|\WP_Error {
+		if ( is_user_logged_in() ) {
+			return true;
+		}
+		return new \WP_Error( 'rest_forbidden', __( 'Authentication required.', '6arshid-social-community' ), array( 'status' => 401 ) );
+	}
+
+	public function can_tag( \WP_REST_Request $req ): bool|\WP_Error {
+		return $this->require_login( $req );
 	}
 
 	public function get_tags( \WP_REST_Request $req ): \WP_REST_Response {

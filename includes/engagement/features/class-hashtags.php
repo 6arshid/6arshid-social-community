@@ -38,7 +38,6 @@ class Hashtags {
 
 		// Shortcode (primary name + legacy alias for existing post content).
 		add_shortcode( 'arshid6social_trending_hashtags', array( $this, 'shortcode_trending' ) );
-		add_shortcode( 'sn_trending_hashtags', array( $this, 'shortcode_trending' ) );
 
 		// Render hashtag links in activity content output.
 		add_filter( 'arshid6social_activity_content', array( $this, 'linkify' ), 10 );

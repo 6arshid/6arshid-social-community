@@ -156,7 +156,7 @@ class Social_Embeds {
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'rest_preview' ),
-				'permission_callback' => static fn() => is_user_logged_in(),
+				'permission_callback' => array( $this, 'require_login' ),
 				'args'                => array(
 					'url' => array(
 						'required'          => true,
@@ -176,6 +176,18 @@ class Social_Embeds {
 				'callback'            => array( $this, 'rest_providers' ),
 				'permission_callback' => '__return_true',
 			)
+		);
+	}
+
+	public function require_login( \WP_REST_Request $request ): true|\WP_Error {
+		if ( is_user_logged_in() ) {
+			return true;
+		}
+
+		return new \WP_Error(
+			'arshid6social_login_required',
+			__( 'You must be logged in to perform this action.', '6arshid-social-community' ),
+			array( 'status' => 401 )
 		);
 	}
 

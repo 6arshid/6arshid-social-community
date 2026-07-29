@@ -479,7 +479,7 @@ final class Admin {
 	private function render_monetization_transactions_tab(): void {
 		global $wpdb;
 
-		$table = $wpdb->prefix . 'sixarshidsc_transactions';
+		$table = $wpdb->prefix . 'arshid6social_monetization_transactions';
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 		if ( $wpdb->get_var( "SHOW TABLES LIKE '{$table}'" ) !== $table ) {
 			echo '<p class="description">' . esc_html__( 'Transactions table does not exist yet. Enable Monetization and save settings first.', '6arshid-social-community' ) . '</p>';

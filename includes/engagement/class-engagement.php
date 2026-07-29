@@ -98,10 +98,7 @@ class Engagement {
 		// Fallback: detect via shortcode in post content (covers cases where the option is not set).
 		if ( ! $on_saved_posts_page && is_singular() ) {
 			global $post;
-			if ( $post && (
-				has_shortcode( $post->post_content, 'arshid6social_bookmarks' ) ||
-				has_shortcode( $post->post_content, 'sn_bookmarks' )
-			) ) {
+			if ( $post && has_shortcode( $post->post_content, 'arshid6social_bookmarks' ) ) {
 				$on_saved_posts_page = true;
 			}
 		}

@@ -32,7 +32,6 @@ class Verification {
 	private function hooks(): void {
 		// Shortcode (primary name + legacy alias for existing post content).
 		add_shortcode( 'arshid6social_verification_request', array( $this, 'shortcode_request_form' ) );
-		add_shortcode( 'sn_verification_request', array( $this, 'shortcode_request_form' ) );
 
 		// Inject badge into display names throughout the site.
 		add_filter( 'arshid6social_format_member', array( $this, 'inject_badge_into_member' ), 10, 2 );

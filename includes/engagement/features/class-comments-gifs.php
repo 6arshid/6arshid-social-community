@@ -49,7 +49,7 @@ class Comments_GIFs {
 			return $cached;
 		}
 
-		$response = wp_remote_get(
+		$response = wp_safe_remote_get(
 			add_query_arg(
 				array(
 					'api_key' => $key,
@@ -57,10 +57,14 @@ class Comments_GIFs {
 					'rating'  => 'g',
 				),
 				'https://api.giphy.com/v1/gifs/trending'
+			),
+			array(
+				'timeout'     => 10,
+				'redirection' => 3,
 			)
 		);
 
-		if ( is_wp_error( $response ) ) {
+		if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
 			return array();
 		}
 
@@ -72,7 +76,7 @@ class Comments_GIFs {
 
 	private function fetch_giphy_search( string $q, int $limit = 25 ): array {
 		$key      = $this->api_key();
-		$response = wp_remote_get(
+		$response = wp_safe_remote_get(
 			add_query_arg(
 				array(
 					'api_key' => $key,
@@ -81,10 +85,14 @@ class Comments_GIFs {
 					'rating'  => 'g',
 				),
 				'https://api.giphy.com/v1/gifs/search'
+			),
+			array(
+				'timeout'     => 10,
+				'redirection' => 3,
 			)
 		);
 
-		if ( is_wp_error( $response ) ) {
+		if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
 			return array();
 		}
 
@@ -117,7 +125,7 @@ class Comments_GIFs {
 			return $cached;
 		}
 
-		$response = wp_remote_get(
+		$response = wp_safe_remote_get(
 			add_query_arg(
 				array(
 					'key'           => $key,
@@ -126,10 +134,14 @@ class Comments_GIFs {
 					'media_filter'  => 'gif',
 				),
 				'https://tenor.googleapis.com/v2/featured'
+			),
+			array(
+				'timeout'     => 10,
+				'redirection' => 3,
 			)
 		);
 
-		if ( is_wp_error( $response ) ) {
+		if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
 			return array();
 		}
 
@@ -141,7 +153,7 @@ class Comments_GIFs {
 
 	private function fetch_tenor_search( string $q, int $limit = 25 ): array {
 		$key      = $this->api_key();
-		$response = wp_remote_get(
+		$response = wp_safe_remote_get(
 			add_query_arg(
 				array(
 					'key'           => $key,
@@ -151,10 +163,14 @@ class Comments_GIFs {
 					'media_filter'  => 'gif',
 				),
 				'https://tenor.googleapis.com/v2/search'
+			),
+			array(
+				'timeout'     => 10,
+				'redirection' => 3,
 			)
 		);
 
-		if ( is_wp_error( $response ) ) {
+		if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
 			return array();
 		}
 

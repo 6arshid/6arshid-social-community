@@ -22,7 +22,7 @@ class Friends_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'get_status' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'require_login' ),
 			)
 		);
 
@@ -44,7 +44,7 @@ class Friends_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::CREATABLE,
 				'callback'            => array( $this, 'accept_request' ),
-				'permission_callback' => array( $this, 'can_target_user' ),
+				'permission_callback' => array( $this, 'can_accept_request' ),
 			)
 		);
 
@@ -102,9 +102,19 @@ class Friends_REST extends \WP_REST_Controller {
 			array(
 				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => array( $this, 'suggestions' ),
-				'permission_callback' => 'is_user_logged_in',
+				'permission_callback' => array( $this, 'require_login' ),
 			)
 		);
+	}
+
+	/**
+	 * Requires an authenticated REST user.
+	 */
+	public function require_login( \WP_REST_Request $request ): bool|\WP_Error {
+		if ( is_user_logged_in() ) {
+			return true;
+		}
+		return new \WP_Error( 'rest_forbidden', __( 'Authentication required.', '6arshid-social-community' ), array( 'status' => 401 ) );
 	}
 
 	/**
@@ -122,6 +132,33 @@ class Friends_REST extends \WP_REST_Controller {
 		if ( ! get_userdata( $target ) ) {
 			return new \WP_Error( 'arshid6social_not_found', __( 'User not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
 		}
+		return true;
+	}
+
+	/**
+	 * Accepting a friend request is only allowed for a real inbound pending
+	 * request from the route target to the current user.
+	 */
+	public function can_accept_request( \WP_REST_Request $request ): bool|\WP_Error {
+		$base = $this->can_target_user( $request );
+		if ( true !== $base ) {
+			return $base;
+		}
+
+		$component = ARSHID6SOCIAL()->component( 'friends' );
+		$current   = get_current_user_id();
+		$requester = absint( $request['id'] );
+
+		if ( ! $component ) {
+			return new \WP_Error( 'arshid6social_disabled', __( 'Friends component is not active.', '6arshid-social-community' ), array( 'status' => 503 ) );
+		}
+		if ( $component->is_blocked( $current, $requester ) ) {
+			return new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', '6arshid-social-community' ), array( 'status' => 403 ) );
+		}
+		if ( 'pending_received' !== $component->get_friendship_status( $current, $requester ) ) {
+			return new \WP_Error( 'arshid6social_no_pending_request', __( 'No pending friend request from this user.', '6arshid-social-community' ), array( 'status' => 409 ) );
+		}
+
 		return true;
 	}
 
@@ -179,9 +216,11 @@ class Friends_REST extends \WP_REST_Controller {
 		return rest_ensure_response( array( 'status' => 'pending_sent' ) );
 	}
 
-	public function accept_request( $request ): \WP_REST_Response {
+	public function accept_request( $request ): \WP_REST_Response|\WP_Error {
 		$component = ARSHID6SOCIAL()->component( 'friends' );
-		$component->accept_request( get_current_user_id(), (int) $request['id'] );
+		if ( ! $component || ! $component->accept_request( get_current_user_id(), (int) $request['id'] ) ) {
+			return new \WP_Error( 'arshid6social_no_pending_request', __( 'No pending friend request from this user.', '6arshid-social-community' ), array( 'status' => 409 ) );
+		}
 		return rest_ensure_response( array( 'status' => 'friends' ) );
 	}
 

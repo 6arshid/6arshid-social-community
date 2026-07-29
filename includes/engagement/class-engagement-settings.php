@@ -603,7 +603,7 @@ class Engagement_Settings {
 		?>
 		<div class="arshid6social-eng-section">
 			<h3><?php esc_html_e( 'External Social Sharing', '6arshid-social-community' ); ?></h3>
-			<p class="description"><?php esc_html_e( 'Let visitors share activity posts to 80+ external networks (Facebook, WhatsApp, Telegram, X, and more).', '6arshid-social-community' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Let visitors share activity posts to selected external networks such as Facebook, WhatsApp, Telegram, X, LinkedIn, Reddit, and Bluesky.', '6arshid-social-community' ); ?></p>
 			<?php $this->toggle( 'arshid6social_eng_social_share_external', __( 'Enable External Social Sharing', '6arshid-social-community' ) ); ?>
 
 			<div class="arshid6social-eng-sub">

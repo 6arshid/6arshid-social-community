@@ -531,100 +531,351 @@ class Moderation {
 	}
 
 	/**
-	 * Serves a social-network media file, blocking access if the owner is
-	 * suspended. Called via admin-ajax.php after the .htaccess rewrites
-	 * all direct file requests through WordPress.
+	 * Serves a social-network media file through WordPress after canonical
+	 * path resolution and object-level visibility checks.
 	 */
 	public function serve_media_file(): void {
-		$raw_uri = sanitize_text_field( wp_unslash( $_GET['arshid6social_uri'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification
+		$raw_uri  = isset( $_GET['arshid6social_uri'] ) ? (string) wp_unslash( $_GET['arshid6social_uri'] ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+		$resolved = $this->resolve_social_media_request( $raw_uri );
 
-		if ( ! $raw_uri ) {
-			status_header( 400 );
-			exit;
-		}
-
-		// Extract activity ID from URI pattern: /social-network/activity/{id}/filename
-		if ( ! preg_match( '#/social-network/activity/(\d+)/([^?]+)$#', $raw_uri, $m ) ) {
-			// Not an activity file — serve normally (profile/group covers etc.).
-			$this->passthrough_file( $raw_uri );
-			return;
-		}
-
-		$activity_id = (int) $m[1];
-		$filename    = sanitize_file_name( $m[2] );
-
-		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$row = $wpdb->get_row(
-			$wpdb->prepare(
-				"SELECT a.user_id, med.file_path, med.mime_type
-				 FROM {$wpdb->prefix}arshid6social_activity a
-				 JOIN {$wpdb->prefix}arshid6social_activity_media med ON med.activity_id = a.id
-				 WHERE a.id = %d
-				   AND med.file_path LIKE %s
-				 LIMIT 1",
-				$activity_id,
-				'%' . $wpdb->esc_like( $filename )
-			)
-		);
-
-		if ( ! $row || ! file_exists( $row->file_path ) ) {
+		if ( ! $resolved ) {
 			status_header( 404 );
 			exit;
 		}
 
-		// Block access if the posting user is suspended.
+		if ( ! $this->get_safe_mime_type( $resolved['file_path'] ) ) {
+			status_header( 403 );
+			exit;
+		}
+
+		// Dispatch by owned media bucket after canonical path resolution.
+		if ( preg_match( '#^activity/(\d+)/#', $resolved['rel_path'], $m ) ) {
+			$this->serve_activity_media( (int) $m[1], $resolved['file_path'] );
+			return;
+		}
+
+		if ( str_starts_with( $resolved['rel_path'], 'stories/' ) ) {
+			$this->serve_story_media( $resolved['file_path'] );
+			return;
+		}
+		if ( preg_match( '#^verification-docs/(\d+)/#', $resolved['rel_path'], $m ) ) {
+			$this->serve_verification_document( (int) $m[1], $resolved['file_path'] );
+			return;
+		}
+		if ( preg_match( '#^users/(\d+)/#', $resolved['rel_path'], $m ) ) {
+			$this->serve_user_media( (int) $m[1], $resolved['file_path'] );
+			return;
+		}
+		if ( preg_match( '#^groups/(\d+)/#', $resolved['rel_path'], $m ) ) {
+			$this->serve_group_media( (int) $m[1], $resolved['file_path'] );
+			return;
+		}
+
+		status_header( 404 );
+		exit;
+	}
+
+	/**
+	 * Resolves a request URI to a canonical file under uploads/social-network.
+	 *
+	 * @return array{file_path:string,rel_path:string}|null
+	 */
+	private function resolve_social_media_request( string $raw_uri ): ?array {
+		$raw_uri = trim( $raw_uri );
+		if ( '' === $raw_uri || str_contains( $raw_uri, "\0" ) ) {
+			return null;
+		}
+
+		$decoded = rawurldecode( $raw_uri );
+		if ( str_contains( $decoded, "\0" ) ) {
+			return null;
+		}
+
+		$url_parts = wp_parse_url( $decoded );
+		if ( false === $url_parts ) {
+			return null;
+		}
+
+		$upload_dir = wp_upload_dir();
+		if ( ! empty( $url_parts['host'] ) ) {
+			$allowed_hosts = array_filter(
+				array(
+					wp_parse_url( home_url( '/' ), PHP_URL_HOST ),
+					wp_parse_url( $upload_dir['baseurl'], PHP_URL_HOST ),
+				)
+			);
+			if ( ! in_array( strtolower( $url_parts['host'] ), array_map( 'strtolower', $allowed_hosts ), true ) ) {
+				return null;
+			}
+		}
+
+		$path = isset( $url_parts['path'] ) ? (string) $url_parts['path'] : $decoded;
+		$path = wp_normalize_path( $path );
+		if ( str_contains( $path, '\\' ) || preg_match( '#(?:^|/)\.\.(?:/|$)#', $path ) ) {
+			return null;
+		}
+
+		$needle = '/social-network/';
+		$pos    = strpos( $path, $needle );
+		if ( false === $pos ) {
+			return null;
+		}
+
+		$rel_path = ltrim( substr( $path, $pos + strlen( $needle ) ), '/' );
+		if ( '' === $rel_path || preg_match( '#(?:^|/)\.\.(?:/|$)#', $rel_path ) ) {
+			return null;
+		}
+
+		$base_dir = realpath( trailingslashit( $upload_dir['basedir'] ) . 'social-network' );
+		if ( ! $base_dir ) {
+			return null;
+		}
+
+		$candidate = $base_dir . DIRECTORY_SEPARATOR . str_replace( '/', DIRECTORY_SEPARATOR, $rel_path );
+		$real_file = realpath( $candidate );
+		if ( ! $real_file || ! is_file( $real_file ) ) {
+			return null;
+		}
+
+		$base_norm = trailingslashit( wp_normalize_path( $base_dir ) );
+		$file_norm = wp_normalize_path( $real_file );
+		if ( ! str_starts_with( $file_norm, $base_norm ) ) {
+			return null;
+		}
+
+		return array(
+			'file_path' => $real_file,
+			'rel_path'  => $rel_path,
+		);
+	}
+
+	private function serve_activity_media( int $activity_id, string $file_path ): void {
+		global $wpdb;
+
+		$rows = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT a.id, a.user_id, a.privacy, a.hide_sitewide, a.is_spam, med.file_path, med.mime_type
+				 FROM {$wpdb->prefix}arshid6social_activity a
+				 JOIN {$wpdb->prefix}arshid6social_activity_media med ON med.activity_id = a.id
+				 WHERE a.id = %d",
+				$activity_id
+			)
+		) ?: array();
+
+		$row = $this->find_row_for_file_path( $rows, $file_path );
+		if ( ! $row ) {
+			status_header( 404 );
+			exit;
+		}
+		if ( get_user_meta( (int) $row->user_id, 'arshid6social_suspended', true ) ) {
+			$this->exit_suspended();
+		}
+		if ( ! $this->current_user_can_view_activity_media( $row ) ) {
+			status_header( 403 );
+			exit;
+		}
+
+		$mime = $this->get_safe_mime_type( $file_path, (string) $row->mime_type );
+		if ( ! $mime ) {
+			status_header( 403 );
+			exit;
+		}
+
+		$this->output_file( $file_path, $mime );
+	}
+
+	private function serve_story_media( string $file_path ): void {
+		global $wpdb;
+
+		$normalized_path = wp_normalize_path( $file_path );
+		$native_path     = str_replace( '/', DIRECTORY_SEPARATOR, $normalized_path );
+		$rows            = $wpdb->get_results(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT s.*, si.file_path AS item_file_path
+				 FROM {$wpdb->prefix}arshid6social_story_items si
+				 JOIN {$wpdb->prefix}arshid6social_stories s ON s.id = si.story_id
+				 WHERE si.file_path IN (%s, %s)",
+				$normalized_path,
+				$native_path
+			)
+		) ?: array();
+
+		$row = $this->find_row_for_file_path( $rows, $file_path, 'item_file_path' );
+		if ( ! $row ) {
+			status_header( 404 );
+			exit;
+		}
 		if ( get_user_meta( (int) $row->user_id, 'arshid6social_suspended', true ) ) {
 			$this->exit_suspended();
 		}
 
-		$this->output_file( $row->file_path, $row->mime_type );
-	}
-
-	/**
-	 * Serves a non-activity file (cover, avatar, story, verification doc)
-	 * after checking suspension state for user-owned and group-owned files.
-	 *
-	 * @param string $uri Request URI.
-	 */
-	private function passthrough_file( string $uri ): void {
-		$upload_dir  = wp_upload_dir();
-		$upload_base = wp_parse_url( $upload_dir['baseurl'], PHP_URL_PATH );
-		$rel_path    = str_replace( $upload_base, '', strtok( $uri, '?' ) );
-		$file_path   = $upload_dir['basedir'] . $rel_path;
-
-		if ( ! file_exists( $file_path ) ) {
-			status_header( 404 );
+		$stories = ARSHID6SOCIAL()->component( 'stories' );
+		if ( ! $stories || ! $stories->can_view_story( $row, get_current_user_id() ) ) {
+			status_header( 403 );
 			exit;
 		}
 
-		// Block files belonging to a suspended user (/social-network/users/{id}/).
-		if (
-			preg_match( '#/social-network/users/(\d+)/#', $file_path, $m ) &&
-			get_user_meta( (int) $m[1], 'arshid6social_suspended', true )
-		) {
+		$mime = $this->get_safe_mime_type( $file_path );
+		if ( ! $mime ) {
+			status_header( 403 );
+			exit;
+		}
+
+		$this->output_file( $file_path, $mime );
+	}
+
+	private function serve_verification_document( int $owner_id, string $file_path ): void {
+		$current_user = get_current_user_id();
+		if ( $current_user !== $owner_id && ! current_user_can( 'arshid6social_manage_members' ) && ! current_user_can( 'arshid6social_manage_settings' ) ) {
+			status_header( 403 );
+			exit;
+		}
+		if ( get_user_meta( $owner_id, 'arshid6social_suspended', true ) && ! current_user_can( 'arshid6social_manage_members' ) ) {
 			$this->exit_suspended();
 		}
 
-		// Block files belonging to a suspended group or a group whose creator is suspended.
-		if ( preg_match( '#/social-network/groups/(\d+)/#', $file_path, $m ) ) {
-			global $wpdb;
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$group_row = $wpdb->get_row(
-				$wpdb->prepare( "SELECT is_suspended, creator_id FROM {$wpdb->prefix}arshid6social_groups WHERE id = %d LIMIT 1", (int) $m[1] )
-			);
-			if (
-				$group_row && (
-					(bool) $group_row->is_suspended ||
-					( $group_row->creator_id && get_user_meta( (int) $group_row->creator_id, 'arshid6social_suspended', true ) )
-				)
-			) {
-				$this->exit_suspended();
-			}
+		$mime = $this->get_safe_mime_type( $file_path );
+		if ( ! $mime ) {
+			status_header( 403 );
+			exit;
 		}
 
-		$mime = wp_check_filetype( $file_path )['type'] ?: 'application/octet-stream';
 		$this->output_file( $file_path, $mime );
+	}
+
+	private function serve_user_media( int $owner_id, string $file_path ): void {
+		if ( ! get_userdata( $owner_id ) ) {
+			status_header( 404 );
+			exit;
+		}
+		if ( get_user_meta( $owner_id, 'arshid6social_suspended', true ) ) {
+			$this->exit_suspended();
+		}
+		if ( is_user_logged_in() && function_exists( 'arshid6social_is_blocked' ) && arshid6social_is_blocked( get_current_user_id(), $owner_id ) ) {
+			status_header( 403 );
+			exit;
+		}
+
+		$mime = $this->get_safe_mime_type( $file_path );
+		if ( ! $mime ) {
+			status_header( 403 );
+			exit;
+		}
+
+		$this->output_file( $file_path, $mime );
+	}
+
+	private function serve_group_media( int $group_id, string $file_path ): void {
+		global $wpdb;
+
+		$group = $wpdb->get_row(
+			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				"SELECT id, creator_id, status, is_suspended FROM {$wpdb->prefix}arshid6social_groups WHERE id = %d LIMIT 1",
+				$group_id
+			)
+		);
+
+		if ( ! $group ) {
+			status_header( 404 );
+			exit;
+		}
+		if ( (bool) $group->is_suspended || ( $group->creator_id && get_user_meta( (int) $group->creator_id, 'arshid6social_suspended', true ) ) ) {
+			$this->exit_suspended();
+		}
+		if ( ! $this->current_user_can_view_group_media( $group ) ) {
+			status_header( 403 );
+			exit;
+		}
+
+		$mime = $this->get_safe_mime_type( $file_path );
+		if ( ! $mime ) {
+			status_header( 403 );
+			exit;
+		}
+
+		$this->output_file( $file_path, $mime );
+	}
+
+	private function find_row_for_file_path( array $rows, string $file_path, string $field = 'file_path' ): ?object {
+		$requested = wp_normalize_path( $file_path );
+		foreach ( $rows as $row ) {
+			if ( empty( $row->{$field} ) ) {
+				continue;
+			}
+			$stored = realpath( (string) $row->{$field} );
+			if ( $stored && wp_normalize_path( $stored ) === $requested ) {
+				return $row;
+			}
+		}
+		return null;
+	}
+
+	private function current_user_can_view_activity_media( object $activity ): bool {
+		$current_user = get_current_user_id();
+		$owner_id     = (int) $activity->user_id;
+
+		if ( $current_user && ( $current_user === $owner_id || current_user_can( 'arshid6social_manage_activity' ) ) ) {
+			return true;
+		}
+		if ( (int) $activity->hide_sitewide || (int) $activity->is_spam ) {
+			return false;
+		}
+		if ( 'public' === (string) $activity->privacy ) {
+			return true;
+		}
+		if ( ! $current_user ) {
+			return false;
+		}
+		if ( function_exists( 'arshid6social_is_blocked' ) && arshid6social_is_blocked( $current_user, $owner_id ) ) {
+			return false;
+		}
+		if ( 'friends' === (string) $activity->privacy ) {
+			$friends = ARSHID6SOCIAL()->component( 'friends' );
+			return $friends && 'friends' === $friends->get_friendship_status( $current_user, $owner_id );
+		}
+		if ( 'paid' === (string) $activity->privacy && function_exists( 'arshid6social_monetization_user_can_view_paid_activity' ) ) {
+			return arshid6social_monetization_user_can_view_paid_activity( $current_user, (int) $activity->id );
+		}
+
+		return false;
+	}
+
+	private function current_user_can_view_group_media( object $group ): bool {
+		if ( 'public' === (string) $group->status ) {
+			return true;
+		}
+		if ( current_user_can( 'arshid6social_manage_groups' ) ) {
+			return true;
+		}
+		if ( ! is_user_logged_in() ) {
+			return false;
+		}
+
+		$groups = ARSHID6SOCIAL()->component( 'groups' );
+		return $groups && $groups->is_member( get_current_user_id(), (int) $group->id );
+	}
+
+	private function get_safe_mime_type( string $file_path, string $stored_mime = '' ): string|false {
+		$allowed = array(
+			'image/jpeg',
+			'image/png',
+			'image/gif',
+			'image/webp',
+			'video/mp4',
+			'video/webm',
+			'video/ogg',
+			'audio/mpeg',
+			'audio/wav',
+			'audio/ogg',
+			'application/pdf',
+		);
+
+		$type = wp_check_filetype( $file_path )['type'] ?: sanitize_mime_type( $stored_mime );
+		if ( ! $type || ! in_array( $type, $allowed, true ) ) {
+			return false;
+		}
+
+		return $type;
 	}
 
 	/**
@@ -684,8 +935,17 @@ class Moderation {
 		header( 'Cache-Control: private, max-age=86400' );
 		header( 'X-Content-Type-Options: nosniff' );
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
-		readfile( $file_path );
+		$handle = fopen( $file_path, 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		if ( false === $handle ) {
+			status_header( 404 );
+			exit;
+		}
+
+		while ( ! feof( $handle ) ) {
+			echo fread( $handle, 8192 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped,WordPress.WP.AlternativeFunctions.file_system_operations_fread
+			flush();
+		}
+		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 		exit;
 	}
 

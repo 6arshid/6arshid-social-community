@@ -35,9 +35,8 @@ class Stories {
 	}
 
 	private function hooks(): void {
-		// Shortcode for manual placement outside the activity block (primary name + legacy alias).
+		// Shortcode for manual placement outside the activity block.
 		add_shortcode( 'arshid6social_stories_tray', array( $this, 'shortcode_tray' ) );
-		add_shortcode( 'sn_stories_tray', array( $this, 'shortcode_tray' ) );
 
 		// Cron: expire stories.
 		add_action( 'arshid6social_expire_stories', array( $this, 'expire_stories' ) );
@@ -46,7 +45,7 @@ class Stories {
 		add_action( 'wp_ajax_arshid6social_create_story', array( $this, 'ajax_create_story' ) );
 		add_action( 'wp_ajax_arshid6social_delete_story', array( $this, 'ajax_delete_story' ) );
 		add_action( 'wp_ajax_arshid6social_get_story_tray', array( $this, 'ajax_get_tray' ) );
-		add_action( 'wp_ajax_arshid6social_nopriv_get_story_tray', array( $this, 'ajax_get_tray' ) );
+		add_action( 'wp_ajax_nopriv_arshid6social_get_story_tray', array( $this, 'ajax_get_tray' ) );
 		add_action( 'wp_ajax_arshid6social_get_story_items', array( $this, 'ajax_get_items' ) );
 		add_action( 'wp_ajax_arshid6social_mark_story_viewed', array( $this, 'ajax_mark_viewed' ) );
 		add_action( 'wp_ajax_arshid6social_react_story', array( $this, 'ajax_react' ) );
@@ -71,7 +70,7 @@ class Stories {
 			add_action( 'wp_ajax_arshid6social_delete_highlight', array( $this, 'ajax_delete_highlight' ) );
 			add_action( 'wp_ajax_arshid6social_add_to_highlight', array( $this, 'ajax_add_to_highlight' ) );
 			add_action( 'wp_ajax_arshid6social_get_highlights', array( $this, 'ajax_get_highlights' ) );
-			add_action( 'wp_ajax_arshid6social_nopriv_get_highlights', array( $this, 'ajax_get_highlights' ) );
+			add_action( 'wp_ajax_nopriv_arshid6social_get_highlights', array( $this, 'ajax_get_highlights' ) );
 		}
 	}
 
@@ -216,12 +215,19 @@ class Stories {
 	 * Returns all active story items for the user who owns the given story_id.
 	 * This merges items from multiple stories of the same user into one sequential list.
 	 */
-	public function get_items_for_user( int $story_id ): array {
+	public function get_items_for_user( int $story_id, int $viewer_id = 0 ): array {
 		global $wpdb;
 		$now = current_time( 'mysql' );
-		return $wpdb->get_results(
+
+		$seed_story = $this->get_story( $story_id );
+		if ( ! $seed_story || ! $this->can_view_story( $seed_story, $viewer_id ) ) {
+			return array();
+		}
+
+		$rows = $wpdb->get_results(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT si.* FROM {$wpdb->prefix}arshid6social_story_items si
+				"SELECT si.*, s.id AS parent_story_id, s.user_id AS story_user_id, s.privacy, s.close_friends, s.created_at AS story_created_at, s.expires_at AS story_expires_at, s.highlight_id
+			 FROM {$wpdb->prefix}arshid6social_story_items si
 			 JOIN {$wpdb->prefix}arshid6social_stories s ON s.id = si.story_id
 			 WHERE s.user_id = (
 			     SELECT user_id FROM {$wpdb->prefix}arshid6social_stories WHERE id = %d LIMIT 1
@@ -233,6 +239,28 @@ class Stories {
 				$now
 			)
 		) ?: array();
+
+		$items = array();
+		foreach ( $rows as $row ) {
+			$story = (object) array(
+				'id'            => (int) $row->parent_story_id,
+				'user_id'       => (int) $row->story_user_id,
+				'privacy'       => (string) $row->privacy,
+				'close_friends' => (int) $row->close_friends,
+				'created_at'    => $row->story_created_at,
+				'expires_at'    => $row->story_expires_at,
+				'highlight_id'  => $row->highlight_id,
+			);
+
+			if ( ! $this->can_view_story( $story, $viewer_id ) ) {
+				continue;
+			}
+
+			unset( $row->parent_story_id, $row->story_user_id, $row->privacy, $row->close_friends, $row->story_created_at, $row->story_expires_at, $row->highlight_id );
+			$items[] = $row;
+		}
+
+		return $items;
 	}
 
 	/**
@@ -589,6 +617,63 @@ class Stories {
 		) ?: array();
 	}
 
+	/**
+	 * Returns only highlights containing stories visible to the current viewer.
+	 *
+	 * Guests see only public highlight stories. Logged-in viewers get the same
+	 * privacy rules as normal stories, and story_count is recalculated from the
+	 * visible subset so private highlight contents are not leaked.
+	 */
+	public function get_visible_highlights( int $user_id, int $viewer_id = 0 ): array {
+		$highlights = $this->get_highlights( $user_id );
+		if ( empty( $highlights ) ) {
+			return array();
+		}
+
+		global $wpdb;
+		$visible_highlights = array();
+
+		foreach ( $highlights as $highlight ) {
+			$stories = $wpdb->get_results(
+				$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+					"SELECT * FROM {$wpdb->prefix}arshid6social_stories WHERE highlight_id = %d ORDER BY created_at ASC",
+					(int) $highlight->id
+				)
+			) ?: array();
+
+			$visible_story_ids = array();
+			foreach ( $stories as $story ) {
+				if ( $this->can_view_story( $story, $viewer_id ) ) {
+					$visible_story_ids[] = (int) $story->id;
+				}
+			}
+
+			if ( empty( $visible_story_ids ) ) {
+				continue;
+			}
+
+			$placeholders = implode( ', ', array_fill( 0, count( $visible_story_ids ), '%d' ) );
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+			$visible_count = (int) $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT COUNT(id) FROM {$wpdb->prefix}arshid6social_story_items WHERE story_id IN ($placeholders)",
+					...$visible_story_ids
+				)
+			);
+			// phpcs:enable
+
+			if ( $visible_count <= 0 ) {
+				continue;
+			}
+
+			$row              = clone $highlight;
+			$row->story_count = $visible_count;
+			$visible_highlights[] = $row;
+		}
+
+		return $visible_highlights;
+	}
+
 	public function delete_highlight( int $highlight_id, int $user_id ): bool {
 		global $wpdb;
 		$owner = $wpdb->get_var(
@@ -601,12 +686,11 @@ class Stories {
 			return false;
 		}
 		// Detach stories from this highlight.
-		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'arshid6social_stories',
-			array( 'highlight_id' => null ),
-			array( 'highlight_id' => $highlight_id ),
-			array( '%d' ),
-			array( '%d' )
+		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prepare(
+				"UPDATE {$wpdb->prefix}arshid6social_stories SET highlight_id = NULL WHERE highlight_id = %d",
+				$highlight_id
+			)
 		);
 		return (bool) $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'arshid6social_story_highlights',
@@ -744,6 +828,15 @@ class Stories {
 		}
 	}
 
+	private function current_user_can_view_story_item( int $story_item_id ): bool {
+		$story = $this->get_story_by_item( $story_item_id );
+		return $story && $this->can_view_story( $story, get_current_user_id() );
+	}
+
+	private function validate_story_target_user( int $target_user_id ): bool {
+		return $target_user_id > 0 && $target_user_id !== get_current_user_id() && (bool) get_userdata( $target_user_id );
+	}
+
 	public function ajax_create_story(): void {
 		$this->nonce_check();
 		$user_id = get_current_user_id();
@@ -830,7 +923,16 @@ class Stories {
 	public function ajax_get_items(): void {
 		check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce' );
 		$story_id = absint( $_POST['story_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
-		wp_send_json_success( array( 'items' => $this->get_items_for_user( $story_id ) ) );
+		$story    = $this->get_story( $story_id );
+
+		if ( ! $story ) {
+			wp_send_json_success( array( 'items' => array() ) );
+		}
+		if ( ! $this->can_view_story( $story, get_current_user_id() ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
+		}
+
+		wp_send_json_success( array( 'items' => $this->get_items_for_user( $story_id, get_current_user_id() ) ) );
 	}
 
 	public function ajax_mark_viewed(): void {
@@ -839,6 +941,9 @@ class Stories {
 		}
 		check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce' );
 		$item_id = absint( $_POST['story_item_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
+		if ( ! $this->current_user_can_view_story_item( $item_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
+		}
 		$this->mark_viewed( $item_id, get_current_user_id() );
 		wp_send_json_success();
 	}
@@ -847,6 +952,9 @@ class Stories {
 		$this->nonce_check();
 		$item_id  = absint( $_POST['story_item_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
 		$reaction = sanitize_text_field( wp_unslash( $_POST['reaction'] ?? '❤️' ) ); // phpcs:ignore WordPress.Security.NonceVerification
+		if ( ! $this->current_user_can_view_story_item( $item_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
+		}
 		$this->react( $item_id, get_current_user_id(), $reaction );
 		wp_send_json_success();
 	}
@@ -865,6 +973,9 @@ class Stories {
 		if ( ! $message ) {
 			wp_send_json_error( array( 'message' => __( 'Message cannot be empty.', '6arshid-social-community' ) ) );
 		}
+		if ( ! $this->current_user_can_view_story_item( $item_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
+		}
 		$thread_id = $this->reply( $item_id, get_current_user_id(), $message );
 		$thread_id ? wp_send_json_success( array( 'thread_id' => $thread_id ) ) : wp_send_json_error();
 	}
@@ -875,6 +986,10 @@ class Stories {
 		$story_id = absint( $_POST['story_id'] ?? 0 );
 		$reason   = sanitize_text_field( wp_unslash( $_POST['reason'] ?? 'spam' ) );
 		// phpcs:enable
+		$story = $this->get_story( $story_id ) ?? $this->get_story_by_item( $story_id );
+		if ( ! $story || ! $this->can_view_story( $story, get_current_user_id() ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
+		}
 		\Arshid6Social\Components\Moderation\Moderation::add_report(
 			get_current_user_id(),
 			$story_id,
@@ -895,9 +1010,14 @@ class Stories {
 		$this->nonce_check();
 		// phpcs:disable WordPress.Security.NonceVerification
 		$friend_id = absint( $_POST['friend_id'] ?? 0 );
-		$add       = (bool) sanitize_text_field( wp_unslash( $_POST['add'] ?? true ) );
+		$add       = rest_sanitize_boolean( wp_unslash( $_POST['add'] ?? true ) );
 		// phpcs:enable
-		$user_id = get_current_user_id();
+		$user_id      = get_current_user_id();
+		$friends_comp = ARSHID6SOCIAL()->component( 'friends' );
+
+		if ( ! $this->validate_story_target_user( $friend_id ) || ! $friends_comp || 'friends' !== $friends_comp->get_friendship_status( $user_id, $friend_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'You can only add friends to your close-friends list.', '6arshid-social-community' ) ), 403 );
+		}
 
 		if ( $add ) {
 			$this->add_close_friend( $user_id, $friend_id );
@@ -924,6 +1044,9 @@ class Stories {
 	public function ajax_mute_stories(): void {
 		$this->nonce_check();
 		$target = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
+		if ( ! $this->validate_story_target_user( $target ) ) {
+			wp_send_json_error( array( 'message' => __( 'User not found.', '6arshid-social-community' ) ), 404 );
+		}
 		$this->mute( get_current_user_id(), $target );
 		wp_send_json_success();
 	}
@@ -931,6 +1054,9 @@ class Stories {
 	public function ajax_unmute_stories(): void {
 		$this->nonce_check();
 		$target = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
+		if ( ! $this->validate_story_target_user( $target ) ) {
+			wp_send_json_error( array( 'message' => __( 'User not found.', '6arshid-social-community' ) ), 404 );
+		}
 		$this->unmute( get_current_user_id(), $target );
 		wp_send_json_success();
 	}
@@ -964,8 +1090,14 @@ class Stories {
 
 	public function ajax_get_highlights(): void {
 		check_ajax_referer( 'arshid6social_ajax_nonce', 'nonce' );
-		$user_id = absint( $_POST['user_id'] ?? get_current_user_id() ); // phpcs:ignore WordPress.Security.NonceVerification
-		wp_send_json_success( array( 'highlights' => $this->get_highlights( $user_id ) ) );
+		$user_id = absint( $_POST['user_id'] ?? 0 ); // phpcs:ignore WordPress.Security.NonceVerification
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+		if ( ! $user_id || ! get_userdata( $user_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'User not found.', '6arshid-social-community' ) ), 404 );
+		}
+		wp_send_json_success( array( 'highlights' => $this->get_visible_highlights( $user_id, get_current_user_id() ) ) );
 	}
 
 	// ── Helpers ───────────────────────────────────────────────────────────────
