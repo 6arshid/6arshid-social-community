@@ -21,9 +21,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // This is a command-line development tool, not runtime plugin code.
 // phpcs:ignoreFile
 
-const BI_VERSION = '1.11.3';
-const ZIP_URL    = 'https://github.com/twbs/icons/releases/download/v' . BI_VERSION . '/bootstrap-icons-' . BI_VERSION . '.zip';
-const OUT_FILE   = __DIR__ . '/../assets/icons/bootstrap-icons.json';
+$bi_version = '1.11.3';
+$zip_url    = 'https://github.com/twbs/icons/releases/download/v' . $bi_version . '/bootstrap-icons-' . $bi_version . '.zip';
+$out_file   = __DIR__ . '/../assets/icons/bootstrap-icons.json';
 
 // ── Direct-access protection ────────────────────────────────────────────────
 // Block direct web access. Allow CLI execution for development builds.
@@ -31,11 +31,11 @@ if ( ! defined( 'ABSPATH' ) && 'cli' !== PHP_SAPI ) {
 	exit;
 }
 
-echo "Downloading Bootstrap Icons v" . BI_VERSION . "…\n";
+echo "Downloading Bootstrap Icons v" . $bi_version . "…\n";
 
 // ── Download ──────────────────────────────────────────────────────────────────
 
-$tmp = sys_get_temp_dir() . '/bootstrap-icons-' . BI_VERSION . '.zip';
+$tmp = sys_get_temp_dir() . '/bootstrap-icons-' . $bi_version . '.zip';
 
 if ( ! file_exists( $tmp ) ) {
 	$ctx = stream_context_create( array(
@@ -52,9 +52,9 @@ if ( ! file_exists( $tmp ) ) {
 		),
 	) );
 
-	$data = @file_get_contents( ZIP_URL, false, $ctx );
+	$data = @file_get_contents( $zip_url, false, $ctx );
 	if ( $data === false ) {
-		fwrite( STDERR, "Error: could not download " . ZIP_URL . "\n" );
+		fwrite( STDERR, "Error: could not download " . $zip_url . "\n" );
 		exit( 1 );
 	}
 	file_put_contents( $tmp, $data );
@@ -78,7 +78,7 @@ if ( $zip->open( $tmp ) !== true ) {
 	exit( 1 );
 }
 
-$prefix    = 'bootstrap-icons-' . BI_VERSION . '/';
+$prefix    = 'bootstrap-icons-' . $bi_version . '/';
 $icons_map = array();
 
 for ( $i = 0; $i < $zip->numFiles; $i++ ) {
@@ -113,17 +113,17 @@ echo "  Found $count icons.\n";
 
 // ── Write output ──────────────────────────────────────────────────────────────
 
-$out_dir = dirname( OUT_FILE );
+$out_dir = dirname( $out_file );
 if ( ! is_dir( $out_dir ) ) {
 	mkdir( $out_dir, 0755, true );
 }
 
-$ok = file_put_contents( OUT_FILE, json_encode( $icons_map, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
+$ok = file_put_contents( $out_file, json_encode( $icons_map, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES ) );
 if ( $ok === false ) {
-	fwrite( STDERR, "Error: could not write " . OUT_FILE . "\n" );
+	fwrite( STDERR, "Error: could not write " . $out_file . "\n" );
 	exit( 1 );
 }
 
-$kb = round( filesize( OUT_FILE ) / 1024 );
-echo "  Written to " . realpath( OUT_FILE ) . " ({$kb} KB)\n";
+$kb = round( filesize( $out_file ) / 1024 );
+echo "  Written to " . realpath( $out_file ) . " ({$kb} KB)\n";
 echo "Done. Commit assets/icons/bootstrap-icons.json to your repository.\n";

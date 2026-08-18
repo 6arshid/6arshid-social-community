@@ -263,3 +263,91 @@ function arshid6social_report_modal(): void {
 	</div>
 	<?php
 }
+
+// ─── SVG KSES helpers ──────────────────────────────────────────────────────────
+
+if ( ! function_exists( 'a6sc_allowed_svg_tags' ) ) {
+	/**
+	 * Returns an explicit SVG KSES allowlist for sanitizing plugin SVG output.
+	 *
+	 * @return array<string, array<string, bool>>
+	 */
+	function a6sc_allowed_svg_tags(): array {
+		return array(
+			'svg'    => array(
+				'xmlns'       => true,
+				'width'       => true,
+				'height'      => true,
+				'viewbox'     => true,
+				'fill'        => true,
+				'stroke'      => true,
+				'stroke-width'    => true,
+				'stroke-linecap'  => true,
+				'stroke-linejoin' => true,
+				'aria-hidden' => true,
+				'role'        => true,
+			),
+			'path'   => array(
+				'd'              => true,
+				'fill'           => true,
+				'fill-rule'      => true,
+				'clip-rule'      => true,
+				'stroke'         => true,
+				'stroke-width'   => true,
+				'stroke-linecap' => true,
+			),
+			'circle' => array(
+				'cx'             => true,
+				'cy'             => true,
+				'r'              => true,
+				'fill'           => true,
+				'stroke'         => true,
+				'stroke-width'   => true,
+			),
+			'rect'   => array(
+				'x'      => true,
+				'y'      => true,
+				'width'  => true,
+				'height' => true,
+				'rx'     => true,
+				'ry'     => true,
+				'fill'   => true,
+			),
+			'line'   => array(
+				'x1'             => true,
+				'y1'             => true,
+				'x2'             => true,
+				'y2'             => true,
+				'stroke'         => true,
+				'stroke-width'   => true,
+				'stroke-linecap' => true,
+			),
+			'polyline' => array(
+				'points'         => true,
+				'fill'           => true,
+				'stroke'         => true,
+				'stroke-width'   => true,
+				'stroke-linecap' => true,
+				'stroke-linejoin' => true,
+			),
+			'polygon'  => array(
+				'points'         => true,
+				'fill'           => true,
+				'stroke'         => true,
+			),
+			'g'      => array( 'fill' => true ),
+		);
+	}
+}
+
+if ( ! function_exists( 'a6sc_kses_svg' ) ) {
+	/**
+	 * Sanitizes SVG markup through a minimal explicit allowlist.
+	 *
+	 * @param string $svg Raw SVG string.
+	 * @return string     Sanitized SVG string.
+	 */
+	function a6sc_kses_svg( string $svg ): string {
+		return wp_kses( $svg, a6sc_allowed_svg_tags() );
+	}
+}

@@ -91,6 +91,48 @@ class Blocking {
 		);
 	}
 
+	/**
+	 * Returns cached list of user IDs blocked by (or blocking) the given user.
+	 *
+	 * @param int $user_id User ID.
+	 * @return int[] Blocked user IDs.
+	 */
+	private function get_blocked_ids( int $user_id ): array {
+		$cache_key = 'blocked_ids_' . $user_id;
+		$found     = false;
+		$cached    = \Arshid6Social\Cache::get( $cache_key, $found );
+		if ( $found ) {
+			return $cached;
+		}
+
+		global $wpdb;
+		$blocked = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT blocked_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocker_id = %d
+			 UNION
+			 SELECT blocker_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocked_id = %d",
+				$user_id,
+				$user_id
+			)
+		);
+
+		$result = array_map( 'absint', $blocked ?: array() );
+		\Arshid6Social\Cache::set( $cache_key, $result, 300 );
+
+		return $result;
+	}
+
+	/**
+	 * Invalidates cached blocked IDs for both parties when a block changes.
+	 *
+	 * @param int $user_a First user ID.
+	 * @param int $user_b Second user ID.
+	 */
+	private function invalidate_blocked_cache( int $user_a, int $user_b ): void {
+		\Arshid6Social\Cache::delete( 'blocked_ids_' . $user_a );
+		\Arshid6Social\Cache::delete( 'blocked_ids_' . $user_b );
+	}
+
 	// ── Activity filter ───────────────────────────────────────────────────────
 
 	/**
@@ -103,21 +145,12 @@ class Blocking {
 			return $args;
 		}
 
-		global $wpdb;
-		$blocked_ids = $wpdb->get_col(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT blocked_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocker_id = %d
-			 UNION
-			 SELECT blocker_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocked_id = %d",
-				$current_user_id,
-				$current_user_id
-			)
-		);
+		$blocked_ids = $this->get_blocked_ids( $current_user_id );
 
 		if ( ! empty( $blocked_ids ) ) {
 			$args['exclude_user_ids'] = array_merge(
 				(array) ( $args['exclude_user_ids'] ?? array() ),
-				array_map( 'absint', $blocked_ids )
+				$blocked_ids
 			);
 		}
 
@@ -132,22 +165,13 @@ class Blocking {
 			return $args;
 		}
 
-		global $wpdb;
-		$blocked_ids = $wpdb->get_col(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT blocked_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocker_id = %d
-			 UNION
-			 SELECT blocker_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocked_id = %d",
-				$current,
-				$current
-			)
-		);
+		$blocked_ids = $this->get_blocked_ids( $current );
 
 		if ( ! empty( $blocked_ids ) ) {
 			$args['exclude'] = array_unique(
 				array_merge(
 					(array) ( $args['exclude'] ?? array() ),
-					array_map( 'absint', $blocked_ids )
+					$blocked_ids
 				)
 			);
 		}
@@ -163,16 +187,7 @@ class Blocking {
 			return $exclude_ids;
 		}
 
-		global $wpdb;
-		$blocked = $wpdb->get_col(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT blocked_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocker_id = %d
-			 UNION
-			 SELECT blocker_id FROM {$wpdb->prefix}arshid6social_blocks WHERE blocked_id = %d",
-				$current,
-				$current
-			)
-		);
+		$blocked = $this->get_blocked_ids( $current );
 
 		return array_unique( array_merge( $exclude_ids, array_map( 'absint', $blocked ) ) );
 	}
@@ -228,6 +243,10 @@ class Blocking {
 
 		$blocked = $friends->block( $current, $target, $reason );
 
+		if ( $blocked || $friends->is_blocked( $current, $target ) ) {
+			$this->invalidate_blocked_cache( $current, $target );
+		}
+
 		if ( ! $blocked && ! $friends->is_blocked( $current, $target ) ) {
 			wp_send_json_error(
 				array(
@@ -257,6 +276,8 @@ class Blocking {
 		if ( $friends ) {
 			$friends->unblock( $current, $target );
 		}
+
+		$this->invalidate_blocked_cache( $current, $target );
 
 		wp_send_json_success(
 			array(
@@ -290,7 +311,7 @@ class Blocking {
 			if ( ! $user ) {
 				continue;
 			}
-			$item                 = $members ? $members->format_member( $user ) : array( 'id' => $block->blocked_id );
+			$item                 = $members ? $members->format_member( $user, $current ?: null ) : array( 'id' => $block->blocked_id );
 			$item['block_date']   = $block->date_created;
 			$item['block_reason'] = $block->reason ?? '';
 			$data[]               = $item;

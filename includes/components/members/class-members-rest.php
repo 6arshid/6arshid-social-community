@@ -91,13 +91,15 @@ class Members_REST extends \WP_REST_Controller {
 			return new \WP_Error( 'arshid6social_component_disabled', __( 'Members component is not active.', '6arshid-social-community' ), array( 'status' => 503 ) );
 		}
 
+		$viewer_id = get_current_user_id() ?: null;
 		$data = $component->get_members(
 			array(
 				'page'   => $request->get_param( 'page' ) ?: 1,
 				'number' => $request->get_param( 'per_page' ) ?: get_option( 'arshid6social_members_per_page', 20 ),
 				'search' => $request->get_param( 'search' ) ?: '',
 				'type'   => $request->get_param( 'type' ) ?: 'newest',
-			)
+			),
+			$viewer_id
 		);
 
 		$response = rest_ensure_response( $data['members'] );
@@ -120,7 +122,8 @@ class Members_REST extends \WP_REST_Controller {
 		}
 
 		$component = ARSHID6SOCIAL()->component( 'members' );
-		return rest_ensure_response( $component->format_member( $user ) );
+		$viewer_id = get_current_user_id() ?: null;
+		return rest_ensure_response( $component->format_member( $user, $viewer_id ) );
 	}
 
 	/**
@@ -132,7 +135,7 @@ class Members_REST extends \WP_REST_Controller {
 	public function get_current_member( $request ): \WP_REST_Response|\WP_Error {
 		$user      = wp_get_current_user();
 		$component = ARSHID6SOCIAL()->component( 'members' );
-		return rest_ensure_response( $component->format_member( $user ) );
+		return rest_ensure_response( $component->format_member( $user, $user->ID ) );
 	}
 
 	/**
@@ -163,7 +166,7 @@ class Members_REST extends \WP_REST_Controller {
 			);
 		}
 
-		return rest_ensure_response( $component->format_member( get_userdata( $user_id ) ) );
+		return rest_ensure_response( $component->format_member( get_userdata( $user_id ), get_current_user_id() ?: null ) );
 	}
 
 	/**

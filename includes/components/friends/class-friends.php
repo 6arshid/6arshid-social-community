@@ -640,7 +640,7 @@ class Friends {
 			if ( ! $user || ! $members_comp ) {
 				continue;
 			}
-			$item = $members_comp->format_member( $user );
+			$item = $members_comp->format_member( $user, $current ?: null );
 			if ( $current ) {
 				$item['friendshipStatus'] = $this->get_friendship_status( $current, (int) $fid );
 			}
@@ -664,7 +664,7 @@ class Friends {
 		foreach ( $suggestions as $uid ) {
 			$user = get_userdata( $uid );
 			if ( $user && $members_comp ) {
-				$data[] = $members_comp->format_member( $user );
+				$data[] = $members_comp->format_member( $user, get_current_user_id() );
 			}
 		}
 

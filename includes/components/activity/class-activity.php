@@ -110,13 +110,22 @@ class Activity {
 	 * Returns a single activity item by its unique ID slug.
 	 */
 	public function get_by_uid( string $uid ): ?object {
+		$cache_key = "activity_uid_{$uid}";
+		$found     = false;
+		$cached    = \Arshid6Social\Cache::get( $cache_key, $found );
+		if ( $found ) {
+			return $cached ?: null;
+		}
+
 		global $wpdb;
-		return $wpdb->get_row(
+		$row = $wpdb->get_row(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				"SELECT * FROM {$wpdb->prefix}arshid6social_activity WHERE uid = %s",
 				$uid
 			)
 		);
+		\Arshid6Social\Cache::set( $cache_key, $row ?: false, 300 );
+		return $row ?: null;
 	}
 
 	public function handle_single_activity_page(): void {

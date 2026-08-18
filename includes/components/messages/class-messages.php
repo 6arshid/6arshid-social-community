@@ -63,15 +63,29 @@ class Messages {
 	}
 
 	public static function user_id_from_uid( string $uid ): int {
-		$users = get_users(
-			array(
-				'meta_key'   => 'arshid6social_uid',
-				'meta_value' => sanitize_text_field( $uid ),
-				'number'     => 1,
-				'fields'     => 'ID',
+		$uid = sanitize_text_field( $uid );
+		if ( ! $uid ) {
+			return 0;
+		}
+
+		$cache_key = 'uid_lookup_' . md5( $uid );
+		$found     = false;
+		$cached    = \Arshid6Social\Cache::get( $cache_key, $found );
+		if ( $found ) {
+			return (int) $cached;
+		}
+
+		global $wpdb;
+		$user_id = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT user_id FROM {$wpdb->usermeta} WHERE meta_key = 'arshid6social_uid' AND meta_value = %s LIMIT 1",
+				$uid
 			)
 		);
-		return $users ? (int) $users[0] : 0;
+
+		\Arshid6Social\Cache::set( $cache_key, $user_id, 300 );
+
+		return $user_id;
 	}
 
 	private function hooks(): void {

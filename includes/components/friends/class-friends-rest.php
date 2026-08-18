@@ -263,7 +263,7 @@ class Friends_REST extends \WP_REST_Controller {
 		foreach ( $suggestions as $uid ) {
 			$user = get_userdata( $uid );
 			if ( $user && $members_comp ) {
-				$data[] = $members_comp->format_member( $user );
+				$data[] = $members_comp->format_member( $user, get_current_user_id() );
 			}
 		}
 

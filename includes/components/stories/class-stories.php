@@ -380,6 +380,8 @@ class Stories {
 		$wpdb->delete( $wpdb->prefix . 'arshid6social_story_items', array( 'story_id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->delete( $wpdb->prefix . 'arshid6social_stories', array( 'id' => $story_id ), array( '%d' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
+		\Arshid6Social\Cache::delete( 'story_owner_' . $story_id );
+
 		do_action( 'arshid6social_story_deleted', $story_id, $user_id );
 		return true;
 	}
@@ -577,18 +579,8 @@ class Stories {
 	public function add_story_to_highlight( int $story_id, int $highlight_id, int $user_id ): bool {
 		global $wpdb;
 		// Verify ownership of both.
-		$story_owner     = $wpdb->get_var(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}arshid6social_stories WHERE id = %d",
-				$story_id
-			)
-		);
-		$highlight_owner = $wpdb->get_var(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}arshid6social_story_highlights WHERE id = %d",
-				$highlight_id
-			)
-		);
+		$story_owner     = $this->get_story_owner( $story_id );
+		$highlight_owner = $this->get_highlight_owner( $highlight_id );
 		if ( (int) $story_owner !== $user_id || (int) $highlight_owner !== $user_id ) {
 			return false;
 		}
@@ -599,6 +591,58 @@ class Stories {
 			array( '%d' ),
 			array( '%d' )
 		);
+	}
+
+	/**
+	 * Returns cached owner user ID for a story.
+	 *
+	 * @param int $story_id Story ID.
+	 * @return int User ID or 0.
+	 */
+	public function get_story_owner( int $story_id ): int {
+		$cache_key = 'story_owner_' . $story_id;
+		$found     = false;
+		$cached    = \Arshid6Social\Cache::get( $cache_key, $found );
+		if ( $found ) {
+			return (int) $cached;
+		}
+
+		global $wpdb;
+		$owner = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_stories WHERE id = %d",
+				$story_id
+			)
+		);
+
+		\Arshid6Social\Cache::set( $cache_key, $owner, 300 );
+		return $owner;
+	}
+
+	/**
+	 * Returns cached owner user ID for a highlight.
+	 *
+	 * @param int $highlight_id Highlight ID.
+	 * @return int User ID or 0.
+	 */
+	public function get_highlight_owner( int $highlight_id ): int {
+		$cache_key = 'highlight_owner_' . $highlight_id;
+		$found     = false;
+		$cached    = \Arshid6Social\Cache::get( $cache_key, $found );
+		if ( $found ) {
+			return (int) $cached;
+		}
+
+		global $wpdb;
+		$owner = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT user_id FROM {$wpdb->prefix}arshid6social_story_highlights WHERE id = %d",
+				$highlight_id
+			)
+		);
+
+		\Arshid6Social\Cache::set( $cache_key, $owner, 300 );
+		return $owner;
 	}
 
 	public function get_highlights( int $user_id ): array {
@@ -652,14 +696,10 @@ class Stories {
 				continue;
 			}
 
-			$placeholders = implode( ', ', array_fill( 0, count( $visible_story_ids ), '%d' ) );
-			$count_args   = array_map( 'intval', $visible_story_ids );
-			// phpcs:disable WordPress.DB.DirectDatabaseQuery,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
+			$ids_csv = implode( ',', array_map( 'absint', $visible_story_ids ) );
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery,PluginCheck.Security.DirectDB.UnescapedDBParameter
 			$visible_count = (int) $wpdb->get_var(
-				$wpdb->prepare(
-					"SELECT COUNT(id) FROM {$wpdb->prefix}arshid6social_story_items WHERE story_id IN ($placeholders)",
-					$count_args
-				)
+				"SELECT COUNT(id) FROM {$wpdb->prefix}arshid6social_story_items WHERE story_id IN ($ids_csv)"
 			);
 			// phpcs:enable
 
@@ -693,11 +733,13 @@ class Stories {
 				$highlight_id
 			)
 		);
-		return (bool) $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$result = (bool) $wpdb->delete( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prefix . 'arshid6social_story_highlights',
 			array( 'id' => $highlight_id ),
 			array( '%d' )
 		);
+		\Arshid6Social\Cache::delete( 'highlight_owner_' . $highlight_id );
+		return $result;
 	}
 
 	// ── Cron: expire ─────────────────────────────────────────────────────────
@@ -1036,7 +1078,7 @@ class Stories {
 		foreach ( $ids as $id ) {
 			$user = get_userdata( (int) $id );
 			if ( $user && $members ) {
-				$data[] = $members->format_member( $user );
+				$data[] = $members->format_member( $user, get_current_user_id() );
 			}
 		}
 		wp_send_json_success( array( 'close_friends' => $data ) );

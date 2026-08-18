@@ -187,7 +187,7 @@ class Shortcodes {
 						alt="<?php echo esc_attr( $m['name'] ); ?>"
 						width="44" height="44" loading="lazy"
 						style="<?php echo esc_attr( $s_img ); ?>"
-						onerror="this.onerror=null;this.src='<?php echo $fallback_avatar; // phpcs:ignore WordPress.Security.EscapeOutput ?>';"
+						onerror="this.onerror=null;this.src='<?php echo esc_attr( $fallback_avatar ); ?>';"
 					/>
 				</a>
 				<a class="arshid6social-wtf-name" href="<?php echo esc_url( $m['profileUrl'] ); ?>" style="<?php echo esc_attr( $s_name ); ?>">
@@ -205,7 +205,7 @@ class Shortcodes {
 					data-user-id="<?php echo esc_attr( $m['id'] ); ?>"
 					data-status="<?php echo esc_attr( $status ); ?>"
 					data-primary-color="<?php echo esc_attr( $primary_color ); ?>">
-					<?php echo $btn_icon; // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					<?php echo wp_kses( $btn_icon, a6sc_allowed_svg_tags() ); ?>
 					<?php echo esc_html( $btn_label ); ?>
 				</button>
 				<?php endif; ?>
@@ -509,7 +509,7 @@ class Shortcodes {
 		global $arshid6social_is_page;
 		$arshid6social_is_page = true;
 
-		$member = $comp->format_member( get_userdata( $user_id ) );
+		$member = $comp->format_member( get_userdata( $user_id ), get_current_user_id() ?: null );
 
 		return ARSHID6SOCIAL()->template()->get_template(
 			'members/profile.php',

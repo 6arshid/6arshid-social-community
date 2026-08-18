@@ -400,7 +400,8 @@ class Members {
 				'search' => $search,
 				'type'   => $type,
 				'number' => $per_page,
-			)
+			),
+			get_current_user_id() ?: null
 		);
 
 		wp_send_json_success( $members );
@@ -702,7 +703,7 @@ class Members {
 	 * @param array<string, mixed> $args Query arguments.
 	 * @return array<string, mixed>
 	 */
-	public function get_members( array $args = array() ): array {
+	public function get_members( array $args = array(), ?int $viewer_id = null ): array {
 		$defaults = array(
 			'page'    => 1,
 			'number'  => (int) get_option( 'arshid6social_members_per_page', 20 ),
@@ -767,7 +768,7 @@ class Members {
 
 		$members = array();
 		foreach ( $users as $user ) {
-			$members[] = $this->format_member( $user );
+			$members[] = $this->format_member( $user, $viewer_id );
 		}
 
 		return array(
@@ -781,10 +782,19 @@ class Members {
 	/**
 	 * Formats a WP_User object into a frontend-ready array.
 	 *
-	 * @param \WP_User $user WordPress user object.
+	 * @param \WP_User $user      WordPress user object.
+	 * @param int|null $viewer_id The user viewing this profile (null = guest). Used for field visibility.
 	 * @return array<string, mixed>
 	 */
-	public function format_member( \WP_User $user ): array {
+	public function format_member( \WP_User $user, ?int $viewer_id = null ): array {
+		// Check bio visibility before including it.
+		$bio        = '';
+		$bio_field  = $this->xprofile->get_field_by_name( 'bio' );
+		$can_view   = $bio_field ? $this->xprofile->can_view_field( (int) $bio_field['id'], $user->ID, $viewer_id ) : true;
+		if ( $can_view ) {
+			$bio = wp_kses_post( $this->xprofile->get_field_value( $user->ID, 'bio' ) );
+		}
+
 		return array(
 			'id'           => $user->ID,
 			'name'         => $user->display_name,
@@ -792,7 +802,7 @@ class Members {
 			'profileUrl'   => esc_url( home_url( '/members/' . $user->user_nicename . '/' ) ),
 			'avatarUrl'    => esc_url( $this->avatar->get_avatar_url( $user->ID ) ),
 			'coverUrl'     => esc_url( $this->avatar->get_cover_url( $user->ID ) ),
-			'bio'          => wp_kses_post( $this->xprofile->get_field_value( $user->ID, 'bio' ) ),
+			'bio'          => $bio,
 			'isVerified'   => arshid6social_verification() ? arshid6social_verification()->is_verified( $user->ID ) : (bool) get_user_meta( $user->ID, 'arshid6social_verified', true ),
 			'isSuspended'  => (bool) get_user_meta( $user->ID, 'arshid6social_suspended', true ),
 			'isOnline'     => $this->is_user_online( $user->ID ),

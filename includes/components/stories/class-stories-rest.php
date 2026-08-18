@@ -461,7 +461,7 @@ class Stories_REST extends \WP_REST_Controller {
 		foreach ( $ids as $id ) {
 			$user = get_userdata( (int) $id );
 			if ( $user && $members ) {
-				$data[] = $members->format_member( $user );
+				$data[] = $members->format_member( $user, get_current_user_id() );
 			}
 		}
 		return rest_ensure_response( array( 'close_friends' => $data ) );
@@ -606,18 +606,8 @@ class Stories_REST extends \WP_REST_Controller {
 		}
 
 		global $wpdb;
-		$highlight_owner = (int) $wpdb->get_var(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}arshid6social_story_highlights WHERE id = %d",
-				absint( $request['id'] )
-			)
-		);
-		$story_owner     = (int) $wpdb->get_var(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}arshid6social_stories WHERE id = %d",
-				absint( $request->get_param( 'story_id' ) )
-			)
-		);
+		$highlight_owner = $this->stories->get_highlight_owner( absint( $request['id'] ) );
+		$story_owner     = $this->stories->get_story_owner( absint( $request->get_param( 'story_id' ) ) );
 
 		if ( ! $highlight_owner || ! $story_owner ) {
 			return true; // Let the callback return a resource-specific 400.
@@ -660,13 +650,7 @@ class Stories_REST extends \WP_REST_Controller {
 		if ( ! is_user_logged_in() ) {
 			return false;
 		}
-		global $wpdb;
-		$owner_id = (int) $wpdb->get_var(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}arshid6social_stories WHERE id = %d",
-				absint( $request['id'] )
-			)
-		);
+		$owner_id = $this->stories->get_story_owner( absint( $request['id'] ) );
 		if ( ! $owner_id ) {
 			return true; // Resource not found; let the callback return a 404.
 		}
@@ -677,13 +661,7 @@ class Stories_REST extends \WP_REST_Controller {
 		if ( ! is_user_logged_in() ) {
 			return false;
 		}
-		global $wpdb;
-		$owner_id = (int) $wpdb->get_var(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}arshid6social_stories WHERE id = %d",
-				absint( $request['id'] )
-			)
-		);
+		$owner_id = $this->stories->get_story_owner( absint( $request['id'] ) );
 		if ( ! $owner_id ) {
 			return true; // Resource not found; let the callback return an empty result.
 		}
@@ -694,13 +672,7 @@ class Stories_REST extends \WP_REST_Controller {
 		if ( ! is_user_logged_in() ) {
 			return false;
 		}
-		global $wpdb;
-		$owner_id = (int) $wpdb->get_var(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}arshid6social_story_highlights WHERE id = %d",
-				absint( $request['id'] )
-			)
-		);
+		$owner_id = $this->stories->get_highlight_owner( absint( $request['id'] ) );
 		if ( ! $owner_id ) {
 			return true; // Resource not found; let the callback return a 404.
 		}

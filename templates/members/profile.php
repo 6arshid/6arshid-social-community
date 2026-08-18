@@ -21,6 +21,7 @@ $avatar     = $component->avatar;
 $cover_url  = $avatar->get_cover_url( $profile_user->ID );
 $avatar_url = $avatar->get_avatar_url( $profile_user->ID, 120 );
 $is_self    = is_user_logged_in() && get_current_user_id() === $profile_user->ID;
+$viewer_id  = get_current_user_id() ?: null;
 
 $_profile_suspended = (bool) get_user_meta( $profile_user->ID, 'arshid6social_suspended', true );
 $_viewer_is_admin   = current_user_can( 'arshid6social_manage_reports' );
@@ -285,7 +286,12 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 		<div class="arshid6social-profile-content" style="margin-block-start:1.5rem;">
 
 			<!-- About compact (always visible) -->
-			<?php $about_bio = $xprofile->get_field_value( $profile_user->ID, 'bio' ); ?>
+			<?php
+			$_bio_field  = $xprofile->get_field_by_name( 'bio' );
+			$_bio_can_view = $_bio_field ? $xprofile->can_view_field( (int) $_bio_field['id'], $profile_user->ID, $viewer_id ) : true;
+			$about_bio   = $_bio_can_view ? $xprofile->get_field_value( $profile_user->ID, 'bio' ) : '';
+			?>
+			<?php if ( $_bio_can_view ) : ?>
 			<div class="arshid6social-card arshid6social-card--about" id="arshid6social-about-card">
 				<div class="arshid6social-about-row">
 					<span class="arshid6social-about-label"><?php esc_html_e( 'About', '6arshid-social-community' ); ?></span>
@@ -312,6 +318,7 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 				</div>
 				<?php endif; ?>
 			</div>
+			<?php endif; ?>
 
 			<!-- Stories compact (activity tab only) -->
 			<?php
@@ -393,13 +400,23 @@ $profile_url = home_url( '/members/' . $profile_user->user_nicename . '/' );
 						if ( empty( $group['fields'] ) ) {
 							continue;
 						}
+						// Pre-filter fields by visibility so empty groups are skipped.
+						$visible_fields = array();
+						foreach ( $group['fields'] as $field ) {
+							if ( $xprofile->can_view_field( (int) $field['id'], $profile_user->ID, $viewer_id ) ) {
+								$visible_fields[] = $field;
+							}
+						}
+						if ( empty( $visible_fields ) ) {
+							continue;
+						}
 						?>
 						<div class="arshid6social-card" style="margin-block-end:1rem;">
 							<div class="arshid6social-card__header"><?php echo esc_html( $group['name'] ); ?></div>
 							<div class="arshid6social-card__body">
 								<dl style="display:grid;gap:.75rem;">
 									<?php
-									foreach ( $group['fields'] as $field ) :
+									foreach ( $visible_fields as $field ) :
 										$value = $xprofile->get_field_value( $profile_user->ID, (int) $field['id'] );
 										if ( ! $value ) {
 											continue;

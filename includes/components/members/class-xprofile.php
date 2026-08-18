@@ -68,6 +68,131 @@ class XProfile {
 	}
 
 	/**
+	 * Returns a single field's metadata (including visibility) by ID.
+	 *
+	 * @param int $field_id Field ID.
+	 * @return array<string, mixed>|null Field row or null if not found.
+	 */
+	public function get_field( int $field_id ): ?array {
+		global $wpdb;
+
+		if ( ! $field_id ) {
+			return null;
+		}
+
+		$cache_key = 'xprofile_field_' . $field_id;
+		$found     = false;
+		$cached    = \Arshid6Social\Cache::get( $cache_key, $found );
+		if ( $found ) {
+			return $cached;
+		}
+
+		$result = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}arshid6social_xprofile_fields WHERE id = %d LIMIT 1",
+				$field_id
+			),
+			ARRAY_A
+		);
+
+		$value = $result ?: null;
+		\Arshid6Social\Cache::set( $cache_key, $value, 300 );
+
+		return $value;
+	}
+
+	/**
+	 * Returns a single field's metadata by name.
+	 *
+	 * @param string $field_name Field name.
+	 * @return array<string, mixed>|null Field row or null if not found.
+	 */
+	public function get_field_by_name( string $field_name ): ?array {
+		global $wpdb;
+
+		if ( ! $field_name ) {
+			return null;
+		}
+
+		$cache_key = 'xprofile_field_name_' . $field_name;
+		$found     = false;
+		$cached    = \Arshid6Social\Cache::get( $cache_key, $found );
+		if ( $found ) {
+			return $cached;
+		}
+
+		$result = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}arshid6social_xprofile_fields WHERE name = %s LIMIT 1",
+				$field_name
+			),
+			ARRAY_A
+		);
+
+		$value = $result ?: null;
+		\Arshid6Social\Cache::set( $cache_key, $value, 300 );
+
+		return $value;
+	}
+
+	/**
+	 * Checks whether the current viewer is allowed to see a field based on its visibility setting.
+	 *
+	 * Visibility levels:
+	 *  - 'public'       → everyone can see
+	 *  - 'friends_only' → only the profile owner and confirmed friends can see
+	 *  - 'admin_only'   → only the profile owner and admins can see
+	 *  - 'onlyme'       → only the profile owner can see
+	 *
+	 * @param int         $field_id   Field ID.
+	 * @param int         $profile_user_id The user who owns the profile.
+	 * @param int|null    $viewer_id  The user viewing the profile (null = guest).
+	 * @return bool True if the viewer may see this field.
+	 */
+	public function can_view_field( int $field_id, int $profile_user_id, ?int $viewer_id = null ): bool {
+		$field = $this->get_field( $field_id );
+		if ( ! $field ) {
+			return false;
+		}
+
+		$visibility = $field['visibility'] ?? 'public';
+
+		// Profile owner always sees their own fields.
+		if ( $viewer_id && $viewer_id === $profile_user_id ) {
+			return true;
+		}
+
+		// Admins with manage_members capability can see all fields.
+		if ( $viewer_id && user_can( $viewer_id, 'arshid6social_manage_members' ) ) {
+			return true;
+		}
+
+		switch ( $visibility ) {
+			case 'public':
+				return true;
+
+			case 'friends_only':
+				if ( ! $viewer_id ) {
+					return false;
+				}
+				$friends = ARSHID6SOCIAL()->component( 'friends' );
+				if ( $friends && method_exists( $friends, 'are_friends' ) ) {
+					return $friends->are_friends( $viewer_id, $profile_user_id );
+				}
+				return false;
+
+		case 'admin_only':
+			return $viewer_id && user_can( $viewer_id, 'arshid6social_manage_members' );
+
+			case 'onlyme':
+				return false; // Already handled owner above.
+
+		default:
+			return false;
+		}
+	}
+
+	/**
 	 * Returns a single field's stored value for a user.
 	 *
 	 * @param int        $user_id  User ID.

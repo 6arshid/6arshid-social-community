@@ -112,7 +112,7 @@ class Blocking_REST extends \WP_REST_Controller {
 			if ( ! $user ) {
 				continue;
 			}
-			$item                 = $members ? $members->format_member( $user ) : array( 'id' => (int) $block->blocked_id );
+			$item                 = $members ? $members->format_member( $user, $current ?: null ) : array( 'id' => (int) $block->blocked_id );
 			$item['block_date']   = $block->date_created;
 			$item['block_reason'] = $block->reason ?? '';
 			$data[]               = $item;

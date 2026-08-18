@@ -435,6 +435,92 @@ add_shortcode(
 
 // ─── 8. SVG icons ─────────────────────────────────────────────────────────────
 
+/**
+ * Returns an explicit SVG KSES allowlist for sanitizing plugin SVG output.
+ *
+ * @return array<string, array<string, bool>>
+ */
+if ( ! function_exists( 'a6sc_allowed_svg_tags' ) ) {
+function a6sc_allowed_svg_tags(): array {
+	return array(
+		'svg'    => array(
+			'xmlns'       => true,
+			'width'       => true,
+			'height'      => true,
+			'viewbox'     => true,
+			'fill'        => true,
+			'stroke'      => true,
+			'stroke-width'    => true,
+			'stroke-linecap'  => true,
+			'stroke-linejoin' => true,
+			'aria-hidden' => true,
+			'role'        => true,
+		),
+		'path'   => array(
+			'd'              => true,
+			'fill'           => true,
+			'fill-rule'      => true,
+			'clip-rule'      => true,
+			'stroke'         => true,
+			'stroke-width'   => true,
+			'stroke-linecap' => true,
+		),
+		'circle' => array(
+			'cx'             => true,
+			'cy'             => true,
+			'r'              => true,
+			'fill'           => true,
+			'stroke'         => true,
+			'stroke-width'   => true,
+		),
+		'rect'   => array(
+			'x'      => true,
+			'y'      => true,
+			'width'  => true,
+			'height' => true,
+			'rx'     => true,
+			'ry'     => true,
+			'fill'   => true,
+		),
+		'line'   => array(
+			'x1'             => true,
+			'y1'             => true,
+			'x2'             => true,
+			'y2'             => true,
+			'stroke'         => true,
+			'stroke-width'   => true,
+			'stroke-linecap' => true,
+		),
+		'polyline' => array(
+			'points'         => true,
+			'fill'           => true,
+			'stroke'         => true,
+			'stroke-width'   => true,
+			'stroke-linecap' => true,
+			'stroke-linejoin' => true,
+		),
+		'polygon'  => array(
+			'points'         => true,
+			'fill'           => true,
+			'stroke'         => true,
+		),
+		'g'      => array( 'fill' => true ),
+	);
+}
+} // End if function_exists a6sc_allowed_svg_tags.
+
+/**
+ * Sanitizes SVG markup through a minimal explicit allowlist.
+ *
+ * @param string $svg Raw SVG string.
+ * @return string     Sanitized SVG string.
+ */
+if ( ! function_exists( 'a6sc_kses_svg' ) ) {
+function a6sc_kses_svg( string $svg ): string {
+	return wp_kses( $svg, a6sc_allowed_svg_tags() );
+}
+}
+
 function a6sc_svg( string $name ): string {
 	static $icons = null;
 	if ( null === $icons ) {
@@ -461,7 +547,7 @@ function a6sc_svg( string $name ): string {
 			'exit'            => '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/><path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/></svg>',
 		);
 	}
-	return $icons[ $name ] ?? '';
+	return a6sc_kses_svg( $icons[ $name ] ?? '' );
 }
 
 // ─── 9. Nav icon helper ────────────────────────────────────────────────────────
@@ -475,7 +561,7 @@ function a6sc_nav_icon( int $page_id, string $fallback, bool $is_active, int $si
 	if ( $page_id && function_exists( 'arshid6social_page_icon' ) ) {
 		$bi = arshid6social_page_icon( $page_id, $size );
 		if ( $bi ) {
-			return $bi;
+			return a6sc_kses_svg( $bi );
 		}
 	}
 	return a6sc_svg( $is_active ? $fallback . '-filled' : $fallback );
@@ -568,7 +654,7 @@ add_shortcode(
 			$badge      = isset( $item['badge_id'] )
 						? '<span id="' . esc_attr( $item['badge_id'] ) . '" class="a6sc-nav-badge" hidden aria-hidden="true">0</span>'
 						: '';
-			$out       .= '<a href="' . esc_url( $item['url'] ) . '" class="a6sc-sidenav__item' . $active_cls . '">'
+			$out       .= '<a href="' . esc_url( $item['url'] ) . '" class="a6sc-sidenav__item' . esc_attr( $active_cls ) . '">'
 				. '<span class="a6sc-sidenav__icon">' . $icon_svg . '</span>'
 				. '<span class="a6sc-sidenav__label">' . esc_html( $item['label'] ) . '</span>'
 				. $badge
@@ -706,9 +792,11 @@ function a6sc_apply_nav_order( array $items ): array {
  * Default fallback icon (outline circle) for Pages with no icon assigned.
  */
 function a6sc_page_nav_default_icon( int $size = 26 ): string {
-	return sprintf(
-		'<svg xmlns="http://www.w3.org/2000/svg" width="%1$d" height="%1$d" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/></svg>',
-		$size
+	return a6sc_kses_svg(
+		sprintf(
+			'<svg xmlns="http://www.w3.org/2000/svg" width="%1$d" height="%1$d" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/></svg>',
+			$size
+		)
 	);
 }
 
@@ -737,7 +825,7 @@ function a6sc_render_page_nav( string $menu = 'socialnetworksix-primary', bool $
 		$cls       = $is_active ? ' a6sc-sidenav__item--active' : '';
 		$icon      = $item['icon'] ?: a6sc_page_nav_default_icon( 26 );
 
-		$out .= '<a href="' . esc_url( $item['url'] ) . '" class="a6sc-sidenav__item' . $cls . '">'
+		$out .= '<a href="' . esc_url( $item['url'] ) . '" class="a6sc-sidenav__item' . esc_attr( $cls ) . '">'
 				. '<span class="a6sc-sidenav__icon">' . $icon . '</span>'
 				. '<span class="a6sc-sidenav__label">' . esc_html( $item['label'] ) . '</span>'
 				. '</a>';
@@ -1125,7 +1213,7 @@ add_shortcode(
 			$badge_icon = isset( $item['badge_id'] )
 						? '<span id="' . esc_attr( $item['badge_id'] ) . '" class="a6sc-nav-badge a6sc-nav-badge--icon" hidden aria-hidden="true">0</span>'
 						: '';
-			$out       .= '<a href="' . esc_url( $item['url'] ) . '" class="a6sc-bnav__item' . $active_cls . '">'
+			$out       .= '<a href="' . esc_url( $item['url'] ) . '" class="a6sc-bnav__item' . esc_attr( $active_cls ) . '">'
 				. '<span class="a6sc-bnav__icon">' . $icon_svg . $badge_icon . '</span>'
 				. '<span class="a6sc-bnav__label">' . esc_html( $item['label'] ) . '</span>'
 				. '</a>';
