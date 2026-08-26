@@ -94,7 +94,7 @@ class Private_Encryption {
 			$envelope = self::encrypt_openssl( $plaintext, $key );
 		}
 
-		sodium_memzero( $key );
+		self::safe_sodium_memzero( $key );
 
 		if ( is_wp_error( $envelope ) ) {
 			return $envelope;
@@ -164,14 +164,14 @@ class Private_Encryption {
 		}
 
 		$envelope = self::encrypt( $plaintext );
-		sodium_memzero( $plaintext );
+		self::safe_sodium_memzero( $plaintext );
 
 		if ( is_wp_error( $envelope ) || false === $envelope ) {
 			return false;
 		}
 
 		$bytes = file_put_contents( $path, $envelope ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
-		sodium_memzero( $envelope );
+		self::safe_sodium_memzero( $envelope );
 
 		return false !== $bytes;
 	}
@@ -189,14 +189,14 @@ class Private_Encryption {
 		}
 
 		$plaintext = self::decrypt( $ciphertext );
-		sodium_memzero( $ciphertext );
+		self::safe_sodium_memzero( $ciphertext );
 
 		if ( false === $plaintext || is_wp_error( $plaintext ) ) {
 			return false;
 		}
 
 		echo $plaintext; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		sodium_memzero( $plaintext );
+		self::safe_sodium_memzero( $plaintext );
 
 		return true;
 	}
@@ -252,7 +252,7 @@ class Private_Encryption {
 
 		// Wrap with both salt-KEK and recovery-KEK (authenticated dual wrap).
 		$wrapped = self::wrap_key_dual( $legacy_key, self::LEGACY_A6S1_KEY_VERSION );
-		sodium_memzero( $legacy_key );
+		self::safe_sodium_memzero( $legacy_key );
 
 		if ( is_wp_error( $wrapped ) ) {
 			return false;
@@ -491,11 +491,11 @@ class Private_Encryption {
 		if ( ! $added ) {
 			$persisted = get_option( self::RECOVERY_OPTION, '' );
 			if ( is_string( $persisted ) && strlen( $persisted ) === self::RECOVERY_SECRET_LEN ) {
-				sodium_memzero( $secret );
+				self::safe_sodium_memzero( $secret );
 				self::$recovery_cache[ self::current_blog_id() ] = $persisted;
 				return $persisted;
 			}
-			sodium_memzero( $secret );
+			self::safe_sodium_memzero( $secret );
 			return new \WP_Error(
 				'arshid6social_recovery_corrupt',
 				__( 'Recovery secret initialization failed due to a race condition.', '6arshid-social-community' )
@@ -635,6 +635,13 @@ class Private_Encryption {
 	 * @return array|WP_Error Dual-wrapped keyring entry or error.
 	 */
 	private static function wrap_key_dual( string $raw_key, int $version ) {
+		if ( ! self::sodium_available() ) {
+			return new \WP_Error(
+				'arshid6social_no_sodium',
+				__( 'libsodium is required for key wrapping but is not available on this server.', '6arshid-social-community' )
+			);
+		}
+
 		// Wrap with salt-derived KEK (primary).
 		$salt_kek = self::derive_kek_from_salts();
 		if ( is_wp_error( $salt_kek ) ) {
@@ -643,7 +650,7 @@ class Private_Encryption {
 
 		$salt_nonce  = random_bytes( self::SODIUM_NONCE_LEN );
 		$salt_cipher = sodium_crypto_secretbox( $raw_key, $salt_nonce, $salt_kek );
-		sodium_memzero( $salt_kek );
+		self::safe_sodium_memzero( $salt_kek );
 
 		// Wrap with recovery-derived KEK (fallback).
 		$recovery_kek = self::derive_kek_from_recovery();
@@ -653,7 +660,7 @@ class Private_Encryption {
 
 		$recovery_nonce  = random_bytes( self::SODIUM_NONCE_LEN );
 		$recovery_cipher = sodium_crypto_secretbox( $raw_key, $recovery_nonce, $recovery_kek );
-		sodium_memzero( $recovery_kek );
+		self::safe_sodium_memzero( $recovery_kek );
 
 		return array(
 			'version'         => $version,
@@ -716,12 +723,12 @@ class Private_Encryption {
 		$cipher = base64_decode( $entry['kek_cipher'], true );
 
 		if ( false === $nonce || false === $cipher ) {
-			sodium_memzero( $salt_kek );
+			self::safe_sodium_memzero( $salt_kek );
 			return new \WP_Error( 'arshid6social_key_corrupt', __( 'Encryption key data is corrupted.', '6arshid-social-community' ) );
 		}
 
 		$raw_key = sodium_crypto_secretbox_open( $cipher, $nonce, $salt_kek );
-		sodium_memzero( $salt_kek );
+		self::safe_sodium_memzero( $salt_kek );
 
 		if ( false === $raw_key || strlen( $raw_key ) !== 32 ) {
 			return new \WP_Error( 'arshid6social_key_unwrap_salt_failed', __( 'Salt-based key unwrap failed.', '6arshid-social-community' ) );
@@ -746,12 +753,12 @@ class Private_Encryption {
 		$cipher = base64_decode( $entry['recovery_cipher'], true );
 
 		if ( false === $nonce || false === $cipher ) {
-			sodium_memzero( $recovery_kek );
+			self::safe_sodium_memzero( $recovery_kek );
 			return new \WP_Error( 'arshid6social_key_corrupt', __( 'Recovery key data is corrupted.', '6arshid-social-community' ) );
 		}
 
 		$raw_key = sodium_crypto_secretbox_open( $cipher, $nonce, $recovery_kek );
-		sodium_memzero( $recovery_kek );
+		self::safe_sodium_memzero( $recovery_kek );
 
 		if ( false === $raw_key || strlen( $raw_key ) !== 32 ) {
 			return new \WP_Error( 'arshid6social_key_unwrap_recovery_failed', __( 'Recovery key unwrap failed.', '6arshid-social-community' ) );
@@ -805,7 +812,7 @@ class Private_Encryption {
 
 		// Re-wrap with current salts (dual wrap).
 		$rewrapped = self::wrap_key_dual( $raw_key, self::LEGACY_A6S1_KEY_VERSION );
-		sodium_memzero( $raw_key );
+		self::safe_sodium_memzero( $raw_key );
 
 		if ( ! is_wp_error( $rewrapped ) ) {
 			$rewrapped['type'] = self::LEGACY_A6S1_KEY_TYPE;
@@ -899,7 +906,7 @@ class Private_Encryption {
 		$preserved = self::unwrap_preserved_legacy_a6s1_key();
 		if ( ! is_wp_error( $preserved ) ) {
 			$plain = sodium_crypto_secretbox_open( $cipher, $nonce, $preserved );
-			sodium_memzero( $preserved );
+			self::safe_sodium_memzero( $preserved );
 			if ( false !== $plain ) {
 				return $plain;
 			}
@@ -916,8 +923,8 @@ class Private_Encryption {
 
 		$plain = sodium_crypto_secretbox_open( $cipher, $nonce, $key );
 
-		sodium_memzero( $key );
-		sodium_memzero( $nonce );
+		self::safe_sodium_memzero( $key );
+		self::safe_sodium_memzero( $nonce );
 
 		if ( false === $plain ) {
 			return new \WP_Error(
@@ -976,7 +983,7 @@ class Private_Encryption {
 				break;
 		}
 
-		sodium_memzero( $raw_key );
+		self::safe_sodium_memzero( $raw_key );
 
 		return $plain;
 	}
@@ -992,7 +999,7 @@ class Private_Encryption {
 		$nonce  = substr( $payload, 0, self::SODIUM_NONCE_LEN );
 		$cipher = substr( $payload, self::SODIUM_NONCE_LEN );
 		$plain  = sodium_crypto_secretbox_open( $cipher, $nonce, $key );
-		sodium_memzero( $nonce );
+		self::safe_sodium_memzero( $nonce );
 
 		return false === $plain ? false : $plain;
 	}
@@ -1018,7 +1025,7 @@ class Private_Encryption {
 			$tag
 		);
 
-		sodium_memzero( $iv );
+		self::safe_sodium_memzero( $iv );
 
 		return false === $plain ? false : $plain;
 	}
@@ -1028,6 +1035,13 @@ class Private_Encryption {
 	// ═══════════════════════════════════════════════════════════════════════
 
 	private static function sodium_available(): bool {
+		// Native PHP sodium extension is required. WordPress sodium_compat defines
+		// polyfill functions that emulate secretbox but cannot perform secure memory
+		// wiping (sodium_memzero throws SodiumException). We must not treat the
+		// polyfill as equivalent to the native extension for backend selection.
+		if ( ! extension_loaded( 'sodium' ) ) {
+			return false;
+		}
 		return function_exists( 'sodium_crypto_secretbox' )
 			&& function_exists( 'sodium_crypto_secretbox_open' )
 			&& function_exists( 'random_bytes' );
@@ -1038,5 +1052,28 @@ class Private_Encryption {
 			&& function_exists( 'openssl_decrypt' )
 			&& function_exists( 'openssl_random_pseudo_bytes' )
 			&& defined( 'OPENSSL_RAW_DATA' );
+	}
+
+	/**
+	 * Safely zeroes a sensitive string if the native sodium extension is loaded.
+	 *
+	 * WordPress sodium_compat defines sodium_memzero() as a polyfill that throws
+	 * SodiumException because secure memory wiping is impossible from PHP userland.
+	 * This helper checks extension_loaded('sodium') — not merely function_exists —
+	 * to ensure only the native implementation is called. A try/catch provides a
+	 * final safety net. On failure or when native sodium is absent, the variable
+	 * is set to null as a best-effort cleanup (not cryptographically secure).
+	 *
+	 * @param string &$var Variable to zero.
+	 */
+	public static function safe_sodium_memzero( string &$var ): void {
+		if ( extension_loaded( 'sodium' ) && function_exists( 'sodium_memzero' ) ) {
+			try {
+				sodium_memzero( $var );
+			} catch ( \Throwable $e ) {
+				// Phandler cannot securely wipe memory; continue safely.
+			}
+		}
+		$var = null;
 	}
 }

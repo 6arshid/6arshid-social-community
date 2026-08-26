@@ -1772,26 +1772,26 @@ class Activator {
 		// Re-encrypt with A6S2 master key.
 		$new_envelope = \Arshid6Social\Private_Encryption::encrypt( $plaintext );
 		if ( is_wp_error( $new_envelope ) || false === $new_envelope ) {
-			sodium_memzero( $plaintext );
+			\Arshid6Social\Private_Encryption::safe_sodium_memzero( $plaintext );
 			return new \WP_Error( 'arshid6social_a6s2_encrypt_failed', __( 'Cannot re-encrypt to A6S2.', '6arshid-social-community' ) );
 		}
 
 		// Verify: decrypt the new A6S2 blob and compare.
 		$verify = \Arshid6Social\Private_Encryption::decrypt( $new_envelope );
 		if ( false === $verify || is_wp_error( $verify ) || $verify !== $plaintext ) {
-			sodium_memzero( $plaintext );
-			sodium_memzero( $new_envelope );
+			\Arshid6Social\Private_Encryption::safe_sodium_memzero( $plaintext );
+			\Arshid6Social\Private_Encryption::safe_sodium_memzero( $new_envelope );
 			if ( is_string( $verify ) ) {
-				sodium_memzero( $verify );
+				\Arshid6Social\Private_Encryption::safe_sodium_memzero( $verify );
 			}
 			return new \WP_Error( 'arshid6social_verify_failed', __( 'A6S2 re-encryption verification failed.', '6arshid-social-community' ) );
 		}
-		sodium_memzero( $verify );
+		\Arshid6Social\Private_Encryption::safe_sodium_memzero( $verify );
 
 		// All checks passed — replace the file.
 		$bytes = file_put_contents( $path, $new_envelope ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
-		sodium_memzero( $plaintext );
-		sodium_memzero( $new_envelope );
+		\Arshid6Social\Private_Encryption::safe_sodium_memzero( $plaintext );
+		\Arshid6Social\Private_Encryption::safe_sodium_memzero( $new_envelope );
 
 		if ( false === $bytes ) {
 			return new \WP_Error( 'arshid6social_write_failed', __( 'Failed to write re-encrypted file.', '6arshid-social-community' ) );

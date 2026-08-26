@@ -190,7 +190,7 @@ class Media_Handler {
 
 		$plain   = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		$envelope = Private_Encryption::encrypt( $plain );
-		sodium_memzero( $plain );
+		Private_Encryption::safe_sodium_memzero( $plain );
 
 		if ( is_wp_error( $envelope ) ) {
 			return $envelope;
@@ -198,7 +198,7 @@ class Media_Handler {
 
 		$enc_dest = $path . '.enc';
 		$bytes    = file_put_contents( $enc_dest, $envelope ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
-		sodium_memzero( $envelope );
+		Private_Encryption::safe_sodium_memzero( $envelope );
 
 		if ( false === $bytes ) {
 			return new \WP_Error(
