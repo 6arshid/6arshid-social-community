@@ -20,20 +20,17 @@
 // This is a command-line development tool, not runtime plugin code.
 // phpcs:ignoreFile
 
+// Direct-access protection: block all web/HTTP execution.
+if ( 'cli' !== PHP_SAPI ) {
+	if ( ! defined( 'ABSPATH' ) ) {
+		exit;
+	}
+	exit( 'Direct access is not allowed.' );
+}
+
 $bi_version = '1.11.3';
 $zip_url    = 'https://github.com/twbs/icons/releases/download/v' . $bi_version . '/bootstrap-icons-' . $bi_version . '.zip';
 $out_file   = __DIR__ . '/../assets/icons/bootstrap-icons.json';
-
-// ── Direct-access protection ────────────────────────────────────────────────
-// This script is a development-only build tool. It must NEVER run on end-user
-// WordPress installations. It is excluded from the production .zip via .distignore.
-// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CLI-only output, not rendered in HTML.
-if ( 'cli' !== PHP_SAPI ) {
-	fwrite( STDERR, "Error: this is a development build script. Do not run it on a server.\n" );
-	exit( 1 );
-}
-
-echo "Downloading Bootstrap Icons v" . $bi_version . "…\n";
 
 // ── Download ──────────────────────────────────────────────────────────────────
 
