@@ -1565,6 +1565,12 @@ class Activity {
 
 		add_filter( 'upload_dir', $subdir_filter );
 		$upload_dir_info = wp_upload_dir();
+
+		if ( ! empty( $upload_dir_info['error'] ) ) {
+			remove_filter( 'upload_dir', $subdir_filter );
+			wp_send_json_error( array( 'message' => __( 'Unable to determine upload directory.', '6arshid-social-community' ) ), 500 );
+		}
+
 		wp_mkdir_p( $upload_dir_info['path'] );
 
 		global $wpdb;

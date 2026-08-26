@@ -70,6 +70,12 @@ class Advanced_Polls {
 
 		add_filter( 'upload_dir', $subdir_filter );
 		$upload_dir = wp_upload_dir();
+
+		if ( ! empty( $upload_dir['error'] ) ) {
+			remove_filter( 'upload_dir', $subdir_filter );
+			wp_send_json_error( array( 'message' => __( 'Unable to determine upload directory.', '6arshid-social-community' ) ), 500 );
+		}
+
 		wp_mkdir_p( $upload_dir['path'] );
 
 		$ext      = 'image/png' === $real_mime ? 'png' : ( 'image/webp' === $real_mime ? 'webp' : 'jpg' );

@@ -70,31 +70,46 @@ class Comments_Attachments {
 			$this->strip_exif( $file['tmp_name'], $real_mime );
 		}
 
-		$subdir_filter = function ( array $dir ) use ( $comment_id ): array {
-			$dir['subdir'] = '/social-network/comments/' . $comment_id;
-			$dir['path']   = $dir['basedir'] . $dir['subdir'];
-			$dir['url']    = $dir['baseurl'] . $dir['subdir'];
-			return $dir;
-		};
-
-		add_filter( 'upload_dir', $subdir_filter );
-		$upload_dir = wp_upload_dir();
-		wp_mkdir_p( $upload_dir['path'] );
-
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-		$upload_data = array(
-			'name'     => wp_generate_uuid4() . '.' . pathinfo( $file['name'], PATHINFO_EXTENSION ),
-			'type'     => $real_mime,
-			'tmp_name' => $file['tmp_name'],
-			'error'    => (int) $file['error'],
-			'size'     => (int) $file['size'],
-		);
-		$moved       = wp_handle_upload( $upload_data, array( 'test_form' => false ) );
-		remove_filter( 'upload_dir', $subdir_filter );
-
-		if ( ! isset( $moved['file'] ) || isset( $moved['error'] ) ) {
+		$private_dir = arshid6social_get_private_dir();
+		if ( is_wp_error( $private_dir ) ) {
 			return null;
 		}
+		$dest_dir = $private_dir . 'comments/' . $comment_id;
+
+		if ( ! wp_mkdir_p( $dest_dir ) ) {
+			return null;
+		}
+
+		$filename = wp_generate_uuid4() . '.' . pathinfo( $file['name'], PATHINFO_EXTENSION );
+		$dest     = $dest_dir . '/' . $filename;
+
+		if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
+			return null;
+		}
+
+		global $wp_filesystem;
+		if ( ! $wp_filesystem ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			WP_Filesystem();
+		}
+		if ( ! $wp_filesystem || ! $wp_filesystem->move( $file['tmp_name'], $dest, true ) ) {
+			return null;
+		}
+
+		// Encrypt the file at rest — mandatory, fail closed if unavailable.
+		$enc_result = \Arshid6Social\Media_Handler::encrypt_private_file_for_handler( $dest );
+		if ( is_wp_error( $enc_result ) ) {
+			if ( is_file( $dest ) ) {
+				unlink( $dest ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			}
+			return null;
+		}
+		$dest = $enc_result;
+
+		$moved = array(
+			'file' => $dest,
+			'url'  => '',
+		);
 
 		global $wpdb;
 		$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -214,31 +229,46 @@ class Comments_Attachments {
 				$this->strip_exif( $file['tmp_name'], $real_mime );
 			}
 
-			$subdir_filter = function ( array $dir ) use ( $comment_id ): array {
-				$dir['subdir'] = '/social-network/comments/' . $comment_id;
-				$dir['path']   = $dir['basedir'] . $dir['subdir'];
-				$dir['url']    = $dir['baseurl'] . $dir['subdir'];
-				return $dir;
-			};
-
-			add_filter( 'upload_dir', $subdir_filter );
-			$upload_dir = wp_upload_dir();
-			wp_mkdir_p( $upload_dir['path'] );
-
-			require_once ABSPATH . 'wp-admin/includes/file.php';
-			$upload_data = array(
-				'name'     => wp_generate_uuid4() . '.' . pathinfo( $file['name'], PATHINFO_EXTENSION ),
-				'type'     => $real_mime,
-				'tmp_name' => $file['tmp_name'],
-				'error'    => (int) $file['error'],
-				'size'     => (int) $file['size'],
-			);
-			$moved       = wp_handle_upload( $upload_data, array( 'test_form' => false ) );
-			remove_filter( 'upload_dir', $subdir_filter );
-
-			if ( ! isset( $moved['file'] ) || isset( $moved['error'] ) ) {
-				wp_send_json_error( array( 'message' => 'wp_handle_upload failed: ' . ( $moved['error'] ?? 'no file in result' ) ), 500 );
+			$private_dir = arshid6social_get_private_dir();
+			if ( is_wp_error( $private_dir ) ) {
+				wp_send_json_error( array( 'message' => $private_dir->get_error_message() ), 500 );
 			}
+			$dest_dir = $private_dir . 'comments/' . $comment_id;
+
+			if ( ! wp_mkdir_p( $dest_dir ) ) {
+				wp_send_json_error( array( 'message' => __( 'Unable to create upload directory.', '6arshid-social-community' ) ), 500 );
+			}
+
+			$filename = wp_generate_uuid4() . '.' . pathinfo( $file['name'], PATHINFO_EXTENSION );
+			$dest     = $dest_dir . '/' . $filename;
+
+			if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
+				wp_send_json_error( array( 'message' => 'Upload failed.' ), 500 );
+			}
+
+			global $wp_filesystem;
+			if ( ! $wp_filesystem ) {
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+				WP_Filesystem();
+			}
+			if ( ! $wp_filesystem || ! $wp_filesystem->move( $file['tmp_name'], $dest, true ) ) {
+				wp_send_json_error( array( 'message' => 'Upload failed.' ), 500 );
+			}
+
+			// Encrypt the file at rest — mandatory, fail closed if unavailable.
+			$enc_result = \Arshid6Social\Media_Handler::encrypt_private_file_for_handler( $dest );
+			if ( is_wp_error( $enc_result ) ) {
+				if ( is_file( $dest ) ) {
+					unlink( $dest ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				}
+				wp_send_json_error( array( 'message' => $enc_result->get_error_message() ), 500 );
+			}
+			$dest = $enc_result;
+
+			$moved = array(
+				'file' => $dest,
+				'url'  => '',
+			);
 
 			$wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 				$wpdb->prefix . 'arshid6social_attachments',
@@ -336,7 +366,47 @@ class Comments_Attachments {
 			wp_send_json_error( null, 403 );
 		}
 
-		wp_safe_redirect( esc_url_raw( $att->file_url ) );
+		$file_path = (string) $att->file_path;
+
+		// Resolve encrypted files: stored path may lack .enc extension.
+		if ( ! file_exists( $file_path ) && ! str_ends_with( $file_path, '.enc' ) ) {
+			$enc_candidate = $file_path . '.enc';
+			if ( file_exists( $enc_candidate ) ) {
+				$file_path = $enc_candidate;
+			}
+		}
+
+		if ( ! file_exists( $file_path ) || ! is_file( $file_path ) ) {
+			status_header( 404 );
+			exit;
+		}
+
+		$mime = (string) $att->mime_type;
+
+		// Decrypt encrypted files before serving.
+		if ( \Arshid6Social\Private_Encryption::is_encrypted( $file_path ) ) {
+			$size = filesize( $file_path );
+			if ( false === $size ) {
+				status_header( 404 );
+				exit;
+			}
+			status_header( 200 );
+			header( 'Content-Type: ' . $mime );
+			header( 'Content-Length: ' . $size );
+			header( 'Content-Disposition: inline; filename="' . esc_attr( $att->file_name ) . '"' );
+			header( 'X-Content-Type-Options: nosniff' );
+			if ( ! \Arshid6Social\Private_Encryption::decrypt_file_to_output( $file_path ) ) {
+				status_header( 404 );
+				exit;
+			}
+			exit;
+		}
+
+		header( 'Content-Type: ' . $mime );
+		header( 'Content-Length: ' . filesize( $file_path ) );
+		header( 'Content-Disposition: inline; filename="' . esc_attr( $att->file_name ) . '"' );
+		header( 'X-Content-Type-Options: nosniff' );
+		readfile( $file_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions
 		exit;
 	}
 

@@ -179,6 +179,14 @@ $options = array(
 	'arshid6social_eng_att_max_size_mb',
 	'arshid6social_eng_att_allowed_types',
 	'arshid6social_engagement_db_version',
+	// Encryption key lifecycle — delete key material AFTER encrypted files are removed.
+	'arshid6social_enc_master_key',
+	'arshid6social_enc_keyring',
+	'arshid6social_enc_recovery_secret',
+	'arshid6social_enc_legacy_a6s1_key',
+	// Migration / debug
+	'arshid6social_private_migration_version',
+	'arshid6social_enable_debug_log',
 );
 
 foreach ( $options as $option ) {
@@ -240,7 +248,35 @@ $wpdb->query( // phpcs:ignore WordPress.DB
 
 // ── Import uploads into WordPress Media Library, then remove the folder ───
 $upload_dir = wp_upload_dir();
-$sn_dir     = trailingslashit( $upload_dir['basedir'] ) . 'social-network/';
+if ( ! empty( $upload_dir['error'] ) ) {
+	return;
+}
+
+// ── Delete encrypted private files and legacy private files ────────────────
+// MUST happen BEFORE key options are deleted, otherwise encrypted files
+// become permanently unrecoverable.
+global $wp_filesystem;
+if ( ! $wp_filesystem ) {
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+	WP_Filesystem();
+}
+if ( $wp_filesystem ) {
+	$private_dir = trailingslashit( $upload_dir['basedir'] ) . '6arshid/private/';
+	if ( is_dir( $private_dir ) ) {
+		$wp_filesystem->delete( $private_dir, true );
+	}
+	$legacy_private = trailingslashit( WP_CONTENT_DIR ) . 'arshid6social-private/';
+	if ( is_dir( $legacy_private ) ) {
+		$wp_filesystem->delete( $legacy_private, true );
+	}
+	// Remove parent directory if empty after cleanup.
+	$sixarshid_dir = trailingslashit( $upload_dir['basedir'] ) . '6arshid/';
+	if ( is_dir( $sixarshid_dir ) && $wp_filesystem->is_empty( $sixarshid_dir ) ) {
+		$wp_filesystem->delete( $sixarshid_dir );
+	}
+}
+
+$sn_dir = trailingslashit( $upload_dir['basedir'] ) . 'social-network/';
 
 if ( is_dir( $sn_dir ) ) {
 	if ( ! function_exists( 'wp_generate_attachment_metadata' ) ) {

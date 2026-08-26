@@ -408,9 +408,8 @@ final class Admin_Members {
 			$rel_path = (string) $row->rel_path;
 			$abs_path = $upload_base . '/' . ltrim( $rel_path, '/' );
 
-			if ( file_exists( $abs_path ) ) {
-				// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-				@unlink( $abs_path );
+			if ( is_file( $abs_path ) ) {
+				unlink( $abs_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 			}
 
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -428,9 +427,8 @@ final class Admin_Members {
 					foreach ( $meta['sizes'] as $size_data ) {
 						if ( ! empty( $size_data['file'] ) ) {
 							$thumb = $dir . '/' . basename( $size_data['file'] );
-							if ( file_exists( $thumb ) ) {
-								// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-								@unlink( $thumb );
+							if ( is_file( $thumb ) ) {
+								unlink( $thumb ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 							}
 						}
 					}

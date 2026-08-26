@@ -7,6 +7,56 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Returns the absolute path to the plugin's private encrypted storage directory.
+ *
+ * Strictly private media (verification docs, message attachments, comment
+ * attachments) is stored here, encrypted at rest, inside wp_upload_dir()
+ * which is the WordPress.org-compliant location for plugin runtime data.
+ *
+ * @return string|\WP_Error Absolute directory path (with trailing slash) or WP_Error on failure.
+ */
+function arshid6social_get_private_dir() {
+	static $dirs = array();
+	$blog_id = ( is_multisite() && function_exists( 'get_current_blog_id' ) ) ? get_current_blog_id() : 1;
+
+	if ( isset( $dirs[ $blog_id ] ) ) {
+		return $dirs[ $blog_id ];
+	}
+
+	$upload_dir = wp_upload_dir();
+	if ( ! empty( $upload_dir['error'] ) ) {
+		return new \WP_Error(
+			'arshid6social_private_storage_unavailable',
+			__( 'Private file storage is currently unavailable.', '6arshid-social-community' )
+		);
+	}
+	$dir = trailingslashit( $upload_dir['basedir'] ) . '6arshid/private/';
+	if ( ! is_dir( $dir ) ) {
+		wp_mkdir_p( $dir );
+		// Apache defense-in-depth.
+		$htaccess = $dir . '.htaccess';
+		if ( ! file_exists( $htaccess ) ) {
+			file_put_contents( $htaccess, "Options -Indexes\nOrder Allow,Deny\nDeny from all\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		}
+	}
+
+	$dirs[ $blog_id ] = $dir;
+	return $dir;
+}
+
+/**
+ * Returns the legacy private directory path for migration/cleanup only.
+ *
+ * This path is NEVER used for new writes. It exists only so that
+ * migration code can find files that were previously stored here.
+ *
+ * @return string Absolute directory path (with trailing slash).
+ */
+function arshid6social_get_legacy_private_dir(): string {
+	return trailingslashit( WP_CONTENT_DIR ) . 'arshid6social-private/';
+}
+
 if ( ! function_exists( 'arshid6social_debug_log' ) ) {
 	/**
 	 * Writes plugin diagnostics only when explicitly enabled by an administrator.

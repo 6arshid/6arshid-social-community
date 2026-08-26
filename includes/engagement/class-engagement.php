@@ -107,8 +107,8 @@ class Engagement {
 		$url = ARSHID6SOCIAL_ASSETS_URL . 'engagement/';
 		$dir = ARSHID6SOCIAL_PLUGIN_DIR . 'assets/engagement/';
 
-		// Use file modification time as version so any upload immediately busts browser cache.
-		$css_ver = (string) ( @filemtime( $dir . 'css/engagement.css' ) ?: ARSHID6SOCIAL_VERSION );
+		// Use the stored asset version for cache busting — no filemtime() calls.
+		$css_ver = \Arshid6Social\Assets::get_asset_version();
 		wp_enqueue_style( 'arshid6social-engagement', $url . 'css/engagement.css', array(), $css_ver );
 
 		// Build enabled map from OPTIONS (not from loaded classes) so buttons
@@ -136,13 +136,13 @@ class Engagement {
 
 		// External share CSS (loaded separately so it can be cached independently).
 		if ( Engagement_Settings::enabled( 'social_share_external' ) ) {
-			$ext_css_ver = (string) ( @filemtime( $dir . 'css/social-share-external.css' ) ?: ARSHID6SOCIAL_VERSION );
+			$ext_css_ver = \Arshid6Social\Assets::get_asset_version();
 			wp_enqueue_style( 'arshid6social-ext-share', $url . 'css/social-share-external.css', array( 'arshid6social-engagement' ), $ext_css_ver );
 		}
 
 		// Social Embeds CSS.
 		if ( Engagement_Settings::enabled( 'social_embeds' ) ) {
-			$emb_css_ver = (string) ( @filemtime( $dir . 'css/social-embeds.css' ) ?: ARSHID6SOCIAL_VERSION );
+			$emb_css_ver = \Arshid6Social\Assets::get_asset_version();
 			wp_enqueue_style( 'arshid6social-social-embeds', $url . 'css/social-embeds.css', array( 'arshid6social-engagement' ), $emb_css_ver );
 		}
 
@@ -164,17 +164,17 @@ class Engagement {
 		);
 
 		$feature_handles = array();
+		$eng_js_ver      = \Arshid6Social\Assets::get_asset_version();
 		foreach ( $scripts as $key => $file ) {
 			if ( Engagement_Settings::enabled( $key ) ) {
 				$handle            = 'arshid6social-eng-' . str_replace( '_', '-', $key );
 				$feature_handles[] = $handle;
-				$js_ver            = (string) ( @filemtime( $dir . 'js/' . $file ) ?: ARSHID6SOCIAL_VERSION );
-				wp_register_script( $handle, $url . 'js/' . $file, array(), $js_ver, true );
+				wp_register_script( $handle, $url . 'js/' . $file, array(), $eng_js_ver, true );
 				wp_enqueue_script( $handle );
 			}
 		}
 
-		$eng_ver = (string) ( @filemtime( $dir . 'js/engagement.js' ) ?: ARSHID6SOCIAL_VERSION );
+		$eng_ver = \Arshid6Social\Assets::get_asset_version();
 		wp_enqueue_script(
 			'arshid6social-engagement',
 			$url . 'js/engagement.js',
@@ -260,7 +260,7 @@ class Engagement {
 		// social-embeds-composer.js must load AFTER arshid6social-engagement so that
 		// window.ARSHID6SOCIALEng (localized above) is already defined when the script runs.
 		if ( Engagement_Settings::enabled( 'social_embeds' ) ) {
-			$emb_js_ver = (string) ( @filemtime( $dir . 'js/social-embeds-composer.js' ) ?: ARSHID6SOCIAL_VERSION );
+			$emb_js_ver = \Arshid6Social\Assets::get_asset_version();
 			wp_enqueue_script(
 				'arshid6social-eng-social-embeds',
 				$url . 'js/social-embeds-composer.js',
@@ -272,7 +272,7 @@ class Engagement {
 
 		// Dedicated JS for the Saved Posts page (infinite scroll feed).
 		if ( $on_saved_posts_page ) {
-			$bp_ver = (string) ( @filemtime( $dir . 'js/bookmarks-page.js' ) ?: ARSHID6SOCIAL_VERSION );
+			$bp_ver = \Arshid6Social\Assets::get_asset_version();
 			wp_enqueue_script(
 				'arshid6social-bookmarks-page',
 				$url . 'js/bookmarks-page.js',

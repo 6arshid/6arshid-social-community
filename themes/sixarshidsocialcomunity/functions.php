@@ -138,26 +138,22 @@ add_action(
 
 		// Plugin CSS — only when the plugin constant is available.
 		if ( defined( 'ARSHID6SOCIAL_ASSETS_URL' ) && defined( 'ARSHID6SOCIAL_VERSION' ) && defined( 'ARSHID6SOCIAL_PLUGIN_DIR' ) ) {
-			$css_dir    = ARSHID6SOCIAL_PLUGIN_DIR . 'assets/css/';
-			$plugin_ver = (string) ( @filemtime( $css_dir . 'social-network.css' ) ?: ARSHID6SOCIAL_VERSION );
+			// Use the stored asset version for cache busting — no filemtime() on plugin files.
+			$plugin_ver = (string) get_option( 'arshid6social_assets_version', ARSHID6SOCIAL_VERSION );
 
 			wp_enqueue_style( 'arshid6social-core', ARSHID6SOCIAL_ASSETS_URL . 'css/social-network.css', array( 'sixarshidsocialcomunity-theme' ), $plugin_ver );
 
 			if ( get_option( 'arshid6social_stories_enabled' ) ) {
-				$stories_ver = (string) ( @filemtime( $css_dir . 'stories.css' ) ?: ARSHID6SOCIAL_VERSION );
-				wp_enqueue_style( 'arshid6social-stories', ARSHID6SOCIAL_ASSETS_URL . 'css/stories.css', array( 'arshid6social-core' ), $stories_ver );
+				wp_enqueue_style( 'arshid6social-stories', ARSHID6SOCIAL_ASSETS_URL . 'css/stories.css', array( 'arshid6social-core' ), $plugin_ver );
 			}
 			if ( get_option( 'arshid6social_blocking_enabled', true ) ) {
-				$blocking_ver = (string) ( @filemtime( $css_dir . 'blocking.css' ) ?: ARSHID6SOCIAL_VERSION );
-				wp_enqueue_style( 'arshid6social-blocking', ARSHID6SOCIAL_ASSETS_URL . 'css/blocking.css', array( 'arshid6social-core' ), $blocking_ver );
+				wp_enqueue_style( 'arshid6social-blocking', ARSHID6SOCIAL_ASSETS_URL . 'css/blocking.css', array( 'arshid6social-core' ), $plugin_ver );
 			}
 			if ( get_option( 'arshid6social_verification_enabled' ) ) {
-				$verif_ver = (string) ( @filemtime( $css_dir . 'verification.css' ) ?: ARSHID6SOCIAL_VERSION );
-				wp_enqueue_style( 'arshid6social-verification', ARSHID6SOCIAL_ASSETS_URL . 'css/verification.css', array( 'arshid6social-core' ), $verif_ver );
+				wp_enqueue_style( 'arshid6social-verification', ARSHID6SOCIAL_ASSETS_URL . 'css/verification.css', array( 'arshid6social-core' ), $plugin_ver );
 			}
 			if ( is_rtl() ) {
-				$rtl_ver = (string) ( @filemtime( $css_dir . 'rtl.css' ) ?: ARSHID6SOCIAL_VERSION );
-				wp_enqueue_style( 'arshid6social-rtl', ARSHID6SOCIAL_ASSETS_URL . 'css/rtl.css', array( 'arshid6social-core' ), $rtl_ver );
+				wp_enqueue_style( 'arshid6social-rtl', ARSHID6SOCIAL_ASSETS_URL . 'css/rtl.css', array( 'arshid6social-core' ), $plugin_ver );
 			}
 		}
 	}

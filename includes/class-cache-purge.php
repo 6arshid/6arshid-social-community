@@ -130,44 +130,19 @@ class Cache_Purge {
 		do_action( 'comet_cache_wipe_cache' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party cache plugin hook (Comet Cache), intentionally fired for integration.
 		do_action( 'swift_performance_cache_purge_all' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party cache plugin hook (Swift Performance), intentionally fired for integration.
 
-		// 14. Touch plugin asset files so filemtime-based version strings update.
-		self::touch_assets();
+		// 14. Bump the asset version so wp_enqueue_style/script generates new
+		//     versioned URLs, forcing browsers to fetch fresh copies.
+		//     Uses a database option instead of touching plugin files directly.
+		self::bump_asset_version();
 	}
 
 	/**
-	 * Updates the mtime of all plugin CSS/JS assets so wp_enqueue_style/script
-	 * generates new versioned URLs, forcing browsers to fetch fresh copies.
+	 * Updates the stored asset version so wp_enqueue_style/script generates
+	 * new versioned URLs, forcing browsers to fetch fresh copies.
+	 *
+	 * Does NOT touch or modify any files inside the plugin directory.
 	 */
-	public static function touch_assets(): void {
-		$asset_files = array(
-			'assets/css/social-network.css',
-			'assets/css/social-network.min.css',
-			'assets/css/rtl.css',
-			'assets/css/stories.css',
-			'assets/css/blocking.css',
-			'assets/css/verification.css',
-			'assets/engagement/css/engagement.css',
-			'assets/engagement/css/social-share-external.css',
-			'assets/js/social-network.js',
-			'assets/js/social-network.min.js',
-			'assets/js/messages.js',
-			'assets/js/stories.js',
-		);
-
-		global $wp_filesystem;
-		if ( ! $wp_filesystem ) {
-			require_once ABSPATH . 'wp-admin/includes/file.php';
-			WP_Filesystem();
-		}
-		if ( ! $wp_filesystem ) {
-			return;
-		}
-		$now = time();
-		foreach ( $asset_files as $relative_path ) {
-			$full_path = ARSHID6SOCIAL_PLUGIN_DIR . $relative_path;
-			if ( $wp_filesystem->exists( $full_path ) ) {
-				$wp_filesystem->touch( $full_path, $now );
-			}
-		}
+	public static function bump_asset_version(): void {
+		update_option( 'arshid6social_assets_version', (string) time(), false );
 	}
 }

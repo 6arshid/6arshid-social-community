@@ -110,38 +110,51 @@ class Messages_Attachments {
 			$this->strip_exif( $file['tmp_name'], $real_mime );
 		}
 
-		// Store in protected, non-guessable path.
+		// Store in protected, non-guessable path under private storage.
 		$uuid          = wp_generate_uuid4();
 		$ext           = pathinfo( (string) $file['name'], PATHINFO_EXTENSION );
 		$safe_filename = $uuid . '.' . $ext;
 
-		$subdir_filter = function ( array $dir ) use ( $user_id ): array {
-			$dir['subdir'] = '/social-network/messages/' . $user_id;
-			$dir['path']   = $dir['basedir'] . $dir['subdir'];
-			$dir['url']    = $dir['baseurl'] . $dir['subdir'];
-			return $dir;
-		};
+		$private_dir = arshid6social_get_private_dir();
+		if ( is_wp_error( $private_dir ) ) {
+			wp_send_json_error( array( 'message' => $private_dir->get_error_message() ), 500 );
+		}
+		$dest_dir = $private_dir . 'messages/' . $user_id;
 
-		add_filter( 'upload_dir', $subdir_filter );
-		$upload_dir = wp_upload_dir();
-		wp_mkdir_p( $upload_dir['path'] );
-
-		// Protect the directory from direct browsing.
-		$htaccess = $upload_dir['path'] . '/.htaccess';
-		if ( ! file_exists( $htaccess ) ) {
-			file_put_contents( $htaccess, "Options -Indexes\nDeny from all\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+		if ( ! wp_mkdir_p( $dest_dir ) ) {
+			wp_send_json_error( array( 'message' => __( 'Unable to create upload directory.', '6arshid-social-community' ) ), 500 );
 		}
 
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-		$upload_file = array(
-			'name'     => $safe_filename,
-			'type'     => $real_mime,
-			'tmp_name' => $file['tmp_name'],
-			'error'    => (int) $file['error'],
-			'size'     => (int) $file['size'],
+		$dest = $dest_dir . '/' . $safe_filename;
+
+		if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
+			wp_send_json_error( array( 'message' => __( 'Upload failed.', '6arshid-social-community' ) ), 500 );
+		}
+
+		global $wp_filesystem;
+		if ( ! $wp_filesystem ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			WP_Filesystem();
+		}
+		if ( ! $wp_filesystem || ! $wp_filesystem->move( $file['tmp_name'], $dest, true ) ) {
+			wp_send_json_error( array( 'message' => __( 'Upload failed.', '6arshid-social-community' ) ), 500 );
+		}
+
+		// Encrypt the file at rest — mandatory, fail closed if unavailable.
+		$enc_result = \Arshid6Social\Media_Handler::encrypt_private_file_for_handler( $dest );
+		if ( is_wp_error( $enc_result ) ) {
+			if ( is_file( $dest ) ) {
+				unlink( $dest ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			}
+			wp_send_json_error( array( 'message' => $enc_result->get_error_message() ), 500 );
+		}
+		$dest = $enc_result;
+
+		$moved = array(
+			'file' => $dest,
+			'url'  => '',
+			'type' => $real_mime,
 		);
-		$moved       = wp_handle_upload( $upload_file, array( 'test_form' => false ) );
-		remove_filter( 'upload_dir', $subdir_filter );
 
 		if ( ! isset( $moved['file'] ) || isset( $moved['error'] ) ) {
 			wp_send_json_error( array( 'message' => __( 'Upload failed.', '6arshid-social-community' ) ), 500 );
@@ -257,12 +270,41 @@ class Messages_Attachments {
 
 		// Serve the file.
 		$file_path = (string) $att->file_path;
-		if ( ! file_exists( $file_path ) ) {
+
+		// Resolve encrypted files: stored path may lack .enc extension.
+		if ( ! file_exists( $file_path ) && ! str_ends_with( $file_path, '.enc' ) ) {
+			$enc_candidate = $file_path . '.enc';
+			if ( file_exists( $enc_candidate ) ) {
+				$file_path = $enc_candidate;
+			}
+		}
+
+		if ( ! file_exists( $file_path ) || ! is_file( $file_path ) ) {
 			status_header( 404 );
 			exit;
 		}
 
 		$mime = (string) $att->mime_type;
+
+		// Decrypt encrypted files before serving.
+		if ( \Arshid6Social\Private_Encryption::is_encrypted( $file_path ) ) {
+			$size = filesize( $file_path );
+			if ( false === $size ) {
+				status_header( 404 );
+				exit;
+			}
+			status_header( 200 );
+			header( 'Content-Type: ' . $mime );
+			header( 'Content-Length: ' . $size );
+			header( 'Content-Disposition: inline; filename="' . esc_attr( $att->file_name ) . '"' );
+			header( 'X-Content-Type-Options: nosniff' );
+			if ( ! \Arshid6Social\Private_Encryption::decrypt_file_to_output( $file_path ) ) {
+				status_header( 404 );
+				exit;
+			}
+			exit;
+		}
+
 		header( 'Content-Type: ' . $mime );
 		header( 'Content-Length: ' . filesize( $file_path ) );
 		header( 'Content-Disposition: inline; filename="' . esc_attr( $att->file_name ) . '"' );

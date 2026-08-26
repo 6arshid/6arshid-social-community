@@ -81,8 +81,22 @@ class Media_Handler {
 
 		// Build destination directory.
 		$upload_dir = wp_upload_dir();
-		$base       = $upload_dir['basedir'];
-		$dest_dir   = $base . '/' . $cfg['subdir'] . '/' . $user_id;
+		if ( ! empty( $upload_dir['error'] ) ) {
+			return new \WP_Error( 'upload_dir_error', __( 'Unable to determine upload directory.', '6arshid-social-community' ) );
+		}
+
+		// Public files stay in normal wp_upload_dir(); private files go to
+		// wp_upload_dir()['basedir']/6arshid/private/ and must be encrypted.
+		if ( $cfg['public'] ) {
+			$base     = $upload_dir['basedir'];
+			$dest_dir = $base . '/' . $cfg['subdir'] . '/' . $user_id;
+		} else {
+			$private_dir = arshid6social_get_private_dir();
+			if ( is_wp_error( $private_dir ) ) {
+				return $private_dir;
+			}
+			$dest_dir = $private_dir . $cfg['subdir'] . '/' . $user_id;
+		}
 
 		if ( ! wp_mkdir_p( $dest_dir ) ) {
 			return new \WP_Error( 'mkdir_failed', __( 'Could not create upload directory.', '6arshid-social-community' ) );
@@ -110,18 +124,93 @@ class Media_Handler {
 			return new \WP_Error( 'move_failed', __( 'Failed to save uploaded file.', '6arshid-social-community' ) );
 		}
 
-		// Strip EXIF/GPS from images.
-		if ( str_starts_with( $real_mime, 'image/' ) ) {
-			self::strip_exif( $dest, $real_mime );
+		// Encrypt non-public files — mandatory, fail closed if unavailable.
+		$stored_path = $dest;
+		if ( ! $cfg['public'] ) {
+			$enc_result = self::encrypt_private_file( $dest );
+			if ( is_wp_error( $enc_result ) ) {
+				// Clean up the plaintext file before returning error.
+				if ( is_file( $dest ) ) {
+					unlink( $dest ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				}
+				return $enc_result;
+			}
+			$stored_path = $enc_result;
 		}
 
-		$base_url = $upload_dir['baseurl'] . '/' . $cfg['subdir'] . '/' . $user_id . '/' . $filename;
+		// Strip EXIF/GPS from images (skip encrypted files).
+		if ( str_starts_with( $real_mime, 'image/' ) && ! str_ends_with( $stored_path, '.enc' ) ) {
+			self::strip_exif( $stored_path, $real_mime );
+		}
+
+		// Private files have no public URL — they are served only through PHP.
+		if ( $cfg['public'] ) {
+			$base_url = $upload_dir['baseurl'] . '/' . $cfg['subdir'] . '/' . $user_id . '/' . $filename;
+		} else {
+			$base_url = '';
+		}
 
 		return array(
-			'url'  => $cfg['public'] ? $base_url : '',
-			'path' => $dest,
+			'url'  => $base_url,
+			'path' => $stored_path,
 			'mime' => $real_mime,
 		);
+	}
+
+	/**
+	 * Encrypts a private file and replaces it with the encrypted blob.
+	 *
+	 * @param string $path Absolute path to the plaintext file.
+	 * @return string|\WP_Error Path to the encrypted file on success, or WP_Error.
+	 */
+	public static function encrypt_private_file_for_handler( string $path ) {
+		return self::encrypt_private_file( $path );
+	}
+
+	/**
+	 * Encrypts a private file (internal implementation).
+	 *
+	 * @param string $path Absolute path to the plaintext file.
+	 * @return string|\WP_Error Path to the encrypted file on success, or WP_Error.
+	 */
+	private static function encrypt_private_file( string $path ) {
+		if ( ! Private_Encryption::is_available() ) {
+			return new \WP_Error(
+				'arshid6social_encryption_unavailable',
+				__( 'Private file encryption is required but no authenticated encryption backend is available.', '6arshid-social-community' )
+			);
+		}
+
+		if ( ! is_file( $path ) || ! is_readable( $path ) ) {
+			return new \WP_Error(
+				'arshid6social_source_unreadable',
+				__( 'The source file could not be read for encryption.', '6arshid-social-community' )
+			);
+		}
+
+		$plain   = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		$envelope = Private_Encryption::encrypt( $plain );
+		sodium_memzero( $plain );
+
+		if ( is_wp_error( $envelope ) ) {
+			return $envelope;
+		}
+
+		$enc_dest = $path . '.enc';
+		$bytes    = file_put_contents( $enc_dest, $envelope ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		sodium_memzero( $envelope );
+
+		if ( false === $bytes ) {
+			return new \WP_Error(
+				'arshid6social_enc_write_failed',
+				__( 'Failed to write encrypted file.', '6arshid-social-community' )
+			);
+		}
+
+		// Remove the original plaintext.
+		unlink( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+
+		return $enc_dest;
 	}
 
 	/**
@@ -130,13 +219,27 @@ class Media_Handler {
 	 * @param string $path Absolute file path.
 	 */
 	public static function delete_file( string $path ): void {
-		if ( ! $path || ! str_contains( $path, 'social-network' ) ) {
+		$private_dir = arshid6social_get_private_dir();
+		$old_private = function_exists( 'arshid6social_get_legacy_private_dir' ) ? arshid6social_get_legacy_private_dir() : '';
+		$is_social   = str_contains( $path, 'social-network' );
+		$is_priv     = is_string( $private_dir ) && str_starts_with( $path, $private_dir );
+		$is_old_priv = '' !== $old_private && str_starts_with( $path, $old_private );
+		if ( ! $path || ( ! $is_social && ! $is_priv && ! $is_old_priv ) ) {
 			return;
+		}
+
+		// Resolve .enc files: stored path may lack .enc extension.
+		$resolved = $path;
+		if ( ! file_exists( $resolved ) && ! str_ends_with( $resolved, '.enc' ) ) {
+			$enc_candidate = $resolved . '.enc';
+			if ( file_exists( $enc_candidate ) ) {
+				$resolved = $enc_candidate;
+			}
 		}
 
 		// Try to find and delete via WP media library (handles thumbnails + post cleanup).
 		$upload_dir = wp_upload_dir();
-		$rel_path   = ltrim( str_replace( $upload_dir['basedir'], '', $path ), '/\\' );
+		$rel_path   = ltrim( str_replace( $upload_dir['basedir'], '', $resolved ), '/\\' );
 
 		global $wpdb;
 		$attach_id = (int) $wpdb->get_var(
@@ -148,8 +251,8 @@ class Media_Handler {
 
 		if ( $attach_id ) {
 			wp_delete_attachment( $attach_id, true );
-		} elseif ( file_exists( $path ) ) {
-			wp_delete_file( $path );
+		} elseif ( file_exists( $resolved ) ) {
+			wp_delete_file( $resolved );
 		}
 	}
 
@@ -161,7 +264,22 @@ class Media_Handler {
 	 * @param string $mime_type File MIME type.
 	 */
 	public static function serve_protected_file( string $path, string $mime_type ): void {
-		if ( ! file_exists( $path ) || ! str_contains( $path, 'social-network/verification-docs' ) ) {
+		$private_dir = arshid6social_get_private_dir();
+		$old_private = function_exists( 'arshid6social_get_legacy_private_dir' ) ? arshid6social_get_legacy_private_dir() : '';
+		$is_legacy   = str_contains( $path, 'social-network/verification-docs' );
+		$is_private  = is_string( $private_dir ) && str_starts_with( $path, $private_dir ) && str_contains( $path, 'verification-docs' );
+		$is_old_priv = '' !== $old_private && str_starts_with( $path, $old_private ) && str_contains( $path, 'verification-docs' );
+
+		// Resolve encrypted files: stored path may lack .enc extension.
+		$resolved_path = $path;
+		if ( ! file_exists( $resolved_path ) && ! str_ends_with( $resolved_path, '.enc' ) ) {
+			$enc_candidate = $resolved_path . '.enc';
+			if ( file_exists( $enc_candidate ) ) {
+				$resolved_path = $enc_candidate;
+			}
+		}
+
+		if ( ! file_exists( $resolved_path ) || ( ! $is_legacy && ! $is_private && ! $is_old_priv ) ) {
 			status_header( 404 );
 			exit;
 		}
@@ -171,11 +289,30 @@ class Media_Handler {
 			exit;
 		}
 
+		// Decrypt encrypted files before serving.
+		if ( Private_Encryption::is_encrypted( $resolved_path ) ) {
+			$size = filesize( $resolved_path );
+			if ( false === $size ) {
+				status_header( 404 );
+				exit;
+			}
+			status_header( 200 );
+			header( 'Content-Type: ' . $mime_type );
+			header( 'Content-Length: ' . $size );
+			header( 'Content-Disposition: inline; filename="' . esc_attr( basename( $path ) ) . '"' );
+			header( 'X-Content-Type-Options: nosniff' );
+			if ( ! Private_Encryption::decrypt_file_to_output( $resolved_path ) ) {
+				status_header( 404 );
+				exit;
+			}
+			exit;
+		}
+
 		header( 'Content-Type: ' . $mime_type );
-		header( 'Content-Length: ' . filesize( $path ) );
+		header( 'Content-Length: ' . filesize( $resolved_path ) );
 		header( 'Content-Disposition: inline; filename="' . esc_attr( basename( $path ) ) . '"' );
 		header( 'X-Content-Type-Options: nosniff' );
-		readfile( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
+		readfile( $resolved_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile
 		exit;
 	}
 
@@ -196,23 +333,27 @@ class Media_Handler {
 			return;
 		}
 
+		if ( ! is_file( $path ) ) {
+			return;
+		}
+
 		$img = null;
 		switch ( $mime ) {
 			case 'image/jpeg':
-				$img = @imagecreatefromjpeg( $path );
+				$img = imagecreatefromjpeg( $path );
 				if ( $img ) {
 					imagejpeg( $img, $path, 90 );
 				}
 				break;
 			case 'image/png':
-				$img = @imagecreatefrompng( $path );
+				$img = imagecreatefrompng( $path );
 				if ( $img ) {
 					imagesavealpha( $img, true );
 					imagepng( $img, $path, 6 );
 				}
 				break;
 			case 'image/webp':
-				$img = @imagecreatefromwebp( $path );
+				$img = imagecreatefromwebp( $path );
 				if ( $img ) {
 					imagewebp( $img, $path, 85 );
 				}

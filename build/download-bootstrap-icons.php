@@ -1,5 +1,4 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Build script — Download & bundle Bootstrap Icons.
  *
@@ -26,9 +25,12 @@ $zip_url    = 'https://github.com/twbs/icons/releases/download/v' . $bi_version 
 $out_file   = __DIR__ . '/../assets/icons/bootstrap-icons.json';
 
 // ── Direct-access protection ────────────────────────────────────────────────
-// Block direct web access. Allow CLI execution for development builds.
-if ( ! defined( 'ABSPATH' ) && 'cli' !== PHP_SAPI ) {
-	exit;
+// This script is a development-only build tool. It must NEVER run on end-user
+// WordPress installations. It is excluded from the production .zip via .distignore.
+// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CLI-only output, not rendered in HTML.
+if ( 'cli' !== PHP_SAPI ) {
+	fwrite( STDERR, "Error: this is a development build script. Do not run it on a server.\n" );
+	exit( 1 );
 }
 
 echo "Downloading Bootstrap Icons v" . $bi_version . "…\n";

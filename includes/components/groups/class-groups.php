@@ -845,7 +845,10 @@ class Groups {
 		}
 
 		$upload_dir = wp_upload_dir();
-		$dest_dir   = trailingslashit( $upload_dir['basedir'] ) . "social-network/groups/{$group_id}/{$slot}";
+		if ( ! empty( $upload_dir['error'] ) ) {
+			return new \WP_Error( 'upload_dir_error', __( 'Unable to determine upload directory.', '6arshid-social-community' ) );
+		}
+		$dest_dir = trailingslashit( $upload_dir['basedir'] ) . "social-network/groups/{$group_id}/{$slot}";
 
 		if ( ! wp_mkdir_p( $dest_dir ) ) {
 			return new \WP_Error( 'mkdir_failed', __( 'Could not create upload directory.', '6arshid-social-community' ) );

@@ -39,6 +39,14 @@ class Activator {
 			self::seed_default_options();
 			self::create_pages();
 			self::protect_upload_directory();
+			// Ensure per-site recovery secret exists for salt rotation recovery.
+			if ( ! get_option( 'arshid6social_enc_recovery_secret', '' ) ) {
+				\Arshid6Social\Private_Encryption::initialize_recovery_secret_for_activation();
+			}
+			// Preserve the current A6S1 legacy key BEFORE migration.
+			\Arshid6Social\Private_Encryption::preserve_legacy_a6s1_key();
+			// Migrate private files to encrypted storage (version-gated).
+			self::maybe_migrate_private_files( 2 );
 			update_option( 'arshid6social_db_version', ARSHID6SOCIAL_DB_VERSION );
 			flush_rewrite_rules( false );
 		}
@@ -356,6 +364,19 @@ class Activator {
 		self::add_capabilities();
 		self::schedule_events();
 		self::protect_upload_directory();
+
+		// Ensure per-site recovery secret exists (required for salt rotation recovery).
+		if ( ! get_option( 'arshid6social_enc_recovery_secret', '' ) ) {
+			\Arshid6Social\Private_Encryption::initialize_recovery_secret_for_activation();
+		}
+
+		// Preserve the current A6S1 legacy key BEFORE migration.
+		// This must happen while WordPress salts are still valid so that
+		// future salt rotation does not orphan any unmigrated A6S1 files.
+		\Arshid6Social\Private_Encryption::preserve_legacy_a6s1_key();
+
+		// Migrate existing private files to encrypted storage.
+		self::maybe_migrate_private_files( 2 );
 
 		// Flag for setup wizard redirect.
 		if ( ! get_option( 'arshid6social_setup_complete' ) ) {
@@ -1236,7 +1257,10 @@ class Activator {
 	public static function purge_suspended_users_standard_attachments(): void {
 		global $wpdb;
 
-		$upload_dir  = wp_upload_dir();
+		$upload_dir = wp_upload_dir();
+		if ( ! empty( $upload_dir['error'] ) ) {
+			return;
+		}
 		$upload_base = $upload_dir['basedir'];
 
 		// Single query: attachments owned by suspended users that are NOT in social-network/.
@@ -1276,9 +1300,8 @@ class Activator {
 		$abs_path = $upload_base . '/' . ltrim( $rel_path, '/' );
 
 		// Delete the main file.
-		if ( file_exists( $abs_path ) ) {
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-			@unlink( $abs_path );
+		if ( is_file( $abs_path ) ) {
+			unlink( $abs_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 		}
 
 		// Delete generated thumbnail files stored in _wp_attachment_metadata.
@@ -1298,9 +1321,8 @@ class Activator {
 				foreach ( $meta['sizes'] as $size_data ) {
 					if ( ! empty( $size_data['file'] ) ) {
 						$thumb = $dir . '/' . basename( $size_data['file'] );
-						if ( file_exists( $thumb ) ) {
-							// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-							@unlink( $thumb );
+						if ( is_file( $thumb ) ) {
+							unlink( $thumb ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 						}
 					}
 				}
@@ -1328,7 +1350,10 @@ class Activator {
 			return;
 		}
 
-		$upload_dir  = wp_upload_dir();
+		$upload_dir = wp_upload_dir();
+		if ( ! empty( $upload_dir['error'] ) ) {
+			return;
+		}
 		$base_url    = $upload_dir['baseurl'];    // no trailing slash
 		$base_dir    = $upload_dir['basedir'];
 		$sn_fragment = 'social-network/groups/'; // already-migrated files contain this
@@ -1374,30 +1399,38 @@ class Activator {
 				if ( copy( $old_path, $dest_path ) ) {
 					update_option( $opt_url, $dest_url, false );
 					update_option( $opt_path, $dest_path, false );
-					// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-					@unlink( $old_path );
+					if ( is_file( $old_path ) ) {
+						unlink( $old_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+					}
 				}
 			}
 		}
 	}
 
 	/**
-	 * Creates a .htaccess in the plugin's upload directory AND injects rules into
-	 * the root .htaccess so that all social-network file requests are routed through
-	 * admin-ajax.php for suspension access control.
+	 * Creates a .htaccess in the social-network upload directory so that all
+	 * file requests are routed through admin-ajax.php for suspension access control.
+	 *
+	 * The .htaccess lives in wp_upload_dir()/social-network/ (not in the plugin
+	 * directory) and is sufficient on its own — no root .htaccess modification is
+	 * needed because Apache processes .htaccess files at each directory level.
 	 */
 	private static function protect_upload_directory(): void {
 		$upload_dir = wp_upload_dir();
-		$sn_dir     = trailingslashit( $upload_dir['basedir'] ) . 'social-network/';
+		if ( ! empty( $upload_dir['error'] ) ) {
+			return;
+		}
+		$sn_dir = trailingslashit( $upload_dir['basedir'] ) . 'social-network/';
 
 		if ( ! is_dir( $sn_dir ) ) {
 			wp_mkdir_p( $sn_dir );
 		}
 
-		// Subdirectory .htaccess — fallback for servers where root .htaccess isn't writable.
-		// Build the admin-ajax path dynamically so it works for sub-directory installs.
+		// Route all file requests in this directory through admin-ajax.php so
+		// suspension access control is enforced.  The admin-ajax path is built
+		// dynamically so it works for sub-directory installs.
 		$ajax_url_path = wp_parse_url( admin_url( 'admin-ajax.php' ), PHP_URL_PATH );
-		$subdir_rules  = array(
+		$rules         = array(
 			'Options -Indexes',
 			'<IfModule mod_rewrite.c>',
 			'RewriteEngine On',
@@ -1405,47 +1438,365 @@ class Activator {
 			'RewriteRule ^(.+)$ ' . $ajax_url_path . '?action=arshid6social_serve_file&arshid6social_uri=%{REQUEST_URI} [QSA,L]',
 			'</IfModule>',
 		);
-		file_put_contents( $sn_dir . '.htaccess', implode( "\n", $subdir_rules ) . "\n" ); // phpcs:ignore WordPress.WP.AlternativeFunctions
 
-		// Root .htaccess — injects rules AFTER the WordPress block so the redirect
-		// catches existing social-network files before Apache serves them directly.
-		self::inject_root_htaccess_rules();
+		$htaccess_file = $sn_dir . '.htaccess';
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Static rewrite rules for upload protection; no user input involved.
+		file_put_contents( $htaccess_file, implode( "\n", $rules ) . "\n" );
 	}
 
 	/**
-	 * Uses WordPress's insert_with_markers() to add rewrite rules in the root
-	 * .htaccess that route all social-network uploads through admin-ajax.php.
-	 * Safe to call on every upgrade — markers keep the block idempotent.
+	 * Migrates strictly private files to the new encrypted storage.
+	 *
+	 * Only advances the migration version when ALL files are successfully migrated.
+	 * If any files fail, the version is NOT advanced, so migration will be retried
+	 * on the next page load / activation.
+	 *
+	 * @param int $version Schema version to compare against for upgrade migration.
 	 */
-	private static function inject_root_htaccess_rules(): void {
-		if ( ! function_exists( 'insert_with_markers' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/misc.php';
-		}
-		if ( ! function_exists( 'get_home_path' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/file.php';
-		}
-
-		$htaccess = get_home_path() . '.htaccess';
-		if ( ! file_exists( $htaccess ) && ! wp_is_writable( dirname( $htaccess ) ) ) {
+	public static function maybe_migrate_private_files( int $version = 0 ): void {
+		$stored = (int) get_option( 'arshid6social_private_migration_version', 0 );
+		if ( $stored >= $version && $version > 0 ) {
 			return;
 		}
 
+		$failures = self::migrate_private_files();
+
+		// Only advance the version when no files failed.
+		if ( 0 === $failures && $version > 0 ) {
+			update_option( 'arshid6social_private_migration_version', $version );
+		}
+	}
+
+	/**
+	 * Migrates strictly private files from legacy/old paths to new encrypted storage.
+	 *
+	 * Returns the number of files that failed migration. Zero means all succeeded
+	 * or no files needed migration.
+	 *
+	 * @return int Number of failed files.
+	 */
+	public static function migrate_private_files(): int {
+		global $wpdb;
+
 		$upload_dir = wp_upload_dir();
-		// e.g. /wp-content/uploads/social-network (works for sub-directory installs too).
-		$sn_path = wp_parse_url( $upload_dir['baseurl'] . '/social-network', PHP_URL_PATH );
+		if ( ! empty( $upload_dir['error'] ) ) {
+			return 0;
+		}
 
-		// Build admin-ajax URL path relative to server root dynamically.
-		$ajax_path = wp_parse_url( admin_url( 'admin-ajax.php' ), PHP_URL_PATH );
+		$legacy_base = $upload_dir['basedir'];
+		$new_private = trailingslashit( $legacy_base ) . '6arshid/private/';
+		$old_private = trailingslashit( WP_CONTENT_DIR ) . 'arshid6social-private/';
+		$failures    = 0;
 
-		$rules = array(
-			'<IfModule mod_rewrite.c>',
-			'RewriteEngine On',
-			'RewriteCond %{REQUEST_URI} ^' . $sn_path . '/',
-			'RewriteCond %{REQUEST_FILENAME} -f',
-			'RewriteRule ^(.*)$ ' . $ajax_path . '?action=arshid6social_serve_file&arshid6social_uri=%{REQUEST_URI} [QSA,L]',
-			'</IfModule>',
+		// Source 1: legacy wp_upload_dir()/social-network/{type}/
+		$failures += self::migrate_private_files_by_type(
+			$wpdb,
+			$legacy_base,
+			$new_private,
+			'social-network/verification-docs',
+			'verification-docs'
+		);
+		$failures += self::migrate_private_files_by_type(
+			$wpdb,
+			$legacy_base,
+			$new_private,
+			'social-network/messages',
+			'messages'
+		);
+		$failures += self::migrate_private_files_by_type(
+			$wpdb,
+			$legacy_base,
+			$new_private,
+			'social-network/comments',
+			'comments'
 		);
 
-		insert_with_markers( $htaccess, '6arshid-social-community', $rules );
+		// Source 2: old WP_CONTENT_DIR/arshid6social-private/{type}/
+		if ( is_dir( $old_private ) ) {
+			$failures += self::migrate_private_files_from_old_private(
+				$wpdb,
+				$old_private,
+				$new_private,
+				'verification-docs',
+				'verification-docs'
+			);
+			$failures += self::migrate_private_files_from_old_private(
+				$wpdb,
+				$old_private,
+				$new_private,
+				'messages',
+				'messages'
+			);
+			$failures += self::migrate_private_files_from_old_private(
+				$wpdb,
+				$old_private,
+				$new_private,
+				'comments',
+				'comments'
+			);
+		}
+
+		return $failures;
+	}
+
+	/**
+	 * Migrates files from a legacy social-network subdirectory to the new private dir.
+	 *
+	 * @param \wpdb  $wpdb
+	 * @param string $legacy_base  wp_upload_dir() basedir.
+	 * @param string $new_private  New private storage root (6arshid/private/).
+	 * @param string $legacy_sub   Legacy subdirectory prefix.
+	 * @param string $private_sub  Private subdirectory prefix.
+	 * @return int Number of files that failed migration.
+	 */
+	private static function migrate_private_files_by_type(
+		\wpdb $wpdb,
+		string $legacy_base,
+		string $new_private,
+		string $legacy_sub,
+		string $private_sub
+	): int {
+		$failures = 0;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT id, file_path FROM {$wpdb->prefix}arshid6social_attachments WHERE file_path LIKE %s",
+				$legacy_base . '/' . $legacy_sub . '/%'
+			)
+		);
+
+		if ( ! $rows ) {
+			return 0;
+		}
+
+		foreach ( $rows as $row ) {
+			$old_path = (string) $row->file_path;
+
+			// Already in the new private dir?
+			if ( str_starts_with( $old_path, $new_private ) ) {
+				continue;
+			}
+
+			if ( ! is_file( $old_path ) ) {
+				++$failures;
+				continue;
+			}
+
+			// Build destination.
+			$relative  = ltrim( str_replace( $legacy_base, '', $old_path ), '/\\' );
+			$dest_path = $new_private . ltrim( str_replace( $legacy_sub, $private_sub, $relative ), '/\\' );
+			$dest_dir  = dirname( $dest_path );
+
+			if ( ! wp_mkdir_p( $dest_dir ) ) {
+				++$failures;
+				continue;
+			}
+
+			// Copy the file.
+			if ( ! copy( $old_path, $dest_path ) ) {
+				++$failures;
+				continue;
+			}
+
+			// Verify size.
+			if ( filesize( $old_path ) !== filesize( $dest_path ) ) {
+				unlink( $dest_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				++$failures;
+				continue;
+			}
+
+			// Encrypt the destination if it's not already encrypted.
+			if ( ! \Arshid6Social\Private_Encryption::is_encrypted( $dest_path ) ) {
+				if ( ! \Arshid6Social\Private_Encryption::encrypt_file( $dest_path ) ) {
+					++$failures;
+					continue;
+				}
+			} else {
+				// Re-encrypt legacy A6S1 to A6S2 with verification.
+				$reencrypted = self::reencrypt_a6s1_to_a6s2_verified( $dest_path );
+				if ( is_wp_error( $reencrypted ) ) {
+					++$failures;
+					continue;
+				}
+			}
+
+			// Update database record (store path without .enc — we resolve .enc on serve).
+			$db_path = $dest_path;
+			if ( str_ends_with( $db_path, '.enc' ) ) {
+				$db_path = substr( $db_path, 0, -4 );
+			}
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$wpdb->prefix . 'arshid6social_attachments',
+				array( 'file_path' => $db_path ),
+				array( 'id' => (int) $row->id ),
+				array( '%s' ),
+				array( '%d' )
+			);
+
+			// Remove old file after successful migration.
+			if ( is_file( $old_path ) ) {
+				unlink( $old_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			}
+		}
+
+		return $failures;
+	}
+
+	/**
+	 * Migrates files from the old WP_CONTENT_DIR/arshid6social-private/ directory.
+	 *
+	 * @param \wpdb  $wpdb
+	 * @param string $old_private  Old private storage root.
+	 * @param string $new_private  New private storage root.
+	 * @param string $old_sub      Old subdirectory prefix.
+	 * @param string $new_sub      New subdirectory prefix.
+	 * @return int Number of files that failed migration.
+	 */
+	private static function migrate_private_files_from_old_private(
+		\wpdb $wpdb,
+		string $old_private,
+		string $new_private,
+		string $old_sub,
+		string $new_sub
+	): int {
+		$failures = 0;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT id, file_path FROM {$wpdb->prefix}arshid6social_attachments WHERE file_path LIKE %s",
+				$old_private . $old_sub . '/%'
+			)
+		);
+
+		if ( ! $rows ) {
+			return 0;
+		}
+
+		foreach ( $rows as $row ) {
+			$old_path = (string) $row->file_path;
+
+			if ( str_starts_with( $old_path, $new_private ) ) {
+				continue;
+			}
+
+			if ( ! is_file( $old_path ) ) {
+				++$failures;
+				continue;
+			}
+
+			$relative  = ltrim( str_replace( $old_private, '', $old_path ), '/\\' );
+			$dest_path = $new_private . ltrim( str_replace( $old_sub, $new_sub, $relative ), '/\\' );
+			$dest_dir  = dirname( $dest_path );
+
+			if ( ! wp_mkdir_p( $dest_dir ) ) {
+				++$failures;
+				continue;
+			}
+
+			if ( ! copy( $old_path, $dest_path ) ) {
+				++$failures;
+				continue;
+			}
+
+			if ( filesize( $old_path ) !== filesize( $dest_path ) ) {
+				unlink( $dest_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				++$failures;
+				continue;
+			}
+
+			// Encrypt the destination (old private files are plaintext).
+			if ( ! \Arshid6Social\Private_Encryption::is_encrypted( $dest_path ) ) {
+				if ( ! \Arshid6Social\Private_Encryption::encrypt_file( $dest_path ) ) {
+					++$failures;
+					continue;
+				}
+			} else {
+				$reencrypted = self::reencrypt_a6s1_to_a6s2_verified( $dest_path );
+				if ( is_wp_error( $reencrypted ) ) {
+					++$failures;
+					continue;
+				}
+			}
+
+			// Update database record.
+			$db_path = $dest_path;
+			if ( str_ends_with( $db_path, '.enc' ) ) {
+				$db_path = substr( $db_path, 0, -4 );
+			}
+			$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+				$wpdb->prefix . 'arshid6social_attachments',
+				array( 'file_path' => $db_path ),
+				array( 'id' => (int) $row->id ),
+				array( '%s' ),
+				array( '%d' )
+			);
+
+			if ( is_file( $old_path ) ) {
+				unlink( $old_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			}
+		}
+
+		return $failures;
+	}
+
+	/**
+	 * Re-encrypts a legacy A6S1 file to A6S2 with verification before replacement.
+	 *
+	 * The original A6S1 file is only replaced if:
+	 * 1. The A6S1 decryption succeeds
+	 * 2. The A6S2 re-encryption succeeds
+	 * 3. The new A6S2 blob can be decrypted back to the same plaintext
+	 *
+	 * @param string $path Absolute path to the A6S1 encrypted file.
+	 * @return true|\WP_Error True on success, or WP_Error on failure.
+	 */
+	private static function reencrypt_a6s1_to_a6s2_verified( string $path ) {
+		$ciphertext = file_get_contents( $path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		if ( false === $ciphertext || strlen( $ciphertext ) < 12 ) {
+			return new \WP_Error( 'arshid6social_read_failed', __( 'Cannot read file for re-encryption.', '6arshid-social-community' ) );
+		}
+
+		$magic = substr( $ciphertext, 0, 5 );
+		if ( 'A6S1' !== $magic ) {
+			return true; // Not A6S1 — nothing to do.
+		}
+
+		// Decrypt A6S1 using preserved key (salt-rotation safe).
+		$plaintext = \Arshid6Social\Private_Encryption::decrypt( $ciphertext );
+		if ( is_wp_error( $plaintext ) || false === $plaintext ) {
+			return new \WP_Error( 'arshid6social_a6s1_decrypt_failed', __( 'Cannot decrypt A6S1 file for migration.', '6arshid-social-community' ) );
+		}
+
+		// Re-encrypt with A6S2 master key.
+		$new_envelope = \Arshid6Social\Private_Encryption::encrypt( $plaintext );
+		if ( is_wp_error( $new_envelope ) || false === $new_envelope ) {
+			sodium_memzero( $plaintext );
+			return new \WP_Error( 'arshid6social_a6s2_encrypt_failed', __( 'Cannot re-encrypt to A6S2.', '6arshid-social-community' ) );
+		}
+
+		// Verify: decrypt the new A6S2 blob and compare.
+		$verify = \Arshid6Social\Private_Encryption::decrypt( $new_envelope );
+		if ( false === $verify || is_wp_error( $verify ) || $verify !== $plaintext ) {
+			sodium_memzero( $plaintext );
+			sodium_memzero( $new_envelope );
+			if ( is_string( $verify ) ) {
+				sodium_memzero( $verify );
+			}
+			return new \WP_Error( 'arshid6social_verify_failed', __( 'A6S2 re-encryption verification failed.', '6arshid-social-community' ) );
+		}
+		sodium_memzero( $verify );
+
+		// All checks passed — replace the file.
+		$bytes = file_put_contents( $path, $new_envelope ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		sodium_memzero( $plaintext );
+		sodium_memzero( $new_envelope );
+
+		if ( false === $bytes ) {
+			return new \WP_Error( 'arshid6social_write_failed', __( 'Failed to write re-encrypted file.', '6arshid-social-community' ) );
+		}
+
+		return true;
 	}
 }

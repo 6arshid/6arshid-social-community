@@ -39,6 +39,20 @@ final class Assets {
 	}
 
 	/**
+	 * Returns the stored asset cache version.
+	 *
+	 * Updated by Cache_Purge::bump_asset_version() on cache purge. Falls back
+	 * to the compile-time constant when no option has been set yet.
+	 */
+	public static function get_asset_version(): string {
+		static $version = null;
+		if ( null === $version ) {
+			$version = (string) get_option( 'arshid6social_assets_version', ARSHID6SOCIAL_ASSET_VER );
+		}
+		return $version;
+	}
+
+	/**
 	 * Returns cached asset suffixes and versions, computing them at most once per
 	 * plugin version (stored in a site option so filesystem calls only happen when
 	 * the plugin is updated, not on every page load).
@@ -59,7 +73,7 @@ final class Assets {
 		}
 
 		$debug   = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
-		$av      = ARSHID6SOCIAL_ASSET_VER;
+		$av      = self::get_asset_version();
 		$css_dir = ARSHID6SOCIAL_PLUGIN_DIR . 'assets/css/';
 		$js_dir  = ARSHID6SOCIAL_PLUGIN_DIR . 'assets/js/';
 
@@ -71,11 +85,11 @@ final class Assets {
 			$src_mtime = (int) ( @filemtime( $js_dir . 'social-network.js' ) ?: 0 );
 			$min_mtime = (int) ( @filemtime( $js_dir . 'social-network.min.js' ) ?: 0 );
 			$js_suffix = ( $min_mtime >= $src_mtime ) ? '.min' : '';
-			$js_ver    = $js_suffix ? (string) $min_mtime : (string) $src_mtime;
 		} else {
 			$js_suffix = '';
-			$js_ver    = (string) ( @filemtime( $js_dir . 'social-network.js' ) ?: $av );
 		}
+
+		$js_ver = $av;
 
 		$variants = compact( 'css_suffix', 'js_suffix', 'js_ver' );
 		set_site_transient( $cache_key, $variants, WEEK_IN_SECONDS );
@@ -90,7 +104,7 @@ final class Assets {
 			return;
 		}
 
-		$av                           = ARSHID6SOCIAL_ASSET_VER;
+		$av                           = self::get_asset_version();
 		[ 'css_suffix' => $suffix,
 			'js_suffix'  => $js_suffix,
 			'js_ver'     => $js_ver ] = $this->get_asset_variants();
@@ -248,15 +262,13 @@ final class Assets {
 
 		// Search assets — loaded on every search page (WordPress /?s= queries).
 		if ( is_search() ) {
-			$search_dir     = ARSHID6SOCIAL_PLUGIN_DIR . 'assets/';
-			$search_css_ver = (string) ( @filemtime( $search_dir . 'css/search.css' ) ?: $av );
-			$search_js_ver  = (string) ( @filemtime( $search_dir . 'js/search.js' ) ?: $av );
-			wp_enqueue_style( 'arshid6social-search', ARSHID6SOCIAL_ASSETS_URL . 'css/search.css', array(), $search_css_ver );
+			$search_ver = self::get_asset_version();
+			wp_enqueue_style( 'arshid6social-search', ARSHID6SOCIAL_ASSETS_URL . 'css/search.css', array(), $search_ver );
 			wp_enqueue_script(
 				'arshid6social-search',
 				ARSHID6SOCIAL_ASSETS_URL . 'js/search.js',
 				array(),
-				$search_js_ver,
+				$search_ver,
 				array(
 					'strategy'  => 'defer',
 					'in_footer' => true,

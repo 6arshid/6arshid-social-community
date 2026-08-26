@@ -248,7 +248,10 @@ class Avatar {
 
 		// ── Generate randomised filename ─────────────────────────────────────────
 		$upload_dir = wp_upload_dir();
-		$sub_dir    = '/social-network/users/' . $user_id . '/' . $image_type . '/';
+		if ( ! empty( $upload_dir['error'] ) ) {
+			return new \WP_Error( 'upload_dir_error', __( 'Unable to determine upload directory.', '6arshid-social-community' ) );
+		}
+		$sub_dir  = '/social-network/users/' . $user_id . '/' . $image_type . '/';
 		$dir_path   = $upload_dir['basedir'] . $sub_dir;
 		$dir_url    = $upload_dir['baseurl'] . $sub_dir;
 

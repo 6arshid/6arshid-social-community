@@ -163,6 +163,20 @@ class Moderation {
 		self::rmdir_recursive( $upload_base . "social-network/stories/{$user_id}" );
 		self::rmdir_recursive( $upload_base . "social-network/verification-docs/{$user_id}" );
 
+		// Delete from new private storage.
+		$new_private = $upload_base . '6arshid/private/';
+		self::rmdir_recursive( $new_private . "verification-docs/{$user_id}" );
+		self::rmdir_recursive( $new_private . "messages/{$user_id}" );
+		self::rmdir_recursive( $new_private . "comments/{$user_id}" );
+
+		// Delete from old private storage (legacy path).
+		$old_private = function_exists( 'arshid6social_get_legacy_private_dir' ) ? arshid6social_get_legacy_private_dir() : '';
+		if ( is_dir( $old_private ) ) {
+			self::rmdir_recursive( $old_private . "verification-docs/{$user_id}" );
+			self::rmdir_recursive( $old_private . "messages/{$user_id}" );
+			self::rmdir_recursive( $old_private . "comments/{$user_id}" );
+		}
+
 		// ── 4b. Delete group avatar/cover files for groups this user created ──
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$created_group_ids = array_map(
@@ -302,12 +316,33 @@ class Moderation {
 	}
 
 	/**
-	 * Recursively deletes a directory and its contents from within uploads/social-network/.
+	 * Recursively deletes a directory and its contents.
 	 *
 	 * @param string $dir Absolute path to directory.
 	 */
 	private static function rmdir_recursive( string $dir ): void {
-		if ( ! is_dir( $dir ) || ! str_contains( $dir, 'social-network' ) ) {
+		if ( ! is_dir( $dir ) ) {
+			return;
+		}
+		// Safety: only delete directories that belong to this plugin.
+		$upload_dir = wp_upload_dir();
+		$allowed_bases = array();
+		if ( ! empty( $upload_dir['basedir'] ) ) {
+			$allowed_bases[] = trailingslashit( $upload_dir['basedir'] ) . 'social-network/';
+			$allowed_bases[] = trailingslashit( $upload_dir['basedir'] ) . '6arshid/';
+		}
+		$old_private = function_exists( 'arshid6social_get_legacy_private_dir' ) ? arshid6social_get_legacy_private_dir() : '';
+		$allowed_bases[] = $old_private;
+
+		$real_dir = wp_normalize_path( realpath( $dir ) ?: $dir );
+		$is_allowed = false;
+		foreach ( $allowed_bases as $base ) {
+			if ( str_starts_with( $real_dir, wp_normalize_path( $base ) ) ) {
+				$is_allowed = true;
+				break;
+			}
+		}
+		if ( ! $is_allowed ) {
 			return;
 		}
 		$iter = new \RecursiveIteratorIterator(
@@ -605,7 +640,6 @@ class Moderation {
 			return null;
 		}
 
-		$upload_dir = wp_upload_dir();
 		$path = isset( $url_parts['path'] ) ? (string) $url_parts['path'] : $decoded;
 		$path = wp_normalize_path( $path );
 		if ( str_contains( $path, '\\' ) || str_contains( $path, '//' ) || preg_match( '#(?:^|/)\.\.?(?:/|$)#', $path ) ) {
@@ -622,27 +656,79 @@ class Moderation {
 			return null;
 		}
 
-		$base_dir = realpath( trailingslashit( $upload_dir['basedir'] ) . 'social-network' );
-		if ( ! $base_dir ) {
-			return null;
+		// Check legacy location first (wp_upload_dir/social-network/).
+		$upload_dir = wp_upload_dir();
+		$base_dir   = realpath( trailingslashit( $upload_dir['basedir'] ) . 'social-network' );
+		if ( $base_dir ) {
+			$candidate = $base_dir . DIRECTORY_SEPARATOR . str_replace( '/', DIRECTORY_SEPARATOR, $rel_path );
+			$real_file = realpath( $candidate );
+			if ( $real_file && is_file( $real_file ) ) {
+				$base_norm = trailingslashit( wp_normalize_path( $base_dir ) );
+				$file_norm = wp_normalize_path( $real_file );
+				if ( str_starts_with( $file_norm, $base_norm ) ) {
+					return array(
+						'file_path' => $real_file,
+						'rel_path'  => $rel_path,
+					);
+				}
+			}
 		}
 
-		$candidate = $base_dir . DIRECTORY_SEPARATOR . str_replace( '/', DIRECTORY_SEPARATOR, $rel_path );
-		$real_file = realpath( $candidate );
-		if ( ! $real_file || ! is_file( $real_file ) ) {
-			return null;
+		// Check private storage (wp_upload_dir/6arshid/private/).
+		$upload_base = trailingslashit( $upload_dir['basedir'] );
+		$new_private = $upload_base . '6arshid/private/';
+		if ( is_dir( $new_private ) ) {
+			$private_rel = preg_replace( '#^social-network/#', '', $rel_path );
+			if ( $private_rel !== $rel_path ) {
+				$candidate = $new_private . str_replace( '/', DIRECTORY_SEPARATOR, $private_rel );
+				$real_file = realpath( $candidate );
+				if ( $real_file && is_file( $real_file ) ) {
+					$base_norm = trailingslashit( wp_normalize_path( $new_private ) );
+					$file_norm = wp_normalize_path( $real_file );
+					if ( str_starts_with( $file_norm, $base_norm ) ) {
+						return array(
+							'file_path' => $real_file,
+							'rel_path'  => $private_rel,
+						);
+					}
+				}
+				// Also check with .enc extension (encrypted files).
+				$candidate_enc = $candidate . '.enc';
+				$real_file_enc = realpath( $candidate_enc );
+				if ( $real_file_enc && is_file( $real_file_enc ) ) {
+					$base_norm = trailingslashit( wp_normalize_path( $new_private ) );
+					$file_norm = wp_normalize_path( $real_file_enc );
+					if ( str_starts_with( $file_norm, $base_norm ) ) {
+						return array(
+							'file_path' => $real_file_enc,
+							'rel_path'  => $private_rel,
+						);
+					}
+				}
+			}
 		}
 
-		$base_norm = trailingslashit( wp_normalize_path( $base_dir ) );
-		$file_norm = wp_normalize_path( $real_file );
-		if ( ! str_starts_with( $file_norm, $base_norm ) ) {
-			return null;
+		// Check old private storage (legacy path).
+		$old_private = function_exists( 'arshid6social_get_legacy_private_dir' ) ? arshid6social_get_legacy_private_dir() : '';
+		if ( is_dir( $old_private ) ) {
+			$private_rel = preg_replace( '#^social-network/#', '', $rel_path );
+			if ( $private_rel !== $rel_path ) {
+				$candidate = $old_private . str_replace( '/', DIRECTORY_SEPARATOR, $private_rel );
+				$real_file = realpath( $candidate );
+				if ( $real_file && is_file( $real_file ) ) {
+					$base_norm = trailingslashit( wp_normalize_path( $old_private ) );
+					$file_norm = wp_normalize_path( $real_file );
+					if ( str_starts_with( $file_norm, $base_norm ) ) {
+						return array(
+							'file_path' => $real_file,
+							'rel_path'  => $private_rel,
+						);
+					}
+				}
+			}
 		}
 
-		return array(
-			'file_path' => $real_file,
-			'rel_path'  => $rel_path,
-		);
+		return null;
 	}
 
 	private function serve_activity_media( int $activity_id, string $file_path ): void {
@@ -794,12 +880,33 @@ class Moderation {
 
 	private function find_row_for_file_path( array $rows, string $file_path, string $field = 'file_path' ): ?object {
 		$requested = wp_normalize_path( $file_path );
+		// Also check without .enc extension (encrypted files stored without it).
+		$requested_no_enc = str_ends_with( $requested, '.enc' )
+			? substr( $requested, 0, -4 )
+			: $requested;
+		$requested_with_enc = str_ends_with( $requested, '.enc' )
+			? $requested
+			: $requested . '.enc';
+
 		foreach ( $rows as $row ) {
 			if ( empty( $row->{$field} ) ) {
 				continue;
 			}
+			$stored_raw = wp_normalize_path( (string) $row->{$field} );
+
+			// Direct match.
 			$stored = realpath( (string) $row->{$field} );
 			if ( $stored && wp_normalize_path( $stored ) === $requested ) {
+				return $row;
+			}
+
+			// Match when stored path lacks .enc but resolved has it.
+			if ( $stored_raw === $requested_no_enc ) {
+				return $row;
+			}
+
+			// Match when stored path has .enc but resolved doesn't.
+			if ( $stored_raw === $requested_with_enc ) {
 				return $row;
 			}
 		}
@@ -918,11 +1025,31 @@ class Moderation {
 
 	/**
 	 * Outputs a file to the browser with appropriate headers.
+	 * Handles both plaintext and encrypted files transparently.
 	 *
 	 * @param string $file_path Absolute path to file.
 	 * @param string $mime_type MIME type.
 	 */
 	private function output_file( string $file_path, string $mime_type ): void {
+		// Decrypt encrypted files before serving.
+		if ( \Arshid6Social\Private_Encryption::is_encrypted( $file_path ) ) {
+			$size = filesize( $file_path );
+			if ( false === $size ) {
+				status_header( 404 );
+				exit;
+			}
+			status_header( 200 );
+			header( 'Content-Type: ' . $mime_type );
+			header( 'Content-Length: ' . $size );
+			header( 'Cache-Control: private, max-age=86400' );
+			header( 'X-Content-Type-Options: nosniff' );
+			if ( ! \Arshid6Social\Private_Encryption::decrypt_file_to_output( $file_path ) ) {
+				status_header( 404 );
+				exit;
+			}
+			exit;
+		}
+
 		$size = (int) filesize( $file_path );
 
 		status_header( 200 );
