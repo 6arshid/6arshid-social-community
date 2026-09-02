@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       6Arshid Social Community
- * Plugin URI:        https://6arshid.com/apps/wordpress/6arshid-social-community
+ * Plugin URI:        https://apps.6arshid.com/wordpress/6arshid-social-community/
  * Description:       A complete, secure, responsive, multilingual social network plugin for WordPress with profiles, activity streams, groups, messaging, notifications, and more.
  * Version:           1.8.3
  * Requires at least: 6.5
