@@ -127,7 +127,7 @@ add_action(
 		// Use the file's modification time so the browser cache busts automatically
 		// whenever theme.css changes (a fixed string would serve stale CSS forever).
 		$theme_css_path = get_template_directory() . '/assets/css/theme.css';
-		$theme_ver      = (string) ( @filemtime( $theme_css_path ) ?: '1.3.0' );
+		$theme_ver      = file_exists( $theme_css_path ) ? (string) filemtime( $theme_css_path ) : '1.3.0';
 
 		wp_enqueue_style(
 			'sixarshidsocialcomunity-theme',
@@ -232,7 +232,7 @@ add_action(
 	'wp_enqueue_scripts',
 	function () {
 		$src = get_template_directory() . '/assets/js/theme-toggle.js';
-		$ver = (string) ( @filemtime( $src ) ?: '1.0.0' );
+		$ver = file_exists( $src ) ? (string) filemtime( $src ) : '1.0.0';
 
 		wp_enqueue_script(
 			'a6sc-theme-toggle',
@@ -1012,8 +1012,10 @@ add_action(
 	function () {
 		$dir     = get_stylesheet_directory();
 		$uri     = get_stylesheet_directory_uri();
-		$js_ver  = (string) ( @filemtime( $dir . '/assets/js/page-nav-block.js' ) ?: '2.9.0' );
-		$css_ver = (string) ( @filemtime( $dir . '/assets/css/page-nav-editor.css' ) ?: '2.9.0' );
+		$js_file = $dir . '/assets/js/page-nav-block.js';
+		$css_file = $dir . '/assets/css/page-nav-editor.css';
+		$js_ver  = file_exists( $js_file ) ? (string) filemtime( $js_file ) : '2.9.0';
+		$css_ver = file_exists( $css_file ) ? (string) filemtime( $css_file ) : '2.9.0';
 
 		wp_enqueue_script(
 			'a6sc-page-nav-block',
@@ -1095,8 +1097,10 @@ add_action(
 		$dir = get_stylesheet_directory();
 		$uri = get_stylesheet_directory_uri();
 
-		$js_ver  = (string) ( @filemtime( $dir . '/assets/js/page-nav-admin.js' ) ?: '1.0.0' );
-		$css_ver = (string) ( @filemtime( $dir . '/assets/css/page-nav-editor.css' ) ?: '1.0.0' );
+		$js_file  = $dir . '/assets/js/page-nav-admin.js';
+		$css_file = $dir . '/assets/css/page-nav-editor.css';
+		$js_ver   = file_exists( $js_file ) ? (string) filemtime( $js_file ) : '1.0.0';
+		$css_ver  = file_exists( $css_file ) ? (string) filemtime( $css_file ) : '1.0.0';
 
 		wp_enqueue_style(
 			'a6sc-page-nav-editor',
@@ -1372,4 +1376,3 @@ add_shortcode(
 		. '</aside>';
 	}
 );
-

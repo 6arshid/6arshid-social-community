@@ -106,34 +106,6 @@ if ( ! function_exists( 'arshid6social_eng' ) ) {
 	}
 }
 
-// Auto-set the activity page as the WordPress front page if no static front page
-// has been chosen yet.  Runs once; respects any later manual change by the admin.
-add_action(
-	'admin_init',
-	static function () {
-		// Already done once — skip.
-		if ( get_option( 'arshid6social_frontpage_set' ) ) {
-			return;
-		}
-
-		// Only act when WordPress is still in "latest posts" mode (no static front page).
-		if ( 'posts' !== get_option( 'show_on_front', 'posts' ) ) {
-			// Admin already chose a static front page — record that and never touch it again.
-			update_option( 'arshid6social_frontpage_set', true );
-			return;
-		}
-
-		$activity_page_id = (int) get_option( 'arshid6social_page_activity', 0 );
-		if ( $activity_page_id && 'publish' === get_post_status( $activity_page_id ) ) {
-			update_option( 'show_on_front', 'page' );
-			update_option( 'page_on_front', $activity_page_id );
-		}
-
-		update_option( 'arshid6social_frontpage_set', true );
-	},
-	5
-);
-
 // Flush stale DB-cached FSE templates for the sixarshidsocialcomunity theme so the
 // file-based templates are always used after a theme update.
 add_action(

@@ -40,7 +40,7 @@ class Admin_Pages {
 		<div class="wrap arshid6social-admin-pages">
 			<h1><?php esc_html_e( 'Social Network — Pages & Shortcodes', '6arshid-social-community' ); ?></h1>
 			<p class="description">
-				<?php esc_html_e( 'These pages were created automatically when the plugin was activated. Each page uses a shortcode to display the social network content. You can copy the shortcode and paste it into any page or widget.', '6arshid-social-community' ); ?>
+				<?php esc_html_e( 'These pages provide the plugin frontend screens. Each page uses a shortcode to display the social network content. You can copy the shortcode and paste it into any page or widget.', '6arshid-social-community' ); ?>
 			</p>
 
 			<?php $this->render_pages_table( $pages ); ?>

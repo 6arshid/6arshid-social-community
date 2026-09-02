@@ -260,7 +260,8 @@ This plugin connects to several third-party services to deliver certain features
 1. Upload the `6arshid-social-community` folder to `/wp-content/plugins/`
 2. Activate the plugin through the **Plugins** menu in WordPress
 3. Follow the setup wizard that appears after activation
-4. Configure components and settings at **6arshid Social Community → Settings**
+4. Activation and setup create/configure plugin pages only. The plugin does not change `show_on_front`, `page_on_front`, or assign itself as the site homepage automatically.
+5. Configure components and settings at **6arshid Social Community → Settings**
 
 == Frequently Asked Questions ==
 
@@ -453,6 +454,9 @@ The development-only Bootstrap Icons download helper in the build directory down
 == Changelog ==
 
 = 1.8.3 =
+* WordPress.org review fix: plugin activation and setup no longer assign a static front page or modify the site's homepage settings.
+* Security hardening: sticky activity REST/AJAX permissions now validate the activity owner, profile scope owner, group destination, and moderator capabilities before pinning or unpinning.
+* Compliance hardening: removed runtime error-suppression operators from local asset version and icon metadata reads.
 * Security hardening: tightened REST permission callbacks, social media file serving, story visibility checks, friend-request acceptance, monetization setting sanitization, and remote GIF API requests.
 * External services documentation: rebuilt the section to match the currently supported services and removed obsolete sharing-provider disclosures.
 

@@ -246,7 +246,8 @@ final class Admin_Page_Icons {
 
 		static $data = null;
 		if ( null === $data ) {
-			$raw  = @file_get_contents( $this->icons_json_path() ); // phpcs:ignore
+			$path = $this->icons_json_path();
+			$raw  = is_readable( $path ) ? file_get_contents( $path ) : false; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 			$data = $raw ? (array) json_decode( $raw, true ) : array();
 		}
 

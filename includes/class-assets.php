@@ -82,8 +82,10 @@ final class Assets {
 
 		$has_min_js = ! $debug && file_exists( $js_dir . 'social-network.min.js' );
 		if ( $has_min_js ) {
-			$src_mtime = (int) ( @filemtime( $js_dir . 'social-network.js' ) ?: 0 );
-			$min_mtime = (int) ( @filemtime( $js_dir . 'social-network.min.js' ) ?: 0 );
+			$src_file  = $js_dir . 'social-network.js';
+			$min_file  = $js_dir . 'social-network.min.js';
+			$src_mtime = file_exists( $src_file ) ? (int) filemtime( $src_file ) : 0;
+			$min_mtime = file_exists( $min_file ) ? (int) filemtime( $min_file ) : 0;
 			$js_suffix = ( $min_mtime >= $src_mtime ) ? '.min' : '';
 		} else {
 			$js_suffix = '';

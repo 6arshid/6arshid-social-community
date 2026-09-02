@@ -451,7 +451,6 @@ class Activator {
 			if ( $existing_id && 'publish' === get_post_status( $existing_id ) ) {
 				if ( 'home' === $key ) {
 					update_post_meta( $existing_id, '_wp_page_template', 'home-splash' );
-					self::set_front_page( $existing_id );
 				}
 				continue;
 			}
@@ -460,9 +459,6 @@ class Activator {
 			$existing = get_page_by_path( $page['slug'] );
 			if ( $existing && 'publish' === $existing->post_status ) {
 				update_option( $page['option'], $existing->ID );
-				if ( 'home' === $key ) {
-					self::set_front_page( $existing->ID );
-				}
 				continue;
 			}
 
@@ -484,33 +480,10 @@ class Activator {
 
 			if ( $page_id && ! is_wp_error( $page_id ) ) {
 				update_option( $page['option'], $page_id );
-				if ( 'home' === $key ) {
-					self::set_front_page( $page_id );
-				}
 			}
 		}
 	}
 
-	/**
-	 * Sets the WordPress front page to the given page ID.
-	 * Only changes the setting if it hasn't been customised by the site owner
-	 * (i.e. still showing "latest posts" or pointing to a page that no longer exists).
-	 *
-	 * @param int $page_id
-	 */
-	private static function set_front_page( int $page_id ): void {
-		$current_front = (int) get_option( 'page_on_front', 0 );
-		$current_show  = (string) get_option( 'show_on_front', 'posts' );
-
-		// Already pointing at a valid published page that isn't ours — respect it.
-		if ( 'page' === $current_show && $current_front && $current_front !== $page_id
-			&& 'publish' === get_post_status( $current_front ) ) {
-			return;
-		}
-
-		update_option( 'show_on_front', 'page' );
-		update_option( 'page_on_front', $page_id );
-	}
 
 	/**
 	 * Verifies PHP and WP version requirements before proceeding.

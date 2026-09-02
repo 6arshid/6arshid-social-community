@@ -26,6 +26,7 @@ class Sticky_Posts_REST {
 						'scope'      => array(
 							'default'           => 'profile',
 							'sanitize_callback' => 'sanitize_key',
+							'validate_callback' => array( $this, 'validate_scope' ),
 						),
 						'scope_id'   => array(
 							'default'           => 0,
@@ -34,6 +35,7 @@ class Sticky_Posts_REST {
 						'expires_at' => array(
 							'default'           => null,
 							'sanitize_callback' => 'sanitize_text_field',
+							'validate_callback' => array( $this, 'validate_expires_at' ),
 						),
 					),
 				),
@@ -45,6 +47,7 @@ class Sticky_Posts_REST {
 						'scope'    => array(
 							'default'           => 'profile',
 							'sanitize_callback' => 'sanitize_key',
+							'validate_callback' => array( $this, 'validate_scope' ),
 						),
 						'scope_id' => array(
 							'default'           => 0,
@@ -66,6 +69,7 @@ class Sticky_Posts_REST {
 					'scope'    => array(
 						'default'           => 'site',
 						'sanitize_callback' => 'sanitize_key',
+						'validate_callback' => array( $this, 'validate_scope' ),
 					),
 					'scope_id' => array(
 						'default'           => 0,
@@ -76,35 +80,34 @@ class Sticky_Posts_REST {
 		);
 	}
 
-	public function can_pin_activity( \WP_REST_Request $req ): bool {
-		if ( ! is_user_logged_in() ) {
-			return false;
+	public function validate_scope( $value ): bool {
+		return in_array( sanitize_key( $value ), array( 'profile', 'group', 'site' ), true );
+	}
+
+	public function validate_expires_at( $value ): bool {
+		if ( null === $value || '' === $value ) {
+			return true;
 		}
-		$activity_comp = ARSHID6SOCIAL()->component( 'activity' );
-		$activity      = $activity_comp ? $activity_comp->get_by_id( absint( $req['id'] ) ) : null;
-		if ( ! $activity ) {
-			return true; // Activity not found; let the callback return a proper 404.
+		return false !== strtotime( (string) $value );
+	}
+
+	public function can_pin_activity( \WP_REST_Request $req ) {
+		$f = $this->feature();
+		if ( ! $f ) {
+			return new \WP_Error( 'arshid6social_disabled', __( 'Sticky posts are unavailable.', '6arshid-social-community' ), array( 'status' => 503 ) );
 		}
 
-		$is_moderator = current_user_can( 'arshid6social_manage_activity' );
-		if ( (int) $activity->user_id !== get_current_user_id() && ! $is_moderator ) {
-			return false;
+		$authorized_scope_id = $f->authorize_sticky_request(
+			absint( $req['id'] ),
+			sanitize_key( $req['scope'] ?? 'profile' ),
+			absint( $req['scope_id'] ?? 0 )
+		);
+
+		if ( is_wp_error( $authorized_scope_id ) ) {
+			return $authorized_scope_id;
 		}
 
-		// Scope-level authorization: site-wide pins are a moderator action and
-		// group pins require being an admin of the target group.
-		$scope = sanitize_key( $req['scope'] ?? 'profile' );
-		if ( 'site' === $scope && ! $is_moderator ) {
-			return false;
-		}
-		if ( 'group' === $scope ) {
-			$groups         = ARSHID6SOCIAL()->component( 'groups' );
-			$is_group_admin = $groups && $groups->is_admin( get_current_user_id(), absint( $req['scope_id'] ?? 0 ) );
-			if ( ! $is_group_admin && ! current_user_can( 'arshid6social_manage_groups' ) ) {
-				return false;
-			}
-		}
-
+		$req->set_param( 'scope_id', $authorized_scope_id );
 		return true;
 	}
 

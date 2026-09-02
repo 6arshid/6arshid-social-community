@@ -32,7 +32,7 @@ class Sticky_Posts {
 	 *
 	 * @param int         $object_id  Activity ID.
 	 * @param string      $scope      'profile' | 'group' | 'site'
-	 * @param int         $scope_id   Group ID (for group scope), 0 otherwise.
+	 * @param int         $scope_id   User ID (profile scope), group ID (group scope), 0 for site scope.
 	 * @param int         $created_by User performing the pin.
 	 * @param string|null $expires_at  MySQL datetime or null.
 	 * @return int|false  Sticky record ID or false.
@@ -139,6 +139,74 @@ class Sticky_Posts {
 
 	// ── Capability checks ─────────────────────────────────────────────────────
 
+	/**
+	 * Returns the canonical scope id for a sticky request after validating the
+	 * requested object/scope relationship and the current user's authority.
+	 *
+	 * @param int    $activity_id Activity ID.
+	 * @param string $scope       profile|group|site.
+	 * @param int    $scope_id    Requested scope ID.
+	 * @return int|\WP_Error Canonical scope ID, or WP_Error when forbidden/invalid.
+	 */
+	public function authorize_sticky_request( int $activity_id, string $scope, int $scope_id ) {
+		if ( ! is_user_logged_in() ) {
+			return new \WP_Error( 'arshid6social_not_logged_in', __( 'You must be logged in.', '6arshid-social-community' ), array( 'status' => 401 ) );
+		}
+
+		if ( ! in_array( $scope, array( 'profile', 'group', 'site' ), true ) ) {
+			return new \WP_Error( 'arshid6social_invalid_scope', __( 'Invalid sticky scope.', '6arshid-social-community' ), array( 'status' => 400 ) );
+		}
+
+		$activity_comp = ARSHID6SOCIAL()->component( 'activity' );
+		$activity      = $activity_comp ? $activity_comp->get_by_id( $activity_id ) : null;
+		if ( ! $activity ) {
+			return new \WP_Error( 'arshid6social_not_found', __( 'Activity not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
+		}
+
+		$current_user_id = get_current_user_id();
+		$activity_owner  = (int) $activity->user_id;
+		$is_moderator    = $this->can_pin_site();
+
+		if ( $activity_owner !== $current_user_id && ! $is_moderator ) {
+			return new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', '6arshid-social-community' ), array( 'status' => 403 ) );
+		}
+
+		if ( 'site' === $scope ) {
+			return $is_moderator
+				? 0
+				: new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', '6arshid-social-community' ), array( 'status' => 403 ) );
+		}
+
+		if ( 'profile' === $scope ) {
+			$canonical_scope_id = $scope_id ?: $activity_owner;
+			if ( $canonical_scope_id !== $activity_owner ) {
+				return new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', '6arshid-social-community' ), array( 'status' => 403 ) );
+			}
+			if ( ! get_userdata( $canonical_scope_id ) ) {
+				return new \WP_Error( 'arshid6social_not_found', __( 'Profile not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
+			}
+			return $canonical_scope_id;
+		}
+
+		if ( ! $scope_id ) {
+			return new \WP_Error( 'arshid6social_invalid_scope', __( 'Invalid sticky scope.', '6arshid-social-community' ), array( 'status' => 400 ) );
+		}
+
+		$groups = ARSHID6SOCIAL()->component( 'groups' );
+		$group  = $groups && method_exists( $groups, 'get_by_id' ) ? $groups->get_by_id( $scope_id ) : null;
+		if ( ! $group ) {
+			return new \WP_Error( 'arshid6social_not_found', __( 'Group not found.', '6arshid-social-community' ), array( 'status' => 404 ) );
+		}
+
+		if ( (int) $activity->item_id !== $scope_id ) {
+			return new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', '6arshid-social-community' ), array( 'status' => 403 ) );
+		}
+
+		return ( $is_moderator || $this->can_pin_group( $scope_id ) )
+			? $scope_id
+			: new \WP_Error( 'arshid6social_forbidden', __( 'Permission denied.', '6arshid-social-community' ), array( 'status' => 403 ) );
+	}
+
 	private function can_pin_site(): bool {
 		return current_user_can( 'arshid6social_manage_activity' ) || current_user_can( 'manage_options' );
 	}
@@ -148,25 +216,13 @@ class Sticky_Posts {
 			return true;
 		}
 		global $wpdb;
-		$role = $wpdb->get_var(
+		return (bool) $wpdb->get_var(
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT role FROM {$wpdb->prefix}arshid6social_groups_members WHERE group_id = %d AND user_id = %d",
+				"SELECT id FROM {$wpdb->prefix}arshid6social_groups_members WHERE group_id = %d AND user_id = %d AND is_confirmed = 1 AND is_banned = 0 AND (is_admin = 1 OR is_mod = 1)",
 				$group_id,
 				get_current_user_id()
 			)
 		);
-		return in_array( $role, array( 'admin', 'mod' ), true );
-	}
-
-	private function can_pin_profile( int $activity_id ): bool {
-		global $wpdb;
-		$owner = (int) $wpdb->get_var(
-			$wpdb->prepare( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-				"SELECT user_id FROM {$wpdb->prefix}arshid6social_activity WHERE id = %d",
-				$activity_id
-			)
-		);
-		return $owner && ( $owner === get_current_user_id() || $this->can_pin_site() );
 	}
 
 	// ── AJAX ──────────────────────────────────────────────────────────────────
@@ -190,19 +246,12 @@ class Sticky_Posts {
 			wp_send_json_error( null, 400 );
 		}
 
-		// Capability check.
-		$allowed = match ( $scope ) {
-			'site'    => $this->can_pin_site(),
-			'group'   => $this->can_pin_group( $scope_id ),
-			'profile' => $this->can_pin_profile( $activity_id ),
-			default   => false,
-		};
-
-		if ( ! $allowed ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', '6arshid-social-community' ) ), 403 );
+		$authorized_scope_id = $this->authorize_sticky_request( $activity_id, $scope, $scope_id );
+		if ( is_wp_error( $authorized_scope_id ) ) {
+			wp_send_json_error( array( 'message' => $authorized_scope_id->get_error_message() ), (int) ( $authorized_scope_id->get_error_data()['status'] ?? 403 ) );
 		}
 
-		$id = $this->pin( $activity_id, $scope, $scope_id, get_current_user_id(), $expires_at );
+		$id = $this->pin( $activity_id, $scope, (int) $authorized_scope_id, get_current_user_id(), $expires_at );
 		$id ? wp_send_json_success( array( 'sticky_id' => $id ) ) : wp_send_json_error( null, 500 );
 	}
 
@@ -220,18 +269,12 @@ class Sticky_Posts {
 		$scope_id    = absint( $_POST['scope_id'] ?? 0 );
 		// phpcs:enable
 
-		$allowed = match ( $scope ) {
-			'site'    => $this->can_pin_site(),
-			'group'   => $this->can_pin_group( $scope_id ),
-			'profile' => $this->can_pin_profile( $activity_id ),
-			default   => false,
-		};
-
-		if ( ! $allowed ) {
-			wp_send_json_error( null, 403 );
+		$authorized_scope_id = $this->authorize_sticky_request( $activity_id, $scope, $scope_id );
+		if ( is_wp_error( $authorized_scope_id ) ) {
+			wp_send_json_error( array( 'message' => $authorized_scope_id->get_error_message() ), (int) ( $authorized_scope_id->get_error_data()['status'] ?? 403 ) );
 		}
 
-		$this->unpin( $activity_id, $scope, $scope_id )
+		$this->unpin( $activity_id, $scope, (int) $authorized_scope_id )
 			? wp_send_json_success()
 			: wp_send_json_error( null, 500 );
 	}
