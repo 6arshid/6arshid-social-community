@@ -1,6 +1,6 @@
 === 6Arshid Social Community ===
 Contributors: 6arshid, hassantafreshi, aminkhadivar
-Tags: community, buddypress, members, groups, messaging
+Tags: social network, wordpress social network, buddypress, community, messaging
 Requires at least: 6.5
 Tested up to: 7.1
 Stable tag: 1.8.3
@@ -8,252 +8,236 @@ Requires PHP: 8.1
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
-A complete, secure, responsive, multilingual social network plugin for WordPress.
+Build a fast, secure WordPress social network with member profiles, activity feeds, groups, messaging, notifications, polls, moderation, and more.
 
 == Description ==
 
-6Arshid Social Community transforms your WordPress site into a fully-featured social community. Every component is built with security, performance, and developer extensibility at its core — no BuddyPress dependency required.
+6Arshid Social Community is a complete **WordPress social network plugin** for building member communities, private networks, creator communities, discussion spaces, and social platforms directly inside WordPress.
+
+It provides member profiles, activity feeds, groups, friends and followers, private messaging, notifications, polls, hashtags, bookmarks, moderation, social embeds, creator monetization, REST API support, and more — without requiring BuddyPress.
+
+If you are looking for a **WordPress social network**, a flexible **WP social network** solution, or a standalone alternative to a traditional BuddyPress-based setup, 6Arshid Social Community gives you the core community features in one modular plugin.
+
+= Build a Social Network with WordPress =
+
+Turn WordPress into a modern social community where members can create profiles, publish activity posts, follow people, become friends, join groups, send private messages, react to content, vote in polls, save posts, and receive notifications.
+
+The plugin is designed for:
+
+* Private or public online communities
+* Membership websites
+* Creator and fan communities
+* Company or organization networks
+* Niche social networks
+* Discussion and interest-based communities
+* Local communities
+* Educational and professional networks
+
+Each major feature can be enabled or disabled independently, so you can build a lightweight community or a more complete social network experience.
 
 = Member Profiles =
 
-* Extended profile fields (xProfile) — text, textarea, select, checkbox, date, URL, social links
-* Field groups with per-field visibility controls (public, friends only, only me)
-* Avatar upload with EXIF-stripping and re-encoding
-* Cover photo upload and management
-* Profile completion progress widget
-* Verified badge system
-* Per-user settings persistence
-* GDPR data export and erasure hooks
+Members can create rich profiles with avatars, cover photos, extended profile fields, social links, privacy controls, profile completion indicators, and verification badges.
 
-= Activity Stream =
+Profile features include:
 
-* Activity composer with text, images, GIFs, emoji, and link previews
-* Privacy levels per post — public, friends, private
-* Inline editing and deletion of posts
-* Infinite scroll and basic pagination (switchable)
-* @mentions with autocomplete and notifications
-* Hashtags with dedicated archive pages
-* Reactions — heart, thumbs-up/down, haha, wow, sad, angry, celebrate, fire, clap, pray, love, 💯, strong, cool
-* Comments with nested replies (threaded)
-* Comment like and dislike reactions with animated buttons
-* Comment attachments — images and documents
-* GIFs in comments via GIPHY
-* Share activity to new post or private message
-* Sticky posts — pin any post to the top of the feed
-* Bookmark / save posts with user collections
-* Report posts, comments, and profiles
-* Akismet spam filtering
-* Single activity permalink pages
+* Custom profile fields and field groups
+* Public, friends-only, and private field visibility
+* Avatar and cover image uploads
+* Profile completion progress
+* Verified member badges
+* User settings and privacy preferences
+* GDPR export and erasure integration
 
-= Polls =
+= Activity Feed =
 
-* Create polls with multiple options directly in the activity composer
-* Poll voting with live result distribution
-* Poll expiration with auto-close
-* Quiz mode — reveal correct answer after voting
-* Advanced Polls — suggest options, import/export, templates (save, load, delete)
-* Poll participation history per user
-* Scheduled hourly expiration check
+The activity stream is the center of the community. Members can publish posts, images, GIFs, polls, links, mentions, hashtags, and attachments.
 
-= Hashtags =
+Activity features include:
 
-* Auto-extract and link hashtags in posts
-* Hashtag archive pages (`/hashtag/{slug}/`)
-* Trending hashtags feed with scheduled cache refresh
-* Follow and unfollow hashtags
-* Hashtag autocomplete in the composer
-* `[arshid6social_trending_hashtags]` shortcode
+* Public, friends-only, and private posts
+* Image, GIF, emoji, and link support
+* Comments and threaded replies
+* Reactions and comment reactions
+* @mentions and member autocomplete
+* Hashtags and hashtag archives
+* Sticky posts
+* Bookmarks and collections
+* Post sharing
+* Reporting and moderation
+* Infinite scroll or standard pagination
 
-= Tag Friends =
-
-* @mention autocomplete in posts and comments
-* Photo tagging with approval and rejection workflow
-* Tag removal and privacy controls
-* Mention notifications
-
-= Bookmarks =
-
-* Save any activity post to bookmarks
-* User-created bookmark collections
-* Bookmark search and filtering
-* Dedicated bookmarks page with infinite scroll
-* `[arshid6social_bookmarks]` shortcode
-
-= Share Posts =
-
-* Share activity to a new post
-* Share activity to a private message
-* Share count tracking and history
-
-= Sticky Posts =
-
-* Pin posts to the top of the feed
-* Sticky post expiration with scheduled cleanup
+Members can also edit or delete their own posts and interact with content through reactions, comments, shares, and saved collections.
 
 = Groups =
 
-* Public, private, and hidden groups
-* Group roles — admin, moderator, member
+Create public, private, or hidden groups with their own members, activity feeds, avatars, cover photos, invitations, and moderation roles.
+
+Group features include:
+
+* Admin, moderator, and member roles
 * Join requests and invitations
-* Group activity feed and member list
-* Group avatar and cover photo
-* Hierarchical (parent/child) groups
-* Group search and directory listing
+* Group activity feeds
+* Member directories
+* Parent and child groups
+* Group search
+* Public, private, and hidden visibility
 
-= Friends & Follow =
+= Friends, Followers, and Blocking =
 
-* Mutual friend requests — send, accept, reject, remove
-* One-way follow system
+6Arshid Social Community supports both mutual friendships and one-way following.
+
+Members can:
+
+* Send, accept, reject, and remove friend requests
+* Follow or unfollow other members
+* Receive follower notifications
 * Block and unblock users
-* Friend suggestions based on mutual connections
-* Friendship status queries
+* Discover suggested friends based on mutual connections
 
 = Private Messaging =
 
-* One-to-one and group conversations
-* Message attachments — images and documents
-* Read receipts and unread count badge
-* Real-time updates via WordPress Heartbeat API
-* Thread deletion and spam reporting
-* Dedicated message URLs (`/messages/compose/`, `/messages/thread/{id}/`)
+Members can communicate through one-to-one or group conversations without leaving the WordPress site.
+
+Messaging includes:
+
+* Private conversation threads
+* Group conversations
+* Image and document attachments
+* Read receipts
+* Unread message counters
+* WordPress Heartbeat-powered updates
+* Message deletion
+* Spam and abuse reporting
 
 = Notifications =
 
-* On-site notification centre with unread counter
-* Notification types — friend requests, friendship accepted, reactions, comments, @mentions, messages, group invitations, new followers
-* Per-user notification preferences by type
-* Email notifications with daily and weekly digest
-* Bulk delete and mark-all-read
-* Scheduled cron jobs for digest delivery
+The built-in notification center keeps members informed about community activity.
 
-= Moderation =
+Notifications can be generated for:
 
-* Report content — activity, comments, messages, profiles, groups
-* Admin moderation queue with resolve/dismiss
-* Auto-suspension after configurable number of reports
-* Banned words filter
-* Member suspension with audit log
+* Friend requests
+* Accepted friendships
+* Reactions
+* Comments
+* Mentions
+* Private messages
+* Group invitations
+* New followers
 
-= Comment Attachments =
+Users can control notification preferences, while email digest support can send daily or weekly summaries.
 
-* Upload images and documents directly to comments
-* File type and MIME validation
-* Per-comment upload directory
-* Attachment deletion by owner or admin
-* EXIF stripping from uploaded images
+= Polls, Hashtags, and Engagement =
 
-= Message Attachments =
+Create interactive polls directly from the activity composer. Polls support multiple options, expiration dates, live result distribution, quiz mode, reusable templates, and participation history.
 
-* Upload images and documents inside message threads
-* File type and MIME validation
-* Attachment serving with access control
-* Deletion by owner or admin
+Hashtags are automatically detected and linked. Members can browse hashtag archive pages, follow hashtags, use autocomplete, and discover trending topics.
 
-= GIFs in Comments =
+The plugin also includes photo tagging, friend tagging, post sharing, sticky posts, saved bookmarks, and bookmark collections.
 
-* GIPHY integration — trending, keyword search, recently used
-* GIF insertion into comments
-* GIF usage analytics
+= Moderation and Community Safety =
 
-= Social Embeds =
+Community administrators can manage reports, suspended users, banned words, spam, and abusive content from WordPress.
 
-* Auto-embed links pasted into posts, comments, and private messages
-* 19 supported platforms: YouTube, Vimeo, X / Twitter, Instagram, Facebook, TikTok, Spotify, SoundCloud, Pinterest, Reddit, Twitch, Dailymotion, Apple Music / Podcasts, LinkedIn, Telegram, Threads, Bluesky, Aparat, and a generic Open Graph link preview fallback
-* Methods: oEmbed (rich player), iframe (sandbox), and Open Graph preview card
-* Lazy load / click-to-play mode — no third-party request until the user clicks (privacy-first)
-* Tracking parameter stripping from URLs before embedding (`utm_*`, `fbclid`, etc.)
-* Configurable cache duration with daily prune cron job
-* Per-platform enable/disable toggles and banned-domain list
-* REST endpoint `/wp-json/arshid6social/v1/embeds/preview` for live previews in the composer
+Moderation features include:
 
-= Unified Search =
+* Reporting for posts, comments, profiles, messages, and groups
+* Admin moderation queue
+* Resolve and dismiss workflows
+* Configurable automatic suspension
+* Banned-word filtering
+* Suspension audit logs
+* Akismet integration
+* Upload validation and access controls
 
-* Full-text search across activity posts, members, groups, and marketplace listings from a single search page
-* Tabbed results by section — All, Activity, Members, Groups, Marketplace
-* Respects content privacy (guests see only public activity)
-* REST endpoint at `/wp-json/arshid6social/v1/search`
+= Social Embeds and Link Previews =
 
-= Ads =
+Members can share links from popular social and media platforms. Depending on the provider and configuration, the plugin can display oEmbed content, sandboxed iframes, or Open Graph preview cards.
 
-* Admin-managed native ad campaigns — no external ad network required
-* Ad types: image, video, HTML / JavaScript
-* Placement options: sidebar, in-feed (auto-injected every N posts), or both
-* Date-based scheduling — optional start and end dates per campaign
-* Click tracking with per-campaign click counter
+Supported platforms include YouTube, Vimeo, X / Twitter, Instagram, Facebook, TikTok, Spotify, SoundCloud, Pinterest, Reddit, Twitch, Dailymotion, Apple Music, Apple Podcasts, LinkedIn, Telegram, Threads, Bluesky, and Aparat.
 
-= Monetization (Paid Content & Creator Subscriptions) =
+A privacy-focused click-to-play mode can prevent third-party requests until a visitor chooses to load embedded content.
 
-* Let creators monetize content with X-style monthly subscriptions and pay-per-view posts
-* Stripe Connect — creators link their own Stripe account; no raw bank details stored on the server
-* Platform application fee: configurable percentage + optional flat amount per transaction
-* Minimum subscription price floor set by the site admin
-* Stripe secret keys and webhook signing secrets stored encrypted in the database
-* Supports live and test mode with separate key pairs
-* Webhook handler for Stripe events (`customer.subscription.*`, `invoice.*`, `payment_intent.*`, `account.updated`)
-* 13 supported currencies: USD, EUR, GBP, CAD, AUD, JPY, CHF, SEK, NOK, DKK, TRY, AED, SAR
-* Extensible gateway layer — additional gateways can be registered via the `arshid6social_monetization_payment_gateways` filter
+= Search =
 
-= XML Sitemaps =
+Unified search helps users discover content across the community from a single interface.
 
-* Automatic XML sitemap entries for public activity posts, member profiles, groups, and marketplace listings
-* Integrates with the WordPress core sitemap API — no additional plugin required
-* Sitemap index entries: `arshid6social_activity`, `arshid6social_members`, `arshid6social_groups`, `arshid6social_marketplace`
+Search can include:
 
-= Developer & REST API =
+* Activity posts
+* Members
+* Groups
+* Marketplace listings
 
-* Full REST API at `/wp-json/arshid6social/v1/`
-* Endpoints for activity, members, friends, groups, messages, notifications, bookmarks, hashtags, polls, tags, share, sticky, attachments
-* 50+ AJAX actions for every front-end operation
-* Action and filter hooks on every major operation
-* Component-based architecture — enable or disable each feature independently
-* Template override support — copy any template to `{theme}/social-network/`
-* Gutenberg blocks — Activity Feed, Member Directory, Group List
-* Shortcodes — `[arshid6social_activity]`, `[arshid6social_members]`, `[arshid6social_groups]`, `[arshid6social_messages]`, `[arshid6social_notifications]`, `[arshid6social_profile]`, `[arshid6social_bookmarks]`, `[arshid6social_trending_hashtags]`, `[arshid6social_stories_tray]`, `[arshid6social_verification_request]`, `[arshid6social_block_list]`
+Results respect content visibility and privacy settings.
 
-= Multilingual =
+= Creator Monetization =
 
-* Full i18n with `.pot`, `fa_IR` (Persian), and `da_DK` (Danish) included
-* RTL support for Persian and Arabic with a dedicated `rtl.css`
-* Compatible with WPML, Polylang, and TranslatePress
-* Jalali (Shamsi) calendar option for Persian dates
+Optional monetization tools allow creators to offer paid content, monthly subscriptions, and pay-per-view posts.
 
-= Security =
+Stripe Connect support allows creators to connect their own Stripe accounts, while site administrators can configure platform fees and supported currencies.
 
-* All input sanitized, all output escaped
-* Prepared statements on every database query
-* Nonces on every form and AJAX action
-* Capability checks before every privileged operation
-* Rate limiting on posts, messages, and friend requests
-* Strict MIME type and extension validation for uploads
-* Image re-encoding to strip EXIF data and embedded payloads
-* Honeypot on forms with optional reCAPTCHA / Cloudflare Turnstile
-* Akismet integration for spam filtering
-* CSRF, XSS, SQL injection, and IDOR protection throughout
+Monetization can be disabled entirely when it is not needed.
 
-= Performance =
+= Developer Friendly =
 
-* Conditional asset loading — JS and CSS only on plugin pages, never site-wide
-* `filemtime()`-based JS version string for automatic cache busting
-* Object cache and transient caching throughout
-* Proper database indexes on all custom tables
-* Mobile-first CSS with zero jQuery dependency in JS
-* Deferred script loading strategy
+6Arshid Social Community is built as a modular WordPress plugin with REST API endpoints, AJAX actions, hooks, filters, Gutenberg blocks, shortcodes, and template overrides.
 
-= Accessibility =
+Developer features include:
 
-* WCAG 2.1 AA compliant
-* ARIA labels and keyboard navigation
-* Touch-friendly UI (tap targets ≥ 44 × 44 px)
-* Dark mode support — system preference and manual toggle
+* REST API under `/wp-json/arshid6social/v1/`
+* Action and filter hooks
+* Component-based architecture
+* Theme template overrides
+* Gutenberg blocks
+* Shortcodes for activity, members, groups, messages, notifications, profiles, bookmarks, hashtags, stories, verification, and blocking
+* WordPress core XML sitemap integration
 
-= GDPR =
+= Multilingual and RTL Ready =
 
-* Data export and erasure hooks integrated with WP Privacy Tools
-* Per-user email opt-out for notifications
+The plugin includes internationalization support and ships with Persian (`fa_IR`) and Danish (`da_DK`) translation files.
 
-= External Services =
+It also includes:
 
-This plugin connects to several third-party services to deliver certain features (GIF search, profile avatars, social embeds, and sharing). Each service is optional and can be disabled via the Components settings. See the **External Services** section at the bottom of this readme for full details, privacy policies, and terms of service links.
+* RTL support for Persian and Arabic
+* Dedicated RTL stylesheet
+* Jalali (Shamsi) calendar option
+* Compatibility with WPML, Polylang, and TranslatePress
+
+= Security and Performance =
+
+The plugin uses WordPress security best practices throughout its forms, AJAX actions, REST endpoints, database operations, and file uploads.
+
+Security and performance features include:
+
+* Nonce and capability checks
+* Input sanitization and output escaping
+* Prepared database queries
+* Upload MIME and extension validation
+* Image re-encoding and EXIF stripping
+* Rate limiting
+* Honeypot and optional reCAPTCHA / Cloudflare Turnstile
+* Conditional CSS and JavaScript loading
+* Object cache and transient caching
+* Database indexes
+* Deferred scripts
+* No jQuery dependency in front-end JavaScript
+
+= BuddyPress Alternative =
+
+6Arshid Social Community is **not a BuddyPress add-on and does not require BuddyPress**.
+
+It is a standalone WordPress community and social network plugin. Sites currently using BuddyPress can use the included migration tool to help move supported data into 6Arshid Social Community.
+
+This makes it suitable for site owners searching for a BuddyPress alternative while still wanting familiar features such as member profiles, activity streams, groups, friendships, messaging, and notifications.
+
+= Accessibility and Privacy =
+
+The interface includes keyboard navigation, ARIA labels, touch-friendly controls, dark mode support, and WCAG-oriented accessibility features.
+
+WordPress privacy tools are supported for member data export and erasure, and users can control email notification preferences.
+
+Third-party integrations such as GIF providers, social embeds, Gravatar, Stripe, and Akismet are documented below in the **External services** section.
 
 == Installation ==
 
@@ -264,6 +248,13 @@ This plugin connects to several third-party services to deliver certain features
 5. Configure components and settings at **6arshid Social Community → Settings**
 
 == Frequently Asked Questions ==
+
+
+= Is this a WordPress social network plugin? =
+Yes. 6Arshid Social Community is a standalone WordPress social network plugin that adds member profiles, activity feeds, groups, friends, followers, private messaging, notifications, polls, hashtags, moderation, and other community features.
+
+= Is this a BuddyPress plugin or BuddyPress add-on? =
+No. It does not require BuddyPress. It is an independent social network plugin for WordPress and includes a BuddyPress migration tool for supported data.
 
 = Can I disable specific features? =
 Yes. Go to **6arshid Social Community → Settings → Components** and toggle each feature on or off.
