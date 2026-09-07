@@ -1,440 +1,581 @@
-﻿# 6Arshid Social Community - Persian (Farsi) Translation
+# Persian translation for 6Arshid Social Community.
 # Copyright (C) 2026 6arshid
 # This file is distributed under the MIT License.
-# Translator: 6arshid <6arshid@gmail.com>
 msgid ""
 msgstr ""
 "Project-Id-Version: 6Arshid Social Community 1.0.0\n"
-"POT-Creation-Date: 2026-06-12T00:00:00+00:00\n"
-"PO-Revision-Date: 2026-06-12T00:00:00+00:00\n"
-"Last-Translator: 6arshid <6arshid@gmail.com>\n"
-"Language-Team: Persian <fa@li.org>\n"
+"Report-Msgid-Bugs-To: https://github.com/6arshid/social-network-6/issues\n"
+"POT-Creation-Date: 2026-06-12 00:00+0000\n"
+"PO-Revision-Date: 2026-09-08 01:34+0200\n"
+"Last-Translator: 6arshid\n"
+"Language-Team: Persian\n"
 "Language: fa_IR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Domain: social-network-6\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: ChatGPT\n"
+"X-Domain: sixarshidsocialcomunity\n"
 
+#. Plugin Name of the plugin
 msgid "6Arshid Social Community"
-msgstr "شبکه اجتماعی وردپرس"
+msgstr "6Arshid Social Community"
 
+#. Plugin URI of the plugin
+msgid "https://6arshid.com/apps/wordpress/social-network"
+msgstr "https://6arshid.com/apps/wordpress/social-network"
+
+#. Description of the plugin
 msgid "A complete, secure, responsive, multilingual social network plugin for WordPress with profiles, activity streams, groups, messaging, notifications, and more."
-msgstr "یک افزونه شبکه اجتماعی کامل، امن، واکنش‌گرا و چندزبانه برای وردپرس با پروفایل، جریان‌های فعالیت، گروه‌ها، پیام‌رسانی، اعلان‌ها و بیشتر."
+msgstr "یک افزونه کامل، امن، واکنش‌گرا و چندزبانه برای ساخت شبکه اجتماعی در وردپرس، شامل پروفایل‌ها، جریان فعالیت، گروه‌ها، پیام‌رسانی، اعلان‌ها و امکانات بیشتر."
 
-msgid "Loading…"
-msgstr "در حال بارگذاری…"
-
-msgid "No results found."
-msgstr "نتیجه‌ای یافت نشد."
-
-msgid "Something went wrong. Please try again."
-msgstr "خطایی رخ داد. لطفاً دوباره تلاش کنید."
-
-msgid "Are you sure?"
-msgstr "آیا مطمئن هستید؟"
-
-msgid "Like"
-msgstr "پسندیدن"
-
-msgid "Unlike"
-msgstr "لغو پسندیدن"
-
-msgid "Add Friend"
-msgstr "افزودن دوست"
-
-msgid "Cancel Request"
-msgstr "لغو درخواست"
-
-msgid "Follow"
-msgstr "دنبال کردن"
-
-msgid "Unfollow"
-msgstr "لغو دنبال کردن"
-
-msgid "Send Message"
-msgstr "ارسال پیام"
-
-msgid "Report"
-msgstr "گزارش"
-
-msgid "Block User"
-msgstr "مسدود کردن کاربر"
-
-msgid "Unblock User"
-msgstr "رفع مسدودیت کاربر"
-
-msgid "Delete"
-msgstr "حذف"
-
-msgid "just now"
-msgstr "همین الان"
-
-msgid "%d minute ago"
-msgstr "%d دقیقه پیش"
-
-msgid "%d minutes ago"
-msgstr "%d دقیقه پیش"
-
-msgid "%d hour ago"
-msgstr "%d ساعت پیش"
-
-msgid "%d hours ago"
-msgstr "%d ساعت پیش"
-
-msgid "%d day ago"
-msgstr "%d روز پیش"
-
-msgid "%d days ago"
-msgstr "%d روز پیش"
-
-msgid "Social Network"
-msgstr "شبکه اجتماعی"
-
-msgid "Dashboard"
-msgstr "داشبورد"
-
-msgid "Members"
-msgstr "اعضا"
-
-msgid "Groups"
-msgstr "گروه‌ها"
-
-msgid "Moderation"
-msgstr "مدیریت محتوا"
-
-msgid "Settings"
-msgstr "تنظیمات"
-
-msgid "Social Network Dashboard"
-msgstr "داشبورد شبکه اجتماعی"
-
-msgid "Activity Items"
-msgstr "فعالیت‌ها"
-
-msgid "Pending Reports"
-msgstr "گزارش‌های معلق"
-
-msgid "Welcome to 6Arshid Social Community!"
-msgstr "به شبکه اجتماعی وردپرس خوش آمدید!"
-
-msgid "Run the setup wizard →"
-msgstr "اجرای راه‌اندازی ←"
-
-msgid "General"
-msgstr "عمومی"
-
-msgid "Components"
-msgstr "اجزا"
-
-msgid "Activity"
-msgstr "فعالیت"
-
-msgid "Messages"
-msgstr "پیام‌ها"
-
-msgid "Notifications"
-msgstr "اعلان‌ها"
-
-msgid "Security"
-msgstr "امنیت"
-
-msgid "Emails"
-msgstr "ایمیل‌ها"
-
-msgid "Appearance"
-msgstr "ظاهر"
-
-msgid "Social Network Settings"
-msgstr "تنظیمات شبکه اجتماعی"
-
-msgid "Save Settings"
-msgstr "ذخیره تنظیمات"
-
-msgid "Allow Registration"
-msgstr "اجازه ثبت‌نام"
-
-msgid "Allow new users to register on the social network."
-msgstr "به کاربران جدید اجازه ثبت‌نام در شبکه اجتماعی داده شود."
-
-msgid "Relative (e.g. 5 minutes ago)"
-msgstr "نسبی (مانند ۵ دقیقه پیش)"
-
-msgid "Absolute (e.g. June 12, 2026)"
-msgstr "مطلق (مانند ۲۲ خرداد ۱۴۰۵)"
-
-msgid "Jalali / Persian calendar"
-msgstr "تقویم جلالی / شمسی"
-
-msgid "Active Components"
-msgstr "اجزای فعال"
-
-msgid "The Members component is always active."
-msgstr "اجزای اعضا همیشه فعال است."
-
-msgid "Activity Streams"
-msgstr "جریان‌های فعالیت"
-
-msgid "Friends & Follow"
-msgstr "دوستان و دنبال کردن"
-
-msgid "Private Messages"
-msgstr "پیام‌های خصوصی"
-
-msgid "%s posted an update"
-msgstr "%s یک به‌روزرسانی ارسال کرد"
-
-msgid "Security check failed."
-msgstr "بررسی امنیتی ناموفق بود."
-
-msgid "You must be logged in."
-msgstr "باید وارد سیستم شوید."
-
-msgid "Your account has been suspended."
-msgstr "حساب کاربری شما تعلیق شده است."
-
-msgid "You are posting too frequently. Please wait."
-msgstr "شما خیلی سریع ارسال می‌کنید. لطفاً صبر کنید."
-
-msgid "Activity content cannot be empty."
-msgstr "محتوای فعالیت نمی‌تواند خالی باشد."
-
-msgid "Your post contains prohibited content."
-msgstr "پست شما حاوی محتوای ممنوع است."
-
-msgid "Your post was identified as spam."
-msgstr "پست شما به عنوان اسپم شناسایی شد."
-
-msgid "Failed to post activity."
-msgstr "ارسال فعالیت ناموفق بود."
-
-msgid "Activity posted."
-msgstr "فعالیت ارسال شد."
-
-msgid "Activity deleted."
-msgstr "فعالیت حذف شد."
-
-msgid "Activity not found."
-msgstr "فعالیت یافت نشد."
-
-msgid "Authentication required."
-msgstr "احراز هویت لازم است."
-
-msgid "Permission denied."
-msgstr "دسترسی رد شد."
-
-msgid "You must be logged in to react."
-msgstr "برای واکنش نشان دادن باید وارد سیستم شوید."
-
-msgid "Report submitted. Thank you."
-msgstr "گزارش ارسال شد. متشکریم."
-
-msgid "You cannot friend yourself."
-msgstr "نمی‌توانید با خود دوست شوید."
-
-msgid "Unable to send friend request."
-msgstr "ارسال درخواست دوستی امکان‌پذیر نیست."
-
-msgid "A friend request already exists."
-msgstr "درخواست دوستی قبلاً ارسال شده است."
-
-msgid "Friend request sent."
-msgstr "درخواست دوستی ارسال شد."
-
-msgid "Friend request accepted."
-msgstr "درخواست دوستی پذیرفته شد."
-
-msgid "Request rejected."
-msgstr "درخواست رد شد."
-
-msgid "Friend removed."
-msgstr "دوست حذف شد."
-
-msgid "You are now following this member."
-msgstr "شما اکنون این عضو را دنبال می‌کنید."
-
-msgid "You have unfollowed this member."
-msgstr "دنبال کردن این عضو لغو شد."
-
-msgid "User blocked."
-msgstr "کاربر مسدود شد."
-
-msgid "User unblocked."
-msgstr "مسدودیت کاربر رفع شد."
-
-msgid "Too many friend requests. Please wait."
-msgstr "تعداد درخواست‌های دوستی زیاد است. لطفاً صبر کنید."
-
-msgid "Group name is required."
-msgstr "نام گروه الزامی است."
-
-msgid "Failed to create group."
-msgstr "ایجاد گروه ناموفق بود."
-
-msgid "Group created!"
-msgstr "گروه ایجاد شد!"
-
-msgid "Group not found."
-msgstr "گروه یافت نشد."
-
-msgid "This group cannot be joined directly."
-msgstr "این گروه قابل پیوستن مستقیم نیست."
-
-msgid "You have joined the group."
-msgstr "شما به گروه پیوستید."
-
-msgid "Membership request sent."
-msgstr "درخواست عضویت ارسال شد."
-
-msgid "Only group members can invite others."
-msgstr "فقط اعضای گروه می‌توانند دیگران را دعوت کنند."
-
-msgid "User not found."
-msgstr "کاربر یافت نشد."
-
-msgid "Invitation sent."
-msgstr "دعوت‌نامه ارسال شد."
-
-msgid "You are the only admin. Assign another admin before leaving."
-msgstr "شما تنها مدیر هستید. قبل از خروج، مدیر دیگری تعیین کنید."
-
-msgid "You have left the group."
-msgstr "شما از گروه خارج شدید."
-
-msgid "Group deleted."
-msgstr "گروه حذف شد."
-
-msgid "You are sending messages too quickly. Please wait."
-msgstr "شما خیلی سریع پیام ارسال می‌کنید. لطفاً صبر کنید."
-
-msgid "Message cannot be empty."
-msgstr "پیام نمی‌تواند خالی باشد."
-
-msgid "Could not send message."
-msgstr "ارسال پیام ناموفق بود."
-
-msgid "Recipient required."
-msgstr "گیرنده الزامی است."
-
-msgid "Conversation deleted."
-msgstr "مکالمه حذف شد."
-
-msgid "New Message"
-msgstr "پیام جدید"
-
-msgid "%s sent you a friend request."
-msgstr "%s درخواست دوستی برای شما ارسال کرد."
-
-msgid "%s accepted your friend request."
-msgstr "%s درخواست دوستی شما را پذیرفت."
-
-msgid "%s mentioned you in an activity update."
-msgstr "%s شما را در یک به‌روزرسانی ذکر کرد."
-
-msgid "%s invited you to join a group."
-msgstr "%s شما را به پیوستن به یک گروه دعوت کرد."
-
-msgid "%s sent you a message."
-msgstr "%s برای شما پیامی ارسال کرد."
-
-msgid "%s reacted to your activity."
-msgstr "%s به فعالیت شما واکنش نشان داد."
-
-msgid "Your %s digest"
-msgstr "خلاصه %s شما"
-
-msgid "Here are your recent notifications:"
-msgstr "اعلان‌های اخیر شما:"
-
-msgid "Manage notification preferences"
-msgstr "مدیریت تنظیمات اعلان"
-
-msgid "Your account has been suspended. Please contact an administrator."
-msgstr "حساب کاربری شما تعلیق شده است. لطفاً با مدیر تماس بگیرید."
-
-msgid "Edit Profile"
-msgstr "ویرایش پروفایل"
-
-msgid "Change Photo"
-msgstr "تغییر عکس"
-
-msgid "Connect"
-msgstr "ارتباط"
-
-msgid "Profile sections"
-msgstr "بخش‌های پروفایل"
-
-msgid "No bio yet."
-msgstr "بیوگرافی‌ای وجود ندارد."
-
-msgid "Activity feed"
-msgstr "جریان فعالیت"
-
-msgid "Member directory"
-msgstr "فهرست اعضا"
-
-msgid "Search members…"
-msgstr "جستجوی اعضا…"
-
-msgid "Conversations"
-msgstr "مکالمات"
-
-msgid "Message thread"
-msgstr "رشته پیام"
-
-msgid "Select a conversation"
-msgstr "یک مکالمه انتخاب کنید"
-
-msgid "Type a message…"
-msgstr "یک پیام بنویسید…"
-
-msgid "Send"
-msgstr "ارسال"
-
-msgid "Friends"
-msgstr "دوستان"
-
-msgid "About"
-msgstr "درباره"
-
-msgid "Online"
-msgstr "آنلاین"
-
-msgid "Verified"
-msgstr "تأیید شده"
-
-msgid "Verified Member"
-msgstr "عضو تأیید شده"
-
-msgid "6Arshid Social Community requires PHP %s or higher."
-msgstr "شبکه اجتماعی ۶ به PHP نسخه %s یا بالاتر نیاز دارد."
-
-msgid "6Arshid Social Community requires WordPress %s or higher."
-msgstr "شبکه اجتماعی ۶ به وردپرس نسخه %s یا بالاتر نیاز دارد."
-
-msgid "Invitation Limit"
-msgstr "محدودیت دعوت‌نامه"
-
-msgid "Maximum invitations a member can send. 0 = unlimited."
-msgstr "حداکثر تعداد دعوت‌نامه‌هایی که عضو می‌تواند ارسال کند. ۰ = نامحدود."
-
-msgid "Hello %s,"
-msgstr "سلام %s،"
-
-msgid "%s cover photo"
-msgstr "عکس کاور %s"
-
-msgid "Edit Cover"
-msgstr "ویرایش کاور"
-
-msgid "Search members"
-msgstr "جستجوی اعضا"
-
-msgid "Message"
-msgstr "پیام"
-
+#. Author of the plugin
 msgid "6arshid"
 msgstr "6arshid"
 
-msgid "https://github.com/6arshid/social-network-6"
-msgstr "https://github.com/6arshid/social-network-6"
+#: includes/class-activator.php
+msgid "6Arshid Social Community requires PHP %s or higher."
+msgstr "افزونه 6Arshid Social Community به PHP نسخه %s یا بالاتر نیاز دارد."
+
+#: includes/class-activator.php
+msgid "6Arshid Social Community requires WordPress %s or higher."
+msgstr "افزونه 6Arshid Social Community به وردپرس نسخه %s یا بالاتر نیاز دارد."
+
+#: includes/class-assets.php
+msgid "Loading…"
+msgstr "در حال بارگذاری…"
+
+#: includes/class-assets.php
+msgid "No results found."
+msgstr "نتیجه‌ای یافت نشد."
+
+#: includes/class-assets.php
+msgid "Something went wrong. Please try again."
+msgstr "مشکلی پیش آمد. لطفاً دوباره تلاش کنید."
+
+#: includes/class-assets.php
+msgid "Are you sure?"
+msgstr "آیا مطمئن هستید؟"
+
+#: includes/class-assets.php
+msgid "Like"
+msgstr "پسندیدن"
+
+#: includes/class-assets.php
+msgid "Unlike"
+msgstr "لغو پسند"
+
+#: includes/class-assets.php
+#: templates/members/profile.php
+msgid "Add Friend"
+msgstr "افزودن دوست"
+
+#: includes/class-assets.php
+msgid "Cancel Request"
+msgstr "لغو درخواست"
+
+#: includes/class-assets.php
+msgid "Follow"
+msgstr "دنبال کردن"
+
+#: includes/class-assets.php
+msgid "Unfollow"
+msgstr "لغو دنبال کردن"
+
+#: includes/class-assets.php
+msgid "Send Message"
+msgstr "ارسال پیام"
+
+#: includes/class-assets.php
+msgid "Report"
+msgstr "گزارش"
+
+#: includes/class-assets.php
+msgid "Block User"
+msgstr "مسدود کردن کاربر"
+
+#: includes/class-assets.php
+msgid "Unblock User"
+msgstr "رفع مسدودی کاربر"
+
+#: includes/class-assets.php
+msgid "Delete"
+msgstr "حذف"
+
+#: includes/class-assets.php
+msgid "just now"
+msgstr "همین حالا"
+
+#: includes/class-assets.php
+msgid "%d minute ago"
+msgstr "%d دقیقه پیش"
+
+#: includes/class-assets.php
+msgid "%d minutes ago"
+msgstr "%d دقیقه پیش"
+
+#: includes/class-assets.php
+msgid "%d hour ago"
+msgstr "%d ساعت پیش"
+
+#: includes/class-assets.php
+msgid "%d hours ago"
+msgstr "%d ساعت پیش"
+
+#: includes/class-assets.php
+msgid "%d day ago"
+msgstr "%d روز پیش"
+
+#: includes/class-assets.php
+msgid "%d days ago"
+msgstr "%d روز پیش"
+
+#: includes/admin/class-admin.php
+msgid "Social Network"
+msgstr "شبکه اجتماعی"
+
+#: includes/admin/class-admin.php
+msgid "Dashboard"
+msgstr "پیشخوان"
+
+#: includes/admin/class-admin.php
+msgid "Members"
+msgstr "اعضا"
+
+#: includes/admin/class-admin.php
+msgid "Moderation"
+msgstr "مدیریت محتوا"
+
+#: includes/admin/class-admin.php
+msgid "Settings"
+msgstr "تنظیمات"
+
+#: includes/admin/class-admin.php
+msgid "Social Network Dashboard"
+msgstr "پیشخوان شبکه اجتماعی"
+
+#: includes/admin/class-admin.php
+msgid "Activity Items"
+msgstr "موارد فعالیت"
+
+#: includes/admin/class-admin.php
+msgid "Groups"
+msgstr "گروه‌ها"
+
+#: includes/admin/class-admin.php
+msgid "Pending Reports"
+msgstr "گزارش‌های در انتظار بررسی"
+
+#: includes/admin/class-admin.php
+msgid "Welcome to 6Arshid Social Community!"
+msgstr "به 6Arshid Social Community خوش آمدید!"
+
+#: includes/admin/class-admin.php
+msgid "Run the setup wizard →"
+msgstr "اجرای راه‌انداز اولیه ←"
+
+#: includes/admin/class-admin-settings.php
+msgid "General"
+msgstr "عمومی"
+
+#: includes/admin/class-admin-settings.php
+msgid "Components"
+msgstr "اجزا"
+
+#: includes/admin/class-admin-settings.php
+#: templates/members/profile.php
+msgid "Activity"
+msgstr "فعالیت"
+
+#: includes/admin/class-admin-settings.php
+#: templates/messages/inbox.php
+msgid "Messages"
+msgstr "پیام‌ها"
+
+#: includes/admin/class-admin-settings.php
+msgid "Notifications"
+msgstr "اعلان‌ها"
+
+#: includes/admin/class-admin-settings.php
+msgid "Security"
+msgstr "امنیت"
+
+#: includes/admin/class-admin-settings.php
+msgid "Emails"
+msgstr "ایمیل‌ها"
+
+#: includes/admin/class-admin-settings.php
+msgid "Appearance"
+msgstr "ظاهر"
+
+#: includes/admin/class-admin-settings.php
+msgid "Social Network Settings"
+msgstr "تنظیمات شبکه اجتماعی"
+
+#: includes/admin/class-admin-settings.php
+msgid "Save Settings"
+msgstr "ذخیره تنظیمات"
+
+#: includes/admin/class-admin-settings.php
+msgid "Allow Registration"
+msgstr "اجازه ثبت‌نام"
+
+#: includes/admin/class-admin-settings.php
+msgid "Allow new users to register on the social network."
+msgstr "به کاربران جدید اجازه دهید در شبکه اجتماعی ثبت‌نام کنند."
+
+#: includes/admin/class-admin-settings.php
+msgid "Relative (e.g. 5 minutes ago)"
+msgstr "نسبی (مثلاً ۵ دقیقه پیش)"
+
+#: includes/admin/class-admin-settings.php
+msgid "Absolute (e.g. June 12, 2026)"
+msgstr "مطلق (مثلاً ۱۲ ژوئن ۲۰۲۶)"
+
+#: includes/admin/class-admin-settings.php
+msgid "Jalali / Persian calendar"
+msgstr "تقویم جلالی / فارسی"
+
+#: includes/admin/class-admin-settings.php
+msgid "Invitation Limit"
+msgstr "محدودیت دعوت"
+
+#: includes/admin/class-admin-settings.php
+msgid "Maximum invitations a member can send. 0 = unlimited."
+msgstr "حداکثر تعداد دعوت‌هایی که هر عضو می‌تواند ارسال کند. ۰ = نامحدود."
+
+#: includes/admin/class-admin-settings.php
+msgid "Active Components"
+msgstr "اجزای فعال"
+
+#: includes/admin/class-admin-settings.php
+msgid "The Members component is always active."
+msgstr "بخش اعضا همیشه فعال است."
+
+#: includes/admin/class-admin-settings.php
+msgid "Activity Streams"
+msgstr "جریان فعالیت‌ها"
+
+#: includes/admin/class-admin-settings.php
+msgid "Friends & Follow"
+msgstr "دوستان و دنبال‌کردن"
+
+#: includes/admin/class-admin-settings.php
+msgid "Private Messages"
+msgstr "پیام‌های خصوصی"
+
+#: includes/components/activity/class-activity.php
+msgid "%s posted an update"
+msgstr "%s یک به‌روزرسانی منتشر کرد"
+
+#: includes/components/activity/class-activity.php
+msgid "Security check failed."
+msgstr "بررسی امنیتی ناموفق بود."
+
+#: includes/components/activity/class-activity.php
+msgid "You must be logged in."
+msgstr "باید وارد حساب کاربری خود شوید."
+
+#: includes/components/activity/class-activity.php
+msgid "Your account has been suspended."
+msgstr "حساب کاربری شما تعلیق شده است."
+
+#: includes/components/activity/class-activity.php
+msgid "You are posting too frequently. Please wait."
+msgstr "با فاصله زمانی بسیار کوتاه پست می‌گذارید. لطفاً کمی صبر کنید."
+
+#: includes/components/activity/class-activity.php
+msgid "Activity content cannot be empty."
+msgstr "محتوای فعالیت نمی‌تواند خالی باشد."
+
+#: includes/components/activity/class-activity.php
+msgid "Your post contains prohibited content."
+msgstr "پست شما حاوی محتوای ممنوع است."
+
+#: includes/components/activity/class-activity.php
+msgid "Your post was identified as spam."
+msgstr "پست شما به‌عنوان هرزنامه شناسایی شد."
+
+#: includes/components/activity/class-activity.php
+msgid "Failed to post activity."
+msgstr "انتشار فعالیت ناموفق بود."
+
+#: includes/components/activity/class-activity.php
+msgid "Activity posted."
+msgstr "فعالیت منتشر شد."
+
+#: includes/components/activity/class-activity.php
+msgid "Activity deleted."
+msgstr "فعالیت حذف شد."
+
+#: includes/components/activity/class-activity.php
+msgid "Activity not found."
+msgstr "فعالیت یافت نشد."
+
+#: includes/components/activity/class-activity.php
+msgid "Authentication required."
+msgstr "احراز هویت الزامی است."
+
+#: includes/components/activity/class-activity.php
+msgid "Permission denied."
+msgstr "دسترسی مجاز نیست."
+
+#: includes/components/activity/class-activity.php
+msgid "You must be logged in to react."
+msgstr "برای واکنش نشان دادن باید وارد حساب کاربری شوید."
+
+#: includes/components/activity/class-activity.php
+msgid "Report submitted. Thank you."
+msgstr "گزارش ارسال شد. متشکریم."
+
+#: includes/components/friends/class-friends.php
+msgid "You cannot friend yourself."
+msgstr "نمی‌توانید خودتان را به‌عنوان دوست اضافه کنید."
+
+#: includes/components/friends/class-friends.php
+msgid "Unable to send friend request."
+msgstr "ارسال درخواست دوستی ممکن نشد."
+
+#: includes/components/friends/class-friends.php
+msgid "A friend request already exists."
+msgstr "درخواست دوستی از قبل وجود دارد."
+
+#: includes/components/friends/class-friends.php
+msgid "Friend request sent."
+msgstr "درخواست دوستی ارسال شد."
+
+#: includes/components/friends/class-friends.php
+msgid "Friend request accepted."
+msgstr "درخواست دوستی پذیرفته شد."
+
+#: includes/components/friends/class-friends.php
+msgid "Request rejected."
+msgstr "درخواست رد شد."
+
+#: includes/components/friends/class-friends.php
+msgid "Friend removed."
+msgstr "دوست حذف شد."
+
+#: includes/components/friends/class-friends.php
+msgid "You are now following this member."
+msgstr "اکنون این عضو را دنبال می‌کنید."
+
+#: includes/components/friends/class-friends.php
+msgid "You have unfollowed this member."
+msgstr "دنبال کردن این عضو لغو شد."
+
+#: includes/components/friends/class-friends.php
+msgid "User blocked."
+msgstr "کاربر مسدود شد."
+
+#: includes/components/friends/class-friends.php
+msgid "User unblocked."
+msgstr "مسدودی کاربر رفع شد."
+
+#: includes/components/friends/class-friends.php
+msgid "Too many friend requests. Please wait."
+msgstr "تعداد درخواست‌های دوستی بیش از حد است. لطفاً کمی صبر کنید."
+
+#: includes/components/groups/class-groups.php
+msgid "Group name is required."
+msgstr "نام گروه الزامی است."
+
+#: includes/components/groups/class-groups.php
+msgid "Failed to create group."
+msgstr "ایجاد گروه ناموفق بود."
+
+#: includes/components/groups/class-groups.php
+msgid "Group created!"
+msgstr "گروه ایجاد شد!"
+
+#: includes/components/groups/class-groups.php
+msgid "Group not found."
+msgstr "گروه یافت نشد."
+
+#: includes/components/groups/class-groups.php
+msgid "This group cannot be joined directly."
+msgstr "امکان عضویت مستقیم در این گروه وجود ندارد."
+
+#: includes/components/groups/class-groups.php
+msgid "You have joined the group."
+msgstr "به گروه پیوستید."
+
+#: includes/components/groups/class-groups.php
+msgid "Membership request sent."
+msgstr "درخواست عضویت ارسال شد."
+
+#: includes/components/groups/class-groups.php
+msgid "Only group members can invite others."
+msgstr "فقط اعضای گروه می‌توانند دیگران را دعوت کنند."
+
+#: includes/components/groups/class-groups.php
+msgid "User not found."
+msgstr "کاربر یافت نشد."
+
+#: includes/components/groups/class-groups.php
+msgid "Invitation sent."
+msgstr "دعوت‌نامه ارسال شد."
+
+#: includes/components/groups/class-groups.php
+msgid "You are the only admin. Assign another admin before leaving."
+msgstr "شما تنها مدیر گروه هستید. پیش از ترک گروه، مدیر دیگری تعیین کنید."
+
+#: includes/components/groups/class-groups.php
+msgid "You have left the group."
+msgstr "گروه را ترک کردید."
+
+#: includes/components/groups/class-groups.php
+msgid "Group deleted."
+msgstr "گروه حذف شد."
+
+#: includes/components/messages/class-messages.php
+msgid "You are sending messages too quickly. Please wait."
+msgstr "پیام‌ها را با فاصله زمانی بسیار کوتاه ارسال می‌کنید. لطفاً کمی صبر کنید."
+
+#: includes/components/messages/class-messages.php
+msgid "Message cannot be empty."
+msgstr "پیام نمی‌تواند خالی باشد."
+
+#: includes/components/messages/class-messages.php
+msgid "Could not send message."
+msgstr "ارسال پیام ممکن نشد."
+
+#: includes/components/messages/class-messages.php
+msgid "Recipient required."
+msgstr "انتخاب گیرنده الزامی است."
+
+#: includes/components/messages/class-messages.php
+msgid "Conversation deleted."
+msgstr "گفت‌وگو حذف شد."
+
+#: includes/components/messages/class-messages.php
+msgid "New Message"
+msgstr "پیام جدید"
+
+#: includes/components/notifications/class-notifications.php
+msgid "%s sent you a friend request."
+msgstr "%s برای شما درخواست دوستی فرستاد."
+
+#: includes/components/notifications/class-notifications.php
+msgid "%s accepted your friend request."
+msgstr "%s درخواست دوستی شما را پذیرفت."
+
+#: includes/components/notifications/class-notifications.php
+msgid "%s mentioned you in an activity update."
+msgstr "%s در یک به‌روزرسانی فعالیت از شما نام برد."
+
+#: includes/components/notifications/class-notifications.php
+msgid "%s invited you to join a group."
+msgstr "%s شما را برای پیوستن به یک گروه دعوت کرد."
+
+#: includes/components/notifications/class-notifications.php
+msgid "%s sent you a message."
+msgstr "%s برای شما پیام فرستاد."
+
+#: includes/components/notifications/class-notifications.php
+msgid "%s reacted to your activity."
+msgstr "%s به فعالیت شما واکنش نشان داد."
+
+#: includes/components/notifications/class-notifications.php
+msgid "Your %s digest"
+msgstr "خلاصه %s شما"
+
+#: includes/components/notifications/class-notifications.php
+msgid "Hello %s,"
+msgstr "سلام %s،"
+
+#: includes/components/notifications/class-notifications.php
+msgid "Here are your recent notifications:"
+msgstr "اعلان‌های اخیر شما:"
+
+#: includes/components/notifications/class-notifications.php
+msgid "Manage notification preferences"
+msgstr "مدیریت تنظیمات اعلان‌ها"
+
+#: includes/components/moderation/class-moderation.php
+msgid "Your account has been suspended. Please contact an administrator."
+msgstr "حساب کاربری شما تعلیق شده است. لطفاً با مدیر سایت تماس بگیرید."
+
+#: templates/members/profile.php
+msgid "%s cover photo"
+msgstr "تصویر کاور %s"
+
+#: templates/members/profile.php
+msgid "Edit Cover"
+msgstr "ویرایش کاور"
+
+#: templates/members/profile.php
+msgid "Verified Member"
+msgstr "عضو تأییدشده"
+
+#: templates/members/profile.php
+msgid "Verified"
+msgstr "تأییدشده"
+
+#: templates/members/profile.php
+msgid "Friends"
+msgstr "دوستان"
+
+#: templates/members/profile.php
+msgid "Edit Profile"
+msgstr "ویرایش پروفایل"
+
+#: templates/members/profile.php
+msgid "Change Photo"
+msgstr "تغییر تصویر"
+
+#: templates/members/profile.php
+msgid "Connect"
+msgstr "ارتباط"
+
+#: templates/members/profile.php
+msgid "About"
+msgstr "درباره"
+
+#: templates/members/profile.php
+msgid "Profile sections"
+msgstr "بخش‌های پروفایل"
+
+#: templates/members/profile.php
+msgid "No bio yet."
+msgstr "هنوز توضیحی ثبت نشده است."
+
+#: templates/members/profile.php
+msgid "Activity feed"
+msgstr "خوراک فعالیت"
+
+#: templates/members/directory.php
+msgid "Search members…"
+msgstr "جست‌وجوی اعضا…"
+
+#: templates/members/directory.php
+msgid "Search members"
+msgstr "جست‌وجوی اعضا"
+
+#: templates/members/directory.php
+msgid "Member directory"
+msgstr "فهرست اعضا"
+
+#: templates/messages/inbox.php
+msgid "Conversations"
+msgstr "گفت‌وگوها"
+
+#: templates/messages/inbox.php
+msgid "Message thread"
+msgstr "رشته پیام‌ها"
+
+#: templates/messages/inbox.php
+msgid "Select a conversation"
+msgstr "یک گفت‌وگو را انتخاب کنید"
+
+#: templates/messages/inbox.php
+msgid "Type a message…"
+msgstr "پیام خود را بنویسید…"
+
+#: templates/messages/inbox.php
+msgid "Message"
+msgstr "پیام"
+
+#: templates/messages/inbox.php
+msgid "Send"
+msgstr "ارسال"
