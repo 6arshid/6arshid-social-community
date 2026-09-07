@@ -247,6 +247,21 @@ Third-party integrations such as GIF providers, social embeds, Gravatar, Stripe,
 4. Activation and setup create/configure plugin pages only. The plugin does not change `show_on_front`, `page_on_front`, or assign itself as the site homepage automatically.
 5. Configure components and settings at **6arshid Social Community → Settings**
 
+== Build Native Apps for Free ==
+
+You can build native mobile and desktop applications for your 6Arshid Social Community network at no cost. We provide free build scripts and step-by-step tutorials for all major platforms.
+
+Supported platforms:
+
+* Android
+* iOS
+* Windows
+* macOS
+* Linux
+
+For a complete tutorial on building and deploying your own native apps, visit:
+https://6arshid.com/portfolio/flutter-mobile-app-6arshid-social-community
+
 == Frequently Asked Questions ==
 
 
