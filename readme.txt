@@ -260,7 +260,11 @@ Supported platforms:
 * Linux
 
 For a complete tutorial on building and deploying your own native apps, visit:
-https://6arshid.com/portfolio/flutter-mobile-app-6arshid-social-community
+<a href="https://6arshid.com/portfolio/flutter-mobile-app-6arshid-social-community" target="_blank">Flutter Mobile App – 6Arshid Social Community</a>
+
+### Video Tutorial
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/6nFuUrSQ1Ik" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 == Frequently Asked Questions ==
 
