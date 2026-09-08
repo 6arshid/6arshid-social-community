@@ -34,6 +34,9 @@ The plugin is designed for:
 * Educational and professional networks
 
 Each major feature can be enabled or disabled independently, so you can build a lightweight community or a more complete social network experience.
+= Video Tutorial =
+
+https://www.youtube.com/watch?v=6nFuUrSQ1Ik
 
 
 == Build Native Apps for Free ==
@@ -50,10 +53,6 @@ Supported platforms:
 
 For a complete tutorial on building and deploying your own native apps, visit:
 <a href="https://6arshid.com/portfolio/flutter-mobile-app-6arshid-social-community" target="_blank">Flutter Mobile App – 6Arshid Social Community</a>
-
-### Video Tutorial
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/6nFuUrSQ1Ik?si=PdV0WUaQTvR2GxzV" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 
 = Member Profiles =
